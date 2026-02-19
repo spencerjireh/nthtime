@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./libs/shared"
+    },
+    {
+      "path": "./libs/data-access"
+    },
+    {
+      "path": "./libs/verification"
+    },
+    {
+      "path": "./libs/editor"
+    }
+  ]
+}

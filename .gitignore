@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+out-tsc/
+.next/
+out/
+
+# Nx
+.nx/cache
+.nx/installation
+.nx/workspace-data
+
+# Convex
+.convex/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.tsbuildinfo
+*.log
+
+# Vitest
+vitest.config.*.timestamp*

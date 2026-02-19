@@ -1,0 +1,19 @@
+{
+  "name": "@nthtime/web",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/web",
+        "command": "next build --webpack"
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/web",
+        "command": "playwright test"
+      }
+    }
+  }
+}
