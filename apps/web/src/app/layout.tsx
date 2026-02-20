@@ -1,6 +1,7 @@
 import './global.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AppShell } from '@/components/app-shell';
+import { ConvexClientProvider } from '@/lib/convex/provider';
 
 export const metadata = {
   title: 'nthtime',
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider>
-          <AppShell>{children}</AppShell>
-        </ThemeProvider>
+        <ConvexClientProvider>
+          <ThemeProvider>
+            <AppShell>{children}</AppShell>
+          </ThemeProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   );
