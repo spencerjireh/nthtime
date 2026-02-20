@@ -488,7 +488,7 @@ A user can: browse the catalog, select a challenge, write code (single or multi-
   - [x] CLI validator: schema check + reference solution verification
   - [x] Run every reference solution through the full verification pipeline
   - [x] Descriptive error output for invalid packs
-  - [ ] Integrate into CI (packs validated on every push) (deferred to Phase 9)
+  - [x] Integrate into CI (packs validated on every push) (completed in Phase 9)
 - [x] Build seed script (`tools/seed.ts`):
   - [x] Read pack JSON files from `packs/` directory
   - [x] Validate all packs before import
@@ -567,6 +567,7 @@ All three packs pass schema validation and reference solution verification. Seed
   - [ ] CDN caching rules (static assets, WASM grammars)
   - [ ] Cache headers for challenge data
 - [x] Complete GitHub Actions CI/CD pipeline:
+  - [x] Validate packs (`pnpm validate` step)
   - [x] Run Vitest (unit/integration)
   - [x] Run Playwright (E2E)
   - [ ] Deploy Convex functions (deferred -- needs CONVEX_DEPLOY_KEY secret)
