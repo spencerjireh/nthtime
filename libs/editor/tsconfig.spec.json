@@ -9,6 +9,7 @@
       "node",
       "vitest"
     ],
+    "lib": ["ES2022", "DOM"],
     "forceConsistentCasingInFileNames": true
   },
   "include": [

@@ -13,5 +13,8 @@
     },
     "./package.json": "./package.json"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@nthtime/shared": "workspace:*",
+    "zustand": "^5.0.0"
+  }
 }

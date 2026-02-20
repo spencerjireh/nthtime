@@ -43,5 +43,19 @@
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     ".next"
+  ],
+  "references": [
+    {
+      "path": "../../libs/verification"
+    },
+    {
+      "path": "../../libs/shared"
+    },
+    {
+      "path": "../../libs/editor"
+    },
+    {
+      "path": "../../libs/data-access"
+    }
   ]
 }
