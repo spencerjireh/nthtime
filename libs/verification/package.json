@@ -13,5 +13,8 @@
     },
     "./package.json": "./package.json"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@nthtime/shared": "workspace:*",
+    "web-tree-sitter": "^0.24.7"
+  }
 }

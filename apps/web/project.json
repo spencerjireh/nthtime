@@ -8,6 +8,13 @@
         "command": "next build --webpack"
       }
     },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/web",
+        "command": "next dev --webpack"
+      }
+    },
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
