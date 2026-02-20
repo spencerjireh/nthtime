@@ -1,0 +1,54 @@
+{
+  "title": "Counter with useState",
+  "prompt": "Build a simple counter component using React's useState hook.\n\n**Requirements:**\n1. Import `useState` from `react`\n2. Create and export a function `Counter` component\n3. Use `useState` to track the count\n4. Render a `<button>` element that increments the count on click\n5. Display the current count",
+  "difficulty": "beginner",
+  "tags": ["useState", "events", "components"],
+  "timeEstimateSeconds": 300,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "Counter.tsx",
+      "content": "import { useState } from 'react';\n\nexport function Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={() => setCount(count + 1)}>Increment</button>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "Counter.tsx",
+      "content": "// Build a Counter component with useState\n"
+    }
+  ],
+  "hints": [
+    "Import useState: import { useState } from 'react'",
+    "Initialize state: const [count, setCount] = useState(0)",
+    "Use onClick handler on the button to call setCount"
+  ],
+  "assertions": {
+    "perFile": {
+      "Counter.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState"],
+          "description": "Import useState from React"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Counter",
+          "description": "Define a Counter component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "button",
+          "description": "Render a button element"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Counter",
+          "isDefault": false,
+          "description": "Export the Counter component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

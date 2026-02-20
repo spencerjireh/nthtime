@@ -1,0 +1,69 @@
+{
+  "title": "Multiple Routes",
+  "prompt": "Create an Express server with multiple route handlers for a simple API.\n\n**Requirements:**\n1. Import `express` and create an app instance\n2. Enable JSON body parsing with `express.json()`\n3. Add a GET route at `/api/items` that returns all items\n4. Add a POST route at `/api/items` that adds a new item\n5. Export the app as the default export",
+  "difficulty": "intermediate",
+  "tags": ["routes", "get", "post", "crud"],
+  "timeEstimateSeconds": 480,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "app.js",
+      "content": "import express from 'express';\n\nconst app = express();\n\napp.use(express.json());\n\nconst items = [];\n\napp.get('/api/items', (req, res) => {\n  res.json(items);\n});\n\napp.post('/api/items', (req, res) => {\n  const item = { id: items.length + 1, ...req.body };\n  items.push(item);\n  res.status(201).json(item);\n});\n\nexport default app;\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "app.js",
+      "content": "// Build an Express app with GET and POST routes for /api/items\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "hints": [
+    "You need both app.get() and app.post() on the same path",
+    "Use an array to store items in memory",
+    "Set status 201 for created resources: res.status(201).json(item)"
+  ],
+  "assertions": {
+    "perFile": {
+      "app.js": [
+        {
+          "type": "importDeclaration",
+          "source": "express",
+          "description": "Import the express module"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "app",
+          "kind": "const",
+          "description": "Create an Express application instance"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "get",
+          "description": "Define a GET route handler"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "post",
+          "description": "Define a POST route handler"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "app",
+          "isDefault": true,
+          "description": "Export the app as default"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

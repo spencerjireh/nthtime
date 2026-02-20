@@ -1,0 +1,57 @@
+{
+  "title": "Request Body with Pydantic",
+  "prompt": "Create a FastAPI endpoint that accepts a JSON request body validated with Pydantic.\n\n**Requirements:**\n1. Import `FastAPI` from `fastapi`\n2. Import `BaseModel` from `pydantic`\n3. Define a class `Item` that inherits from `BaseModel` with `name` and `price` fields\n4. Define a function `create_item` decorated with `@app.post('/items')` that accepts an `Item` body\n5. Return the received item data",
+  "difficulty": "beginner",
+  "tags": ["pydantic", "models", "post", "validation"],
+  "timeEstimateSeconds": 420,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\n\n@app.post(\"/items\")\ndef create_item(item: Item):\n    return {\"name\": item.name, \"price\": item.price}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "main.py",
+      "content": "# Create a FastAPI endpoint with a Pydantic request body\n"
+    }
+  ],
+  "hints": [
+    "Import BaseModel: from pydantic import BaseModel",
+    "Define models as classes that inherit from BaseModel",
+    "Type annotations on class fields define the schema: name: str",
+    "Use the model as a function parameter type for automatic validation"
+  ],
+  "assertions": {
+    "perFile": {
+      "main.py": [
+        {
+          "type": "pythonImport",
+          "module": "fastapi",
+          "names": ["FastAPI"],
+          "description": "Import FastAPI from fastapi"
+        },
+        {
+          "type": "pythonImport",
+          "module": "pydantic",
+          "names": ["BaseModel"],
+          "description": "Import BaseModel from pydantic"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Item",
+          "bases": ["BaseModel"],
+          "description": "Define an Item Pydantic model"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "create_item",
+          "decorator": "app.post",
+          "description": "Define a POST endpoint"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

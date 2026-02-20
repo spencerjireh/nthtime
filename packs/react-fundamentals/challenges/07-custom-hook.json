@@ -1,0 +1,82 @@
+{
+  "title": "Custom Hook",
+  "prompt": "Create a custom `useLocalStorage` hook and use it in a component.\n\n**Requirements in `useLocalStorage.ts`:**\n1. Import `useState` from `react`\n2. Create and export a function `useLocalStorage` that wraps useState with localStorage persistence\n3. The hook should accept a key and initial value\n\n**Requirements in `App.tsx`:**\n1. Import `useLocalStorage` from `./useLocalStorage`\n2. Create and export a function `App` component that uses the custom hook\n3. Render an `<input>` element bound to the stored value",
+  "difficulty": "intermediate",
+  "tags": ["custom-hooks", "localStorage", "reuse"],
+  "timeEstimateSeconds": 600,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "useLocalStorage.ts",
+      "content": "import { useState } from 'react';\n\nexport function useLocalStorage(key: string, initialValue: string) {\n  const [value, setValue] = useState(() => {\n    const stored = localStorage.getItem(key);\n    return stored ?? initialValue;\n  });\n\n  const setStoredValue = (newValue: string) => {\n    setValue(newValue);\n    localStorage.setItem(key, newValue);\n  };\n\n  return [value, setStoredValue] as const;\n}\n"
+    },
+    {
+      "path": "App.tsx",
+      "content": "import { useLocalStorage } from './useLocalStorage';\n\nexport function App() {\n  const [name, setName] = useLocalStorage('name', '');\n\n  return (\n    <div>\n      <input value={name} onChange={e => setName(e.target.value)} />\n      <p>Stored: {name}</p>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "useLocalStorage.ts",
+      "content": "// Build a custom useLocalStorage hook\n"
+    },
+    {
+      "path": "App.tsx",
+      "content": "// Use the custom hook in a component\n"
+    }
+  ],
+  "hints": [
+    "Custom hooks are functions that start with 'use' and can call other hooks",
+    "Use a lazy initializer with useState: useState(() => ...)",
+    "Read from localStorage on init, write on update",
+    "Return [value, setter] as const for proper TypeScript inference"
+  ],
+  "assertions": {
+    "perFile": {
+      "useLocalStorage.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState"],
+          "description": "Import useState from React"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useLocalStorage",
+          "description": "Define the custom hook"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useLocalStorage",
+          "isDefault": false,
+          "description": "Export the custom hook"
+        }
+      ],
+      "App.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "./useLocalStorage",
+          "specifiers": ["useLocalStorage"],
+          "description": "Import the custom hook"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "App",
+          "description": "Define the App component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "description": "Render an input element"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "App",
+          "isDefault": false,
+          "description": "Export the App component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "title": "Controlled Form",
+  "prompt": "Build a contact form with controlled inputs.\n\n**Requirements:**\n1. Import `useState` from `react`\n2. Create and export a function `ContactForm` component\n3. Use `useState` to track form fields (name and email)\n4. Render a `<form>` element with `<input>` elements for name and email\n5. Handle form submission to log the data",
+  "difficulty": "intermediate",
+  "tags": ["forms", "controlled", "useState", "events"],
+  "timeEstimateSeconds": 480,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "ContactForm.tsx",
+      "content": "import { useState } from 'react';\n\nexport function ContactForm() {\n  const [name, setName] = useState('');\n  const [email, setEmail] = useState('');\n\n  function handleSubmit(e: React.FormEvent) {\n    e.preventDefault();\n    console.log({ name, email });\n  }\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <input value={name} onChange={e => setName(e.target.value)} placeholder=\"Name\" />\n      <input value={email} onChange={e => setEmail(e.target.value)} placeholder=\"Email\" />\n      <button type=\"submit\">Send</button>\n    </form>\n  );\n}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "ContactForm.tsx",
+      "content": "// Build a controlled contact form\n"
+    }
+  ],
+  "hints": [
+    "Controlled inputs use value and onChange together",
+    "Prevent default form behavior with e.preventDefault()",
+    "Use separate useState calls for each form field",
+    "Use React.FormEvent for the submit handler type"
+  ],
+  "assertions": {
+    "perFile": {
+      "ContactForm.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState"],
+          "description": "Import useState from React"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "ContactForm",
+          "description": "Define the ContactForm component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "form",
+          "description": "Render a form element"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "description": "Render input elements"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ContactForm",
+          "isDefault": false,
+          "description": "Export the ContactForm component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

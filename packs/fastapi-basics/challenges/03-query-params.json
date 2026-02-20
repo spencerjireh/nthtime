@@ -1,0 +1,44 @@
+{
+  "title": "Query Parameters",
+  "prompt": "Create a FastAPI endpoint that accepts optional query parameters.\n\n**Requirements:**\n1. Import `FastAPI` from `fastapi`\n2. Create an app instance\n3. Define a function `list_items` decorated with `@app.get('/items')` that accepts `skip` and `limit` query parameters with defaults\n4. Return the parameters in a JSON response",
+  "difficulty": "beginner",
+  "tags": ["endpoints", "query-params", "get"],
+  "timeEstimateSeconds": 300,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/items\")\ndef list_items(skip: int = 0, limit: int = 10):\n    return {\"skip\": skip, \"limit\": limit}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "main.py",
+      "content": "# Create a FastAPI endpoint with query parameters\n"
+    }
+  ],
+  "hints": [
+    "Query parameters are function parameters NOT in the path template",
+    "Provide default values: skip: int = 0, limit: int = 10",
+    "FastAPI automatically validates and converts types"
+  ],
+  "assertions": {
+    "perFile": {
+      "main.py": [
+        {
+          "type": "pythonImport",
+          "module": "fastapi",
+          "names": ["FastAPI"],
+          "description": "Import FastAPI from fastapi"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "list_items",
+          "decorator": "app.get",
+          "description": "Define a GET endpoint with query parameters"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

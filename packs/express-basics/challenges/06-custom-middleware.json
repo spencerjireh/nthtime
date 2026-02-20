@@ -1,0 +1,91 @@
+{
+  "title": "Custom Middleware",
+  "prompt": "Create custom middleware functions for an Express application.\n\n**Requirements in `middleware.js`:**\n1. Write a function `logger` that logs the request method and URL, then calls `next()`\n2. Export `logger` as a named export\n\n**Requirements in `app.js`:**\n1. Import `express` and import `logger` from `./middleware.js`\n2. Create an app instance and register the logger middleware with `app.use()`\n3. Add a GET route at `/api/status` that returns `{ status: 'ok' }`\n4. Export the app as the default export",
+  "difficulty": "intermediate",
+  "tags": ["middleware", "logging", "modules"],
+  "timeEstimateSeconds": 600,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "middleware.js",
+      "content": "export function logger(req, res, next) {\n  console.log(`${req.method} ${req.url}`);\n  next();\n}\n"
+    },
+    {
+      "path": "app.js",
+      "content": "import express from 'express';\nimport { logger } from './middleware.js';\n\nconst app = express();\n\napp.use(logger);\n\napp.get('/api/status', (req, res) => {\n  res.json({ status: 'ok' });\n});\n\nexport default app;\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "middleware.js",
+      "content": "// Write a logger middleware function here\n"
+    },
+    {
+      "path": "app.js",
+      "content": "// Import express and your custom middleware, then wire them together\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "hints": [
+    "Middleware functions take (req, res, next) as parameters",
+    "Always call next() to pass control to the next middleware",
+    "Register middleware with app.use(middlewareFunction)",
+    "Use named exports: export function logger(...) { ... }"
+  ],
+  "assertions": {
+    "perFile": {
+      "middleware.js": [
+        {
+          "type": "functionDeclaration",
+          "name": "logger",
+          "description": "Define a logger middleware function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "logger",
+          "isDefault": false,
+          "description": "Export logger as a named export"
+        }
+      ],
+      "app.js": [
+        {
+          "type": "importDeclaration",
+          "source": "express",
+          "description": "Import the express module"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "./middleware.js",
+          "specifiers": ["logger"],
+          "description": "Import the logger middleware"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "use",
+          "description": "Register middleware with app.use()"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "get",
+          "description": "Define a GET route"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "app",
+          "isDefault": true,
+          "description": "Export the app as default"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

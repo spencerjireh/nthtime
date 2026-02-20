@@ -1,0 +1,61 @@
+{
+  "title": "Event Handling",
+  "prompt": "Build a toggle button that switches between on and off states.\n\n**Requirements:**\n1. Import `useState` from `react`\n2. Create and export a function `ToggleButton` component\n3. Use `useState` to track whether the toggle is on or off\n4. Define a `handleClick` function that toggles the state\n5. Render a `<button>` with an `onClick` prop set to `handleClick`",
+  "difficulty": "intermediate",
+  "tags": ["events", "useState", "handlers"],
+  "timeEstimateSeconds": 360,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "ToggleButton.tsx",
+      "content": "import { useState } from 'react';\n\nexport function ToggleButton() {\n  const [isOn, setIsOn] = useState(false);\n\n  function handleClick() {\n    setIsOn(prev => !prev);\n  }\n\n  return (\n    <button onClick={handleClick}>\n      {isOn ? 'ON' : 'OFF'}\n    </button>\n  );\n}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "ToggleButton.tsx",
+      "content": "// Build a ToggleButton with click handling\n"
+    }
+  ],
+  "hints": [
+    "Use useState(false) to start in the off state",
+    "Create a named handler function for the click event",
+    "Toggle state with a callback: setIsOn(prev => !prev)",
+    "Pass the handler to onClick: <button onClick={handleClick}>"
+  ],
+  "assertions": {
+    "perFile": {
+      "ToggleButton.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState"],
+          "description": "Import useState from React"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "ToggleButton",
+          "description": "Define a ToggleButton component"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "handleClick",
+          "description": "Define a click handler function"
+        },
+        {
+          "type": "jsxElement",
+          "name": "button",
+          "props": ["onClick"],
+          "description": "Render a button with onClick handler"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ToggleButton",
+          "isDefault": false,
+          "description": "Export the ToggleButton component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

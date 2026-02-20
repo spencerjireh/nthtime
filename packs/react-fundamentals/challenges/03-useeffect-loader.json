@@ -1,0 +1,54 @@
+{
+  "title": "useEffect Data Loader",
+  "prompt": "Build a component that loads data when it mounts using useEffect.\n\n**Requirements:**\n1. Import `useState` and `useEffect` from `react`\n2. Create and export a function `UserList` component\n3. Use `useState` to store an array of users\n4. Use `useEffect` to call `fetch('/api/users')` on mount\n5. Render the list of users",
+  "difficulty": "beginner",
+  "tags": ["useEffect", "useState", "fetch", "async"],
+  "timeEstimateSeconds": 420,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "UserList.tsx",
+      "content": "import { useState, useEffect } from 'react';\n\nexport function UserList() {\n  const [users, setUsers] = useState<string[]>([]);\n\n  useEffect(() => {\n    fetch('/api/users')\n      .then(res => res.json())\n      .then(data => setUsers(data));\n  }, []);\n\n  return (\n    <ul>\n      {users.map((user, i) => (\n        <li key={i}>{user}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "UserList.tsx",
+      "content": "// Build a UserList component that fetches data on mount\n"
+    }
+  ],
+  "hints": [
+    "Import both hooks: import { useState, useEffect } from 'react'",
+    "Pass an empty dependency array [] to useEffect to run only on mount",
+    "Chain .then() calls on the fetch Promise to parse JSON and update state"
+  ],
+  "assertions": {
+    "perFile": {
+      "UserList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "useEffect"],
+          "description": "Import useState and useEffect from React"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "UserList",
+          "description": "Define a UserList component"
+        },
+        {
+          "type": "methodCall",
+          "method": "fetch",
+          "description": "Call fetch to load data"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "UserList",
+          "isDefault": false,
+          "description": "Export the UserList component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

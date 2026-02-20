@@ -1,0 +1,107 @@
+{
+  "title": "Component Composition",
+  "prompt": "Build a set of reusable components and compose them together.\n\n**Requirements in `Button.tsx`:**\n1. Create and export a function `Button` component that renders a `<button>` element\n\n**Requirements in `Card.tsx`:**\n1. Create and export a function `Card` component that renders a `<div>` wrapping its children\n\n**Requirements in `App.tsx`:**\n1. Import `Button` from `./Button` and `Card` from `./Card`\n2. Create and export a function `App` component\n3. Compose the Card and Button components together in the render output",
+  "difficulty": "advanced",
+  "tags": ["composition", "components", "reuse", "multi-file"],
+  "timeEstimateSeconds": 600,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "Button.tsx",
+      "content": "export function Button({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {\n  return <button onClick={onClick}>{children}</button>;\n}\n"
+    },
+    {
+      "path": "Card.tsx",
+      "content": "export function Card({ children, title }: { children: React.ReactNode; title: string }) {\n  return (\n    <div>\n      <h2>{title}</h2>\n      {children}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "App.tsx",
+      "content": "import { Button } from './Button';\nimport { Card } from './Card';\n\nexport function App() {\n  return (\n    <Card title=\"Welcome\">\n      <p>Click the button below.</p>\n      <Button onClick={() => console.log('clicked')}>Click me</Button>\n    </Card>\n  );\n}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "Button.tsx",
+      "content": "// Create a reusable Button component\n"
+    },
+    {
+      "path": "Card.tsx",
+      "content": "// Create a reusable Card component\n"
+    },
+    {
+      "path": "App.tsx",
+      "content": "// Compose Button and Card together\n"
+    }
+  ],
+  "hints": [
+    "Use children prop to make components composable: { children: React.ReactNode }",
+    "Export each component from its own file with named exports",
+    "In App, import and nest the components: <Card><Button>...</Button></Card>"
+  ],
+  "assertions": {
+    "perFile": {
+      "Button.tsx": [
+        {
+          "type": "functionDeclaration",
+          "name": "Button",
+          "description": "Define a Button component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "button",
+          "description": "Render a button element"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Button",
+          "isDefault": false,
+          "description": "Export the Button component"
+        }
+      ],
+      "Card.tsx": [
+        {
+          "type": "functionDeclaration",
+          "name": "Card",
+          "description": "Define a Card component"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Card",
+          "isDefault": false,
+          "description": "Export the Card component"
+        }
+      ],
+      "App.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "./Button",
+          "specifiers": ["Button"],
+          "description": "Import the Button component"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "./Card",
+          "specifiers": ["Card"],
+          "description": "Import the Card component"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "App",
+          "description": "Define the App component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Card",
+          "description": "Use the Card component"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "App",
+          "isDefault": false,
+          "description": "Export the App component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

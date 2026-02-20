@@ -1,0 +1,22 @@
+{
+  "name": "FastAPI Basics",
+  "slug": "fastapi-basics",
+  "description": "Build REST APIs with Python and FastAPI -- endpoints, models, and dependency injection.",
+  "language": "python",
+  "framework": "fastapi",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["python", "http", "backend", "api"],
+  "challenges": [
+    "challenges/01-hello-endpoint.json",
+    "challenges/02-path-params.json",
+    "challenges/03-query-params.json",
+    "challenges/04-pydantic-model.json",
+    "challenges/05-response-model.json",
+    "challenges/06-post-endpoint.json",
+    "challenges/07-error-handling.json",
+    "challenges/08-dependency-injection.json",
+    "challenges/09-router-module.json",
+    "challenges/10-full-crud.json"
+  ]
+}

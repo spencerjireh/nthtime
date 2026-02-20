@@ -1,0 +1,60 @@
+{
+  "title": "List with Keys",
+  "prompt": "Build a todo list component that renders items with proper keys.\n\n**Requirements:**\n1. Import `useState` from `react`\n2. Create and export a function `TodoList` component\n3. Use `useState` to store an array of todo items\n4. Render an unordered list `<ul>` of `<li>` elements\n5. Use `.map()` to transform the array into list items with `key` props",
+  "difficulty": "intermediate",
+  "tags": ["lists", "keys", "map", "rendering"],
+  "timeEstimateSeconds": 420,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "TodoList.tsx",
+      "content": "import { useState } from 'react';\n\nexport function TodoList() {\n  const [todos, setTodos] = useState([\n    { id: 1, text: 'Learn React' },\n    { id: 2, text: 'Build a project' },\n    { id: 3, text: 'Deploy' },\n  ]);\n\n  return (\n    <ul>\n      {todos.map(todo => (\n        <li key={todo.id}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "TodoList.tsx",
+      "content": "// Build a TodoList that renders items with keys\n"
+    }
+  ],
+  "hints": [
+    "Each item in a list needs a unique key prop",
+    "Use .map() to transform an array into JSX elements",
+    "Use a unique identifier (like id) for the key, not the array index"
+  ],
+  "assertions": {
+    "perFile": {
+      "TodoList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState"],
+          "description": "Import useState from React"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TodoList",
+          "description": "Define a TodoList component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "ul",
+          "description": "Render an unordered list"
+        },
+        {
+          "type": "jsxElement",
+          "name": "li",
+          "props": ["key"],
+          "description": "Render list items with key props"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TodoList",
+          "isDefault": false,
+          "description": "Export the TodoList component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

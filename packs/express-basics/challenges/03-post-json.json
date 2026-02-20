@@ -1,0 +1,63 @@
+{
+  "title": "POST JSON Handler",
+  "prompt": "Create an Express server that accepts JSON POST requests.\n\n**Requirements:**\n1. Import `express` and create an app instance\n2. Use `app.use(express.json())` to enable JSON body parsing\n3. Add a POST route at `/api/items` that reads the request body and returns `{ created: true, item: req.body }`\n4. Export the app as the default export",
+  "difficulty": "beginner",
+  "tags": ["routes", "post", "json", "middleware"],
+  "timeEstimateSeconds": 300,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "app.js",
+      "content": "import express from 'express';\n\nconst app = express();\n\napp.use(express.json());\n\napp.post('/api/items', (req, res) => {\n  res.json({ created: true, item: req.body });\n});\n\nexport default app;\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "app.js",
+      "content": "// Create an Express app that handles POST requests with JSON bodies\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "hints": [
+    "Enable JSON parsing with: app.use(express.json())",
+    "Define a POST route with: app.post('/api/items', handler)",
+    "The request body is available as req.body"
+  ],
+  "assertions": {
+    "perFile": {
+      "app.js": [
+        {
+          "type": "importDeclaration",
+          "source": "express",
+          "description": "Import the express module"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "use",
+          "description": "Register JSON body parser middleware"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "post",
+          "description": "Define a POST route handler"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "app",
+          "isDefault": true,
+          "description": "Export the app as default"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

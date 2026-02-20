@@ -1,0 +1,22 @@
+{
+  "name": "Express Basics",
+  "slug": "express-basics",
+  "description": "Build HTTP servers with Express.js -- routes, middleware, and error handling.",
+  "language": "javascript",
+  "framework": "express",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["node", "http", "backend"],
+  "challenges": [
+    "challenges/01-hello-world.json",
+    "challenges/02-route-params.json",
+    "challenges/03-post-json.json",
+    "challenges/04-query-filtering.json",
+    "challenges/05-multiple-routes.json",
+    "challenges/06-custom-middleware.json",
+    "challenges/07-error-handling.json",
+    "challenges/08-express-router.json",
+    "challenges/09-static-and-cors.json",
+    "challenges/10-full-rest-api.json"
+  ]
+}

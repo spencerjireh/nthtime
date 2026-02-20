@@ -1,0 +1,67 @@
+{
+  "title": "Router Module",
+  "prompt": "Organize FastAPI endpoints into separate router modules.\n\n**Requirements in `routers/items.py`:**\n1. Import `APIRouter` from `fastapi`\n2. Create a `router` variable with `APIRouter()`\n3. Define a function `list_items` decorated with `@router.get('/')` that returns a list of items\n\n**Requirements in `main.py`:**\n1. Import `FastAPI` from `fastapi`\n2. Import `router` from `routers.items`\n3. Create an app instance and include the router with `app.include_router()`",
+  "difficulty": "advanced",
+  "tags": ["routers", "modules", "organization"],
+  "timeEstimateSeconds": 600,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "routers/items.py",
+      "content": "from fastapi import APIRouter\n\nrouter = APIRouter()\n\n\n@router.get(\"/\")\ndef list_items():\n    return [{\"id\": 1, \"name\": \"Widget\"}, {\"id\": 2, \"name\": \"Gadget\"}]\n"
+    },
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI\nfrom routers.items import router\n\napp = FastAPI()\n\napp.include_router(router, prefix=\"/items\")\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "routers/items.py",
+      "content": "# Create an API router for item endpoints\n"
+    },
+    {
+      "path": "main.py",
+      "content": "# Include the items router in the main app\n"
+    }
+  ],
+  "hints": [
+    "Import APIRouter: from fastapi import APIRouter",
+    "Create a router instance: router = APIRouter()",
+    "Use @router.get('/') instead of @app.get('/')",
+    "Include the router with app.include_router(router, prefix='/items')"
+  ],
+  "assertions": {
+    "perFile": {
+      "routers/items.py": [
+        {
+          "type": "pythonImport",
+          "module": "fastapi",
+          "names": ["APIRouter"],
+          "description": "Import APIRouter from fastapi"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "list_items",
+          "decorator": "router.get",
+          "description": "Define a GET endpoint on the router"
+        }
+      ],
+      "main.py": [
+        {
+          "type": "pythonImport",
+          "module": "fastapi",
+          "names": ["FastAPI"],
+          "description": "Import FastAPI"
+        },
+        {
+          "type": "pythonImport",
+          "module": "routers.items",
+          "names": ["router"],
+          "description": "Import the items router"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

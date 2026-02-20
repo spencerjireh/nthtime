@@ -3,23 +3,23 @@ import type { Challenge } from '@nthtime/shared';
 
 export const MOCK_CHALLENGE: Challenge = {
   id: 'demo',
-  title: 'Express Hello World',
+  title: 'Hello World Server',
   prompt: `Create a basic Express.js server that responds with a JSON message.
 
 **Requirements:**
-1. Import \`express\` and create an app instance
+1. Import \`express\` and create an app instance stored in a \`const\` variable called \`app\`
 2. Add a GET route at \`/api/hello\` that returns \`{ message: "Hello World" }\`
 3. Export the app as the default export
 
 The server setup (listening on a port) is already provided in \`server.js\`.`,
   difficulty: Difficulty.Beginner,
-  tags: ['express', 'node', 'api'],
+  tags: ['routes', 'get', 'json'],
   timeEstimateSeconds: 300,
   scaffolded: true,
   files: [
     {
       path: 'app.js',
-      content: `// Create your Express app here\n`,
+      content: '// Create your Express app here\n',
     },
     {
       path: 'server.js',
@@ -63,3 +63,117 @@ The server setup (listening on a port) is already provided in \`server.js\`.`,
     crossFile: [],
   },
 };
+
+const MOCK_REACT_CHALLENGE: Challenge = {
+  id: 'ch_react_1',
+  title: 'Counter with useState',
+  prompt: `Build a simple counter component using React's useState hook.
+
+**Requirements:**
+1. Import \`useState\` from \`react\`
+2. Create and export a function \`Counter\` component
+3. Use \`useState\` to track the count
+4. Render a \`<button>\` element that increments the count on click
+5. Display the current count`,
+  difficulty: Difficulty.Beginner,
+  tags: ['useState', 'events', 'components'],
+  timeEstimateSeconds: 300,
+  scaffolded: true,
+  files: [
+    {
+      path: 'Counter.tsx',
+      content: '// Build a Counter component with useState\n',
+    },
+  ],
+  hints: [
+    'Import useState: import { useState } from "react"',
+    'Initialize state: const [count, setCount] = useState(0)',
+    'Use onClick handler on the button to call setCount',
+  ],
+  assertions: {
+    perFile: {
+      'Counter.tsx': [
+        {
+          type: 'importDeclaration',
+          source: 'react',
+          specifiers: ['useState'],
+          description: 'Import useState from React',
+        },
+        {
+          type: 'functionDeclaration',
+          name: 'Counter',
+          description: 'Define a Counter component',
+        },
+        {
+          type: 'jsxElement',
+          name: 'button',
+          description: 'Render a button element',
+        },
+        {
+          type: 'exportDeclaration',
+          name: 'Counter',
+          isDefault: false,
+          description: 'Export the Counter component',
+        },
+      ],
+    },
+    crossFile: [],
+  },
+};
+
+const MOCK_FASTAPI_CHALLENGE: Challenge = {
+  id: 'ch_fastapi_1',
+  title: 'Hello Endpoint',
+  prompt: `Create a basic FastAPI application with a single endpoint.
+
+**Requirements:**
+1. Import \`FastAPI\` from \`fastapi\`
+2. Create an app instance: \`app = FastAPI()\`
+3. Define a function \`read_root\` decorated with \`@app.get('/')\` that returns \`{"message": "Hello World"}\``,
+  difficulty: Difficulty.Beginner,
+  tags: ['endpoints', 'get', 'basics'],
+  timeEstimateSeconds: 300,
+  scaffolded: true,
+  files: [
+    {
+      path: 'main.py',
+      content: '# Create a FastAPI app with a hello endpoint\n',
+    },
+  ],
+  hints: [
+    'Import FastAPI: from fastapi import FastAPI',
+    'Create the app instance: app = FastAPI()',
+    "Use a decorator for the route: @app.get('/')",
+  ],
+  assertions: {
+    perFile: {
+      'main.py': [
+        {
+          type: 'pythonImport',
+          module: 'fastapi',
+          names: ['FastAPI'],
+          description: 'Import FastAPI from fastapi',
+        },
+        {
+          type: 'pythonFunctionDef',
+          name: 'read_root',
+          decorator: 'app.get',
+          description: 'Define a GET endpoint handler',
+        },
+      ],
+    },
+    crossFile: [],
+  },
+};
+
+// Map of mock challenge IDs to full Challenge objects for dev fallback
+const MOCK_CHALLENGES_BY_ID: Record<string, Challenge> = {
+  demo: MOCK_CHALLENGE,
+  ch_express_1: MOCK_CHALLENGE,
+  ch_react_1: MOCK_REACT_CHALLENGE,
+  ch_fastapi_1: MOCK_FASTAPI_CHALLENGE,
+};
+
+export function getMockChallenge(id: string): Challenge | null {
+  return MOCK_CHALLENGES_BY_ID[id] ?? null;
+}

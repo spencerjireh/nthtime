@@ -1,0 +1,56 @@
+{
+  "title": "POST Endpoint",
+  "prompt": "Create a POST endpoint that accepts a Pydantic model and returns a created resource.\n\n**Requirements:**\n1. Import `FastAPI` from `fastapi`\n2. Import `BaseModel` from `pydantic`\n3. Define a class `User` that inherits from `BaseModel` with `name` and `email` fields\n4. Define a function `create_user` decorated with `@app.post('/users')` that accepts a `User` body\n5. Return the user data with an added `id` field",
+  "difficulty": "intermediate",
+  "tags": ["post", "pydantic", "crud"],
+  "timeEstimateSeconds": 420,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\nclass User(BaseModel):\n    name: str\n    email: str\n\n\n@app.post(\"/users\")\ndef create_user(user: User):\n    return {\"id\": 1, \"name\": user.name, \"email\": user.email}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "main.py",
+      "content": "# Create a POST endpoint for user creation\n"
+    }
+  ],
+  "hints": [
+    "Use @app.post() decorator for POST endpoints",
+    "The Pydantic model parameter automatically parses the request body",
+    "Return a dict with the model fields plus any additional data"
+  ],
+  "assertions": {
+    "perFile": {
+      "main.py": [
+        {
+          "type": "pythonImport",
+          "module": "fastapi",
+          "names": ["FastAPI"],
+          "description": "Import FastAPI"
+        },
+        {
+          "type": "pythonImport",
+          "module": "pydantic",
+          "names": ["BaseModel"],
+          "description": "Import BaseModel"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "User",
+          "bases": ["BaseModel"],
+          "description": "Define a User model"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "create_user",
+          "decorator": "app.post",
+          "description": "Define a POST endpoint"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "title": "Error Handling Middleware",
+  "prompt": "Create an Express app with a centralized error handling middleware.\n\n**Requirements:**\n1. Import `express` and create an app instance\n2. Add a GET route at `/api/error` that throws a new Error\n3. Define an `errorHandler` function with four parameters `(err, req, res, next)` that sends a JSON error response\n4. Register the error handler with `app.use()`\n5. Export the app as the default export",
+  "difficulty": "intermediate",
+  "tags": ["middleware", "errors", "error-handling"],
+  "timeEstimateSeconds": 600,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "app.js",
+      "content": "import express from 'express';\n\nconst app = express();\n\napp.get('/api/error', (req, res) => {\n  throw new Error('Something went wrong');\n});\n\nfunction errorHandler(err, req, res, next) {\n  res.status(500).json({ error: err.message });\n}\n\napp.use(errorHandler);\n\nexport default app;\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "app.js",
+      "content": "// Build an Express app with error handling middleware\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "hints": [
+    "Error handling middleware MUST have exactly 4 parameters: (err, req, res, next)",
+    "Express identifies error handlers by the 4-parameter signature",
+    "Register error handlers after all routes with app.use(errorHandler)",
+    "Send error details with res.status(500).json({ error: err.message })"
+  ],
+  "assertions": {
+    "perFile": {
+      "app.js": [
+        {
+          "type": "importDeclaration",
+          "source": "express",
+          "description": "Import the express module"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "app",
+          "kind": "const",
+          "description": "Create an Express application instance"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "errorHandler",
+          "params": ["err", "req", "res", "next"],
+          "description": "Define error handling middleware with 4 parameters"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "use",
+          "description": "Register the error handler"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "app",
+          "isDefault": true,
+          "description": "Export the app as default"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

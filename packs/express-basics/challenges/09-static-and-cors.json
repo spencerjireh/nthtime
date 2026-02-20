@@ -1,0 +1,68 @@
+{
+  "title": "Static Files and CORS",
+  "prompt": "Configure an Express app to serve static files and handle CORS.\n\n**Requirements:**\n1. Import `express` and import `cors` from the `cors` package\n2. Create an app instance\n3. Register CORS middleware with `app.use(cors())`\n4. Serve static files from a `public` directory with `app.use(express.static('public'))`\n5. Add a GET route at `/api/health` that returns `{ healthy: true }`\n6. Export the app as the default export",
+  "difficulty": "advanced",
+  "tags": ["cors", "static", "configuration"],
+  "timeEstimateSeconds": 600,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "app.js",
+      "content": "import express from 'express';\nimport cors from 'cors';\n\nconst app = express();\n\napp.use(cors());\napp.use(express.static('public'));\n\napp.get('/api/health', (req, res) => {\n  res.json({ healthy: true });\n});\n\nexport default app;\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "app.js",
+      "content": "// Configure Express with CORS and static file serving\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "hints": [
+    "Import cors: import cors from 'cors'",
+    "Enable CORS with: app.use(cors())",
+    "Serve static files with: app.use(express.static('public'))"
+  ],
+  "assertions": {
+    "perFile": {
+      "app.js": [
+        {
+          "type": "importDeclaration",
+          "source": "express",
+          "description": "Import the express module"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "cors",
+          "description": "Import the cors package"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "app",
+          "kind": "const",
+          "description": "Create an Express application instance"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "use",
+          "description": "Register middleware"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "app",
+          "isDefault": true,
+          "description": "Export the app as default"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

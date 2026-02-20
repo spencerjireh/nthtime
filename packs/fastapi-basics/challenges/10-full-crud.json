@@ -1,0 +1,101 @@
+{
+  "title": "Full CRUD API",
+  "prompt": "Build a complete CRUD API with models, a router, and multiple endpoints.\n\n**Requirements in `models.py`:**\n1. Import `BaseModel` from `pydantic`\n2. Define a class `Item` that inherits from `BaseModel` with `name` and `price` fields\n\n**Requirements in `routers/items.py`:**\n1. Import `APIRouter` from `fastapi`\n2. Create a `router` variable\n3. Define a function `list_items` decorated with `@router.get('/')`\n4. Define a function `create_item` decorated with `@router.post('/')`\n5. Define a function `delete_item` decorated with `@router.delete('/{item_id}')`\n\n**Requirements in `main.py`:**\n1. Import `FastAPI` from `fastapi`\n2. Import `router` from `routers.items`\n3. Create an app and include the router",
+  "difficulty": "advanced",
+  "tags": ["crud", "routers", "models", "full-api"],
+  "timeEstimateSeconds": 900,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "models.py",
+      "content": "from pydantic import BaseModel\n\n\nclass Item(BaseModel):\n    name: str\n    price: float\n"
+    },
+    {
+      "path": "routers/items.py",
+      "content": "from fastapi import APIRouter, HTTPException\nfrom models import Item\n\nrouter = APIRouter()\n\nitems_db = {}\nnext_id = 1\n\n\n@router.get(\"/\")\ndef list_items():\n    return list(items_db.values())\n\n\n@router.post(\"/\")\ndef create_item(item: Item):\n    global next_id\n    item_id = next_id\n    next_id += 1\n    items_db[item_id] = {\"id\": item_id, **item.model_dump()}\n    return items_db[item_id]\n\n\n@router.delete(\"/{item_id}\")\ndef delete_item(item_id: int):\n    if item_id not in items_db:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    del items_db[item_id]\n    return {\"deleted\": True}\n"
+    },
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI\nfrom routers.items import router\n\napp = FastAPI()\n\napp.include_router(router, prefix=\"/items\")\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "models.py",
+      "content": "# Define Pydantic models\n"
+    },
+    {
+      "path": "routers/items.py",
+      "content": "# Build a full CRUD router\n"
+    },
+    {
+      "path": "main.py",
+      "content": "# Wire up the app with the items router\n"
+    }
+  ],
+  "hints": [
+    "Define models in a separate file for reuse across routers",
+    "Use @router.get('/'), @router.post('/'), @router.delete('/{id}') for CRUD",
+    "Store items in a dict for easy lookup and deletion",
+    "Use HTTPException for 404 errors on missing items"
+  ],
+  "assertions": {
+    "perFile": {
+      "models.py": [
+        {
+          "type": "pythonImport",
+          "module": "pydantic",
+          "names": ["BaseModel"],
+          "description": "Import BaseModel"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Item",
+          "bases": ["BaseModel"],
+          "description": "Define an Item model"
+        }
+      ],
+      "routers/items.py": [
+        {
+          "type": "pythonImport",
+          "module": "fastapi",
+          "names": ["APIRouter"],
+          "description": "Import APIRouter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "list_items",
+          "decorator": "router.get",
+          "description": "Define GET endpoint for listing items"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "create_item",
+          "decorator": "router.post",
+          "description": "Define POST endpoint for creating items"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "delete_item",
+          "decorator": "router.delete",
+          "description": "Define DELETE endpoint for removing items"
+        }
+      ],
+      "main.py": [
+        {
+          "type": "pythonImport",
+          "module": "fastapi",
+          "names": ["FastAPI"],
+          "description": "Import FastAPI"
+        },
+        {
+          "type": "pythonImport",
+          "module": "routers.items",
+          "names": ["router"],
+          "description": "Import the items router"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "title": "useReducer Todo",
+  "prompt": "Build a todo app using useReducer for state management.\n\n**Requirements in `todoReducer.ts`:**\n1. Create and export a function `todoReducer` that handles 'add' and 'toggle' actions\n2. Define a `Todo` type with `id`, `text`, and `done` fields\n\n**Requirements in `TodoApp.tsx`:**\n1. Import `useReducer` from `react`\n2. Import `todoReducer` from `./todoReducer`\n3. Create and export a function `TodoApp` component\n4. Render a `<form>` for adding todos and a list of existing todos",
+  "difficulty": "advanced",
+  "tags": ["useReducer", "state", "forms", "advanced-hooks"],
+  "timeEstimateSeconds": 900,
+  "scaffolded": true,
+  "files": [
+    {
+      "path": "todoReducer.ts",
+      "content": "export interface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\ntype Action =\n  | { type: 'add'; text: string }\n  | { type: 'toggle'; id: number };\n\nexport function todoReducer(state: Todo[], action: Action): Todo[] {\n  switch (action.type) {\n    case 'add':\n      return [...state, { id: Date.now(), text: action.text, done: false }];\n    case 'toggle':\n      return state.map(t => (t.id === action.id ? { ...t, done: !t.done } : t));\n    default:\n      return state;\n  }\n}\n"
+    },
+    {
+      "path": "TodoApp.tsx",
+      "content": "import { useReducer, useState } from 'react';\nimport { todoReducer } from './todoReducer';\n\nexport function TodoApp() {\n  const [todos, dispatch] = useReducer(todoReducer, []);\n  const [text, setText] = useState('');\n\n  function handleSubmit(e: React.FormEvent) {\n    e.preventDefault();\n    if (text.trim()) {\n      dispatch({ type: 'add', text });\n      setText('');\n    }\n  }\n\n  return (\n    <div>\n      <form onSubmit={handleSubmit}>\n        <input value={text} onChange={e => setText(e.target.value)} />\n        <button type=\"submit\">Add</button>\n      </form>\n      <ul>\n        {todos.map(todo => (\n          <li key={todo.id} onClick={() => dispatch({ type: 'toggle', id: todo.id })}>\n            {todo.done ? <s>{todo.text}</s> : todo.text}\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "scaffold": [
+    {
+      "path": "todoReducer.ts",
+      "content": "// Define Todo type and todoReducer function\n"
+    },
+    {
+      "path": "TodoApp.tsx",
+      "content": "// Build a todo app with useReducer\n"
+    }
+  ],
+  "hints": [
+    "useReducer takes a reducer function and initial state: useReducer(reducer, [])",
+    "The reducer receives current state and an action, returns new state",
+    "Use a switch statement on action.type to handle different actions",
+    "Dispatch actions with dispatch({ type: 'add', text: '...' })"
+  ],
+  "assertions": {
+    "perFile": {
+      "todoReducer.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "todoReducer",
+          "description": "Define the todo reducer function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "todoReducer",
+          "isDefault": false,
+          "description": "Export the reducer"
+        }
+      ],
+      "TodoApp.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useReducer"],
+          "description": "Import useReducer from React"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "./todoReducer",
+          "specifiers": ["todoReducer"],
+          "description": "Import the todo reducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TodoApp",
+          "description": "Define the TodoApp component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "form",
+          "description": "Render a form for adding todos"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TodoApp",
+          "isDefault": false,
+          "description": "Export the TodoApp component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

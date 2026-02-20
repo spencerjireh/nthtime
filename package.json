@@ -10,7 +10,9 @@
     "typecheck": "nx run-many --target=typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "e2e": "nx e2e @nthtime/web"
+    "e2e": "nx e2e @nthtime/web",
+    "validate": "npx tsx tools/validate-packs.ts",
+    "seed": "npx tsx tools/seed.ts"
   },
   "private": true,
   "devDependencies": {
