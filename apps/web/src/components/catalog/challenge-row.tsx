@@ -11,6 +11,7 @@ interface ChallengeRowProps {
   tags: string[];
   timeEstimateSeconds: number;
   status: 'not-attempted' | 'failed' | 'passed';
+  packSlug?: string;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -27,10 +28,15 @@ export function ChallengeRow({
   tags,
   timeEstimateSeconds,
   status,
+  packSlug,
 }: ChallengeRowProps) {
+  const href = packSlug
+    ? `/challenge/${id}?pack=${packSlug}`
+    : `/challenge/${id}`;
+
   return (
     <Link
-      href={`/challenge/${id}`}
+      href={href}
       className="group flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/30"
     >
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">

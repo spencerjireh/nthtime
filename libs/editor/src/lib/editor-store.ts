@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import type { EditorStore, EditorState } from './types.js';
+import type { EditorStore, EditorState, EditorFile } from './types.js';
 import {
   saveDraft as saveDraftToStorage,
   loadDraft as loadDraftFromStorage,
@@ -17,6 +17,9 @@ const initialState: EditorState = {
   hints: [],
   timer: { startedAt: null, elapsedSeconds: 0 },
   challengeMetadata: null,
+  viewMode: 'editing',
+  submittedFiles: null,
+  scaffoldFiles: null,
 };
 
 export function createEditorStore() {
@@ -24,10 +27,12 @@ export function createEditorStore() {
     ...initialState,
 
     initFromChallenge(challenge, challengeId) {
-      const files: Record<string, { path: string; content: string }> = {};
+      const files: Record<string, EditorFile> = {};
+      const scaffoldFiles: Record<string, EditorFile> = {};
       let firstPath: string | null = null;
       for (const file of challenge.files) {
         files[file.path] = { path: file.path, content: file.content };
+        scaffoldFiles[file.path] = { path: file.path, content: file.content };
         if (!firstPath) firstPath = file.path;
       }
 
@@ -35,6 +40,7 @@ export function createEditorStore() {
         ...initialState,
         challengeId: challengeId ?? null,
         files,
+        scaffoldFiles,
         activeFilePath: firstPath,
         totalHints: challenge.hints.length,
         hints: [...challenge.hints],
@@ -110,6 +116,31 @@ export function createEditorStore() {
       set((state) => ({
         timer: { ...state.timer, startedAt: null },
       }));
+    },
+
+    submit() {
+      const { files, timer } = get();
+      // Snapshot files and stop timer
+      const elapsed =
+        timer.startedAt !== null
+          ? Math.floor((Date.now() - timer.startedAt) / 1000)
+          : timer.elapsedSeconds;
+      set({
+        submittedFiles: { ...files },
+        viewMode: 'results',
+        timer: { startedAt: null, elapsedSeconds: elapsed },
+      });
+    },
+
+    retry() {
+      const { submittedFiles } = get();
+      set({
+        viewMode: 'editing',
+        runState: 'idle',
+        verificationResult: null,
+        // Restore submitted code into editor
+        ...(submittedFiles ? { files: { ...submittedFiles } } : {}),
+      });
     },
 
     reset() {

@@ -2,9 +2,14 @@ import { ChallengeView } from '@/components/challenge/challenge-view';
 
 interface ChallengePageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ pack?: string }>;
 }
 
-export default async function ChallengePage({ params }: ChallengePageProps) {
+export default async function ChallengePage({
+  params,
+  searchParams,
+}: ChallengePageProps) {
   const { id } = await params;
-  return <ChallengeView challengeId={id} />;
+  const { pack } = await searchParams;
+  return <ChallengeView challengeId={id} packSlug={pack} />;
 }

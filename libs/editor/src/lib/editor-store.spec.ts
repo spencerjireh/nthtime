@@ -31,6 +31,9 @@ describe('createEditorStore', () => {
     expect(state.runState).toBe('idle');
     expect(state.verificationResult).toBeNull();
     expect(state.hintsRevealed).toBe(0);
+    expect(state.viewMode).toBe('editing');
+    expect(state.submittedFiles).toBeNull();
+    expect(state.scaffoldFiles).toBeNull();
   });
 
   it('initializes from a challenge', () => {
@@ -44,6 +47,24 @@ describe('createEditorStore', () => {
     expect(state.hints).toEqual(['Use express()', 'Call app.listen()']);
     expect(state.challengeMetadata?.title).toBe('Express Basics');
     expect(state.challengeMetadata?.difficulty).toBe('beginner');
+  });
+
+  it('stores scaffold files on init', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    const state = store.getState();
+
+    expect(state.scaffoldFiles).not.toBeNull();
+    expect(state.scaffoldFiles!['app.js'].content).toBe('const app = express();');
+    expect(state.scaffoldFiles!['server.js'].content).toBe('app.listen(3000);');
+  });
+
+  it('preserves scaffold files after file edits', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    store.getState().setFileContent('app.js', 'updated content');
+
+    const state = store.getState();
+    expect(state.files['app.js'].content).toBe('updated content');
+    expect(state.scaffoldFiles!['app.js'].content).toBe('const app = express();');
   });
 
   it('sets file content', () => {
@@ -112,5 +133,95 @@ describe('createEditorStore', () => {
     expect(state.activeFilePath).toBeNull();
     expect(state.runState).toBe('idle');
     expect(state.challengeMetadata).toBeNull();
+    expect(state.viewMode).toBe('editing');
+    expect(state.submittedFiles).toBeNull();
+    expect(state.scaffoldFiles).toBeNull();
+  });
+});
+
+describe('submit and retry', () => {
+  it('submit snapshots files and switches to results', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    store.getState().setFileContent('app.js', 'submitted code');
+    store.getState().submit();
+
+    const state = store.getState();
+    expect(state.viewMode).toBe('results');
+    expect(state.submittedFiles).not.toBeNull();
+    expect(state.submittedFiles!['app.js'].content).toBe('submitted code');
+  });
+
+  it('submit stops the timer', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    store.getState().startTimer();
+    expect(store.getState().timer.startedAt).not.toBeNull();
+
+    store.getState().submit();
+    expect(store.getState().timer.startedAt).toBeNull();
+  });
+
+  it('submit preserves elapsed time', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    // Manually set a known elapsed time
+    store.getState().startTimer();
+    store.getState().tickTimer();
+
+    store.getState().submit();
+    const state = store.getState();
+    expect(state.timer.startedAt).toBeNull();
+    // elapsedSeconds should be preserved (not reset)
+    expect(state.timer.elapsedSeconds).toBeGreaterThanOrEqual(0);
+  });
+
+  it('retry restores submitted files and switches to editing', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    store.getState().setFileContent('app.js', 'submitted code');
+    store.getState().submit();
+
+    // Verify we are in results mode
+    expect(store.getState().viewMode).toBe('results');
+
+    store.getState().retry();
+
+    const state = store.getState();
+    expect(state.viewMode).toBe('editing');
+    expect(state.runState).toBe('idle');
+    expect(state.verificationResult).toBeNull();
+    expect(state.files['app.js'].content).toBe('submitted code');
+  });
+
+  it('retry without submitted files preserves current files', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    const originalContent = store.getState().files['app.js'].content;
+
+    store.getState().retry();
+
+    expect(store.getState().files['app.js'].content).toBe(originalContent);
+    expect(store.getState().viewMode).toBe('editing');
+  });
+
+  it('full submit-retry cycle preserves scaffold files', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    const originalScaffold = store.getState().scaffoldFiles;
+
+    store.getState().setFileContent('app.js', 'modified');
+    store.getState().submit();
+    store.getState().retry();
+
+    expect(store.getState().scaffoldFiles).toEqual(originalScaffold);
+  });
+
+  it('viewMode transitions correctly through full cycle', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    expect(store.getState().viewMode).toBe('editing');
+
+    store.getState().submit();
+    expect(store.getState().viewMode).toBe('results');
+
+    store.getState().retry();
+    expect(store.getState().viewMode).toBe('editing');
+
+    store.getState().submit();
+    expect(store.getState().viewMode).toBe('results');
   });
 });

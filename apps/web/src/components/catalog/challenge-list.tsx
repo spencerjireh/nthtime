@@ -18,9 +18,14 @@ interface ChallengeData {
 interface ChallengeListProps {
   challenges: ChallengeData[] | undefined;
   isLoading: boolean;
+  packSlug?: string;
 }
 
-export function ChallengeList({ challenges, isLoading }: ChallengeListProps) {
+export function ChallengeList({
+  challenges,
+  isLoading,
+  packSlug,
+}: ChallengeListProps) {
   if (isLoading) {
     return <ChallengeListSkeleton />;
   }
@@ -43,6 +48,7 @@ export function ChallengeList({ challenges, isLoading }: ChallengeListProps) {
           tags={challenge.tags}
           timeEstimateSeconds={challenge.timeEstimateSeconds}
           status={challenge.status}
+          packSlug={packSlug}
         />
       ))}
     </div>

@@ -5,6 +5,7 @@ export type {
   EditorActions,
   EditorFile,
   RunState,
+  ViewMode,
   TimerState,
   ChallengeMetadata,
 } from './lib/types.js';

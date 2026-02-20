@@ -60,7 +60,7 @@ export function PackPage({ slug }: PackPageProps) {
         </div>
       </div>
 
-      <ChallengeList challenges={challenges} isLoading={false} />
+      <ChallengeList challenges={challenges} isLoading={false} packSlug={slug} />
     </div>
   );
 }

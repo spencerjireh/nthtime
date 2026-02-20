@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import type { OnChange, OnMount } from '@monaco-editor/react';
+import type { OnChange, OnMount, EditorProps } from '@monaco-editor/react';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.default), {
   ssr: false,
@@ -18,6 +18,7 @@ interface MonacoWrapperProps {
   theme: string;
   onChange?: OnChange;
   onMount?: OnMount;
+  options?: EditorProps['options'];
 }
 
 export function MonacoWrapper({
@@ -26,6 +27,7 @@ export function MonacoWrapper({
   theme,
   onChange,
   onMount,
+  options,
 }: MonacoWrapperProps) {
   return (
     <MonacoEditor
@@ -45,6 +47,7 @@ export function MonacoWrapper({
         renderLineHighlight: 'line',
         bracketPairColorization: { enabled: true },
         tabSize: 2,
+        ...options,
       }}
     />
   );

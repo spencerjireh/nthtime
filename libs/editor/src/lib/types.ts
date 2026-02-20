@@ -7,6 +7,8 @@ export interface EditorFile {
 
 export type RunState = 'idle' | 'running' | 'complete';
 
+export type ViewMode = 'editing' | 'results';
+
 export interface TimerState {
   startedAt: number | null;
   elapsedSeconds: number;
@@ -31,6 +33,9 @@ export interface EditorState {
   hints: string[];
   timer: TimerState;
   challengeMetadata: ChallengeMetadata | null;
+  viewMode: ViewMode;
+  submittedFiles: Record<string, EditorFile> | null;
+  scaffoldFiles: Record<string, EditorFile> | null;
 }
 
 export interface EditorActions {
@@ -54,6 +59,8 @@ export interface EditorActions {
   startTimer(): void;
   tickTimer(): void;
   stopTimer(): void;
+  submit(): void;
+  retry(): void;
   reset(): void;
   getAllFileEntries(): { path: string; content: string }[];
   saveDraft(): void;
