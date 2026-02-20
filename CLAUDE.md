@@ -29,6 +29,10 @@ nx affected --target=lint
 # Pack tooling
 pnpm validate                     # Validate all packs (reference solution verification)
 pnpm seed                         # Seed packs to Convex (requires CONVEX_URL)
+
+# Docker
+docker compose build              # Build production image
+docker compose up                 # Run production container (needs .env.production)
 ```
 
 ## Architecture
@@ -72,6 +76,14 @@ Tree-sitter WASM grammars (JS, TS, TSX, Python, HTML, CSS) are served from `apps
 ### Convex backend
 
 Convex functions (auth, packs, challenges, attempts, settings) live at repo root in `convex/`. The Convex provider in the app wraps with a null check on `NEXT_PUBLIC_CONVEX_URL` so builds work without a backend connection.
+
+### Health check
+
+`GET /api/health` returns `{ status: "ok", timestamp: <epoch_ms> }`. Used by Docker healthcheck and monitoring.
+
+### Docker
+
+Multi-stage Dockerfile produces a standalone Next.js image (~100-200MB). `docker-compose.yml` runs the web service on port 3000 with healthcheck. Copy `.env.production.example` to `.env.production` and fill in `NEXT_PUBLIC_CONVEX_URL` before running.
 
 ## Code style
 

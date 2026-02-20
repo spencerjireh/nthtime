@@ -1,0 +1,14 @@
+node_modules
+.next
+.nx
+.git
+.github
+.convex
+coverage
+playwright-report
+test-results
+*.tsbuildinfo
+*.log
+.env
+.env.*
+!.env.production.example

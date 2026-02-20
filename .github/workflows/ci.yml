@@ -35,6 +35,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate packs
+        run: pnpm validate
+
       - name: Lint (affected)
         run: npx nx affected --target=lint
 
@@ -47,12 +50,16 @@ jobs:
       - name: Build (affected)
         run: npx nx affected --target=build
 
-      # - name: Install Playwright browsers
-      #   run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
 
-      # - name: E2E tests
-      #   run: npx nx e2e @nthtime/web
+      - name: E2E tests
+        run: npx nx e2e @nthtime/web
 
+      - name: Docker build (verify)
+        run: docker build -t nthtime-web .
+
+      # Convex deploy -- needs CONVEX_DEPLOY_KEY secret configured
       # - name: Convex deploy
       #   run: npx convex deploy
       #   env:
