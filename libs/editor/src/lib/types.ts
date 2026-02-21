@@ -9,6 +9,8 @@ export type RunState = 'idle' | 'running' | 'complete';
 
 export type ViewMode = 'editing' | 'results';
 
+export type SplitMode = 'single' | 'horizontal';
+
 export interface TimerState {
   startedAt: number | null;
   elapsedSeconds: number;
@@ -26,6 +28,7 @@ export interface EditorState {
   challengeId: string | null;
   files: Record<string, EditorFile>;
   activeFilePath: string | null;
+  tabOrder: string[];
   runState: RunState;
   verificationResult: VerificationResult | null;
   hintsRevealed: number;
@@ -33,6 +36,8 @@ export interface EditorState {
   hints: string[];
   timer: TimerState;
   challengeMetadata: ChallengeMetadata | null;
+  splitMode: SplitMode;
+  secondActiveFilePath: string | null;
   viewMode: ViewMode;
   submittedFiles: Record<string, EditorFile> | null;
   scaffoldFiles: Record<string, EditorFile> | null;
@@ -48,11 +53,21 @@ export interface EditorActions {
       difficulty: Difficulty;
       tags: readonly string[];
       timeEstimateSeconds: number;
+      scaffolded?: boolean;
     },
     challengeId?: string,
   ): void;
   setFileContent(path: string, content: string): void;
   setActiveFile(path: string): void;
+  createFile(path: string, content?: string): void;
+  renameFile(oldPath: string, newPath: string): void;
+  deleteFile(path: string): void;
+  openTab(path: string): void;
+  closeTab(path: string): void;
+  reorderTabs(fromIndex: number, toIndex: number): void;
+  toggleSplit(): void;
+  setSecondActiveFile(path: string): void;
+  closeSplit(): void;
   setRunState(state: RunState): void;
   setVerificationResult(result: VerificationResult | null): void;
   revealNextHint(): void;

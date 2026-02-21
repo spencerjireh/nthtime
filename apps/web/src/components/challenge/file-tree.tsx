@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 const FILE_ICONS: Record<string, string> = {
@@ -18,41 +19,360 @@ function getFileIcon(path: string): string {
   return FILE_ICONS[ext] ?? '--';
 }
 
+interface TreeNode {
+  name: string;
+  path: string; // full path for files, folder prefix for dirs
+  isFolder: boolean;
+  children: TreeNode[];
+}
+
+function buildTree(paths: string[]): TreeNode[] {
+  const root: TreeNode[] = [];
+
+  for (const filePath of paths) {
+    const parts = filePath.split('/');
+    let current = root;
+    let accumulated = '';
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      accumulated = accumulated ? `${accumulated}/${part}` : part;
+      const isLast = i === parts.length - 1;
+
+      let existing = current.find((n) => n.name === part && n.isFolder === !isLast);
+      if (!existing) {
+        existing = {
+          name: part,
+          path: isLast ? filePath : accumulated,
+          isFolder: !isLast,
+          children: [],
+        };
+        current.push(existing);
+      }
+      current = existing.children;
+    }
+  }
+
+  return root;
+}
+
 interface FileTreeProps {
   files: string[];
   activeFile: string | null;
   isDirty: (path: string) => boolean;
   onSelect: (path: string) => void;
+  onCreateFile?: (path: string) => void;
+  onRenameFile?: (oldPath: string, newPath: string) => void;
+  onDeleteFile?: (path: string) => void;
 }
 
-export function FileTree({ files, activeFile, isDirty, onSelect }: FileTreeProps) {
+export function FileTree({
+  files,
+  activeFile,
+  isDirty,
+  onSelect,
+  onCreateFile,
+  onRenameFile,
+  onDeleteFile,
+}: FileTreeProps) {
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [creating, setCreating] = useState<string | null>(null); // parent folder path or '' for root
+  const [renaming, setRenaming] = useState<string | null>(null); // full file path being renamed
+
+  const tree = useMemo(() => buildTree(files), [files]);
+
+  const toggleFolder = useCallback((folderPath: string) => {
+    setExpandedFolders((prev) => {
+      const next = new Set(prev);
+      if (next.has(folderPath)) next.delete(folderPath);
+      else next.add(folderPath);
+      return next;
+    });
+  }, []);
+
+  const handleCreateCommit = useCallback(
+    (name: string, parentPath: string) => {
+      if (!name.trim()) {
+        setCreating(null);
+        return;
+      }
+      const fullPath = parentPath ? `${parentPath}/${name.trim()}` : name.trim();
+      onCreateFile?.(fullPath);
+      setCreating(null);
+    },
+    [onCreateFile],
+  );
+
+  const handleRenameCommit = useCallback(
+    (newName: string, oldPath: string) => {
+      if (!newName.trim() || newName.trim() === oldPath.split('/').pop()) {
+        setRenaming(null);
+        return;
+      }
+      const parts = oldPath.split('/');
+      parts[parts.length - 1] = newName.trim();
+      const newPath = parts.join('/');
+      onRenameFile?.(oldPath, newPath);
+      setRenaming(null);
+    },
+    [onRenameFile],
+  );
+
+  const handleDelete = useCallback(
+    (path: string) => {
+      if (window.confirm(`Delete ${path}?`)) {
+        onDeleteFile?.(path);
+      }
+    },
+    [onDeleteFile],
+  );
+
+  const startCreateAtRoot = useCallback(() => {
+    setCreating('');
+  }, []);
+
+  const startCreateInFolder = useCallback((folderPath: string) => {
+    setCreating(folderPath);
+    setExpandedFolders((prev) => new Set(prev).add(folderPath));
+  }, []);
+
   return (
     <div className="flex w-44 shrink-0 flex-col border-r border-border bg-muted/20">
-      <div className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        Files
+      <div className="flex items-center justify-between px-3 py-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Files
+        </span>
+        {onCreateFile && (
+          <button
+            onClick={startCreateAtRoot}
+            className="text-xs text-muted-foreground hover:text-foreground"
+            title="New file"
+          >
+            +
+          </button>
+        )}
       </div>
       <nav className="flex-1 overflow-y-auto">
-        {files.map((path) => (
-          <button
-            key={path}
-            onClick={() => onSelect(path)}
-            className={cn(
-              'flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs transition-colors',
-              path === activeFile
-                ? 'bg-accent text-accent-foreground'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-            )}
-          >
-            <span className="inline-flex h-4 w-5 shrink-0 items-center justify-center rounded text-[10px] font-bold text-muted-foreground">
-              {getFileIcon(path)}
-            </span>
-            <span className="truncate">{path}</span>
-            {isDirty(path) && (
-              <span className="ml-auto inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
-            )}
-          </button>
+        {tree.map((node) => (
+          <TreeNodeRow
+            key={node.path}
+            node={node}
+            depth={0}
+            activeFile={activeFile}
+            isDirty={isDirty}
+            expandedFolders={expandedFolders}
+            creating={creating}
+            renaming={renaming}
+            onSelect={onSelect}
+            onToggleFolder={toggleFolder}
+            onCreateCommit={handleCreateCommit}
+            onRenameCommit={handleRenameCommit}
+            onDelete={handleDelete}
+            onStartCreate={startCreateInFolder}
+            onStartRename={setRenaming}
+            showCrud={!!onCreateFile}
+          />
         ))}
+        {creating === '' && (
+          <InlineInput
+            depth={0}
+            initialValue=""
+            onCommit={(name) => handleCreateCommit(name, '')}
+            onCancel={() => setCreating(null)}
+          />
+        )}
       </nav>
+    </div>
+  );
+}
+
+function TreeNodeRow({
+  node,
+  depth,
+  activeFile,
+  isDirty,
+  expandedFolders,
+  creating,
+  renaming,
+  onSelect,
+  onToggleFolder,
+  onCreateCommit,
+  onRenameCommit,
+  onDelete,
+  onStartCreate,
+  onStartRename,
+  showCrud,
+}: {
+  node: TreeNode;
+  depth: number;
+  activeFile: string | null;
+  isDirty: (path: string) => boolean;
+  expandedFolders: Set<string>;
+  creating: string | null;
+  renaming: string | null;
+  onSelect: (path: string) => void;
+  onToggleFolder: (path: string) => void;
+  onCreateCommit: (name: string, parentPath: string) => void;
+  onRenameCommit: (name: string, oldPath: string) => void;
+  onDelete: (path: string) => void;
+  onStartCreate: (folderPath: string) => void;
+  onStartRename: (path: string) => void;
+  showCrud: boolean;
+}) {
+  const paddingLeft = depth * 12 + 8;
+
+  if (node.isFolder) {
+    const isExpanded = expandedFolders.has(node.path);
+    return (
+      <>
+        <div
+          className="group flex w-full items-center gap-1 py-1 text-left text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
+          style={{ paddingLeft }}
+        >
+          <button
+            onClick={() => onToggleFolder(node.path)}
+            className="flex flex-1 items-center gap-1 overflow-hidden"
+          >
+            <span className="shrink-0 text-[10px]">{isExpanded ? '\u25BE' : '\u25B8'}</span>
+            <span className="truncate font-medium">{node.name}</span>
+          </button>
+          {showCrud && (
+            <button
+              onClick={() => onStartCreate(node.path)}
+              className="mr-1 shrink-0 text-[10px] opacity-0 group-hover:opacity-100"
+              title="New file in folder"
+            >
+              +
+            </button>
+          )}
+        </div>
+        {isExpanded && (
+          <>
+            {node.children.map((child) => (
+              <TreeNodeRow
+                key={child.path}
+                node={child}
+                depth={depth + 1}
+                activeFile={activeFile}
+                isDirty={isDirty}
+                expandedFolders={expandedFolders}
+                creating={creating}
+                renaming={renaming}
+                onSelect={onSelect}
+                onToggleFolder={onToggleFolder}
+                onCreateCommit={onCreateCommit}
+                onRenameCommit={onRenameCommit}
+                onDelete={onDelete}
+                onStartCreate={onStartCreate}
+                onStartRename={onStartRename}
+                showCrud={showCrud}
+              />
+            ))}
+            {creating === node.path && (
+              <InlineInput
+                depth={depth + 1}
+                initialValue=""
+                onCommit={(name) => onCreateCommit(name, node.path)}
+                onCancel={() => onCreateCommit('', node.path)}
+              />
+            )}
+          </>
+        )}
+      </>
+    );
+  }
+
+  // File node
+  if (renaming === node.path) {
+    return (
+      <InlineInput
+        depth={depth}
+        initialValue={node.name}
+        onCommit={(name) => onRenameCommit(name, node.path)}
+        onCancel={() => onRenameCommit(node.name, node.path)}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        'group flex w-full items-center gap-1.5 py-1.5 text-left text-xs transition-colors',
+        node.path === activeFile
+          ? 'bg-accent text-accent-foreground'
+          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+      )}
+      style={{ paddingLeft }}
+    >
+      <button
+        onClick={() => onSelect(node.path)}
+        className="flex flex-1 items-center gap-1.5 overflow-hidden"
+      >
+        <span className="inline-flex h-4 w-5 shrink-0 items-center justify-center rounded text-[10px] font-bold text-muted-foreground">
+          {getFileIcon(node.path)}
+        </span>
+        <span className="truncate">{node.name}</span>
+        {isDirty(node.path) && (
+          <span className="ml-auto inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
+        )}
+      </button>
+      {showCrud && (
+        <span className="mr-1 flex shrink-0 gap-0.5 opacity-0 group-hover:opacity-100">
+          <button
+            onClick={() => onStartRename(node.path)}
+            className="text-[10px] text-muted-foreground hover:text-foreground"
+            title="Rename"
+          >
+            ab
+          </button>
+          <button
+            onClick={() => onDelete(node.path)}
+            className="text-[10px] text-muted-foreground hover:text-destructive"
+            title="Delete"
+          >
+            x
+          </button>
+        </span>
+      )}
+    </div>
+  );
+}
+
+function InlineInput({
+  depth,
+  initialValue,
+  onCommit,
+  onCancel,
+}: {
+  depth: number;
+  initialValue: string;
+  onCommit: (value: string) => void;
+  onCancel: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    if (initialValue) {
+      // Select filename without extension
+      const dotIdx = initialValue.lastIndexOf('.');
+      inputRef.current?.setSelectionRange(0, dotIdx > 0 ? dotIdx : initialValue.length);
+    }
+  }, [initialValue]);
+
+  return (
+    <div style={{ paddingLeft: depth * 12 + 8 }} className="py-0.5 pr-2">
+      <input
+        ref={inputRef}
+        type="text"
+        defaultValue={initialValue}
+        className="w-full rounded border border-border bg-background px-1 py-0.5 text-xs text-foreground outline-none focus:border-teal-400"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') onCommit(e.currentTarget.value);
+          if (e.key === 'Escape') onCancel();
+        }}
+        onBlur={(e) => onCommit(e.currentTarget.value)}
+      />
     </div>
   );
 }
