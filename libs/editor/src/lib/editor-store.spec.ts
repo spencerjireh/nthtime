@@ -139,6 +139,37 @@ describe('createEditorStore', () => {
   });
 });
 
+describe('isDirty', () => {
+  it('returns false for unmodified files', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    expect(store.getState().isDirty('app.js')).toBe(false);
+    expect(store.getState().isDirty('server.js')).toBe(false);
+  });
+
+  it('returns true after modifying a file', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    store.getState().setFileContent('app.js', 'modified content');
+    expect(store.getState().isDirty('app.js')).toBe(true);
+    expect(store.getState().isDirty('server.js')).toBe(false);
+  });
+
+  it('returns false after restoring original content', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    store.getState().setFileContent('app.js', 'modified');
+    store.getState().setFileContent('app.js', 'const app = express();');
+    expect(store.getState().isDirty('app.js')).toBe(false);
+  });
+
+  it('returns false for unknown paths', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    expect(store.getState().isDirty('nonexistent.js')).toBe(false);
+  });
+
+  it('returns false before initialization', () => {
+    expect(store.getState().isDirty('app.js')).toBe(false);
+  });
+});
+
 describe('submit and retry', () => {
   it('submit snapshots files and switches to results', () => {
     store.getState().initFromChallenge(mockChallenge);

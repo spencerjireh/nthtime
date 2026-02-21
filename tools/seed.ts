@@ -78,10 +78,19 @@ function loadPack(packJsonPath: string): { manifest: PackManifest; challenges: C
   return { manifest, challenges };
 }
 
+function getAdminSecret(): string {
+  const secret = process.env.ADMIN_SECRET;
+  if (!secret) {
+    throw new Error('ADMIN_SECRET env var is required. Set it before running seed.');
+  }
+  return secret;
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
   const convexUrl = getConvexUrl();
+  const adminSecret = getAdminSecret();
   console.log(`Connecting to Convex: ${convexUrl}\n`);
 
   const client = new ConvexHttpClient(convexUrl);
@@ -101,6 +110,7 @@ async function main(): Promise<void> {
 
     try {
       await client.mutation(api.admin.seedPack, {
+        adminSecret,
         name: manifest.name,
         slug: manifest.slug,
         description: manifest.description,

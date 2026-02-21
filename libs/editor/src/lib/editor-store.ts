@@ -180,5 +180,11 @@ export function createEditorStore() {
         clearDraftFromStorage(challengeId);
       }
     },
+
+    isDirty(path) {
+      const { files, scaffoldFiles } = get();
+      if (!scaffoldFiles || !files[path] || !scaffoldFiles[path]) return false;
+      return files[path].content !== scaffoldFiles[path].content;
+    },
   }));
 }

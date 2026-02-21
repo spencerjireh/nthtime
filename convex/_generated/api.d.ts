@@ -14,6 +14,7 @@ import type * as auth from "../auth.js";
 import type * as challenges from "../challenges.js";
 import type * as http from "../http.js";
 import type * as packs from "../packs.js";
+import type * as rateLimit from "../rateLimit.js";
 import type * as settings from "../settings.js";
 
 import type {
@@ -29,6 +30,7 @@ declare const fullApi: ApiFromModules<{
   challenges: typeof challenges;
   http: typeof http;
   packs: typeof packs;
+  rateLimit: typeof rateLimit;
   settings: typeof settings;
 }>;
 

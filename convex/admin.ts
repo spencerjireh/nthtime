@@ -1,8 +1,9 @@
 import { mutation } from './_generated/server';
-import { v } from 'convex/values';
+import { ConvexError, v } from 'convex/values';
 
 export const seedPack = mutation({
   args: {
+    adminSecret: v.string(),
     name: v.string(),
     slug: v.string(),
     description: v.string(),
@@ -29,6 +30,11 @@ export const seedPack = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const expected = process.env.ADMIN_SECRET;
+    if (!expected || args.adminSecret !== expected) {
+      throw new ConvexError({ code: 'UNAUTHORIZED', message: 'Invalid admin secret' });
+    }
+
     // Upsert pack by slug
     const existing = await ctx.db
       .query('packs')

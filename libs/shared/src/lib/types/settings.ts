@@ -34,4 +34,5 @@ export interface UserSettings {
   readonly keybindings: EditorKeybindings;
   readonly formatter: FormatterConfig;
   readonly darkMode: boolean;
+  readonly autocomplete: boolean;
 }

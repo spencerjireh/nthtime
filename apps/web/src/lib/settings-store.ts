@@ -18,6 +18,7 @@ export interface SettingsActions {
   setKeybindings(kb: EditorKeybindings): void;
   setDarkMode(dark: boolean): void;
   setFormatter(config: Partial<FormatterConfig>): void;
+  setAutocomplete(enabled: boolean): void;
   syncFromServer(settings: Partial<UserSettings>): void;
   hydrate(): void;
 }
@@ -38,6 +39,7 @@ const DEFAULT_SETTINGS: UserSettings = {
     overrides: {},
   },
   darkMode: true,
+  autocomplete: true,
 };
 
 function persistToLocalStorage(settings: UserSettings): void {
@@ -82,6 +84,14 @@ export function createSettingsStore() {
     setDarkMode(dark) {
       set((state) => {
         const settings = { ...state.settings, darkMode: dark };
+        persistToLocalStorage(settings);
+        return { settings };
+      });
+    },
+
+    setAutocomplete(enabled) {
+      set((state) => {
+        const settings = { ...state.settings, autocomplete: enabled };
         persistToLocalStorage(settings);
         return { settings };
       });

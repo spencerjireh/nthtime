@@ -12,6 +12,7 @@ const EXTENSION_TO_GRAMMAR: Record<string, string> = {
   '.py': 'python',
   '.html': 'html',
   '.css': 'css',
+  '.json': 'json',
 };
 
 function isBrowser(): boolean {

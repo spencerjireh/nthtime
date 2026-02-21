@@ -66,6 +66,7 @@ export interface EditorActions {
   saveDraft(): void;
   loadDraft(challengeId: string): boolean;
   clearDraft(): void;
+  isDirty(path: string): boolean;
 }
 
 export type EditorStore = EditorState & EditorActions;

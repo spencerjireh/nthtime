@@ -52,5 +52,6 @@ export default defineSchema({
     keybindings: v.string(),
     darkMode: v.boolean(),
     formatter: v.any(),
+    updatedAt: v.optional(v.number()),
   }).index('by_user', ['userId']),
 });

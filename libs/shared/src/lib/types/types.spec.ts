@@ -100,6 +100,7 @@ describe('type compilation', () => {
       difficulty: Difficulty.Intermediate,
       keybindings: 'vim',
       darkMode: true,
+      autocomplete: true,
       formatter: {
         defaults: {
           enabled: true,

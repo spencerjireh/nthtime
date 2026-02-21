@@ -16,7 +16,9 @@ import { evaluateSExpression } from './sexpression.js';
 
 let jsParser: Parser;
 let pyParser: Parser;
+let jsonParser: Parser;
 let jsLang: Parser.Language;
+let jsonLang: Parser.Language;
 
 function parseJS(code: string): Parser.Tree {
   return jsParser.parse(code);
@@ -26,10 +28,16 @@ function parsePY(code: string): Parser.Tree {
   return pyParser.parse(code);
 }
 
+function parseJSON(code: string): Parser.Tree {
+  return jsonParser.parse(code);
+}
+
 beforeAll(async () => {
   jsParser = await createParser('javascript');
   pyParser = await createParser('python');
+  jsonParser = await createParser('json');
   jsLang = await loadLanguage('javascript');
+  jsonLang = await loadLanguage('json');
 });
 
 describe('functionDeclaration evaluator', () => {
@@ -349,5 +357,21 @@ describe('sexpression evaluator', () => {
       tree, '', { type: 'sexpression', pattern: '(class_declaration name: (identifier) @name)', description: 'test' }, 'test.js', jsLang,
     );
     expect(result.passed).toBe(false);
+  });
+
+  it('matches a JSON object with string key-value pairs', () => {
+    const tree = parseJSON('{"name": "nthtime", "version": "1.0.0"}');
+    const result = evaluateSExpression(
+      tree, '', { type: 'sexpression', pattern: '(pair key: (string) @key)', description: 'test' }, 'data.json', jsonLang,
+    );
+    expect(result.passed).toBe(true);
+  });
+
+  it('matches a JSON array', () => {
+    const tree = parseJSON('[1, 2, 3]');
+    const result = evaluateSExpression(
+      tree, '', { type: 'sexpression', pattern: '(array (number) @num)', description: 'test' }, 'data.json', jsonLang,
+    );
+    expect(result.passed).toBe(true);
   });
 });

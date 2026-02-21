@@ -129,6 +129,25 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             </Select>
           </section>
 
+          {/* Autocomplete */}
+          <section className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="autocomplete"
+                checked={settings.autocomplete}
+                onCheckedChange={(checked) =>
+                  store.getState().setAutocomplete(checked === true)
+                }
+              />
+              <label htmlFor="autocomplete" className="text-sm text-foreground">
+                Autocomplete (IntelliSense)
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Show code suggestions as you type. Disable for a distraction-free editor.
+            </p>
+          </section>
+
           {/* Formatter */}
           <section className="space-y-3">
             <h3 className="text-sm font-medium text-foreground">Formatter</h3>
