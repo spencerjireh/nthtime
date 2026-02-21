@@ -15,6 +15,13 @@
         "command": "next dev --webpack"
       }
     },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/web",
+        "command": "vitest run"
+      }
+    },
     "e2e": {
       "executor": "nx:run-commands",
       "options": {

@@ -86,12 +86,39 @@ function getAdminSecret(): string {
   return secret;
 }
 
+function toSeedPayload(manifest: PackManifest, challenges: ChallengeFile[]) {
+  return {
+    name: manifest.name,
+    slug: manifest.slug,
+    description: manifest.description,
+    language: manifest.language,
+    framework: manifest.framework,
+    version: manifest.version,
+    author: manifest.author,
+    tags: manifest.tags,
+    challenges: challenges.map((c) => ({
+      title: c.title,
+      prompt: c.prompt,
+      difficulty: c.difficulty,
+      tags: c.tags,
+      timeEstimateSeconds: c.timeEstimateSeconds,
+      scaffolded: c.scaffolded,
+      files: c.scaffold ?? c.files,
+      hints: c.hints,
+      assertions: c.assertions,
+    })),
+  };
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
   const convexUrl = getConvexUrl();
   const adminSecret = getAdminSecret();
-  console.log(`Connecting to Convex: ${convexUrl}\n`);
+  const useSync = process.argv.includes('--sync');
+  console.log(`Connecting to Convex: ${convexUrl}`);
+  if (useSync) console.log('Mode: sync (batch + stale cleanup)');
+  console.log();
 
   const client = new ConvexHttpClient(convexUrl);
   const packsDir = resolve(__dirname, '..', 'packs');
@@ -102,39 +129,40 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  console.log(`Found ${packJsonPaths.length} pack(s) to seed.\n`);
+  console.log(`Found ${packJsonPaths.length} pack(s).\n`);
 
-  for (const packJsonPath of packJsonPaths) {
-    const packName = basename(dirname(packJsonPath));
-    const { manifest, challenges } = loadPack(packJsonPath);
+  if (useSync) {
+    // Batch sync: send all packs in one mutation + clean up stale packs
+    const packs = packJsonPaths.map((p) => {
+      const { manifest, challenges } = loadPack(p);
+      return toSeedPayload(manifest, challenges);
+    });
 
     try {
-      await client.mutation(api.admin.seedPack, {
-        adminSecret,
-        name: manifest.name,
-        slug: manifest.slug,
-        description: manifest.description,
-        language: manifest.language,
-        framework: manifest.framework,
-        version: manifest.version,
-        author: manifest.author,
-        tags: manifest.tags,
-        challenges: challenges.map((c) => ({
-          title: c.title,
-          prompt: c.prompt,
-          difficulty: c.difficulty,
-          tags: c.tags,
-          timeEstimateSeconds: c.timeEstimateSeconds,
-          scaffolded: c.scaffolded,
-          files: c.scaffold ?? c.files,
-          hints: c.hints,
-          assertions: c.assertions,
-        })),
-      });
-      console.log(`  SEEDED  ${packName} (${challenges.length} challenges)`);
+      await client.mutation(api.admin.syncPacks, { adminSecret, packs });
+      for (const pack of packs) {
+        console.log(`  SYNCED  ${pack.slug} (${pack.challenges.length} challenges)`);
+      }
     } catch (e) {
-      console.error(`  FAILED  ${packName}: ${e}`);
+      console.error(`  SYNC FAILED: ${e}`);
       process.exit(1);
+    }
+  } else {
+    // Individual seed: one mutation per pack
+    for (const packJsonPath of packJsonPaths) {
+      const packName = basename(dirname(packJsonPath));
+      const { manifest, challenges } = loadPack(packJsonPath);
+
+      try {
+        await client.mutation(api.admin.seedPack, {
+          adminSecret,
+          ...toSeedPayload(manifest, challenges),
+        });
+        console.log(`  SEEDED  ${packName} (${challenges.length} challenges)`);
+      } catch (e) {
+        console.error(`  FAILED  ${packName}: ${e}`);
+        process.exit(1);
+      }
     }
   }
 

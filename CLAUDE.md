@@ -65,9 +65,15 @@ Libraries use **pnpm workspace protocol** (`"@nthtime/shared": "workspace:*"`) a
 
 Both `build` and `dev` targets are overridden in `apps/web/project.json` to use `--webpack` flag. Turbopack fails with Nx's dynamic `require()` calls. The `next.config.js` also enables the `asyncWebAssembly` webpack experiment for Tree-sitter WASM. It uses `NormalModuleReplacementPlugin` to rewrite `node:` imports and `resolve.fallback: false` for `fs`/`path` in the browser bundle.
 
+### Monaco editor
+
+- `monaco-editor` is NOT hoisted by pnpm -- never import types from `monaco-editor` directly. Use `OnMount`, `EditorProps` from `@monaco-editor/react` instead.
+- `monaco-emacs` calls `require('monaco-editor')` which resolves to the AMD bundle. `next.config.js` aliases `monaco-editor$` to `src/lib/monaco-editor-shim.js` (re-exports `window.monaco`). This alias must apply to both server and client builds.
+- `MonacoWrapper` accepts an `options` prop typed as `EditorProps['options']` from `@monaco-editor/react`.
+
 ### Challenge navigation
 
-Pack slug is threaded via `?pack=` query param for challenge navigation (catalog -> pack -> challenge -> results). `MonacoWrapper` accepts an `options` prop typed as `EditorProps['options']` from `@monaco-editor/react`.
+Pack slug is threaded via `?pack=` query param for challenge navigation (catalog -> pack -> challenge -> results).
 
 ### Verification engine
 
@@ -84,6 +90,16 @@ Convex functions (auth, packs, challenges, attempts, settings) live at repo root
 ### Docker
 
 Multi-stage Dockerfile produces a standalone Next.js image (~100-200MB). `docker-compose.yml` runs the web service on port 3000 with healthcheck. Copy `.env.production.example` to `.env.production` and fill in `NEXT_PUBLIC_CONVEX_URL` before running.
+
+## CI pipeline
+
+Runs on push/PR to `main` (Node 22): validate packs -> lint (affected) -> typecheck (all) -> test (affected) -> build (affected) -> Playwright E2E -> Docker build verify.
+
+## Gotchas
+
+- `tools/` scripts use direct relative imports (not workspace packages) and `fileURLToPath(import.meta.url)` for `__dirname` (`import.meta.dirname` is undefined in `npx tsx`)
+- Nx sync may report "out of sync" then "already up to date" on retry -- run twice if needed
+- ESLint: `@nx/eslint` peer wants `eslint ^8||^9`, we use 9. Do not upgrade to eslint 10.
 
 ## Code style
 

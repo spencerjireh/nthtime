@@ -12,7 +12,10 @@
     "format:check": "prettier --check .",
     "e2e": "nx e2e @nthtime/web",
     "validate": "npx tsx tools/validate-packs.ts",
-    "seed": "npx tsx tools/seed.ts"
+    "seed": "npx tsx tools/seed.ts",
+    "test:convex": "vitest run --config convex/vitest.config.mts",
+    "bench": "vitest bench libs/verification",
+    "benchmark": "npx tsx tools/benchmark.ts"
   },
   "private": true,
   "devDependencies": {
@@ -35,6 +38,7 @@
     "@vitest/coverage-v8": "^4.0.0",
     "autoprefixer": "10.4.13",
     "convex": "^1.32.0",
+    "convex-test": "^0.0.41",
     "eslint": "^9.39.2",
     "nx": "22.5.1",
     "postcss": "8.4.38",

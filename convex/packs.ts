@@ -6,6 +6,7 @@ export const list = query({
   args: {
     language: v.optional(v.string()),
     difficulty: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -45,11 +46,16 @@ export const list = query({
       }),
     );
 
-    // Apply language filter at pack level
+    // Apply pack-level filters
+    let filtered = result;
     if (args.language) {
-      return result.filter((p) => p.language === args.language);
+      filtered = filtered.filter((p) => p.language === args.language);
     }
-    return result;
+    if (args.tags && args.tags.length > 0) {
+      const tagSet = new Set(args.tags);
+      filtered = filtered.filter((p) => p.tags.some((t: string) => tagSet.has(t)));
+    }
+    return filtered;
   },
 });
 

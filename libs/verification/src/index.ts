@@ -8,3 +8,5 @@ export {
   resetCache,
 } from './lib/grammar-loader.js';
 export { parseFile, parseFiles } from './lib/parser.js';
+export { extractParseErrors } from './lib/extract-parse-errors.js';
+export type { ParseDiagnostic } from './lib/extract-parse-errors.js';
