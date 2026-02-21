@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChallengeList } from './challenge-list';
-import { MOCK_PACKS, MOCK_CHALLENGES } from '@/lib/mock-packs';
+import { useDataAccess } from '@/lib/data-access';
 import { ArrowLeft } from 'lucide-react';
 
 interface PackPageProps {
@@ -12,9 +12,16 @@ interface PackPageProps {
 }
 
 export function PackPage({ slug }: PackPageProps) {
-  // Use mock data when Convex is not configured
-  const pack = MOCK_PACKS.find((p) => p.slug === slug);
-  const challenges = MOCK_CHALLENGES[slug];
+  const { useChallenges } = useDataAccess();
+  const { pack, challenges, isLoading } = useChallenges(slug);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16 text-muted-foreground">
+        Loading...
+      </div>
+    );
+  }
 
   if (!pack) {
     return (
@@ -46,7 +53,6 @@ export function PackPage({ slug }: PackPageProps) {
             {pack.name}
           </h1>
           <Badge variant="secondary">{pack.language}</Badge>
-          {pack.framework && <Badge variant="outline">{pack.framework}</Badge>}
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           {pack.description}
@@ -60,7 +66,7 @@ export function PackPage({ slug }: PackPageProps) {
         </div>
       </div>
 
-      <ChallengeList challenges={challenges} isLoading={false} packSlug={slug} />
+      <ChallengeList challenges={challenges} isLoading={isLoading} packSlug={slug} />
     </div>
   );
 }

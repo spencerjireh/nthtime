@@ -4,33 +4,51 @@ import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PackGrid } from './pack-grid';
 import { CatalogSearch } from './catalog-search';
-import { CatalogFilters } from './catalog-filters';
+import { CatalogFilters, type CompletionStatus } from './catalog-filters';
+import { useDataAccess } from '@/lib/data-access';
 import { MOCK_PACKS } from '@/lib/mock-packs';
 
 interface CatalogPageProps {
   searchQuery: string;
   language: string;
   difficulty: string;
+  tags: string;
+  status: CompletionStatus;
 }
 
 export function CatalogPage({
   searchQuery,
   language,
   difficulty,
+  tags,
+  status,
 }: CatalogPageProps) {
   const router = useRouter();
+  const { usePackList } = useDataAccess();
+  const selectedTags = useMemo(
+    () => (tags ? tags.split(',').filter(Boolean) : []),
+    [tags],
+  );
+
+  const { packs, isLoading } = usePackList({
+    language,
+    difficulty,
+    tags: selectedTags,
+    status,
+    searchQuery,
+  });
 
   const updateParams = useCallback(
     (updates: Record<string, string>) => {
       const params = new URLSearchParams();
-      const merged = { q: searchQuery, language, difficulty, ...updates };
+      const merged = { q: searchQuery, language, difficulty, tags, status, ...updates };
       for (const [key, value] of Object.entries(merged)) {
         if (value) params.set(key, value);
       }
       const qs = params.toString();
       router.replace(qs ? `/?${qs}` : '/');
     },
-    [router, searchQuery, language, difficulty],
+    [router, searchQuery, language, difficulty, tags, status],
   );
 
   const handleSearch = useCallback(
@@ -49,26 +67,24 @@ export function CatalogPage({
     [updateParams],
   );
 
-  // Use mock data when Convex is not configured
-  const packs = useMemo(() => {
-    let filtered = [...MOCK_PACKS];
+  const handleTagsChange = useCallback(
+    (newTags: string[]) => updateParams({ tags: newTags.join(',') }),
+    [updateParams],
+  );
 
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q)),
-      );
+  const handleStatusChange = useCallback(
+    (s: CompletionStatus) => updateParams({ status: s }),
+    [updateParams],
+  );
+
+  // Derive available tags from all packs (use full list, not filtered)
+  const availableTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    for (const pack of MOCK_PACKS) {
+      for (const tag of pack.tags) tagSet.add(tag);
     }
-
-    if (language) {
-      filtered = filtered.filter((p) => p.language === language);
-    }
-
-    return filtered;
-  }, [searchQuery, language]);
+    return [...tagSet].sort();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -81,19 +97,24 @@ export function CatalogPage({
         </p>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <CatalogFilters
           language={language}
           difficulty={difficulty}
+          availableTags={availableTags}
+          selectedTags={selectedTags}
+          status={status}
           onLanguageChange={handleLanguage}
           onDifficultyChange={handleDifficulty}
+          onTagsChange={handleTagsChange}
+          onStatusChange={handleStatusChange}
         />
         <div className="w-full sm:max-w-xs">
           <CatalogSearch value={searchQuery} onChange={handleSearch} />
         </div>
       </div>
 
-      <PackGrid packs={packs} isLoading={false} searchQuery={searchQuery} />
+      <PackGrid packs={packs} isLoading={isLoading} searchQuery={searchQuery} />
     </div>
   );
 }
