@@ -19,7 +19,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { getSettingsStore } from '@/lib/settings-store';
 import { FeedbackLevel } from '@nthtime/shared';
-import type { EditorKeybindings } from '@nthtime/shared';
+import type { EditorKeybindings, FormatterTrigger } from '@nthtime/shared';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -206,7 +206,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                   store.getState().setFormatter({
                     defaults: {
                       ...settings.formatter.defaults,
-                      trigger: v as 'manual' | 'onSave' | 'onPaste',
+                      trigger: v as FormatterTrigger,
                     },
                   })
                 }
@@ -217,6 +217,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 <SelectContent>
                   <SelectItem value="manual">Manual</SelectItem>
                   <SelectItem value="onSave">On save</SelectItem>
+                  <SelectItem value="onSubmit">On submit</SelectItem>
                   <SelectItem value="onPaste">On paste</SelectItem>
                 </SelectContent>
               </Select>

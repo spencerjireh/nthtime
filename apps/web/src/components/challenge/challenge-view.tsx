@@ -11,6 +11,8 @@ import { ResultsView } from './results-view';
 import { ResultsNavigation } from './results-navigation';
 import { MOCK_CHALLENGE, getMockChallenge } from '@/lib/mock-challenge';
 import { runVerification } from '@/lib/run-verification';
+import { formatCode } from '@/lib/formatter';
+import { getSettingsStore } from '@/lib/settings-store';
 import type { Challenge } from '@nthtime/shared';
 
 interface ChallengeViewProps {
@@ -52,6 +54,18 @@ export function ChallengeView({
   const handleRun = useCallback(async () => {
     const store = storeRef.current.getState();
     store.setRunState('running');
+
+    // Format on submit if enabled
+    const { formatter } = getSettingsStore().getState().settings;
+    if (formatter.defaults.trigger === 'onSubmit') {
+      const entries = Object.entries(store.files);
+      for (const [path, file] of entries) {
+        const formatted = await formatCode(file.content, path, formatter.defaults);
+        if (formatted !== file.content) {
+          store.setFileContent(path, formatted);
+        }
+      }
+    }
 
     const files = store.getAllFileEntries();
     const result = await runVerification(challengeData.assertions, files);

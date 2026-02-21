@@ -96,3 +96,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Monaco editor decorations for failed assertions (L3 feedback) */
+.decoration-fail-line {
+  background-color: rgba(239, 68, 68, 0.08);
+}
+.decoration-fail-glyph {
+  background-color: rgb(239, 68, 68);
+  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  margin-top: 6px;
+  margin-left: 4px;
+}

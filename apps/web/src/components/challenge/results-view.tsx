@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
+import type { OnMount } from '@monaco-editor/react';
 import { useEditorStore } from './editor-store-context';
 import { MonacoWrapper } from './monaco-wrapper';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +11,7 @@ import { getSettingsStore } from '@/lib/settings-store';
 import { FeedbackLevel } from '@nthtime/shared';
 import { getMonacoLanguage, formatTime } from '@nthtime/editor';
 import { cn } from '@/lib/utils';
+import { buildDecorationInputs } from '@/lib/build-result-decorations';
 import type { VerificationResult, FileVerificationResult } from '@nthtime/shared';
 
 interface ResultsViewProps {
@@ -34,10 +36,58 @@ export function ResultsView({ children }: ResultsViewProps) {
   const [activeFile, setActiveFile] = useState(() => filePaths[0] ?? null);
   const [showDiff, setShowDiff] = useState(false);
 
+  const [resultsEditor, setResultsEditor] = useState<Parameters<OnMount>[0] | null>(null);
+  const [resultsMonaco, setResultsMonaco] = useState<Parameters<OnMount>[1] | null>(null);
+  const decorationRef = useRef<ReturnType<Parameters<OnMount>[0]['createDecorationsCollection']> | null>(null);
+
+  const handleResultsMount: OnMount = useCallback((ed, mon) => {
+    setResultsEditor(ed);
+    setResultsMonaco(mon);
+  }, []);
+
+  // Apply decorations for failed assertions at L3+
+  useEffect(() => {
+    if (!resultsEditor || !resultsMonaco || !result || !activeFile) return;
+    if (feedbackLevel < FeedbackLevel.AssertionDetails) {
+      if (decorationRef.current) {
+        decorationRef.current.clear();
+        decorationRef.current = null;
+      }
+      return;
+    }
+
+    const fileResult = result.fileResults.find((f) => f.file === activeFile);
+    if (!fileResult) return;
+
+    const inputs = buildDecorationInputs(fileResult.results);
+    const decorations = inputs.map((d) => ({
+      range: new resultsMonaco.Range(d.startLine, d.startColumn, d.endLine, d.endColumn),
+      options: {
+        isWholeLine: true,
+        className: 'decoration-fail-line',
+        glyphMarginClassName: 'decoration-fail-glyph',
+        hoverMessage: { value: `**${d.description}**\n\n${d.message}` },
+      },
+    }));
+
+    if (decorationRef.current) {
+      decorationRef.current.clear();
+    }
+    decorationRef.current = resultsEditor.createDecorationsCollection(decorations);
+
+    return () => {
+      if (decorationRef.current) {
+        decorationRef.current.clear();
+        decorationRef.current = null;
+      }
+    };
+  }, [resultsEditor, resultsMonaco, result, activeFile, feedbackLevel]);
+
   if (!result || !submittedFiles) return null;
 
   const activeContent = activeFile ? submittedFiles[activeFile]?.content ?? '' : '';
   const language = activeFile ? getMonacoLanguage(activeFile) : 'plaintext';
+  const showGlyphMargin = feedbackLevel >= FeedbackLevel.AssertionDetails;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -132,7 +182,8 @@ export function ResultsView({ children }: ResultsViewProps) {
                 value={activeContent}
                 language={language}
                 theme="vs-dark"
-                options={{ readOnly: true }}
+                onMount={handleResultsMount}
+                options={{ readOnly: true, glyphMargin: showGlyphMargin }}
               />
             )}
           </div>

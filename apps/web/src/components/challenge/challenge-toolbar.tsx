@@ -1,9 +1,12 @@
 'use client';
 
 import { useCallback, useEffect } from 'react';
+import { useStore } from 'zustand';
 import { useEditorStore } from './editor-store-context';
 import { formatTime } from '@nthtime/editor';
 import { Button } from '@/components/ui/button';
+import { getSettingsStore } from '@/lib/settings-store';
+import { formatCode } from '@/lib/formatter';
 
 interface ChallengeToolbarProps {
   onRun: () => void;
@@ -13,6 +16,9 @@ export function ChallengeToolbar({ onRun }: ChallengeToolbarProps) {
   const runState = useEditorStore((s) => s.runState);
   const timer = useEditorStore((s) => s.timer);
   const tickTimer = useEditorStore((s) => s.tickTimer);
+  const formatter = useStore(getSettingsStore(), (s) => s.settings.formatter);
+  const files = useEditorStore((s) => s.files);
+  const setFileContent = useEditorStore((s) => s.setFileContent);
   const timeEstimate = useEditorStore(
     (s) => s.challengeMetadata?.timeEstimateSeconds ?? 0,
   );
@@ -35,10 +41,23 @@ export function ChallengeToolbar({ onRun }: ChallengeToolbarProps) {
     [onRun],
   );
 
+  const handleFormat = useCallback(async () => {
+    const settings = formatter.defaults;
+    const entries = Object.entries(files);
+    for (const [path, file] of entries) {
+      const formatted = await formatCode(file.content, path, settings);
+      if (formatted !== file.content) {
+        setFileContent(path, formatted);
+      }
+    }
+  }, [files, formatter.defaults, setFileContent]);
+
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
+
+  const showFormatButton = formatter.defaults.trigger === 'manual';
 
   return (
     <div className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-2">
@@ -49,6 +68,11 @@ export function ChallengeToolbar({ onRun }: ChallengeToolbarProps) {
         )}
       </div>
       <div className="flex items-center gap-2">
+        {showFormatButton && (
+          <Button variant="ghost" size="sm" onClick={handleFormat}>
+            Format
+          </Button>
+        )}
         <span className="text-xs text-muted-foreground">Ctrl+Enter</span>
         <Button
           size="sm"
