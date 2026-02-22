@@ -4,11 +4,13 @@ import { useEditorStore } from './editor-store-context';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
+const EMPTY_TAGS: string[] = [];
+
 export function PromptPanel() {
   const title = useEditorStore((s) => s.challengeMetadata?.title ?? '');
   const prompt = useEditorStore((s) => s.challengeMetadata?.prompt ?? '');
   const difficulty = useEditorStore((s) => s.challengeMetadata?.difficulty);
-  const tags = useEditorStore((s) => s.challengeMetadata?.tags ?? []);
+  const tags = useEditorStore((s) => s.challengeMetadata?.tags ?? EMPTY_TAGS);
   const hints = useEditorStore((s) => s.hints);
   const hintsRevealed = useEditorStore((s) => s.hintsRevealed);
   const totalHints = useEditorStore((s) => s.totalHints);
