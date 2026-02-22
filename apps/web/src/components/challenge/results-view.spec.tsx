@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { createStore } from 'zustand/vanilla';
 import type { EditorStore } from '@nthtime/editor';
 import { FeedbackLevel } from '@nthtime/shared';
 import type { VerificationResult } from '@nthtime/shared';
+import { buildEditorStore, MOCK_VERIFICATION_RESULT } from '../../test-utils';
 import { EditorStoreContext } from './editor-store-context';
 
 // Stub MonacoWrapper and DiffView since they depend on browser-only Monaco APIs
@@ -37,102 +38,27 @@ vi.mock('@/lib/settings-store', () => ({
 
 import { ResultsView } from './results-view';
 
-const MOCK_RESULT: VerificationResult = {
-  passed: false,
-  totalAssertions: 3,
-  passedAssertions: 1,
-  fileResults: [
-    {
-      file: 'app.js',
-      passed: false,
-      results: [
-        {
-          assertion: {
-            type: 'functionDeclaration',
-            name: 'greet',
-            description: 'greet function exists',
-          },
-          passed: true,
-          message: 'Found function greet',
-        },
-        {
-          assertion: {
-            type: 'functionDeclaration',
-            name: 'farewell',
-            description: 'farewell function exists',
-          },
-          passed: false,
-          message: 'Missing function farewell',
-          location: { file: 'app.js', line: 5, column: 1 },
-        },
-      ],
-    },
-  ],
-  crossFileResults: [
-    {
-      assertion: {
-        type: 'exportPresence',
-        name: 'greet',
-        exportKind: 'named',
-        description: 'greet is exported',
-      },
-      passed: false,
-      message: 'greet is not exported',
-    },
-  ],
+const RESULTS_DEFAULTS: Partial<EditorStore> = {
+  submittedFiles: {
+    'app.js': { path: 'app.js', content: 'function greet() {}' },
+  },
+  viewMode: 'results',
+  verificationResult: MOCK_VERIFICATION_RESULT,
+  timer: { startedAt: null, elapsedSeconds: 42 },
+  hintsRevealed: 0,
+  totalHints: 2,
+  hints: ['Try adding a farewell function', 'Make sure to export greet'],
 };
-
-function buildEditorStore(overrides?: Partial<EditorStore>) {
-  const defaults: EditorStore = {
-    files: { 'app.js': { content: 'function greet() {}', language: 'javascript' } },
-    activeFilePath: 'app.js',
-    tabOrder: ['app.js'],
-    splitMode: 'single',
-    secondActiveFilePath: null,
-    scaffoldFiles: { 'app.js': { content: '', language: 'javascript' } },
-    submittedFiles: { 'app.js': { content: 'function greet() {}', language: 'javascript' } },
-    viewMode: 'results',
-    verificationResult: MOCK_RESULT,
-    timer: { startedAt: null, elapsedSeconds: 42 },
-    hintsRevealed: 0,
-    totalHints: 2,
-    hints: ['Try adding a farewell function', 'Make sure to export greet'],
-    initFromChallenge: vi.fn(),
-    setActiveFile: vi.fn(),
-    setFileContent: vi.fn(),
-    startTimer: vi.fn(),
-    stopTimer: vi.fn(),
-    submit: vi.fn(),
-    retry: vi.fn(),
-    setViewMode: vi.fn(),
-    setVerificationResult: vi.fn(),
-    revealNextHint: vi.fn(),
-    saveDraft: vi.fn(),
-    loadDraft: vi.fn().mockReturnValue(false),
-    clearDraft: vi.fn(),
-    isDirty: vi.fn().mockReturnValue(false),
-    createFile: vi.fn(),
-    renameFile: vi.fn(),
-    deleteFile: vi.fn(),
-    openTab: vi.fn(),
-    closeTab: vi.fn(),
-    reorderTabs: vi.fn(),
-    toggleSplit: vi.fn(),
-    setSecondActiveFile: vi.fn(),
-    closeSplit: vi.fn(),
-    ...overrides,
-  };
-  return createStore<EditorStore>(() => defaults);
-}
 
 function renderResultsView(feedbackLevel: FeedbackLevel, storeOverrides?: Partial<EditorStore>) {
   mockFeedbackLevel = feedbackLevel;
-  const store = buildEditorStore(storeOverrides);
-  return render(
+  const store = buildEditorStore({ ...RESULTS_DEFAULTS, ...storeOverrides });
+  const result = render(
     <EditorStoreContext.Provider value={store}>
       <ResultsView />
     </EditorStoreContext.Provider>,
   );
+  return { ...result, store };
 }
 
 describe('ResultsView feedback levels', () => {
@@ -227,5 +153,56 @@ describe('ResultsView feedback levels', () => {
     renderResultsView(FeedbackLevel.PassFail, { verificationResult: passingResult });
 
     expect(screen.getByText('All Passed')).toBeInTheDocument();
+  });
+
+  it('hint reveal: clicking "Show next hint" calls revealNextHint', () => {
+    const { store } = renderResultsView(FeedbackLevel.Hints);
+    fireEvent.click(screen.getByText('Show next hint'));
+    expect(store.getState().revealNextHint).toHaveBeenCalledOnce();
+  });
+
+  it('revealed hints display in order', () => {
+    renderResultsView(FeedbackLevel.Hints, {
+      hintsRevealed: 2,
+      totalHints: 3,
+      hints: ['hint A', 'hint B', 'hint C'],
+    });
+    // First two revealed, third not yet
+    expect(screen.getByText('hint A')).toBeInTheDocument();
+    expect(screen.getByText('hint B')).toBeInTheDocument();
+    expect(screen.queryByText('hint C')).not.toBeInTheDocument();
+    expect(screen.getByText('Hints (2/3)')).toBeInTheDocument();
+  });
+
+  it('hint button hidden when all hints revealed', () => {
+    renderResultsView(FeedbackLevel.Hints, {
+      hintsRevealed: 2,
+      totalHints: 2,
+      hints: ['hint A', 'hint B'],
+    });
+    // When hintsRevealed === totalHints, the hint section (with button) is hidden
+    expect(screen.queryByText('Show next hint')).not.toBeInTheDocument();
+  });
+
+  it('cross-file assertion section renders with "Cross-file" heading at L1+', () => {
+    renderResultsView(FeedbackLevel.PassFail);
+    expect(screen.getByText('Cross-file')).toBeInTheDocument();
+    expect(screen.getByText('greet is exported')).toBeInTheDocument();
+  });
+
+  it('timer displays formatted elapsed time in banner', () => {
+    renderResultsView(FeedbackLevel.None, { timer: { startedAt: null, elapsedSeconds: 125 } });
+    // formatTime(125) produces "02:05" (zero-padded)
+    expect(screen.getByText('02:05')).toBeInTheDocument();
+  });
+
+  it('diff button at L4 toggles diff view', () => {
+    renderResultsView(FeedbackLevel.FullDiagnostics);
+    // Click Diff to show diff view
+    fireEvent.click(screen.getByText('Diff'));
+    expect(screen.getByTestId('diff-view')).toBeInTheDocument();
+    // Click again to hide
+    fireEvent.click(screen.getByText('Diff'));
+    expect(screen.queryByTestId('diff-view')).not.toBeInTheDocument();
   });
 });

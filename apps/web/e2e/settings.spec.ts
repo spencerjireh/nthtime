@@ -7,7 +7,7 @@ test.describe('Settings', () => {
     // Open settings via the gear button in the header
     await page.getByRole('button', { name: 'Settings' }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('Feedback Level')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Feedback Level' })).toBeVisible();
 
     // Change feedback level to L1
     await page.getByRole('dialog').getByRole('combobox').first().click();

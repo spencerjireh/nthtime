@@ -1,8 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { createStore } from 'zustand/vanilla';
 import type { EditorStore } from '@nthtime/editor';
+import { buildEditorStore } from '../../test-utils';
 import { EditorStoreContext } from './editor-store-context';
+
+// vi.hoisted() for values that need to be accessible in vi.mock() factories
+const { mockKeybindings } = vi.hoisted(() => ({
+  mockKeybindings: { value: 'default' as string },
+}));
 
 // Stub heavy dependencies
 vi.mock('./monaco-wrapper', () => ({
@@ -30,62 +36,15 @@ vi.mock('@/lib/settings-store', () => ({
     createStore(() => ({
       settings: {
         autocomplete: true,
-        keybindings: 'default',
+        get keybindings() {
+          return mockKeybindings.value;
+        },
         formatter: { defaults: { enabled: true, trigger: 'manual', tabSize: 2, useTabs: false } },
       },
     })),
 }));
 
 import { EditorPanel } from './editor-panel';
-
-function buildEditorStore(overrides?: Partial<EditorStore>): ReturnType<typeof createStore<EditorStore>> {
-  const defaults: EditorStore = {
-    files: {
-      'app.js': { content: 'const a = 1;', language: 'javascript' },
-      'server.js': { content: 'const b = 2;', language: 'javascript' },
-    },
-    activeFilePath: 'app.js',
-    tabOrder: ['app.js', 'server.js'],
-    splitMode: 'single',
-    secondActiveFilePath: null,
-    scaffoldFiles: {
-      'app.js': { content: 'const a = 1;', language: 'javascript' },
-      'server.js': { content: 'const b = 2;', language: 'javascript' },
-    },
-    submittedFiles: null,
-    viewMode: 'editing',
-    verificationResult: null,
-    timer: { startedAt: null, elapsedSeconds: 0 },
-    hintsRevealed: 0,
-    totalHints: 0,
-    hints: [],
-    initFromChallenge: vi.fn(),
-    setActiveFile: vi.fn(),
-    setFileContent: vi.fn(),
-    startTimer: vi.fn(),
-    stopTimer: vi.fn(),
-    submit: vi.fn(),
-    retry: vi.fn(),
-    setViewMode: vi.fn(),
-    setVerificationResult: vi.fn(),
-    revealNextHint: vi.fn(),
-    saveDraft: vi.fn(),
-    loadDraft: vi.fn().mockReturnValue(false),
-    clearDraft: vi.fn(),
-    isDirty: vi.fn().mockReturnValue(false),
-    createFile: vi.fn(),
-    renameFile: vi.fn(),
-    deleteFile: vi.fn(),
-    openTab: vi.fn(),
-    closeTab: vi.fn(),
-    reorderTabs: vi.fn(),
-    toggleSplit: vi.fn(),
-    setSecondActiveFile: vi.fn(),
-    closeSplit: vi.fn(),
-    ...overrides,
-  };
-  return createStore<EditorStore>(() => defaults);
-}
 
 function renderEditor(overrides?: Partial<EditorStore>) {
   const store = buildEditorStore(overrides);
@@ -99,6 +58,7 @@ function renderEditor(overrides?: Partial<EditorStore>) {
 describe('EditorPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockKeybindings.value = 'default';
   });
 
   it('renders tabs from tabOrder', () => {
@@ -117,7 +77,6 @@ describe('EditorPanel', () => {
 
   it('shows file tree', () => {
     renderEditor();
-    // File tree header
     expect(screen.getByText('Files')).toBeInTheDocument();
   });
 
@@ -138,15 +97,58 @@ describe('EditorPanel', () => {
 
   it('renders split toggle button when multiple files', () => {
     renderEditor();
-    // The split toggle button shows "||" in single mode
     expect(screen.getByTitle('Split editor')).toBeInTheDocument();
   });
 
   it('does not render split toggle with only one file', () => {
     renderEditor({
-      files: { 'app.js': { content: 'const a = 1;', language: 'javascript' } },
+      files: { 'app.js': { path: 'app.js', content: 'const a = 1;' } },
       tabOrder: ['app.js'],
     });
     expect(screen.queryByTitle('Split editor')).not.toBeInTheDocument();
+  });
+
+  // --- New tests ---
+
+  it('split mode: two monaco-wrapper elements and split-resize-handle visible', () => {
+    renderEditor({
+      splitMode: 'horizontal',
+      secondActiveFilePath: 'server.js',
+    });
+    const monacos = screen.getAllByTestId('monaco-wrapper');
+    expect(monacos).toHaveLength(2);
+    expect(screen.getByTestId('split-resize-handle')).toBeInTheDocument();
+  });
+
+  it('blank canvas "Create your first file" button calls createFile', () => {
+    const store = buildEditorStore({
+      files: {},
+      activeFilePath: null,
+      tabOrder: [],
+    });
+    render(
+      <EditorStoreContext.Provider value={store}>
+        <EditorPanel />
+      </EditorStoreContext.Provider>,
+    );
+    fireEvent.click(screen.getByText('Create your first file'));
+    expect(store.getState().createFile).toHaveBeenCalledWith('index.js');
+  });
+
+  it('vim keybinding: status bar div is rendered', () => {
+    mockKeybindings.value = 'vim';
+    const { container } = renderEditor();
+    // Status bar has font-mono class and appears when keybindings !== 'default'
+    const statusBar = container.querySelector('.font-mono.text-xs');
+    expect(statusBar).toBeInTheDocument();
+  });
+
+  it('default keybinding: no status bar', () => {
+    mockKeybindings.value = 'default';
+    const { container } = renderEditor();
+    // The status bar border-t div shouldn't be present in default mode
+    // Query for the status bar's specific class combination
+    const statusBars = container.querySelectorAll('[class*="border-t"][class*="font-mono"]');
+    expect(statusBars).toHaveLength(0);
   });
 });

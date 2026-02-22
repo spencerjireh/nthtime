@@ -7,10 +7,14 @@ import { type ReactNode, useMemo } from 'react';
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL;
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  const client = useMemo(
-    () => (CONVEX_URL ? new ConvexReactClient(CONVEX_URL) : null),
-    [],
-  );
+  const client = useMemo(() => {
+    if (!CONVEX_URL) return null;
+    const c = new ConvexReactClient(CONVEX_URL);
+    if (process.env.NEXT_PUBLIC_E2E_TEST_AUTH) {
+      console.log('[E2E] Test auth mode enabled');
+    }
+    return c;
+  }, []);
 
   if (!client) {
     // Convex not configured -- render children without provider for dev/build

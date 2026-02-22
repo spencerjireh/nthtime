@@ -97,8 +97,8 @@ const TSX_ASSERTIONS: AssertionSet = {
     'Counter.tsx': [
       { type: 'importDeclaration', source: 'react', description: 'Import React' },
       { type: 'functionDeclaration', name: 'Counter', description: 'Counter component' },
-      { type: 'methodCall', object: null, method: 'useState', description: 'Use useState hook' },
-      { type: 'jsxElement', elementName: 'button', description: 'Render a button' },
+      { type: 'methodCall', method: 'useState', description: 'Use useState hook' },
+      { type: 'jsxElement', name: 'button', description: 'Render a button' },
     ],
   },
   crossFile: [],
@@ -123,7 +123,7 @@ const MULTI_ASSERTIONS: AssertionSet = {
     ],
   },
   crossFile: [
-    { type: 'exportPresence', name: 'default', exportKind: 'default', description: 'Default export in routes' },
+    { type: 'exportDeclaration', name: 'default', isDefault: true, description: 'Default export in routes' },
   ],
 };
 
