@@ -6,6 +6,8 @@ dist/
 out-tsc/
 .next/
 out/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
 
 # Nx
 .nx/cache

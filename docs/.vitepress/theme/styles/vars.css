@@ -1,0 +1,74 @@
+:root {
+  /* Primary brand */
+  --nt-primary: hsl(175, 70%, 38%);
+  --nt-primary-fg: hsl(0, 0%, 100%);
+  --nt-primary-hover: hsl(175, 70%, 32%);
+  --nt-primary-dim: hsl(175, 50%, 28%);
+
+  /* Backgrounds */
+  --nt-bg: #ffffff;
+  --nt-bg-alt: hsl(220, 14%, 96%);
+  --nt-bg-soft: hsl(220, 14%, 94%);
+
+  /* Foregrounds */
+  --nt-fg: hsl(220, 14%, 10%);
+  --nt-fg-muted: hsl(220, 10%, 46%);
+
+  /* Borders */
+  --nt-border: hsl(220, 13%, 90%);
+  --nt-border-hover: hsl(220, 13%, 80%);
+
+  /* Code */
+  --nt-code-bg: hsl(220, 14%, 96%);
+  --nt-code-fg: hsl(220, 14%, 20%);
+  --nt-code-border: hsl(220, 13%, 91%);
+
+  /* Glow */
+  --nt-glow: 0 0 12px -2px hsl(175 65% 46% / 0.35);
+  --nt-glow-lg: 0 0 24px -4px hsl(175 65% 46% / 0.4);
+  --nt-glow-hero: 0 0 60px -12px hsl(175 65% 46% / 0.25);
+
+  /* Semantic */
+  --nt-tip: hsl(175, 70%, 38%);
+  --nt-warning: hsl(38, 92%, 50%);
+  --nt-danger: hsl(0, 72%, 55%);
+
+  /* Typography */
+  --nt-font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --nt-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Layout */
+  --nt-sidebar-width: 272px;
+  --nt-header-height: 64px;
+  --nt-content-max-width: 768px;
+
+  /* Transitions */
+  --nt-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dark {
+  --nt-primary: hsl(175, 65%, 46%);
+  --nt-primary-fg: hsl(222, 28%, 7%);
+  --nt-primary-hover: hsl(175, 65%, 52%);
+  --nt-primary-dim: hsl(175, 40%, 22%);
+
+  --nt-bg: hsl(222, 28%, 7%);
+  --nt-bg-alt: hsl(222, 24%, 10%);
+  --nt-bg-soft: hsl(220, 18%, 14%);
+
+  --nt-fg: hsl(210, 20%, 92%);
+  --nt-fg-muted: hsl(220, 10%, 55%);
+
+  --nt-border: hsl(220, 16%, 18%);
+  --nt-border-hover: hsl(220, 16%, 28%);
+
+  --nt-code-bg: hsl(222, 24%, 12%);
+  --nt-code-fg: hsl(210, 20%, 85%);
+  --nt-code-border: hsl(220, 16%, 16%);
+
+  --nt-glow-hero: 0 0 80px -12px hsl(175 65% 46% / 0.18);
+
+  --nt-tip: hsl(175, 65%, 46%);
+  --nt-warning: hsl(38, 92%, 55%);
+  --nt-danger: hsl(0, 72%, 58%);
+}
