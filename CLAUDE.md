@@ -79,9 +79,17 @@ Pack slug is threaded via `?pack=` query param for challenge navigation (catalog
 
 Tree-sitter WASM grammars (JS, TS, TSX, Python, HTML, CSS) are served from `apps/web/public/tree-sitter/` in the browser. In Vitest, the grammar loader uses `findNodeModulesFor()` to walk up directories since pnpm hoists to the repo root.
 
+### Data access layer
+
+`apps/web/src/lib/data-access/` provides a `DataAccessProvider` that switches between mock hooks (no backend) and Convex hooks based on `NEXT_PUBLIC_CONVEX_URL`. The switch uses only `process.env.NEXT_PUBLIC_CONVEX_URL` (inlined at build time) -- never `typeof window` -- to avoid hydration mismatches. Components call `useDataAccess()` to get the active hooks.
+
 ### Convex backend
 
-Convex functions (auth, packs, challenges, attempts, settings) live at repo root in `convex/`. The Convex provider in the app wraps with a null check on `NEXT_PUBLIC_CONVEX_URL` so builds work without a backend connection.
+Convex functions (auth, packs, challenges, attempts, settings) live at repo root in `convex/`. The Convex provider in the app wraps with a null check on `NEXT_PUBLIC_CONVEX_URL` so builds work without a backend connection. `convex/tsconfig.json` excludes `__tests__/` to prevent test-only types (e.g. `import.meta.glob`) from blocking `npx convex dev` pushes.
+
+### Auth
+
+GitHub OAuth via `@convex-dev/auth` (wraps Auth.js). Convex env vars required: `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `SITE_URL`, `JWT_PRIVATE_KEY`, `JWKS`. Run `npx @convex-dev/auth` to generate JWT keys. The `SITE_URL` must match your dev server origin (e.g. `http://localhost:3000`). `convex/auth.ts` defines providers; `convex/auth.config.ts` configures token verification.
 
 ### Health check
 
@@ -100,6 +108,8 @@ Runs on push/PR to `main` (Node 22): validate packs -> lint (affected) -> typech
 - `tools/` scripts use direct relative imports (not workspace packages) and `fileURLToPath(import.meta.url)` for `__dirname` (`import.meta.dirname` is undefined in `npx tsx`)
 - Nx sync may report "out of sync" then "already up to date" on retry -- run twice if needed
 - ESLint: `@nx/eslint` peer wants `eslint ^8||^9`, we use 9. Do not upgrade to eslint 10.
+- `convex/tsconfig.json` must exclude `__tests__/` -- test files use Vitest-only types that break `npx convex dev`
+- `DataAccessProvider` must NOT use `typeof window` to choose hooks -- causes hydration mismatch (server=mock data, client=loading). Use only `process.env.NEXT_PUBLIC_CONVEX_URL`.
 
 ## Code style
 

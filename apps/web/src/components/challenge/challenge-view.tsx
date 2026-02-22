@@ -13,6 +13,7 @@ import { MOCK_CHALLENGE, getMockChallenge } from '@/lib/mock-challenge';
 import { runVerification } from '@/lib/run-verification';
 import { formatCode } from '@/lib/formatter';
 import { getSettingsStore } from '@/lib/settings-store';
+import { useDataAccess } from '@/lib/data-access';
 import type { Challenge } from '@nthtime/shared';
 
 interface ChallengeViewProps {
@@ -28,6 +29,7 @@ export function ChallengeView({
 }: ChallengeViewProps) {
   const storeRef = useRef(createEditorStore());
   const draftTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const createAttempt = useDataAccess().useCreateAttempt();
 
   const challengeData = challenge ?? getMockChallenge(challengeId) ?? MOCK_CHALLENGE;
 
@@ -74,11 +76,20 @@ export function ChallengeView({
     store.setRunState('complete');
     store.submit();
 
+    // Persist attempt (fire-and-forget -- no-op in mock mode)
+    createAttempt({
+      challengeId,
+      passed: result.passed,
+      assertionResults: result.fileResults,
+      hintsUsed: store.hintsRevealed,
+      timeSeconds: store.timer.elapsedSeconds,
+    });
+
     // Clear draft on successful submission
     if (result.passed) {
       store.clearDraft();
     }
-  }, [challengeData.assertions]);
+  }, [challengeData.assertions, challengeId, createAttempt]);
 
   const handleRetry = useCallback(() => {
     storeRef.current.getState().retry();

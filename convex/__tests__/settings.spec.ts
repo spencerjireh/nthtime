@@ -3,7 +3,6 @@ import { convexTest } from 'convex-test';
 import { api } from '../_generated/api';
 import schema from '../schema';
 import type { Id } from '../_generated/dataModel';
-import { setMockUserId } from './helpers';
 
 // Mock @convex-dev/auth to use our controlled userId
 let _mockUserId: Id<'users'> | null = null;

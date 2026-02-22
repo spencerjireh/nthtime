@@ -1,5 +1,5 @@
 import type { MockPack, MockChallenge } from '@/lib/mock-packs';
-import type { Challenge } from '@nthtime/shared';
+import type { Challenge, VerificationResult } from '@nthtime/shared';
 import type { CompletionStatus } from '@/components/catalog/catalog-filters';
 
 export interface PackListFilters {
@@ -8,6 +8,14 @@ export interface PackListFilters {
   tags?: string[];
   status?: CompletionStatus;
   searchQuery?: string;
+}
+
+export interface CreateAttemptArgs {
+  challengeId: string;
+  passed: boolean;
+  assertionResults: VerificationResult['fileResults'];
+  hintsUsed: number;
+  timeSeconds: number;
 }
 
 export interface DataAccessHooks {
@@ -24,4 +32,5 @@ export interface DataAccessHooks {
     challenge: Challenge | null;
     isLoading: boolean;
   };
+  useCreateAttempt: () => (args: CreateAttemptArgs) => Promise<void>;
 }

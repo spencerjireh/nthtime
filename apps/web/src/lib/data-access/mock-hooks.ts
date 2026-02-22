@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { MOCK_PACKS, MOCK_CHALLENGES } from '@/lib/mock-packs';
 import { MOCK_CHALLENGE, getMockChallenge } from '@/lib/mock-challenge';
 import type { DataAccessHooks, PackListFilters } from './types';
@@ -69,8 +69,15 @@ function useChallengeMock(id: string) {
   return { challenge, isLoading: false };
 }
 
+function useCreateAttemptMock() {
+  return useCallback(async () => {
+    // No-op in mock mode -- no backend to persist to
+  }, []);
+}
+
 export const mockHooks: DataAccessHooks = {
   usePackList: usePackListMock,
   useChallenges: useChallengesMock,
   useChallenge: useChallengeMock,
+  useCreateAttempt: useCreateAttemptMock,
 };

@@ -161,12 +161,12 @@ A test page at `/dev` renders all base components in both dark and light themes.
     - [x] Python
     - [x] HTML
     - [x] CSS
-    - [ ] JSON (deferred)
-- [ ] Implement Prettier WASM integration (deferred to Phase 7):
-  - [ ] Set up Prettier standalone WASM build
-  - [ ] Implement per-language formatter resolution (file extension mapping)
-  - [ ] Implement formatter config application (tabs/spaces, quotes, semicolons, print width)
-  - [ ] Handle unsupported file types (pass-through)
+    - [x] JSON
+- [x] Implement Prettier integration (prettier/standalone):
+  - [x] Set up Prettier standalone build
+  - [x] Implement per-language formatter resolution (file extension mapping)
+  - [x] Implement formatter config application (tabs/spaces, quotes, semicolons, print width)
+  - [x] Handle unsupported file types (pass-through)
 - [x] Implement JSON DSL assertion types:
   - [x] `functionDeclaration` -- name, paramCount, async, exported
   - [x] `variableDeclaration` -- name, kind (const/let/var), exported
@@ -203,13 +203,13 @@ A test page at `/dev` renders all base components in both dark and light themes.
   - [x] Integration tests for full pipeline (format -> parse -> assert -> aggregate)
   - [x] Edge cases: empty files, parse errors, mixed pass/fail, multiple files
   - [x] Tests across all six supported languages
-- [ ] Benchmark verification pipeline (target: < 100ms for typical challenge) (deferred)
+- [x] Benchmark verification pipeline (target: < 100ms for typical challenge)
 
 ### Validation Gate
 
 A test harness can take a multi-file challenge definition (files + assertions), run the full verification pipeline in Node.js (via WASM), and produce correct pass/fail results. All JSON DSL assertion types have passing tests. S-expression queries work for ordering, negation, and regex matching. Cross-file assertions correctly verify import/export relationships. Pipeline completes in under 100ms for a 5-file challenge.
 
-**Completed:** 2026-02-20 (Prettier WASM, JSON grammar, and benchmark deferred)
+**Completed:** 2026-02-20 (core engine); 2026-02-21 (JSON grammar, Prettier, benchmarks added in backfill)
 
 ---
 
@@ -239,22 +239,22 @@ A test harness can take a multi-file challenge definition (files + assertions), 
   - [x] `attempts.list` -- attempt history for user/challenge
   - [x] `settings.get` -- user settings (with defaults)
   - [x] `settings.update` -- update user settings
-  - [ ] `admin.syncPacks` -- validate and upsert pack data (admin-restricted action) (deferred to Phase 7)
-- [ ] Add rate limiting on mutations (`attempts.create`, `settings.update`) (deferred to Phase 7)
+  - [x] `admin.syncPacks` -- validate and upsert pack data (admin-restricted action)
+- [x] Add rate limiting on mutations (`attempts.create`, `settings.update`)
 - [ ] Implement Convex repository in `libs/data-access/src/convex/` (deferred -- using Convex hooks directly):
   - [ ] `ConvexPackRepository` implementing `PackRepository`
   - [ ] `ConvexAttemptRepository` implementing `AttemptRepository`
   - [ ] `ConvexSettingsRepository` implementing `SettingsRepository`
 - [ ] Create React context provider (`DataAccessProvider`) that wires Convex implementations (deferred -- using Convex hooks directly)
 - [x] Wire provider into `apps/web` root layout
-- [ ] Write Vitest tests for Convex server functions (using Convex test utilities) (deferred)
+- [x] Write Vitest tests for Convex server functions (using Convex test utilities)
 - [ ] Verify auth flow end-to-end: sign in with GitHub, session persists, sign out works (deferred)
 
 ### Validation Gate
 
 A signed-in user can hit every Convex query and mutation through the repository interfaces. Auth flow works end-to-end with GitHub OAuth. Schema validates and Convex dashboard shows all tables. Rate limiting triggers on rapid repeated mutations.
 
-**Completed:** 2026-02-20 (admin.syncPacks, rate limiting, repository classes, DataAccessProvider, server function tests, auth E2E deferred)
+**Completed:** 2026-02-20 (schema, auth, server functions); 2026-02-21 (admin.syncPacks, rate limiting, server function tests added in backfill). Repository classes deferred -- app uses Convex hooks directly via DataAccessProvider. Auth E2E deferred (needs OAuth test credentials).
 
 ---
 
@@ -268,51 +268,51 @@ A signed-in user can hit every Convex query and mutation through the repository 
   - [x] Install and configure `@monaco-editor/react`
   - [x] Configure Monaco workers (webpack/turbopack)
   - [x] Implement dark/light theme integration with design system
-- [ ] Implement file tree sidebar (deferred to later phases):
-  - [ ] Tree view component with expand/collapse
-  - [ ] File/folder icons by type
-  - [ ] Inline create file button
-  - [ ] Inline create folder button
-  - [ ] Rename (inline edit)
-  - [ ] Delete (with confirmation)
-  - [ ] Active file highlight
+- [x] Implement file tree sidebar:
+  - [x] Tree view component with expand/collapse
+  - [ ] File/folder icons by type (deferred)
+  - [x] Inline create file button
+  - [x] Inline create folder button
+  - [x] Rename (inline edit)
+  - [x] Delete (with confirmation)
+  - [x] Active file highlight
 - [x] Implement tabbed editor:
   - [x] Tab bar with file names
-  - [ ] Close tab (with unsaved indicator) (deferred to later phases)
-  - [ ] Tab reordering (drag) (deferred to later phases)
-  - [ ] Tab overflow handling (deferred to later phases)
-- [ ] Implement split pane support (deferred to later phases):
-  - [ ] Horizontal split (side-by-side files)
-  - [ ] Resize handle
-  - [ ] Close pane
-- [ ] Implement keybinding modes (deferred to later phases):
-  - [ ] Normal mode (default Monaco)
-  - [ ] Vim mode (`monaco-vim`)
-  - [ ] Emacs mode (`monaco-emacs`)
-  - [ ] Mode switcher in editor toolbar or settings
-- [ ] Implement autocomplete toggle (off by default, Monaco IntelliSense) (deferred to later phases)
+  - [x] Close tab (with unsaved indicator)
+  - [ ] Tab reordering (drag) (deferred)
+  - [ ] Tab overflow handling (deferred)
+- [x] Implement split pane support:
+  - [x] Horizontal split (side-by-side files)
+  - [x] Resize handle
+  - [x] Close pane
+- [x] Implement keybinding modes:
+  - [x] Normal mode (default Monaco)
+  - [x] Vim mode (`monaco-vim`)
+  - [x] Emacs mode (`monaco-emacs`)
+  - [x] Mode switcher in editor toolbar or settings
+- [x] Implement autocomplete toggle (off by default, Monaco IntelliSense)
 - [x] Implement Zustand editor store (`libs/editor/`):
   - [x] Open files state
   - [x] Active file / active pane
   - [x] File contents (in-memory workspace)
-  - [ ] Dirty file tracking (deferred to later phases)
-  - [ ] File tree structure (deferred to later phases)
-- [ ] Integrate Tree-sitter for real-time parse feedback (deferred to later phases):
-  - [ ] Parse on keystroke (debounced)
-  - [ ] Display parse errors as Monaco diagnostics (red squiggles, problems panel)
-  - [ ] Clear errors when parse succeeds
+  - [x] Dirty file tracking
+  - [x] File tree structure
+- [x] Integrate Tree-sitter for real-time parse feedback:
+  - [x] Parse on keystroke (debounced)
+  - [x] Display parse errors as Monaco diagnostics (red squiggles)
+  - [x] Clear errors when parse succeeds
 - [x] Implement keyboard shortcuts:
   - [x] Cmd/Ctrl+Enter -- submit (wired in Phase 7)
   - [x] Cmd/Ctrl+S -- save/format
-  - [ ] Shortcuts for tab navigation (deferred to later phases)
+  - [ ] Shortcuts for tab navigation (deferred)
 - [x] Implement resizable horizontal split: prompt panel (left) + editor workspace (right)
-- [ ] Write component tests for file tree interactions and tab management (deferred to later phases)
+- [ ] Write component tests for file tree interactions and tab management (deferred)
 
 ### Validation Gate
 
 The editor renders with a file tree, supports creating/renaming/deleting files and folders, opens files in tabs, supports split panes, switches between keybinding modes, and shows real-time parse errors from Tree-sitter. Zustand store correctly tracks all editor state.
 
-**Completed:** 2026-02-20 (file tree sidebar, split panes, keybinding modes, autocomplete toggle, Tree-sitter real-time feedback, component tests deferred to later phases)
+**Completed:** 2026-02-20 (core editor, tabs, store); 2026-02-21 (file tree CRUD, split panes, vim/emacs, autocomplete, dirty tracking, parse diagnostics added in backfill). Deferred: file/folder icons by type, tab reordering/overflow, tab navigation shortcuts, component tests.
 
 ---
 
@@ -340,8 +340,8 @@ The editor renders with a file tree, supports creating/renaming/deleting files a
 - [x] Implement filters:
   - [x] Language/framework filter
   - [x] Difficulty filter (beginner/intermediate/advanced)
-  - [ ] Tag filter (deferred)
-  - [ ] Completion status filter (not attempted / failed / passed) (deferred)
+  - [x] Tag filter
+  - [x] Completion status filter (not attempted / failed / passed)
   - [x] Filter state in URL query params (shareable/bookmarkable)
 - [x] Implement empty states:
   - [x] No packs found
@@ -354,7 +354,7 @@ The editor renders with a file tree, supports creating/renaming/deleting files a
 
 Browsing the catalog shows pack cards with real data from Convex. Clicking a pack shows its challenge list with status badges. Search returns relevant results. Filters narrow the catalog correctly. Empty states display when appropriate.
 
-**Completed:** 2026-02-20 (tag filter and completion status filter deferred)
+**Completed:** 2026-02-20 (core catalog); 2026-02-22 (tag filter, completion status filter added)
 
 ---
 
@@ -378,7 +378,7 @@ Browsing the catalog shows pack cards with real data from Convex. Clicking a pac
   - [x] Feedback level selector (L0-L4 with descriptions)
   - [x] Editor keybindings selector (Normal/Vim/Emacs)
   - [ ] Theme selector (Dark/Light/System) (handled via existing ThemeToggle)
-  - [ ] Autocomplete toggle (deferred)
+  - [x] Autocomplete toggle
   - [x] Formatter configuration:
     - [x] Tab size / use tabs settings
     - [x] Trigger mode (format on save / on paste / manual)
@@ -416,19 +416,19 @@ Drafts persist across page reloads and restore correctly for multi-file challeng
   - [x] Load full challenge data via `PackRepository`
   - [x] Initialize editor workspace:
     - [x] Scaffolded mode: pre-populate file tree from challenge definition
-    - [ ] Blank canvas mode: empty file tree, user creates files (deferred)
+    - [x] Blank canvas mode: empty file tree, user creates files
   - [x] Display prompt in left panel
   - [x] Restore draft if exists
 - [x] Implement submit flow:
   - [x] Cmd/Ctrl+Enter triggers submission
   - [x] Collect all files from editor store
   - [x] Run verification pipeline (Phase 2):
-    - [ ] Format (if configured) (deferred)
+    - [x] Format (if configured)
     - [x] Parse (Tree-sitter)
     - [x] Per-file assertions
     - [x] Cross-file assertions
     - [x] Aggregate results
-  - [ ] Persist attempt via `AttemptRepository` (async, non-blocking) (deferred -- wired to Convex but no-op without backend)
+  - [x] Persist attempt via data-access hooks (async, fire-and-forget; no-op in mock mode)
   - [x] Clear draft
   - [x] Transition to results view
 - [x] Implement results view (replaces editor workspace on submit):
@@ -454,7 +454,7 @@ Drafts persist across page reloads and restore correctly for multi-file challeng
   - [x] Per-file diff (file tree navigation in results view)
 - [x] Implement inline annotations (L3):
   - [x] Failure locations shown in assertion detail sidebar (inline Monaco glyph decorations deferred)
-  - [ ] Render as Monaco decorations (read-only mode) (deferred)
+  - [x] Render as Monaco decorations (read-only mode, glyph margin + hover messages)
   - [x] Annotation messages describe what is missing
 - [x] Implement navigation:
   - [x] "Next challenge in pack" button (advances in recommended order)
@@ -465,13 +465,13 @@ Drafts persist across page reloads and restore correctly for multi-file challeng
   - [x] View past attempts for a challenge
   - [x] Per-attempt: pass/fail, time, hints used, timestamp
 - [x] Write integration tests for submit -> verify -> results flow
-- [ ] Write tests for each feedback level rendering correctly (deferred)
+- [x] Write tests for each feedback level rendering correctly
 
 ### Validation Gate
 
 A user can: browse the catalog, select a challenge, write code (single or multi-file), submit, see results at every feedback level (L0-L4), use hints, view diffs, navigate to the next challenge, and see their attempt history. Drafts restore on return. Timer records correctly. The full drill loop works end-to-end.
 
-**Completed:** 2026-02-20 (inline Monaco glyph decorations deferred -- failure locations shown in assertion detail sidebar instead)
+**Completed:** 2026-02-20 (core challenge flow); 2026-02-21 (blank canvas, format on submit, Monaco glyph decorations, feedback level tests added in backfill); 2026-02-22 (attempt persistence wired via data-access hooks)
 
 ---
 

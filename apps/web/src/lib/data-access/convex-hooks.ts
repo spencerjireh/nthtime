@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useQuery } from 'convex/react';
-import type { DataAccessHooks, PackListFilters } from './types';
+import { useCallback } from 'react';
+import { useMutation, useQuery } from 'convex/react';
+import type { CreateAttemptArgs, DataAccessHooks, PackListFilters } from './types';
 import type { MockPack, MockChallenge } from '@/lib/mock-packs';
 import { MOCK_CHALLENGE, getMockChallenge } from '@/lib/mock-challenge';
 
@@ -10,7 +11,7 @@ let _api: any;
 function getApi() {
   if (!_api) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    _api = require('../../../../convex/_generated/api').api;
+    _api = require('../../../../../convex/_generated/api').api;
   }
   return _api;
 }
@@ -96,8 +97,31 @@ function useChallengeConvex(id: string) {
   return { challenge, isLoading: false };
 }
 
+function useCreateAttemptConvex() {
+  const createAttempt = useMutation(getApi().attempts.create);
+  return useCallback(
+    async (args: CreateAttemptArgs) => {
+      try {
+        await createAttempt({
+          challengeId: args.challengeId as any,
+          passed: args.passed,
+          assertionResults: args.assertionResults,
+          hintsUsed: args.hintsUsed,
+          timeSeconds: args.timeSeconds,
+        });
+      } catch {
+        // Fire-and-forget: don't break the UI if persistence fails
+        // (e.g. user not authenticated, rate limited, invalid challenge ID)
+        console.warn('Failed to persist attempt');
+      }
+    },
+    [createAttempt],
+  );
+}
+
 export const convexHooks: DataAccessHooks = {
   usePackList: usePackListConvex,
   useChallenges: useChallengesConvex,
   useChallenge: useChallengeConvex,
+  useCreateAttempt: useCreateAttemptConvex,
 };
