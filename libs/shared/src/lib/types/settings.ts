@@ -1,10 +1,19 @@
-export enum FeedbackLevel {
-  None = 0,
-  PassFail = 1,
-  Hints = 2,
-  AssertionDetails = 3,
-  FullDiagnostics = 4,
+export interface FeedbackConfig {
+  readonly showPassFail: boolean;
+  readonly showHints: boolean;
+  readonly showAssertionDetails: boolean;
+  readonly showDiff: boolean;
+  readonly showSolution: boolean;
 }
+
+// Keep in sync with convex/settings.ts DEFAULT_FEEDBACK
+export const DEFAULT_FEEDBACK: FeedbackConfig = {
+  showPassFail: true,
+  showHints: true,
+  showAssertionDetails: true,
+  showDiff: false,
+  showSolution: false,
+};
 
 export enum Difficulty {
   Beginner = 'beginner',
@@ -29,7 +38,7 @@ export interface FormatterConfig {
 }
 
 export interface UserSettings {
-  readonly feedbackLevel: FeedbackLevel;
+  readonly feedback: FeedbackConfig;
   readonly difficulty: Difficulty;
   readonly keybindings: EditorKeybindings;
   readonly formatter: FormatterConfig;

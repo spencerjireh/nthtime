@@ -140,4 +140,44 @@ describe('FileTree', () => {
     const dots = container.querySelectorAll('.bg-teal-400');
     expect(dots.length).toBeGreaterThanOrEqual(1);
   });
+
+  it('fileStatus: shows pass dot (bg-pass) for passing files', () => {
+    const fileStatus = vi.fn((path: string) => (path === 'app.js' ? 'pass' : null) as 'pass' | 'fail' | null);
+    const { container } = render(
+      <FileTree {...defaultProps} fileStatus={fileStatus} />,
+    );
+    const passDots = container.querySelectorAll('.bg-pass');
+    expect(passDots).toHaveLength(1);
+  });
+
+  it('fileStatus: shows fail dot (bg-fail) for failing files', () => {
+    const fileStatus = vi.fn((path: string) => (path === 'server.js' ? 'fail' : null) as 'pass' | 'fail' | null);
+    const { container } = render(
+      <FileTree {...defaultProps} fileStatus={fileStatus} />,
+    );
+    const failDots = container.querySelectorAll('.bg-fail');
+    expect(failDots).toHaveLength(1);
+  });
+
+  it('fileStatus: overrides isDirty when status is non-null', () => {
+    const isDirty = vi.fn().mockReturnValue(true);
+    const fileStatus = vi.fn(() => 'pass' as const);
+    const { container } = render(
+      <FileTree {...defaultProps} isDirty={isDirty} fileStatus={fileStatus} />,
+    );
+    // Pass dots shown, no teal dirty dots
+    expect(container.querySelectorAll('.bg-pass').length).toBeGreaterThanOrEqual(1);
+    expect(container.querySelectorAll('.bg-teal-400')).toHaveLength(0);
+  });
+
+  it('fileStatus: falls back to isDirty when status is null', () => {
+    const isDirty = vi.fn((path: string) => path === 'app.js');
+    const fileStatus = vi.fn(() => null);
+    const { container } = render(
+      <FileTree {...defaultProps} isDirty={isDirty} fileStatus={fileStatus} />,
+    );
+    // fileStatus returns null, so isDirty teal dot shows for app.js
+    const tealDots = container.querySelectorAll('.bg-teal-400');
+    expect(tealDots).toHaveLength(1);
+  });
 });

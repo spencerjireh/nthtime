@@ -1,7 +1,8 @@
 import { createStore } from 'zustand/vanilla';
+import { DEFAULT_FEEDBACK } from '@nthtime/shared';
 import type {
   UserSettings,
-  FeedbackLevel,
+  FeedbackConfig,
   EditorKeybindings,
   FormatterConfig,
 } from '@nthtime/shared';
@@ -14,7 +15,7 @@ export interface SettingsState {
 }
 
 export interface SettingsActions {
-  setFeedbackLevel(level: FeedbackLevel): void;
+  setFeedback(config: Partial<FeedbackConfig>): void;
   setKeybindings(kb: EditorKeybindings): void;
   setDarkMode(dark: boolean): void;
   setFormatter(config: Partial<FormatterConfig>): void;
@@ -26,7 +27,7 @@ export interface SettingsActions {
 export type SettingsStore = SettingsState & SettingsActions;
 
 const DEFAULT_SETTINGS: UserSettings = {
-  feedbackLevel: 3 as FeedbackLevel,
+  feedback: { ...DEFAULT_FEEDBACK },
   difficulty: 'beginner' as UserSettings['difficulty'],
   keybindings: 'default',
   formatter: {
@@ -50,11 +51,27 @@ function persistToLocalStorage(settings: UserSettings): void {
   }
 }
 
+function migrateFromFeedbackLevel(parsed: Record<string, unknown>): Record<string, unknown> {
+  if (typeof parsed.feedbackLevel === 'number' && !parsed.feedback) {
+    const level = parsed.feedbackLevel as number;
+    parsed.feedback = {
+      showPassFail: level >= 1,
+      showHints: level >= 2,
+      showAssertionDetails: level >= 3,
+      showDiff: level >= 4,
+      showSolution: false,
+    };
+    delete parsed.feedbackLevel;
+  }
+  return parsed;
+}
+
 function loadFromLocalStorage(): UserSettings | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as UserSettings;
+    const parsed = migrateFromFeedbackLevel(JSON.parse(raw));
+    return parsed as unknown as UserSettings;
   } catch {
     return null;
   }
@@ -65,9 +82,12 @@ export function createSettingsStore() {
     settings: DEFAULT_SETTINGS,
     loaded: false,
 
-    setFeedbackLevel(level) {
+    setFeedback(config) {
       set((state) => {
-        const settings = { ...state.settings, feedbackLevel: level };
+        const settings = {
+          ...state.settings,
+          feedback: { ...state.settings.feedback, ...config },
+        };
         persistToLocalStorage(settings);
         return { settings };
       });

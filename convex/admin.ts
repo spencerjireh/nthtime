@@ -15,6 +15,7 @@ const packChallengeValidator = v.object({
     perFile: v.any(),
     crossFile: v.any(),
   }),
+  referenceSolution: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
 });
 
 const packValidator = v.object({
@@ -101,6 +102,7 @@ async function upsertPack(
       files: { path: string; content: string }[];
       hints: string[];
       assertions: { perFile: unknown; crossFile: unknown };
+      referenceSolution?: { path: string; content: string }[];
     }[];
   },
 ) {
@@ -158,6 +160,7 @@ async function upsertPack(
       files: challenge.files,
       hints: challenge.hints,
       assertions: challenge.assertions,
+      referenceSolution: challenge.referenceSolution,
       order: i + 1,
     });
   }

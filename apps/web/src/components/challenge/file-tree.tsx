@@ -64,6 +64,7 @@ interface FileTreeProps {
   onCreateFile?: (path: string) => void;
   onRenameFile?: (oldPath: string, newPath: string) => void;
   onDeleteFile?: (path: string) => void;
+  fileStatus?: (path: string) => 'pass' | 'fail' | null;
 }
 
 export function FileTree({
@@ -74,6 +75,7 @@ export function FileTree({
   onCreateFile,
   onRenameFile,
   onDeleteFile,
+  fileStatus,
 }: FileTreeProps) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [creating, setCreating] = useState<string | null>(null); // parent folder path or '' for root
@@ -171,6 +173,7 @@ export function FileTree({
             onStartCreate={startCreateInFolder}
             onStartRename={setRenaming}
             showCrud={!!onCreateFile}
+            fileStatus={fileStatus}
           />
         ))}
         {creating === '' && (
@@ -202,6 +205,7 @@ function TreeNodeRow({
   onStartCreate,
   onStartRename,
   showCrud,
+  fileStatus,
 }: {
   node: TreeNode;
   depth: number;
@@ -218,6 +222,7 @@ function TreeNodeRow({
   onStartCreate: (folderPath: string) => void;
   onStartRename: (path: string) => void;
   showCrud: boolean;
+  fileStatus?: (path: string) => 'pass' | 'fail' | null;
 }) {
   const paddingLeft = depth * 12 + 8;
 
@@ -266,6 +271,7 @@ function TreeNodeRow({
                 onStartCreate={onStartCreate}
                 onStartRename={onStartRename}
                 showCrud={showCrud}
+                fileStatus={fileStatus}
               />
             ))}
             {creating === node.path && (
@@ -312,9 +318,7 @@ function TreeNodeRow({
           {getFileIcon(node.path)}
         </span>
         <span className="truncate">{node.name}</span>
-        {isDirty(node.path) && (
-          <span className="ml-auto inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
-        )}
+        <FileIndicatorDot path={node.path} isDirty={isDirty} fileStatus={fileStatus} />
       </button>
       {showCrud && (
         <span className="mr-1 flex shrink-0 gap-0.5 opacity-0 group-hover:opacity-100">
@@ -335,6 +339,26 @@ function TreeNodeRow({
         </span>
       )}
     </div>
+  );
+}
+
+function FileIndicatorDot({
+  path,
+  isDirty,
+  fileStatus,
+}: {
+  path: string;
+  isDirty: (path: string) => boolean;
+  fileStatus?: (path: string) => 'pass' | 'fail' | null;
+}) {
+  const status = fileStatus?.(path) ?? null;
+  const color = status === 'pass' ? 'bg-pass'
+    : status === 'fail' ? 'bg-fail'
+    : isDirty(path) ? 'bg-teal-400'
+    : null;
+  if (!color) return null;
+  return (
+    <span className={cn('ml-auto inline-block h-1.5 w-1.5 shrink-0 rounded-full', color)} />
   );
 }
 

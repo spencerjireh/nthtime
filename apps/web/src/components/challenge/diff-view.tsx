@@ -54,6 +54,8 @@ export function DiffView({
           modified={modifiedContent}
           language={language}
           theme="vs-dark"
+          keepCurrentOriginalModel
+          keepCurrentModifiedModel
           options={{
             fontFamily: 'JetBrains Mono, monospace',
             fontSize: 14,

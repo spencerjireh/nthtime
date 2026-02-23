@@ -1,13 +1,24 @@
-import { FeedbackLevel, Difficulty } from './settings.js';
-import type { Assertion, AssertionSet, Pack, UserSettings } from './index.js';
+import { DEFAULT_FEEDBACK, Difficulty } from './settings.js';
+import type { Assertion, AssertionSet, FeedbackConfig, Pack, UserSettings } from './index.js';
 
-describe('FeedbackLevel enum', () => {
-  it('has five levels from 0 to 4', () => {
-    expect(FeedbackLevel.None).toBe(0);
-    expect(FeedbackLevel.PassFail).toBe(1);
-    expect(FeedbackLevel.Hints).toBe(2);
-    expect(FeedbackLevel.AssertionDetails).toBe(3);
-    expect(FeedbackLevel.FullDiagnostics).toBe(4);
+describe('FeedbackConfig defaults', () => {
+  it('has correct default values matching L3 behavior', () => {
+    expect(DEFAULT_FEEDBACK).toEqual({
+      showPassFail: true,
+      showHints: true,
+      showAssertionDetails: true,
+      showDiff: false,
+      showSolution: false,
+    });
+  });
+
+  it('satisfies FeedbackConfig shape', () => {
+    const config: FeedbackConfig = DEFAULT_FEEDBACK;
+    expect(typeof config.showPassFail).toBe('boolean');
+    expect(typeof config.showHints).toBe('boolean');
+    expect(typeof config.showAssertionDetails).toBe('boolean');
+    expect(typeof config.showDiff).toBe('boolean');
+    expect(typeof config.showSolution).toBe('boolean');
   });
 });
 
@@ -96,7 +107,7 @@ describe('type compilation', () => {
 
   it('UserSettings has all required fields', () => {
     const settings: UserSettings = {
-      feedbackLevel: FeedbackLevel.Hints,
+      feedback: DEFAULT_FEEDBACK,
       difficulty: Difficulty.Intermediate,
       keybindings: 'vim',
       darkMode: true,
@@ -111,6 +122,7 @@ describe('type compilation', () => {
         overrides: {},
       },
     };
-    expect(settings.feedbackLevel).toBe(FeedbackLevel.Hints);
+    expect(settings.feedback.showPassFail).toBe(true);
+    expect(settings.feedback.showDiff).toBe(false);
   });
 });

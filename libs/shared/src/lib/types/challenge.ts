@@ -13,4 +13,5 @@ export interface Challenge {
   readonly files: readonly FileEntry[];
   readonly hints: readonly string[];
   readonly assertions: AssertionSet;
+  readonly referenceSolution?: readonly FileEntry[];
 }

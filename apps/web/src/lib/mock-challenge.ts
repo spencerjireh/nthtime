@@ -62,6 +62,17 @@ The server setup (listening on a port) is already provided in \`server.js\`.`,
     },
     crossFile: [],
   },
+  referenceSolution: [
+    {
+      path: 'app.js',
+      content:
+        "import express from 'express';\n\nconst app = express();\n\napp.get('/api/hello', (req, res) => {\n  res.json({ message: 'Hello World' });\n});\n\nexport default app;\n",
+    },
+    {
+      path: 'server.js',
+      content: `import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(\`Server running on port \${PORT}\`);\n});\n`,
+    },
+  ],
 };
 
 const MOCK_REACT_CHALLENGE: Challenge = {
@@ -119,6 +130,13 @@ const MOCK_REACT_CHALLENGE: Challenge = {
     },
     crossFile: [],
   },
+  referenceSolution: [
+    {
+      path: 'Counter.tsx',
+      content:
+        "import { useState } from 'react';\n\nexport function Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={() => setCount(count + 1)}>Increment</button>\n    </div>\n  );\n}\n",
+    },
+  ],
 };
 
 const MOCK_FASTAPI_CHALLENGE: Challenge = {
@@ -164,6 +182,13 @@ const MOCK_FASTAPI_CHALLENGE: Challenge = {
     },
     crossFile: [],
   },
+  referenceSolution: [
+    {
+      path: 'main.py',
+      content:
+        'from fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get("/")\ndef read_root():\n    return {"message": "Hello World"}\n',
+    },
+  ],
 };
 
 // Map of mock challenge IDs to full Challenge objects for dev fallback

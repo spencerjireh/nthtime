@@ -2,15 +2,23 @@ import { test, expect } from '@playwright/test';
 import { waitForEditorReady, setEditorContent } from './helpers';
 
 /**
- * Each test sets a feedback level via the settings dialog, then submits
+ * Each test configures feedback flags via the settings dialog, then submits
  * a partial solution (that should fail some assertions) to verify
- * the correct level of detail is shown in the results view.
+ * the correct detail is shown in the results view.
  */
 
-async function setFeedbackLevel(page: import('@playwright/test').Page, optionLabel: RegExp) {
+async function setFeedbackFlags(
+  page: import('@playwright/test').Page,
+  flags: Record<string, boolean>,
+) {
   await page.getByRole('button', { name: 'Settings' }).click();
-  await page.getByRole('dialog').getByRole('combobox').first().click();
-  await page.getByRole('option', { name: optionLabel }).click();
+  for (const [label, shouldBeChecked] of Object.entries(flags)) {
+    const checkbox = page.getByRole('checkbox', { name: new RegExp(label) });
+    const isChecked = await checkbox.isChecked();
+    if (isChecked !== shouldBeChecked) {
+      await checkbox.click();
+    }
+  }
   await page.keyboard.press('Escape');
 }
 
@@ -22,10 +30,16 @@ async function submitPartialSolution(page: import('@playwright/test').Page) {
   await page.getByText('All Passed').or(page.getByText('Some Failed')).waitFor({ timeout: 15000 });
 }
 
-test.describe('Feedback levels', () => {
-  test('L0: only banner visible, no pass/fail badges', async ({ page }) => {
+test.describe('Feedback flags', () => {
+  test('all feedback off: only banner visible, no pass/fail badges', async ({ page }) => {
     await page.goto('/');
-    await setFeedbackLevel(page, /L0/);
+    await setFeedbackFlags(page, {
+      'Show pass/fail': false,
+      'Show hints': false,
+      'Show assertion details': false,
+      'Show diff': false,
+      'Show reference solution': false,
+    });
 
     await page.goto('/challenge/ch_express_1');
     await submitPartialSolution(page);
@@ -33,31 +47,36 @@ test.describe('Feedback levels', () => {
     // Banner always shown
     await expect(page.getByText('All Passed').or(page.getByText('Some Failed'))).toBeVisible();
 
-    // At L0, no individual assertion pass/fail badges
+    // No individual assertion pass/fail badges
     await expect(page.getByText('[pass]')).not.toBeVisible();
     await expect(page.getByText('[fail]')).not.toBeVisible();
   });
 
-  test('L1: pass/fail badges visible', async ({ page }) => {
+  test('showPassFail on: pass/fail badges visible', async ({ page }) => {
     await page.goto('/');
-    await setFeedbackLevel(page, /L1/);
+    await setFeedbackFlags(page, {
+      'Show pass/fail': true,
+      'Show hints': false,
+      'Show assertion details': false,
+      'Show diff': false,
+    });
 
     await page.goto('/challenge/ch_express_1');
     await submitPartialSolution(page);
 
-    // At L1, pass/fail badges should be visible
+    // At showPassFail, pass/fail badges should be visible
     const badges = page.getByText('[pass]').or(page.getByText('[fail]'));
     await expect(badges.first()).toBeVisible();
   });
 
-  test('L4: Diff button visible', async ({ page }) => {
+  test('showDiff on: Diff button visible', async ({ page }) => {
     await page.goto('/');
-    await setFeedbackLevel(page, /L4/);
+    await setFeedbackFlags(page, { 'Show diff': true });
 
     await page.goto('/challenge/ch_express_1');
     await submitPartialSolution(page);
 
-    // At L4, the Diff button should be visible
+    // Diff button should be visible
     await expect(page.getByText('Diff')).toBeVisible();
   });
 });

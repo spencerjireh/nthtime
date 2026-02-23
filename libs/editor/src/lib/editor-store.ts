@@ -23,6 +23,7 @@ const initialState: EditorState = {
   viewMode: 'editing',
   submittedFiles: null,
   scaffoldFiles: null,
+  referenceSolutionFiles: null,
 };
 
 export function createEditorStore() {
@@ -44,11 +45,20 @@ export function createEditorStore() {
         }
       }
 
+      let referenceSolutionFiles: Record<string, EditorFile> | null = null;
+      if (challenge.referenceSolution?.length) {
+        referenceSolutionFiles = {};
+        for (const file of challenge.referenceSolution) {
+          referenceSolutionFiles[file.path] = { path: file.path, content: file.content };
+        }
+      }
+
       const baseState: EditorState = {
         ...initialState,
         challengeId: challengeId ?? null,
         files,
         scaffoldFiles: isScaffolded ? scaffoldFiles : null,
+        referenceSolutionFiles,
         activeFilePath: firstPath,
         tabOrder: Object.keys(files),
         totalHints: challenge.hints.length,

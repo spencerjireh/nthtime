@@ -37,11 +37,12 @@ export type {
 } from './attempt.js';
 
 export {
-  FeedbackLevel,
+  DEFAULT_FEEDBACK,
   Difficulty,
 } from './settings.js';
 
 export type {
+  FeedbackConfig,
   EditorKeybindings,
   FormatterTrigger,
   LanguageFormatterSettings,

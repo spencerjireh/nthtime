@@ -27,6 +27,7 @@ export function buildEditorStore(
       'server.js': { path: 'server.js', content: '' },
     },
     submittedFiles: null,
+    referenceSolutionFiles: null,
     viewMode: 'editing',
     verificationResult: null,
     timer: { startedAt: null, elapsedSeconds: 0 },

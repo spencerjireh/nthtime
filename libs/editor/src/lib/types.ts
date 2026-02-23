@@ -41,6 +41,7 @@ export interface EditorState {
   viewMode: ViewMode;
   submittedFiles: Record<string, EditorFile> | null;
   scaffoldFiles: Record<string, EditorFile> | null;
+  referenceSolutionFiles: Record<string, EditorFile> | null;
 }
 
 export interface EditorActions {
@@ -54,6 +55,7 @@ export interface EditorActions {
       tags: readonly string[];
       timeEstimateSeconds: number;
       scaffolded?: boolean;
+      referenceSolution?: readonly { path: string; content: string }[];
     },
     challengeId?: string,
   ): void;

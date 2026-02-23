@@ -106,6 +106,7 @@ function toSeedPayload(manifest: PackManifest, challenges: ChallengeFile[]) {
       files: c.scaffold ?? c.files,
       hints: c.hints,
       assertions: c.assertions,
+      referenceSolution: c.scaffold ? c.files : undefined,
     })),
   };
 }

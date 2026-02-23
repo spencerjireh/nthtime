@@ -18,36 +18,19 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getSettingsStore } from '@/lib/settings-store';
-import { FeedbackLevel } from '@nthtime/shared';
-import type { EditorKeybindings, FormatterTrigger } from '@nthtime/shared';
+import type { FeedbackConfig, EditorKeybindings, FormatterTrigger } from '@nthtime/shared';
 
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const FEEDBACK_LEVELS = [
-  { value: FeedbackLevel.None, label: 'L0 -- None', description: 'Just pass/fail' },
-  {
-    value: FeedbackLevel.PassFail,
-    label: 'L1 -- Pass/Fail',
-    description: 'Per-assertion pass/fail',
-  },
-  {
-    value: FeedbackLevel.Hints,
-    label: 'L2 -- Hints',
-    description: '+ Hint access',
-  },
-  {
-    value: FeedbackLevel.AssertionDetails,
-    label: 'L3 -- Details',
-    description: '+ Assertion details (default)',
-  },
-  {
-    value: FeedbackLevel.FullDiagnostics,
-    label: 'L4 -- Full',
-    description: 'Full diagnostics',
-  },
+const FEEDBACK_FLAGS: { key: keyof FeedbackConfig; label: string }[] = [
+  { key: 'showPassFail', label: 'Show pass/fail per assertion' },
+  { key: 'showHints', label: 'Show hints' },
+  { key: 'showAssertionDetails', label: 'Show assertion details and line numbers' },
+  { key: 'showDiff', label: 'Show diff (scaffold vs submitted)' },
+  { key: 'showSolution', label: 'Show reference solution' },
 ];
 
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
@@ -72,39 +55,35 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
-            Configure feedback level, editor behavior, and appearance.
+            Configure feedback, editor behavior, and appearance.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Feedback Level */}
+          {/* Feedback */}
           <section className="space-y-2">
             <h3 className="text-sm font-medium text-foreground">
-              Feedback Level
+              Feedback
             </h3>
-            <Select
-              value={String(settings.feedbackLevel)}
-              onValueChange={(v) =>
-                store.getState().setFeedbackLevel(Number(v) as FeedbackLevel)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {FEEDBACK_LEVELS.map((level) => (
-                  <SelectItem
-                    key={level.value}
-                    value={String(level.value)}
+            <div className="space-y-2">
+              {FEEDBACK_FLAGS.map(({ key, label }) => (
+                <div key={key} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`feedback-${key}`}
+                    checked={settings.feedback[key]}
+                    onCheckedChange={(checked) =>
+                      store.getState().setFeedback({ [key]: checked === true })
+                    }
+                  />
+                  <label
+                    htmlFor={`feedback-${key}`}
+                    className="text-sm text-foreground"
                   >
-                    <span className="font-medium">{level.label}</span>
-                    <span className="ml-2 text-muted-foreground">
-                      {level.description}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                    {label}
+                  </label>
+                </div>
+              ))}
+            </div>
           </section>
 
           {/* Editor Keybindings */}

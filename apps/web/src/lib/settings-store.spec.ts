@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createSettingsStore } from './settings-store';
-import { FeedbackLevel } from '@nthtime/shared';
+import { DEFAULT_FEEDBACK } from '@nthtime/shared';
 
 // Node 25 ships an experimental localStorage that lacks .clear().
 // Stub with a Map-backed implementation for test isolation.
@@ -24,7 +24,7 @@ describe('settings store', () => {
   it('starts with default settings', () => {
     const store = createSettingsStore();
     const state = store.getState();
-    expect(state.settings.feedbackLevel).toBe(FeedbackLevel.AssertionDetails);
+    expect(state.settings.feedback).toEqual(DEFAULT_FEEDBACK);
     expect(state.settings.keybindings).toBe('default');
     expect(state.settings.autocomplete).toBe(true);
     expect(state.loaded).toBe(false);
@@ -37,13 +37,24 @@ describe('settings store', () => {
     expect(store.getState().settings.keybindings).toBe('default');
   });
 
-  it('setFeedbackLevel updates state and persists', () => {
+  it('setFeedback updates individual flags and persists', () => {
     const store = createSettingsStore();
-    store.getState().setFeedbackLevel(FeedbackLevel.Hints);
-    expect(store.getState().settings.feedbackLevel).toBe(FeedbackLevel.Hints);
+    store.getState().setFeedback({ showDiff: true });
+    expect(store.getState().settings.feedback.showDiff).toBe(true);
+    // Other flags unchanged
+    expect(store.getState().settings.feedback.showPassFail).toBe(true);
 
     const stored = JSON.parse(localStorage.getItem('nthtime:settings')!);
-    expect(stored.feedbackLevel).toBe(FeedbackLevel.Hints);
+    expect(stored.feedback.showDiff).toBe(true);
+  });
+
+  it('setFeedback merges multiple flags', () => {
+    const store = createSettingsStore();
+    store.getState().setFeedback({ showPassFail: false, showSolution: true });
+    const { feedback } = store.getState().settings;
+    expect(feedback.showPassFail).toBe(false);
+    expect(feedback.showSolution).toBe(true);
+    expect(feedback.showHints).toBe(true); // untouched
   });
 
   it('setKeybindings updates state and persists', () => {
@@ -77,14 +88,15 @@ describe('settings store', () => {
   it('round-trip: mutate -> hydrate fresh store -> state matches', () => {
     const store1 = createSettingsStore();
     store1.getState().setKeybindings('emacs');
-    store1.getState().setFeedbackLevel(FeedbackLevel.None);
+    store1.getState().setFeedback({ showPassFail: false, showDiff: true });
     store1.getState().setAutocomplete(false);
 
     const store2 = createSettingsStore();
     store2.getState().hydrate();
 
     expect(store2.getState().settings.keybindings).toBe('emacs');
-    expect(store2.getState().settings.feedbackLevel).toBe(FeedbackLevel.None);
+    expect(store2.getState().settings.feedback.showPassFail).toBe(false);
+    expect(store2.getState().settings.feedback.showDiff).toBe(true);
     expect(store2.getState().settings.autocomplete).toBe(false);
     expect(store2.getState().loaded).toBe(true);
   });
@@ -92,10 +104,13 @@ describe('settings store', () => {
   it('syncFromServer overrides local state', () => {
     const store = createSettingsStore();
     store.getState().setKeybindings('vim');
-    store.getState().syncFromServer({ keybindings: 'emacs', feedbackLevel: FeedbackLevel.Hints });
+    store.getState().syncFromServer({
+      keybindings: 'emacs',
+      feedback: { ...DEFAULT_FEEDBACK, showDiff: true },
+    });
 
     expect(store.getState().settings.keybindings).toBe('emacs');
-    expect(store.getState().settings.feedbackLevel).toBe(FeedbackLevel.Hints);
+    expect(store.getState().settings.feedback.showDiff).toBe(true);
     expect(store.getState().loaded).toBe(true);
   });
 
@@ -106,5 +121,50 @@ describe('settings store', () => {
 
     expect(store.getState().settings.autocomplete).toBe(false);
     expect(store.getState().settings.keybindings).toBe('vim');
+  });
+
+  it('migrates old feedbackLevel from localStorage', () => {
+    // Write old-format data (pre-migration)
+    localStorage.setItem('nthtime:settings', JSON.stringify({
+      feedbackLevel: 2,
+      keybindings: 'vim',
+      darkMode: true,
+      autocomplete: true,
+      formatter: {
+        defaults: { enabled: true, trigger: 'manual', tabSize: 2, useTabs: false },
+        overrides: {},
+      },
+    }));
+
+    const store = createSettingsStore();
+    store.getState().hydrate();
+
+    const { feedback } = store.getState().settings;
+    expect(feedback.showPassFail).toBe(true);   // level >= 1
+    expect(feedback.showHints).toBe(true);       // level >= 2
+    expect(feedback.showAssertionDetails).toBe(false); // level < 3
+    expect(feedback.showDiff).toBe(false);       // level < 4
+    expect(feedback.showSolution).toBe(false);   // always false for migration
+    expect(store.getState().settings.keybindings).toBe('vim');
+  });
+
+  it('does not migrate when feedback already exists', () => {
+    localStorage.setItem('nthtime:settings', JSON.stringify({
+      feedbackLevel: 4,
+      feedback: { ...DEFAULT_FEEDBACK, showDiff: true },
+      keybindings: 'default',
+      darkMode: true,
+      autocomplete: true,
+      formatter: {
+        defaults: { enabled: true, trigger: 'manual', tabSize: 2, useTabs: false },
+        overrides: {},
+      },
+    }));
+
+    const store = createSettingsStore();
+    store.getState().hydrate();
+
+    // Should use the existing feedback, not regenerate from feedbackLevel
+    expect(store.getState().settings.feedback.showDiff).toBe(true);
   });
 });

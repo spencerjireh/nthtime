@@ -30,6 +30,7 @@ export default defineSchema({
       perFile: v.any(),
       crossFile: v.any(),
     }),
+    referenceSolution: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
     order: v.number(),
   })
     .index('by_pack', ['packId', 'order'])
@@ -48,7 +49,11 @@ export default defineSchema({
 
   userSettings: defineTable({
     userId: v.id('users'),
-    feedbackLevel: v.number(),
+    showPassFail: v.optional(v.boolean()),
+    showHints: v.optional(v.boolean()),
+    showAssertionDetails: v.optional(v.boolean()),
+    showDiff: v.optional(v.boolean()),
+    showSolution: v.optional(v.boolean()),
     keybindings: v.string(),
     darkMode: v.boolean(),
     formatter: v.any(),

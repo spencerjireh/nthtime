@@ -27,7 +27,10 @@ describe('settings functions', () => {
   it('get returns defaults for unauthenticated user', async () => {
     const t = convexTest(schema, modules);
     const result = await t.query(api.settings.get, {});
-    expect(result.feedbackLevel).toBe(3);
+    expect(result.feedback.showPassFail).toBe(true);
+    expect(result.feedback.showAssertionDetails).toBe(true);
+    expect(result.feedback.showDiff).toBe(false);
+    expect(result.feedback.showSolution).toBe(false);
     expect(result.keybindings).toBe('default');
     expect(result.darkMode).toBe(true);
   });
@@ -36,7 +39,7 @@ describe('settings functions', () => {
     const t = convexTest(schema, modules);
     _mockUserId = await createTestUser(t);
     const result = await t.query(api.settings.get, {});
-    expect(result.feedbackLevel).toBe(3);
+    expect(result.feedback.showPassFail).toBe(true);
     expect(result.keybindings).toBe('default');
   });
 
@@ -48,7 +51,7 @@ describe('settings functions', () => {
       keybindings: 'vim',
     });
     expect(result.keybindings).toBe('vim');
-    expect(result.feedbackLevel).toBe(3);
+    expect(result.feedback.showPassFail).toBe(true);
   });
 
   it('update patches existing settings', async () => {
@@ -66,6 +69,23 @@ describe('settings functions', () => {
     const settings = await t.query(api.settings.get, {});
     expect(settings.keybindings).toBe('vim');
     expect(settings.darkMode).toBe(false);
+    vi.useRealTimers();
+  });
+
+  it('update saves feedback flags', async () => {
+    vi.useFakeTimers();
+    const t = convexTest(schema, modules);
+    _mockUserId = await createTestUser(t);
+
+    await t.mutation(api.settings.update, {
+      feedback: { showDiff: true, showSolution: true },
+    });
+
+    const settings = await t.query(api.settings.get, {});
+    expect(settings.feedback.showDiff).toBe(true);
+    expect(settings.feedback.showSolution).toBe(true);
+    // Other feedback flags at defaults
+    expect(settings.feedback.showPassFail).toBe(true);
     vi.useRealTimers();
   });
 

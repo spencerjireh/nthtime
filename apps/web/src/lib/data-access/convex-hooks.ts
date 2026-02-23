@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from 'react';
-import { useMutation, useQuery } from 'convex/react';
+import { useConvexAuth, useMutation, useQuery } from 'convex/react';
 import type { CreateAttemptArgs, DataAccessHooks, PackListFilters } from './types';
 import type { MockPack, MockChallenge } from '@/lib/mock-packs';
 import { MOCK_CHALLENGE, getMockChallenge } from '@/lib/mock-challenge';
@@ -98,9 +98,12 @@ function useChallengeConvex(id: string) {
 }
 
 function useCreateAttemptConvex() {
+  const { isAuthenticated } = useConvexAuth();
   const createAttempt = useMutation(getApi().attempts.create);
   return useCallback(
     async (args: CreateAttemptArgs) => {
+      // Skip when not authenticated or when using mock challenge IDs
+      if (!isAuthenticated || getMockChallenge(args.challengeId)) return;
       try {
         await createAttempt({
           challengeId: args.challengeId as any,
@@ -111,11 +114,10 @@ function useCreateAttemptConvex() {
         });
       } catch {
         // Fire-and-forget: don't break the UI if persistence fails
-        // (e.g. user not authenticated, rate limited, invalid challenge ID)
         console.warn('Failed to persist attempt');
       }
     },
-    [createAttempt],
+    [isAuthenticated, createAttempt],
   );
 }
 
