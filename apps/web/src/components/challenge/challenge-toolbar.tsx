@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect } from 'react';
 import { useStore } from 'zustand';
 import { useEditorStore } from './editor-store-context';
@@ -7,12 +8,15 @@ import { formatTime } from '@nthtime/editor';
 import { Button } from '@/components/ui/button';
 import { getSettingsStore } from '@/lib/settings-store';
 import { formatCode } from '@/lib/formatter';
+import { challengeHref } from '@/lib/routes';
 
 interface ChallengeToolbarProps {
   onRun: () => void;
+  challengeId: string;
+  packSlug?: string;
 }
 
-export function ChallengeToolbar({ onRun }: ChallengeToolbarProps) {
+export function ChallengeToolbar({ onRun, challengeId, packSlug }: ChallengeToolbarProps) {
   const runState = useEditorStore((s) => s.runState);
   const timer = useEditorStore((s) => s.timer);
   const tickTimer = useEditorStore((s) => s.tickTimer);
@@ -66,6 +70,12 @@ export function ChallengeToolbar({ onRun }: ChallengeToolbarProps) {
         {timeEstimate > 0 && (
           <span>est. {formatTime(timeEstimate)}</span>
         )}
+        <Link
+          href={challengeHref(challengeId, packSlug, 'details')}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          Details
+        </Link>
       </div>
       <div className="flex items-center gap-2">
         {showFormatButton && (

@@ -9,6 +9,7 @@ import { OutputPanel } from './output-panel';
 import { ChallengeToolbar } from './challenge-toolbar';
 import { ResultsView } from './results-view';
 import { ResultsNavigation } from './results-navigation';
+import { ChallengeDetailView } from './challenge-detail-view';
 import { MOCK_CHALLENGE, getMockChallenge } from '@/lib/mock-challenge';
 import { runVerification } from '@/lib/run-verification';
 import { formatCode } from '@/lib/formatter';
@@ -20,18 +21,48 @@ interface ChallengeViewProps {
   challengeId: string;
   packSlug?: string;
   challenge?: Challenge;
+  initialView?: 'details';
 }
 
 export function ChallengeView({
   challengeId,
   packSlug,
   challenge,
+  initialView,
 }: ChallengeViewProps) {
+  const challengeData = challenge ?? getMockChallenge(challengeId) ?? MOCK_CHALLENGE;
+
+  if (initialView === 'details') {
+    return (
+      <ChallengeDetailView
+        challenge={challengeData}
+        challengeId={challengeId}
+        packSlug={packSlug}
+      />
+    );
+  }
+
+  return (
+    <ChallengeViewEditor
+      challengeId={challengeId}
+      packSlug={packSlug}
+      challengeData={challengeData}
+    />
+  );
+}
+
+function ChallengeViewEditor({
+  challengeId,
+  packSlug,
+  challengeData,
+}: {
+  challengeId: string;
+  packSlug?: string;
+  challengeData: Challenge;
+}) {
   const storeRef = useRef(createEditorStore());
   const draftTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
   const createAttempt = useDataAccess().useCreateAttempt();
-
-  const challengeData = challenge ?? getMockChallenge(challengeId) ?? MOCK_CHALLENGE;
 
   useEffect(() => {
     storeRef.current.getState().initFromChallenge(challengeData, challengeId);
@@ -100,6 +131,7 @@ export function ChallengeView({
       <ChallengeViewInner
         onRun={handleRun}
         onRetry={handleRetry}
+        challengeId={challengeId}
         packSlug={packSlug}
       />
     </EditorStoreContext>
@@ -109,10 +141,12 @@ export function ChallengeView({
 function ChallengeViewInner({
   onRun,
   onRetry,
+  challengeId,
   packSlug,
 }: {
   onRun: () => void;
   onRetry: () => void;
+  challengeId: string;
   packSlug?: string;
 }) {
   const viewMode = useEditorStore((s) => s.viewMode);
@@ -132,7 +166,7 @@ function ChallengeViewInner({
         <EditorPanel />
         <OutputPanel />
       </div>
-      <ChallengeToolbar onRun={onRun} />
+      <ChallengeToolbar onRun={onRun} challengeId={challengeId} packSlug={packSlug} />
     </div>
   );
 }

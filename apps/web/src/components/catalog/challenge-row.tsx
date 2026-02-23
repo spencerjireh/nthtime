@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { formatTime } from '@nthtime/editor';
+import { challengeHref } from '@/lib/routes';
 import type { Difficulty } from '@nthtime/shared';
 
 interface ChallengeRowProps {
@@ -30,23 +31,22 @@ export function ChallengeRow({
   status,
   packSlug,
 }: ChallengeRowProps) {
-  const href = packSlug
-    ? `/challenge/${id}?pack=${packSlug}`
-    : `/challenge/${id}`;
+  const href = challengeHref(id, packSlug);
+  const detailsHref = challengeHref(id, packSlug, 'details');
 
   return (
-    <Link
-      href={href}
-      className="group flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/30"
-    >
+    <div className="group relative flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/30">
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
         {order}
       </span>
 
       <div className="min-w-0 flex-1">
-        <div className="truncate font-medium text-foreground group-hover:text-primary">
+        <Link
+          href={href}
+          className="truncate font-medium text-foreground group-hover:text-primary after:absolute after:inset-0 after:content-['']"
+        >
           {title}
-        </div>
+        </Link>
         {tags.length > 0 && (
           <div className="mt-0.5 flex gap-1">
             {tags.map((tag) => (
@@ -58,7 +58,13 @@ export function ChallengeRow({
         )}
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="relative z-10 flex shrink-0 items-center gap-2">
+        <Link
+          href={detailsHref}
+          className="text-xs text-muted-foreground hover:text-primary"
+        >
+          Details
+        </Link>
         <span className="text-xs text-muted-foreground">
           {formatTime(timeEstimateSeconds)}
         </span>
@@ -75,6 +81,6 @@ export function ChallengeRow({
           {STATUS_LABELS[status]}
         </Badge>
       </div>
-    </Link>
+    </div>
   );
 }

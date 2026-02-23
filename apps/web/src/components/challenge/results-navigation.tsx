@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { useEditorStore } from './editor-store-context';
 import { Button } from '@/components/ui/button';
+import { challengeHref } from '@/lib/routes';
 import { MOCK_CHALLENGES } from '@/lib/mock-packs';
 
 interface ResultsNavigationProps {
@@ -47,9 +48,7 @@ export function ResultsNavigation({
         </Button>
         {nextChallengeId && passed && (
           <Button size="sm" asChild>
-            <Link
-              href={`/challenge/${nextChallengeId}${packSlug ? `?pack=${packSlug}` : ''}`}
-            >
+            <Link href={challengeHref(nextChallengeId, packSlug)}>
               Next challenge
             </Link>
           </Button>
