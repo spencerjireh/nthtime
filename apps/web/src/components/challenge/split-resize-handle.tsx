@@ -40,7 +40,7 @@ export function SplitResizeHandle({ onResize }: SplitResizeHandleProps) {
     <div
       ref={containerRef}
       onMouseDown={handleMouseDown}
-      className="w-1 shrink-0 cursor-col-resize bg-border transition-colors hover:bg-teal-400"
+      className="w-1 shrink-0 cursor-col-resize bg-border transition-colors hover:bg-primary"
     />
   );
 }

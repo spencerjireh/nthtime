@@ -17,7 +17,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { getSettingsStore } from '@/lib/settings-store';
+import { RESET_LAYOUT_EVENT } from '@/components/challenge/default-layout';
 import type { FeedbackConfig, EditorKeybindings, FormatterTrigger } from '@nthtime/shared';
 
 interface SettingsDialogProps {
@@ -201,6 +203,26 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 </SelectContent>
               </Select>
             </div>
+          </section>
+
+          {/* Layout */}
+          <section className="space-y-2">
+            <h3 className="text-sm font-medium text-foreground">Layout</h3>
+            <p className="text-xs text-muted-foreground">
+              Reset the challenge panel layout to its default arrangement.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                Object.keys(localStorage)
+                  .filter((k) => k.startsWith('react-resizable-panels'))
+                  .forEach((k) => localStorage.removeItem(k));
+                window.dispatchEvent(new CustomEvent(RESET_LAYOUT_EVENT));
+              }}
+            >
+              Reset panel layout
+            </Button>
           </section>
         </div>
       </DialogContent>

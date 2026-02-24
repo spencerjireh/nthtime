@@ -203,7 +203,7 @@ export function EditorPanel() {
       {keybindings !== 'default' && (
         <div
           ref={statusBarRef}
-          className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 font-mono text-xs text-muted-foreground"
+          className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 text-xs text-muted-foreground"
         />
       )}
     </div>

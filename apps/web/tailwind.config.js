@@ -67,17 +67,11 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: [
-          'JetBrains Mono',
-          'ui-monospace',
-          'SFMono-Regular',
-          'monospace',
-        ],
+        sans: ['var(--font-geist-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
-      boxShadow: {
-        glow: '0 0 12px -2px hsl(175 65% 46% / 0.35)',
-        'glow-lg': '0 0 24px -4px hsl(175 65% 46% / 0.4)',
+      transitionTimingFunction: {
+        factory: 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
       keyframes: {
         'accordion-down': {

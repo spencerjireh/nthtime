@@ -45,7 +45,7 @@ export function ChallengeDetailView({
 
         {/* Header */}
         <header className="mb-8">
-          <h1 className="mb-3 text-2xl font-bold text-foreground">{challenge.title}</h1>
+          <h1 className="mb-3 font-sans text-2xl font-bold text-foreground">{challenge.title}</h1>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant={challenge.difficulty}>{challenge.difficulty}</Badge>
             {language && (
@@ -66,7 +66,7 @@ export function ChallengeDetailView({
 
         {/* Description */}
         <section className="mb-8">
-          <h2 className="mb-3 text-lg font-semibold text-foreground">Description</h2>
+          <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Description</h2>
           <div className="prose prose-sm prose-invert max-w-none text-muted-foreground">
             {challenge.prompt.split('\n').map((line, i) => {
               if (line.startsWith('**') && line.endsWith('**')) {
@@ -91,7 +91,7 @@ export function ChallengeDetailView({
 
         {/* Assertions */}
         <section className="mb-8">
-          <h2 className="mb-3 text-lg font-semibold text-foreground">Assertions</h2>
+          <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Assertions</h2>
           <div className="space-y-3">
             {Object.entries(challenge.assertions.perFile).map(([file, assertions]) => (
               <AssertionFileGroup
@@ -116,7 +116,7 @@ export function ChallengeDetailView({
         {/* Hints */}
         {feedback.showHints && challenge.hints.length > 0 && (
           <section className="mb-8">
-            <h2 className="mb-3 text-lg font-semibold text-foreground">Hints</h2>
+            <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Hints</h2>
             <ul className="space-y-2">
               {challenge.hints.map((hint, i) => (
                 <li
@@ -133,7 +133,7 @@ export function ChallengeDetailView({
         {/* Reference Solution */}
         {challenge.referenceSolution !== undefined && (
           <section className="mb-8">
-            <h2 className="mb-3 text-lg font-semibold text-foreground">Reference Solution</h2>
+            <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Reference Solution</h2>
             {feedback.showSolution ? (
               <ReferenceSolutionViewer files={challenge.referenceSolution} />
             ) : (
@@ -185,7 +185,7 @@ function AssertionFileGroup({
             <li key={i} className="text-sm">
               <span className="text-muted-foreground">{assertion.description}</span>
               {showDetails && (
-                <span className="ml-2 font-mono text-xs text-muted-foreground/70">
+                <span className="ml-2 text-xs text-muted-foreground/70">
                   {getAssertionTechnicalDetail(assertion)}
                 </span>
               )}

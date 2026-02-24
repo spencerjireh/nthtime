@@ -26,7 +26,7 @@ export function PackPage({ slug }: PackPageProps) {
   if (!pack) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <h2 className="text-lg font-semibold text-foreground">
+        <h2 className="font-sans text-lg font-semibold text-foreground">
           Pack not found
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -49,7 +49,7 @@ export function PackPage({ slug }: PackPageProps) {
           </Link>
         </Button>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="font-sans text-2xl font-bold tracking-tight text-foreground">
             {pack.name}
           </h1>
           <Badge variant="secondary">{pack.language}</Badge>

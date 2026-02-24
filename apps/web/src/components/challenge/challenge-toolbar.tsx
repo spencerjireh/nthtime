@@ -64,9 +64,9 @@ export function ChallengeToolbar({ onRun, challengeId, packSlug }: ChallengeTool
   const showFormatButton = formatter.defaults.trigger === 'manual';
 
   return (
-    <div className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-2">
+    <div className="flex items-center justify-between bg-muted/30 px-4 py-2">
       <div className="flex items-center gap-4 text-xs text-muted-foreground">
-        <span className="font-mono">{formatTime(timer.elapsedSeconds)}</span>
+        <span>{formatTime(timer.elapsedSeconds)}</span>
         {timeEstimate > 0 && (
           <span>est. {formatTime(timeEstimate)}</span>
         )}

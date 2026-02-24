@@ -248,7 +248,7 @@ function ResultsBanner({
           {result.passedAssertions}/{result.totalAssertions} assertions passed
         </span>
       </div>
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="text-xs text-muted-foreground">
         {formatTime(elapsedSeconds)}
       </span>
     </div>

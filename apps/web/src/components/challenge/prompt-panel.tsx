@@ -17,9 +17,9 @@ export function PromptPanel() {
   const revealNextHint = useEditorStore((s) => s.revealNextHint);
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto border-r border-border p-4">
+    <div className="flex h-full flex-col overflow-y-auto p-4">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+        <h2 className="font-sans text-lg font-semibold text-foreground">{title}</h2>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {difficulty && (
             <Badge variant={difficulty}>{difficulty}</Badge>

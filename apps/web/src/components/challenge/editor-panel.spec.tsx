@@ -138,8 +138,8 @@ describe('EditorPanel', () => {
   it('vim keybinding: status bar div is rendered', () => {
     mockKeybindings.value = 'vim';
     const { container } = renderEditor();
-    // Status bar has font-mono class and appears when keybindings !== 'default'
-    const statusBar = container.querySelector('.font-mono.text-xs');
+    // Status bar has border-t and appears when keybindings !== 'default'
+    const statusBar = container.querySelector('.border-t.text-xs');
     expect(statusBar).toBeInTheDocument();
   });
 

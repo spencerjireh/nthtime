@@ -89,7 +89,8 @@ export function CatalogPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        <p className="eyebrow">Practice</p>
+        <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-foreground">
           Challenge Packs
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">

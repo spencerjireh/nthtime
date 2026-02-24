@@ -1,4 +1,6 @@
 import './global.css';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AppShell } from '@/components/app-shell';
 import { ConvexClientProvider } from '@/lib/convex/provider';
@@ -7,6 +9,10 @@ import { DataAccessProvider } from '@/lib/data-access';
 export const metadata = {
   title: 'nthtime',
   description: 'Practice coding through structured challenges',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({
@@ -15,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <body className="font-mono">
         <ConvexClientProvider>
           <DataAccessProvider>
             <ThemeProvider>

@@ -132,12 +132,12 @@ describe('FileTree', () => {
     expect(defaultProps.onDeleteFile).not.toHaveBeenCalled();
   });
 
-  it('dirty indicator: teal dot visible when isDirty returns true', () => {
+  it('dirty indicator: primary dot visible when isDirty returns true', () => {
     const isDirty = vi.fn((path: string) => path === 'app.js');
     render(<FileTree {...defaultProps} isDirty={isDirty} />);
-    // The teal dot has class bg-teal-400, and is a 1.5x1.5 circle
+    // The dirty dot has class bg-primary, and is a 1.5x1.5 circle
     const { container } = render(<FileTree {...defaultProps} isDirty={isDirty} />);
-    const dots = container.querySelectorAll('.bg-teal-400');
+    const dots = container.querySelectorAll('.bg-primary');
     expect(dots.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -165,9 +165,9 @@ describe('FileTree', () => {
     const { container } = render(
       <FileTree {...defaultProps} isDirty={isDirty} fileStatus={fileStatus} />,
     );
-    // Pass dots shown, no teal dirty dots
+    // Pass dots shown, no dirty dots
     expect(container.querySelectorAll('.bg-pass').length).toBeGreaterThanOrEqual(1);
-    expect(container.querySelectorAll('.bg-teal-400')).toHaveLength(0);
+    expect(container.querySelectorAll('.bg-primary')).toHaveLength(0);
   });
 
   it('fileStatus: falls back to isDirty when status is null', () => {
@@ -176,8 +176,8 @@ describe('FileTree', () => {
     const { container } = render(
       <FileTree {...defaultProps} isDirty={isDirty} fileStatus={fileStatus} />,
     );
-    // fileStatus returns null, so isDirty teal dot shows for app.js
-    const tealDots = container.querySelectorAll('.bg-teal-400');
-    expect(tealDots).toHaveLength(1);
+    // fileStatus returns null, so isDirty primary dot shows for app.js
+    const dirtyDots = container.querySelectorAll('.bg-primary');
+    expect(dirtyDots).toHaveLength(1);
   });
 });

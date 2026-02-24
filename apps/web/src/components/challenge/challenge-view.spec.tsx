@@ -44,21 +44,27 @@ vi.mock('@nthtime/editor', async (importOriginal) => {
 });
 
 // --- Mock child components as simple stubs ---
-vi.mock('./prompt-panel', () => ({
-  PromptPanel: () => <div data-testid="prompt-panel" />,
+vi.mock('./challenge-detail-view', () => ({
+  ChallengeDetailView: () => <div data-testid="challenge-detail-view" />,
 }));
-vi.mock('./editor-panel', () => ({
-  EditorPanel: () => <div data-testid="editor-panel" />,
-}));
-vi.mock('./output-panel', () => ({
-  OutputPanel: () => <div data-testid="output-panel" />,
-}));
-vi.mock('./challenge-toolbar', () => ({
-  ChallengeToolbar: ({ onRun }: { onRun: () => void }) => (
-    <button data-testid="run-button" onClick={onRun}>
-      Run
-    </button>
-  ),
+
+// Mock the dynamic import of DockableLayout -- renders a stub with a Run button
+vi.mock('next/dynamic', () => ({
+  __esModule: true,
+  default: (loader: () => Promise<{ default: React.ComponentType<{ onRun: () => void }> }>) => {
+    // Eagerly resolve the factory for testing
+    const Stub = (props: { onRun: () => void }) => (
+      <div data-testid="dockable-layout">
+        <div data-testid="prompt-panel" />
+        <div data-testid="editor-panel" />
+        <button data-testid="run-button" onClick={props.onRun}>
+          Run
+        </button>
+      </div>
+    );
+    Stub.displayName = 'DockableLayoutStub';
+    return Stub;
+  },
 }));
 vi.mock('./results-view', () => ({
   ResultsView: ({ children }: { children?: React.ReactNode }) => (
@@ -133,11 +139,10 @@ describe('ChallengeView', () => {
     );
   });
 
-  it('renders editing layout with prompt, editor, output, and toolbar', () => {
+  it('renders editing layout with prompt, editor, and toolbar', () => {
     render(<ChallengeView challengeId="ch_test_1" />);
     expect(screen.getByTestId('prompt-panel')).toBeInTheDocument();
     expect(screen.getByTestId('editor-panel')).toBeInTheDocument();
-    expect(screen.getByTestId('output-panel')).toBeInTheDocument();
     expect(screen.getByTestId('run-button')).toBeInTheDocument();
   });
 

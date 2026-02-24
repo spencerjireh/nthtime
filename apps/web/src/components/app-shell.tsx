@@ -1,18 +1,29 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
 import { SettingsTrigger } from './settings/settings-trigger';
 import { ConditionalUserMenu } from './auth/conditional-user-menu';
+import { ConditionalFooter } from './conditional-footer';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-14 max-w-screen-2xl items-center justify-between px-6">
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
+        <div className="mx-auto flex h-14 max-w-screen-2xl items-center justify-between px-9">
           <Link
             href="/"
-            className="text-lg font-semibold tracking-tight text-foreground hover:text-primary"
+            className="flex items-center gap-2 text-foreground hover:text-primary"
           >
-            nthtime
+            <Image
+              src="/logo-mark.png"
+              alt=""
+              width={20}
+              height={20}
+              className="dark:invert"
+            />
+            <span className="font-mono text-xs font-medium uppercase tracking-wider">
+              nthtime
+            </span>
           </Link>
           <div className="flex items-center gap-1">
             <SettingsTrigger />
@@ -21,7 +32,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-screen-2xl px-6 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-screen-2xl flex-1 px-9 py-10">{children}</main>
+      <ConditionalFooter />
     </div>
   );
 }

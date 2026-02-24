@@ -78,14 +78,14 @@ export function TabBar({
               path === activeTab
                 ? 'bg-background text-foreground'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-              dropIndex === index && 'border-l-2 border-l-teal-400',
+              dropIndex === index && 'border-l-2 border-l-primary',
             )}
           >
             <button onClick={() => onSelect(path)} className="truncate">
               {path.split('/').pop()}
             </button>
             {isDirty(path) && (
-              <span className="ml-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
+              <span className="ml-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
             )}
             <button
               onClick={(e) => {

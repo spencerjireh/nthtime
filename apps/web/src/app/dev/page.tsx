@@ -202,13 +202,10 @@ export default function DevPage() {
         </div>
       </Section>
 
-      {/* Shadow Glow */}
-      <Section title="Shadow Glow">
-        <div className="rounded-lg bg-card p-6 shadow-glow">
-          shadow-glow
-        </div>
-        <div className="rounded-lg bg-card p-6 shadow-glow-lg">
-          shadow-glow-lg
+      {/* Transition */}
+      <Section title="Factory Transition">
+        <div className="rounded-lg border bg-card p-6 transition-colors duration-300 ease-factory hover:bg-accent">
+          ease-factory hover
         </div>
       </Section>
     </div>

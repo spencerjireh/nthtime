@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { createEditorStore } from '@nthtime/editor';
 import { EditorStoreContext, useEditorStore } from './editor-store-context';
-import { PromptPanel } from './prompt-panel';
-import { EditorPanel } from './editor-panel';
-import { OutputPanel } from './output-panel';
-import { ChallengeToolbar } from './challenge-toolbar';
+import dynamic from 'next/dynamic';
 import { ResultsView } from './results-view';
 import { ResultsNavigation } from './results-navigation';
 import { ChallengeDetailView } from './challenge-detail-view';
@@ -16,6 +13,11 @@ import { formatCode } from '@/lib/formatter';
 import { getSettingsStore } from '@/lib/settings-store';
 import { useDataAccess } from '@/lib/data-access';
 import type { Challenge } from '@nthtime/shared';
+
+const DockableLayout = dynamic(() =>
+  import('./dockable-layout').then((m) => ({ default: m.DockableLayout })),
+  { ssr: false },
+);
 
 interface ChallengeViewProps {
   challengeId: string;
@@ -159,14 +161,5 @@ function ChallengeViewInner({
     );
   }
 
-  return (
-    <div className="flex h-full flex-col">
-      <div className="grid flex-1 grid-cols-[minmax(280px,1fr)_minmax(400px,2fr)_minmax(280px,1fr)] overflow-hidden">
-        <PromptPanel />
-        <EditorPanel />
-        <OutputPanel />
-      </div>
-      <ChallengeToolbar onRun={onRun} challengeId={challengeId} packSlug={packSlug} />
-    </div>
-  );
+  return <DockableLayout onRun={onRun} challengeId={challengeId} packSlug={packSlug} />;
 }

@@ -354,7 +354,7 @@ function FileIndicatorDot({
   const status = fileStatus?.(path) ?? null;
   const color = status === 'pass' ? 'bg-pass'
     : status === 'fail' ? 'bg-fail'
-    : isDirty(path) ? 'bg-teal-400'
+    : isDirty(path) ? 'bg-primary'
     : null;
   if (!color) return null;
   return (
@@ -390,7 +390,7 @@ function InlineInput({
         ref={inputRef}
         type="text"
         defaultValue={initialValue}
-        className="w-full rounded border border-border bg-background px-1 py-0.5 text-xs text-foreground outline-none focus:border-teal-400"
+        className="w-full rounded border border-border bg-background px-1 py-0.5 text-xs text-foreground outline-none focus:border-primary"
         onKeyDown={(e) => {
           if (e.key === 'Enter') onCommit(e.currentTarget.value);
           if (e.key === 'Escape') onCancel();
