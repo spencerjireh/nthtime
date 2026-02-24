@@ -1,16 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useConvexAuth, useMutation, useQuery } from 'convex/react';
-import type { CreateAttemptArgs, DataAccessHooks, PackListFilters } from './types';
-import type { MockPack, MockChallenge } from '@/lib/mock-packs';
-import { MOCK_CHALLENGE, getMockChallenge } from '@/lib/mock-challenge';
+import type {
+  ChallengeSummary,
+  CreateAttemptArgs,
+  DataAccessHooks,
+  PackListFilters,
+  PackSummary,
+} from './types';
+import type { Challenge, Difficulty, AssertionSet } from '@nthtime/shared';
 
-// Dynamic import of api to avoid path resolution issues at build time
-// This module is only loaded when NEXT_PUBLIC_CONVEX_URL is set
+// Lazy require of the generated Convex API to avoid path resolution issues at
+// build time. Typed as `any` because importing the generated api.d.ts would
+// pull the entire convex/ tree into the web app's rootDir, causing TS6059
+// errors.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let _api: any;
 function getApi() {
   if (!_api) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     _api = require('../../../../../convex/_generated/api').api;
   }
   return _api;
@@ -23,9 +29,10 @@ function usePackListConvex(filters: PackListFilters) {
     tags: filters.tags?.length ? filters.tags : undefined,
   });
 
-  if (!rawPacks) return { packs: [] as MockPack[], isLoading: true };
+  if (!rawPacks) return { packs: [] as PackSummary[], isLoading: true };
 
-  let packs: MockPack[] = rawPacks.map((p: any) => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let packs: PackSummary[] = rawPacks.map((p: any) => ({
     _id: p._id,
     name: p.name,
     slug: p.slug,
@@ -70,30 +77,49 @@ function useChallengesConvex(slug: string) {
   if (!data) {
     return {
       pack: null,
-      challenges: [] as MockChallenge[],
+      challenges: [] as ChallengeSummary[],
       isLoading: true,
     };
   }
 
   return {
     pack: data.pack,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     challenges: data.challenges.map((c: any) => ({
       _id: c._id,
       title: c.title,
-      difficulty: c.difficulty as MockChallenge['difficulty'],
+      difficulty: c.difficulty as ChallengeSummary['difficulty'],
       tags: c.tags,
       timeEstimateSeconds: c.timeEstimateSeconds,
       order: c.order,
-      status: c.status as MockChallenge['status'],
+      status: c.status as ChallengeSummary['status'],
     })),
     isLoading: false,
   };
 }
 
 function useChallengeConvex(id: string) {
-  // Convex doesn't have a direct getChallenge query yet -- fall back to mock
-  // TODO: Add api.challenges.get query when needed
-  const challenge = getMockChallenge(id) ?? MOCK_CHALLENGE;
+  const doc = useQuery(getApi().challenges.get, { id });
+
+  const challenge = useMemo(() => {
+    if (!doc) return null;
+    const mapped: Challenge = {
+      id: doc._id,
+      title: doc.title,
+      prompt: doc.prompt,
+      difficulty: doc.difficulty as Difficulty,
+      tags: doc.tags,
+      timeEstimateSeconds: doc.timeEstimateSeconds,
+      scaffolded: doc.scaffolded,
+      files: doc.files,
+      hints: doc.hints,
+      assertions: doc.assertions as AssertionSet,
+      referenceSolution: doc.referenceSolution,
+    };
+    return mapped;
+  }, [doc]);
+
+  if (doc === undefined) return { challenge: null, isLoading: true };
   return { challenge, isLoading: false };
 }
 
@@ -102,11 +128,11 @@ function useCreateAttemptConvex() {
   const createAttempt = useMutation(getApi().attempts.create);
   return useCallback(
     async (args: CreateAttemptArgs) => {
-      // Skip when not authenticated or when using mock challenge IDs
-      if (!isAuthenticated || getMockChallenge(args.challengeId)) return;
+      if (!isAuthenticated) return;
       try {
         await createAttempt({
-          challengeId: args.challengeId as any,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          challengeId: args.challengeId as any, // string -> Id<"challenges"> boundary cast
           passed: args.passed,
           assertionResults: args.assertionResults,
           hintsUsed: args.hintsUsed,

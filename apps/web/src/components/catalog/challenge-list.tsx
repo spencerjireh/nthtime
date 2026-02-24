@@ -3,20 +3,10 @@
 import { ChallengeRow } from './challenge-row';
 import { ChallengeListSkeleton } from './challenge-list-skeleton';
 import { EmptyState } from './empty-state';
-import type { Difficulty } from '@nthtime/shared';
-
-interface ChallengeData {
-  _id: string;
-  title: string;
-  difficulty: Difficulty;
-  tags: string[];
-  timeEstimateSeconds: number;
-  order: number;
-  status: 'not-attempted' | 'failed' | 'passed';
-}
+import type { ChallengeSummary } from '@/lib/data-access';
 
 interface ChallengeListProps {
-  challenges: ChallengeData[] | undefined;
+  challenges: ChallengeSummary[] | undefined;
   isLoading: boolean;
   packSlug?: string;
 }
@@ -44,7 +34,7 @@ export function ChallengeList({
           id={challenge._id}
           order={challenge.order}
           title={challenge.title}
-          difficulty={challenge.difficulty as Difficulty}
+          difficulty={challenge.difficulty}
           tags={challenge.tags}
           timeEstimateSeconds={challenge.timeEstimateSeconds}
           status={challenge.status}

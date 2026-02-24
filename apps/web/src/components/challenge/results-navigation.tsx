@@ -5,33 +5,27 @@ import Link from 'next/link';
 import { useEditorStore } from './editor-store-context';
 import { Button } from '@/components/ui/button';
 import { challengeHref } from '@/lib/routes';
-import { MOCK_CHALLENGES } from '@/lib/mock-packs';
 
 interface ResultsNavigationProps {
   onRetry: () => void;
   packSlug?: string;
+  challengeIds?: string[];
 }
 
 export function ResultsNavigation({
   onRetry,
   packSlug,
+  challengeIds,
 }: ResultsNavigationProps) {
   const challengeId = useEditorStore((s) => s.challengeId);
   const passed = useEditorStore((s) => s.verificationResult?.passed ?? false);
 
   const nextChallengeId = useMemo(() => {
-    if (!packSlug) return null;
-
-    // Look up challenges for this pack from mock data
-    const challenges = MOCK_CHALLENGES[packSlug];
-    if (!challenges) return null;
-
-    // Find current challenge position by matching ID
-    const currentIndex = challenges.findIndex((c) => c._id === challengeId);
-    if (currentIndex === -1 || currentIndex >= challenges.length - 1) return null;
-
-    return challenges[currentIndex + 1]._id;
-  }, [packSlug, challengeId]);
+    if (!challengeIds?.length || !challengeId) return null;
+    const currentIndex = challengeIds.indexOf(challengeId);
+    if (currentIndex === -1 || currentIndex >= challengeIds.length - 1) return null;
+    return challengeIds[currentIndex + 1];
+  }, [challengeIds, challengeId]);
 
   return (
     <div className="flex shrink-0 items-center justify-between border-t border-border bg-muted/30 px-4 py-3">

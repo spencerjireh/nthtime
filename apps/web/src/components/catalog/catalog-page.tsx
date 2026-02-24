@@ -6,7 +6,6 @@ import { PackGrid } from './pack-grid';
 import { CatalogSearch } from './catalog-search';
 import { CatalogFilters, type CompletionStatus } from './catalog-filters';
 import { useDataAccess } from '@/lib/data-access';
-import { MOCK_PACKS } from '@/lib/mock-packs';
 
 interface CatalogPageProps {
   searchQuery: string;
@@ -37,6 +36,7 @@ export function CatalogPage({
     status,
     searchQuery,
   });
+  const { packs: allPacks } = usePackList({});
 
   const updateParams = useCallback(
     (updates: Record<string, string>) => {
@@ -77,17 +77,16 @@ export function CatalogPage({
     [updateParams],
   );
 
-  // Derive available tags from all packs (use full list, not filtered)
   const availableTags = useMemo(() => {
     const tagSet = new Set<string>();
-    for (const pack of MOCK_PACKS) {
+    for (const pack of allPacks) {
       for (const tag of pack.tags) tagSet.add(tag);
     }
     return [...tagSet].sort();
-  }, []);
+  }, [allPacks]);
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-screen-2xl space-y-6 px-9 py-10">
       <div>
         <p className="eyebrow">Practice</p>
         <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-foreground">

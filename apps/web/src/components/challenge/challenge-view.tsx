@@ -1,13 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { createEditorStore } from '@nthtime/editor';
 import { EditorStoreContext, useEditorStore } from './editor-store-context';
 import dynamic from 'next/dynamic';
 import { ResultsView } from './results-view';
 import { ResultsNavigation } from './results-navigation';
 import { ChallengeDetailView } from './challenge-detail-view';
-import { MOCK_CHALLENGE, getMockChallenge } from '@/lib/mock-challenge';
 import { runVerification } from '@/lib/run-verification';
 import { formatCode } from '@/lib/formatter';
 import { getSettingsStore } from '@/lib/settings-store';
@@ -18,6 +17,10 @@ const DockableLayout = dynamic(() =>
   import('./dockable-layout').then((m) => ({ default: m.DockableLayout })),
   { ssr: false },
 );
+
+const InlineSolutionLayout = dynamic(() => import('./inline-solution-layout'), {
+  ssr: false,
+});
 
 interface ChallengeViewProps {
   challengeId: string;
@@ -32,7 +35,31 @@ export function ChallengeView({
   challenge,
   initialView,
 }: ChallengeViewProps) {
-  const challengeData = challenge ?? getMockChallenge(challengeId) ?? MOCK_CHALLENGE;
+  const { useChallenge } = useDataAccess();
+  const { challenge: fetched, isLoading } = useChallenge(challengeId);
+
+  const challengeData = challenge ?? fetched;
+
+  if (isLoading && !challengeData) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-muted-foreground text-sm">Loading challenge...</div>
+      </div>
+    );
+  }
+
+  if (!challengeData) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-2">
+        <div className="text-muted-foreground text-sm">Challenge not found</div>
+        {packSlug && (
+          <a href={`/pack/${packSlug}`} className="text-primary text-sm hover:underline">
+            Back to pack
+          </a>
+        )}
+      </div>
+    );
+  }
 
   if (initialView === 'details') {
     return (
@@ -64,7 +91,13 @@ function ChallengeViewEditor({
 }) {
   const storeRef = useRef(createEditorStore());
   const draftTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
-  const createAttempt = useDataAccess().useCreateAttempt();
+  const { useCreateAttempt, useChallenges } = useDataAccess();
+  const createAttempt = useCreateAttempt();
+  const { challenges } = useChallenges(packSlug ?? '');
+  const challengeIds = useMemo(
+    () => [...challenges].sort((a, b) => a.order - b.order).map((c) => c._id),
+    [challenges],
+  );
 
   useEffect(() => {
     storeRef.current.getState().initFromChallenge(challengeData, challengeId);
@@ -109,7 +142,7 @@ function ChallengeViewEditor({
     store.setRunState('complete');
     store.submit();
 
-    // Persist attempt (fire-and-forget -- no-op in mock mode)
+    // Persist attempt (fire-and-forget)
     createAttempt({
       challengeId,
       passed: result.passed,
@@ -135,6 +168,7 @@ function ChallengeViewEditor({
         onRetry={handleRetry}
         challengeId={challengeId}
         packSlug={packSlug}
+        challengeIds={challengeIds}
       />
     </EditorStoreContext>
   );
@@ -145,20 +179,30 @@ function ChallengeViewInner({
   onRetry,
   challengeId,
   packSlug,
+  challengeIds,
 }: {
   onRun: () => void;
   onRetry: () => void;
   challengeId: string;
   packSlug?: string;
+  challengeIds?: string[];
 }) {
   const viewMode = useEditorStore((s) => s.viewMode);
 
   if (viewMode === 'results') {
     return (
       <ResultsView>
-        <ResultsNavigation onRetry={onRetry} packSlug={packSlug} />
+        <ResultsNavigation
+          onRetry={onRetry}
+          packSlug={packSlug}
+          challengeIds={challengeIds}
+        />
       </ResultsView>
     );
+  }
+
+  if (viewMode === 'solution') {
+    return <InlineSolutionLayout />;
   }
 
   return <DockableLayout onRun={onRun} challengeId={challengeId} packSlug={packSlug} />;

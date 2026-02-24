@@ -17,13 +17,18 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
   }, []);
 
   if (!client) {
-    // Convex not configured -- render children without provider for dev/build
-    return <>{children}</>;
+    return (
+      <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
+        <h1>Convex not configured</h1>
+        <p>
+          Set <code>NEXT_PUBLIC_CONVEX_URL</code> in <code>.env.local</code> to connect to Convex.
+        </p>
+        <p>
+          Run <code>npx convex dev</code> to start a development backend, then copy the URL.
+        </p>
+      </div>
+    );
   }
 
-  return (
-    <ConvexAuthProvider client={client}>
-      {children}
-    </ConvexAuthProvider>
-  );
+  return <ConvexAuthProvider client={client}>{children}</ConvexAuthProvider>;
 }

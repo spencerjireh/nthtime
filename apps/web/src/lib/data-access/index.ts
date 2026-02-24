@@ -1,2 +1,8 @@
 export { DataAccessProvider, useDataAccess } from './provider';
-export type { CreateAttemptArgs, DataAccessHooks, PackListFilters } from './types';
+export type {
+  ChallengeSummary,
+  CreateAttemptArgs,
+  DataAccessHooks,
+  PackListFilters,
+  PackSummary,
+} from './types';

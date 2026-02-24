@@ -81,7 +81,7 @@ Tree-sitter WASM grammars (JS, TS, TSX, Python, HTML, CSS) are served from `apps
 
 ### Data access layer
 
-`apps/web/src/lib/data-access/` provides a `DataAccessProvider` that switches between mock hooks (no backend) and Convex hooks based on `NEXT_PUBLIC_CONVEX_URL`. The switch uses only `process.env.NEXT_PUBLIC_CONVEX_URL` (inlined at build time) -- never `typeof window` -- to avoid hydration mismatches. Components call `useDataAccess()` to get the active hooks.
+`apps/web/src/lib/data-access/` provides a `DataAccessProvider` backed by Convex. `NEXT_PUBLIC_CONVEX_URL` is required in all environments -- the app renders an error page if it's missing. Components call `useDataAccess()` to get the hooks. Run `pnpm seed` after setting `NEXT_PUBLIC_CONVEX_URL` and `ADMIN_SECRET` to populate initial pack/challenge data.
 
 ### Convex backend
 
@@ -109,7 +109,7 @@ Runs on push/PR to `main` (Node 22): validate packs -> lint (affected) -> typech
 - Nx sync may report "out of sync" then "already up to date" on retry -- run twice if needed
 - ESLint: `@nx/eslint` peer wants `eslint ^8||^9`, we use 9. Do not upgrade to eslint 10.
 - `convex/tsconfig.json` must exclude `__tests__/` -- test files use Vitest-only types that break `npx convex dev`
-- `DataAccessProvider` must NOT use `typeof window` to choose hooks -- causes hydration mismatch (server=mock data, client=loading). Use only `process.env.NEXT_PUBLIC_CONVEX_URL`.
+- `NEXT_PUBLIC_CONVEX_URL` is required in all environments. The app shows a setup error page if it's missing.
 
 ## Code style
 

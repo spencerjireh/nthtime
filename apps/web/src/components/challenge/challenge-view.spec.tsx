@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import { createStore } from 'zustand/vanilla';
@@ -48,24 +49,33 @@ vi.mock('./challenge-detail-view', () => ({
   ChallengeDetailView: () => <div data-testid="challenge-detail-view" />,
 }));
 
-// Mock the dynamic import of DockableLayout -- renders a stub with a Run button
-vi.mock('next/dynamic', () => ({
-  __esModule: true,
-  default: (loader: () => Promise<{ default: React.ComponentType<{ onRun: () => void }> }>) => {
-    // Eagerly resolve the factory for testing
-    const Stub = (props: { onRun: () => void }) => (
-      <div data-testid="dockable-layout">
-        <div data-testid="prompt-panel" />
-        <div data-testid="editor-panel" />
-        <button data-testid="run-button" onClick={props.onRun}>
-          Run
-        </button>
-      </div>
-    );
-    Stub.displayName = 'DockableLayoutStub';
-    return Stub;
-  },
-}));
+// Mock dynamic imports -- challenge-view.tsx calls dynamic() twice in module scope:
+// 1st call = DockableLayout, 2nd call = InlineSolutionLayout
+vi.mock('next/dynamic', () => {
+  let callIndex = 0;
+  return {
+    __esModule: true,
+    default: () => {
+      const i = callIndex++;
+      if (i === 0) {
+        const Stub = (props: { onRun: () => void }) => (
+          <div data-testid="dockable-layout">
+            <div data-testid="prompt-panel" />
+            <div data-testid="editor-panel" />
+            <button data-testid="run-button" onClick={props.onRun}>
+              Run
+            </button>
+          </div>
+        );
+        Stub.displayName = 'DockableLayoutStub';
+        return Stub;
+      }
+      const SolutionStub = () => <div data-testid="inline-solution-layout" />;
+      SolutionStub.displayName = 'InlineSolutionLayoutStub';
+      return SolutionStub;
+    },
+  };
+});
 vi.mock('./results-view', () => ({
   ResultsView: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="results-view">{children}</div>
@@ -88,7 +98,9 @@ vi.mock('@/lib/formatter', () => ({
 }));
 vi.mock('@/lib/data-access', () => ({
   useDataAccess: () => ({
+    useChallenge: () => ({ challenge: MOCK_CHALLENGE_DATA, isLoading: false }),
     useCreateAttempt: () => mockCreateAttempt,
+    useChallenges: () => ({ pack: null, challenges: [], isLoading: false }),
   }),
 }));
 vi.mock('@/lib/settings-store', () => ({
@@ -108,11 +120,6 @@ vi.mock('@/lib/settings-store', () => ({
       },
     })),
 }));
-vi.mock('@/lib/mock-challenge', () => ({
-  MOCK_CHALLENGE: MOCK_CHALLENGE_DATA,
-  getMockChallenge: () => MOCK_CHALLENGE_DATA,
-}));
-
 import { ChallengeView } from './challenge-view';
 
 describe('ChallengeView', () => {
@@ -152,6 +159,14 @@ describe('ChallengeView', () => {
     expect(screen.getByTestId('results-view')).toBeInTheDocument();
     expect(screen.getByTestId('retry-button')).toBeInTheDocument();
     expect(screen.queryByTestId('prompt-panel')).not.toBeInTheDocument();
+  });
+
+  it('renders inline solution layout when viewMode is solution', () => {
+    mockStoreRef.current = buildEditorStore({ viewMode: 'solution' });
+    render(<ChallengeView challengeId="ch_test_1" />);
+    expect(screen.getByTestId('inline-solution-layout')).toBeInTheDocument();
+    expect(screen.queryByTestId('dockable-layout')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('results-view')).not.toBeInTheDocument();
   });
 
   it('handleRun: calls setRunState, runVerification, setVerificationResult, submit', async () => {

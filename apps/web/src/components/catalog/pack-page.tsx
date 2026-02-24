@@ -17,7 +17,7 @@ export function PackPage({ slug }: PackPageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16 text-muted-foreground">
+      <div className="mx-auto flex max-w-screen-2xl items-center justify-center px-9 py-16 text-muted-foreground">
         Loading...
       </div>
     );
@@ -25,7 +25,7 @@ export function PackPage({ slug }: PackPageProps) {
 
   if (!pack) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="mx-auto flex max-w-screen-2xl flex-col items-center justify-center px-9 py-16 text-center">
         <h2 className="font-sans text-lg font-semibold text-foreground">
           Pack not found
         </h2>
@@ -40,7 +40,7 @@ export function PackPage({ slug }: PackPageProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-screen-2xl space-y-6 px-9 py-10">
       <div>
         <Button variant="ghost" size="sm" className="-ml-2 mb-2" asChild>
           <Link href="/">

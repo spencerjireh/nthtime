@@ -1,6 +1,29 @@
-import type { MockPack, MockChallenge } from '@/lib/mock-packs';
 import type { Challenge, VerificationResult } from '@nthtime/shared';
 import type { CompletionStatus } from '@/components/catalog/catalog-filters';
+
+export interface PackSummary {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  language: string;
+  framework?: string;
+  version: string;
+  author: string;
+  tags: string[];
+  challengeCount: number;
+  passedCount: number;
+}
+
+export interface ChallengeSummary {
+  _id: string;
+  title: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  tags: string[];
+  timeEstimateSeconds: number;
+  order: number;
+  status: 'not-attempted' | 'failed' | 'passed';
+}
 
 export interface PackListFilters {
   language?: string;
@@ -20,12 +43,12 @@ export interface CreateAttemptArgs {
 
 export interface DataAccessHooks {
   usePackList: (filters: PackListFilters) => {
-    packs: MockPack[];
+    packs: PackSummary[];
     isLoading: boolean;
   };
   useChallenges: (slug: string) => {
     pack: { name: string; slug: string; description: string; language: string; tags: string[] } | null;
-    challenges: MockChallenge[];
+    challenges: ChallengeSummary[];
     isLoading: boolean;
   };
   useChallenge: (id: string) => {

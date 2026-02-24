@@ -2,13 +2,12 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { formatTime } from '@nthtime/editor';
 import { challengeHref } from '@/lib/routes';
-import type { Difficulty } from '@nthtime/shared';
 
 interface ChallengeRowProps {
   id: string;
   order: number;
   title: string;
-  difficulty: Difficulty;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
   tags: string[];
   timeEstimateSeconds: number;
   status: 'not-attempted' | 'failed' | 'passed';
@@ -32,7 +31,6 @@ export function ChallengeRow({
   packSlug,
 }: ChallengeRowProps) {
   const href = challengeHref(id, packSlug);
-  const detailsHref = challengeHref(id, packSlug, 'details');
 
   return (
     <div className="group relative flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/30">
@@ -59,12 +57,6 @@ export function ChallengeRow({
       </div>
 
       <div className="relative z-10 flex shrink-0 items-center gap-2">
-        <Link
-          href={detailsHref}
-          className="text-xs text-muted-foreground hover:text-primary"
-        >
-          Details
-        </Link>
         <span className="text-xs text-muted-foreground">
           {formatTime(timeEstimateSeconds)}
         </span>

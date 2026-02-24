@@ -41,7 +41,10 @@
     "jest.config.ts",
     "jest.config.cts",
     "src/**/*.spec.ts",
+    "src/**/*.spec.tsx",
     "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/test-utils.tsx",
     ".next"
   ],
   "references": [

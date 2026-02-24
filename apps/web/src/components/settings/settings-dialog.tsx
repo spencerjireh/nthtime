@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useStore } from 'zustand';
 import {
   Dialog,
@@ -38,18 +37,6 @@ const FEEDBACK_FLAGS: { key: keyof FeedbackConfig; label: string }[] = [
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const store = getSettingsStore();
   const settings = useStore(store, (s) => s.settings);
-  const loaded = useStore(store, (s) => s.loaded);
-
-  // Hydrate settings from localStorage on first open
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => {
-    if (!hydrated) {
-      store.getState().hydrate();
-      setHydrated(true);
-    }
-  }, [store, hydrated]);
-
-  if (!loaded && !hydrated) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

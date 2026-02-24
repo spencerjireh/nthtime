@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
+import dynamic from 'next/dynamic';
 import type { OnMount } from '@monaco-editor/react';
 import { useEditorStore } from './editor-store-context';
 import { MonacoWrapper } from './monaco-wrapper';
@@ -337,8 +338,6 @@ function AssertionDetails({
 }
 
 // Lazy-loaded diff view to avoid loading Monaco DiffEditor upfront
-import dynamic from 'next/dynamic';
-
 const DiffViewLazy = dynamic(
   () => import('./diff-view').then((m) => ({ default: m.DiffView })),
   {

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { render, type RenderOptions } from '@testing-library/react';
 import { createStore } from 'zustand/vanilla';
 import type { EditorStore } from '@nthtime/editor';
@@ -60,6 +61,8 @@ export function buildEditorStore(
     toggleSplit: vi.fn(),
     setSecondActiveFile: vi.fn(),
     closeSplit: vi.fn(),
+    showSolution: vi.fn(),
+    hideSolution: vi.fn(),
     getAllFileEntries: vi.fn().mockReturnValue([
       { path: 'app.js', content: 'const a = 1;' },
       { path: 'server.js', content: 'const b = 2;' },

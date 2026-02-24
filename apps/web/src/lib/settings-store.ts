@@ -20,6 +20,8 @@ export interface SettingsActions {
   setDarkMode(dark: boolean): void;
   setFormatter(config: Partial<FormatterConfig>): void;
   setAutocomplete(enabled: boolean): void;
+  setPromptCollapsed(collapsed: boolean): void;
+  setToolbarCollapsed(collapsed: boolean): void;
   syncFromServer(settings: Partial<UserSettings>): void;
   hydrate(): void;
 }
@@ -41,6 +43,8 @@ const DEFAULT_SETTINGS: UserSettings = {
   },
   darkMode: true,
   autocomplete: true,
+  promptCollapsed: false,
+  toolbarCollapsed: false,
 };
 
 function persistToLocalStorage(settings: UserSettings): void {
@@ -117,6 +121,22 @@ export function createSettingsStore() {
       });
     },
 
+    setPromptCollapsed(collapsed) {
+      set((state) => {
+        const settings = { ...state.settings, promptCollapsed: collapsed };
+        persistToLocalStorage(settings);
+        return { settings };
+      });
+    },
+
+    setToolbarCollapsed(collapsed) {
+      set((state) => {
+        const settings = { ...state.settings, toolbarCollapsed: collapsed };
+        persistToLocalStorage(settings);
+        return { settings };
+      });
+    },
+
     setFormatter(config) {
       set((state) => {
         const settings = {
@@ -146,12 +166,17 @@ export function createSettingsStore() {
   }));
 }
 
-// Singleton store for app-wide usage
+// Singleton store for app-wide usage.
+// Hydrates eagerly from localStorage on first access so that components like
+// DockableLayout see persisted values (e.g. promptCollapsed) immediately.
 let _store: ReturnType<typeof createSettingsStore> | null = null;
 
 export function getSettingsStore() {
   if (!_store) {
     _store = createSettingsStore();
+    if (typeof window !== 'undefined') {
+      _store.getState().hydrate();
+    }
   }
   return _store;
 }
