@@ -1,16 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from 'zustand';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { SolutionPanel } from './solution-panel';
 import { getAssertionTechnicalDetail } from './assertion-detail';
 import { getSettingsStore } from '@/lib/settings-store';
-import { getMonacoLanguage, formatTime } from '@nthtime/editor';
-import { challengeHref } from '@/lib/routes';
-import { cn } from '@/lib/utils';
+import { getMonacoLanguage, formatTime, loadDraft } from '@nthtime/editor';
+import { challengeHref, solutionHref } from '@/lib/routes';
 import type { Challenge, Assertion } from '@nthtime/shared';
 
 interface ChallengeDetailViewProps {
@@ -29,12 +27,17 @@ export function ChallengeDetailView({
     ? getMonacoLanguage(challenge.files[0].path)
     : undefined;
 
-  const editorHref = challengeHref(challengeId, packSlug);
+  const [hasDraft, setHasDraft] = useState(false);
+  useEffect(() => {
+    setHasDraft(loadDraft(challengeId) !== null);
+  }, [challengeId]);
+
+  const editorHref = challengeHref(challengeId, packSlug, 'editor');
   const backHref = packSlug ? `/pack/${packSlug}` : '/';
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <div className="mx-auto w-full max-w-3xl px-6 py-8">
+      <div className="mx-auto w-full max-w-screen-2xl px-9 py-8">
         {/* Back link */}
         <Link
           href={backHref}
@@ -45,8 +48,13 @@ export function ChallengeDetailView({
 
         {/* Header */}
         <header className="mb-8">
-          <h1 className="mb-3 font-sans text-2xl font-bold text-foreground">{challenge.title}</h1>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="font-sans text-2xl font-bold text-foreground">{challenge.title}</h1>
+            <Button asChild>
+              <Link href={editorHref}>{hasDraft ? 'Continue Challenge' : 'Start Challenge'}</Link>
+            </Button>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             <Badge variant={challenge.difficulty}>{challenge.difficulty}</Badge>
             {language && (
               <Badge variant="outline">{language}</Badge>
@@ -135,7 +143,12 @@ export function ChallengeDetailView({
           <section className="mb-8">
             <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Reference Solution</h2>
             {feedback.showSolution ? (
-              <ReferenceSolutionViewer files={challenge.referenceSolution} />
+              <Link
+                href={solutionHref(challengeId, packSlug)}
+                className="inline-block rounded-md border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                View Reference Solution
+              </Link>
             ) : (
               <p className="text-sm text-muted-foreground">
                 Enable &quot;Show reference solution&quot; in settings to view.
@@ -144,12 +157,6 @@ export function ChallengeDetailView({
           </section>
         )}
 
-        {/* CTA */}
-        <div className="border-t border-border pt-8">
-          <Button asChild size="lg">
-            <Link href={editorHref}>Start Challenge</Link>
-          </Button>
-        </div>
       </div>
     </div>
   );
@@ -202,40 +209,3 @@ function AssertionFileGroup({
   );
 }
 
-function ReferenceSolutionViewer({
-  files,
-}: {
-  files: readonly { path: string; content: string }[];
-}) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeFile = files[activeIndex];
-  const language = activeFile ? getMonacoLanguage(activeFile.path) : 'plaintext';
-
-  return (
-    <div className="overflow-hidden rounded-lg border border-border">
-      {files.length > 1 && (
-        <div className="flex border-b border-border bg-muted/30">
-          {files.map((file, i) => (
-            <button
-              key={file.path}
-              onClick={() => setActiveIndex(i)}
-              className={cn(
-                'px-3 py-1.5 text-xs transition-colors',
-                i === activeIndex
-                  ? 'bg-background text-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-              )}
-            >
-              {file.path}
-            </button>
-          ))}
-        </div>
-      )}
-      {activeFile && (
-        <div className="h-80">
-          <SolutionPanel content={activeFile.content} language={language} />
-        </div>
-      )}
-    </div>
-  );
-}

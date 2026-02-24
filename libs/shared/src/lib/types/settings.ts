@@ -44,4 +44,6 @@ export interface UserSettings {
   readonly formatter: FormatterConfig;
   readonly darkMode: boolean;
   readonly autocomplete: boolean;
+  readonly promptCollapsed: boolean;
+  readonly toolbarCollapsed: boolean;
 }

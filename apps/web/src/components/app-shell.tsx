@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-screen-2xl flex-1 px-9 py-10">{children}</main>
+      <main className="w-full flex-1">{children}</main>
       <ConditionalFooter />
     </div>
   );

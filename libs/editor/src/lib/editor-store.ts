@@ -279,6 +279,16 @@ export function createEditorStore() {
       set(initialState);
     },
 
+    showSolution() {
+      if (get().referenceSolutionFiles) {
+        set({ viewMode: 'solution' });
+      }
+    },
+
+    hideSolution() {
+      set({ viewMode: 'editing' });
+    },
+
     getAllFileEntries() {
       return Object.values(get().files).map((f) => ({
         path: f.path,

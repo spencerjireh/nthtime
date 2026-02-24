@@ -7,7 +7,7 @@ export interface EditorFile {
 
 export type RunState = 'idle' | 'running' | 'complete';
 
-export type ViewMode = 'editing' | 'results';
+export type ViewMode = 'editing' | 'results' | 'solution';
 
 export type SplitMode = 'single' | 'horizontal';
 
@@ -79,6 +79,8 @@ export interface EditorActions {
   submit(): void;
   retry(): void;
   reset(): void;
+  showSolution(): void;
+  hideSolution(): void;
   getAllFileEntries(): { path: string; content: string }[];
   saveDraft(): void;
   loadDraft(challengeId: string): boolean;

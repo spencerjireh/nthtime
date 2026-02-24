@@ -121,6 +121,8 @@ describe('type compilation', () => {
         },
         overrides: {},
       },
+      promptCollapsed: false,
+      toolbarCollapsed: false,
     };
     expect(settings.feedback.showPassFail).toBe(true);
     expect(settings.feedback.showDiff).toBe(false);

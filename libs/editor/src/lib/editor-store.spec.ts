@@ -423,6 +423,40 @@ describe('split pane', () => {
   });
 });
 
+describe('showSolution and hideSolution', () => {
+  const challengeWithSolution = {
+    ...mockChallenge,
+    referenceSolution: [
+      { path: 'app.js', content: 'const app = express();\napp.get("/", (req, res) => res.send("ok"));' },
+    ],
+  };
+
+  it('showSolution sets viewMode to solution when referenceSolutionFiles exist', () => {
+    store.getState().initFromChallenge(challengeWithSolution);
+    expect(store.getState().referenceSolutionFiles).not.toBeNull();
+
+    store.getState().showSolution();
+    expect(store.getState().viewMode).toBe('solution');
+  });
+
+  it('showSolution is no-op when referenceSolutionFiles is null', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    expect(store.getState().referenceSolutionFiles).toBeNull();
+
+    store.getState().showSolution();
+    expect(store.getState().viewMode).toBe('editing');
+  });
+
+  it('hideSolution sets viewMode back to editing', () => {
+    store.getState().initFromChallenge(challengeWithSolution);
+    store.getState().showSolution();
+    expect(store.getState().viewMode).toBe('solution');
+
+    store.getState().hideSolution();
+    expect(store.getState().viewMode).toBe('editing');
+  });
+});
+
 describe('submit and retry', () => {
   it('submit snapshots files and switches to results', () => {
     store.getState().initFromChallenge(mockChallenge);
