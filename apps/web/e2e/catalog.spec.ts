@@ -11,7 +11,7 @@ test.describe('Catalog browsing', () => {
 
   test('clicking a pack card navigates to pack page', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('link', { name: /Express Basics/ })).toBeVisible();
     await page.getByRole('link', { name: /Express Basics/ }).click();
     await expect(page).toHaveURL('/pack/express-basics');
     await expect(page.getByText('Hello World Server')).toBeVisible();
@@ -41,7 +41,7 @@ test.describe('Catalog browsing', () => {
 
   test('difficulty filter badges update URL', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('Challenge Packs')).toBeVisible();
     // Click the "Beginner" difficulty badge
     await page.getByRole('button', { name: 'Beginner' }).click();
     await expect(page).toHaveURL(/difficulty=beginner/);

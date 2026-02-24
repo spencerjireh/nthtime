@@ -1,4 +1,7 @@
 import type { Page } from '@playwright/test';
+import { ConvexHttpClient } from 'convex/browser';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { api } from '../../../convex/_generated/api.js';
 
 /** Set Monaco editor content via the browser's Monaco API. */
 export async function setEditorContent(page: Page, content: string) {
@@ -42,3 +45,13 @@ export const EXPRESS_SOLUTION = [
   '',
   'export default app;',
 ].join('\n');
+
+/** Resolve a Convex challenge document ID by pack slug and order number. */
+export async function getChallengeId(packSlug: string, order: number): Promise<string> {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+  if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL required for E2E tests');
+  const client = new ConvexHttpClient(url);
+  const challenge = await client.query(api.challenges.getByPackAndOrder, { packSlug, order });
+  if (!challenge) throw new Error(`Challenge not found: ${packSlug} #${order}`);
+  return challenge._id;
+}

@@ -1,9 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { submitAndWaitForResults, EXPRESS_SOLUTION } from './helpers';
+import { submitAndWaitForResults, EXPRESS_SOLUTION, getChallengeId } from './helpers';
+
+let challengeId: string;
+
+test.beforeAll(async () => {
+  challengeId = await getChallengeId('express-basics', 1);
+});
 
 test.describe('Challenge drill loop', () => {
   test('renders 3-panel layout with prompt and editor', async ({ page }) => {
-    await page.goto('/challenge/ch_express_1');
+    await page.goto(`/challenge/${challengeId}`);
     // Prompt panel
     await expect(page.getByText('Create a basic Express.js server')).toBeVisible();
     // Editor panel -- file tab visible
@@ -13,12 +19,12 @@ test.describe('Challenge drill loop', () => {
   });
 
   test('submit reference solution and see results', async ({ page }) => {
-    await page.goto('/challenge/ch_express_1');
+    await page.goto(`/challenge/${challengeId}`);
     await submitAndWaitForResults(page, EXPRESS_SOLUTION);
   });
 
   test('retry returns to editor', async ({ page }) => {
-    await page.goto('/challenge/ch_express_1');
+    await page.goto(`/challenge/${challengeId}`);
     await submitAndWaitForResults(page, EXPRESS_SOLUTION);
 
     await page.getByRole('button', { name: 'Retry' }).click();

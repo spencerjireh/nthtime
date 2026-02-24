@@ -1,9 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { setEditorContent, getEditorContent, waitForEditorReady } from './helpers';
+import { setEditorContent, getEditorContent, waitForEditorReady, getChallengeId } from './helpers';
+
+let challengeId: string;
+
+test.beforeAll(async () => {
+  challengeId = await getChallengeId('express-basics', 1);
+});
 
 test.describe('Draft persistence', () => {
   test('typed content is restored after navigating away and back', async ({ page }) => {
-    await page.goto('/challenge/ch_express_1');
+    await page.goto(`/challenge/${challengeId}`);
     await waitForEditorReady(page);
 
     await setEditorContent(page, "import express from 'express';\n// draft in progress\n");
@@ -16,7 +22,7 @@ test.describe('Draft persistence', () => {
     await expect(page.getByText('Challenge Packs')).toBeVisible();
 
     // Navigate back
-    await page.goto('/challenge/ch_express_1');
+    await page.goto(`/challenge/${challengeId}`);
     await waitForEditorReady(page);
 
     // Verify draft content is restored

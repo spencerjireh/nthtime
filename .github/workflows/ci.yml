@@ -49,15 +49,25 @@ jobs:
 
       - name: Build (affected)
         run: npx nx affected --target=build
+        env:
+          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL }}
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Seed Convex (E2E data)
+        run: npx tsx tools/seed.ts --sync
+        env:
+          CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+
       - name: E2E tests
         run: npx nx e2e @nthtime/web
+        env:
+          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL }}
 
       - name: Docker build (verify)
-        run: docker build -t nthtime-web .
+        run: docker build --build-arg NEXT_PUBLIC_CONVEX_URL=${{ secrets.NEXT_PUBLIC_CONVEX_URL }} -t nthtime-web .
 
       # Convex deploy -- needs CONVEX_DEPLOY_KEY secret configured
       # - name: Convex deploy

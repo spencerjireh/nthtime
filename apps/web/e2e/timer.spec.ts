@@ -1,9 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { waitForEditorReady, setEditorContent } from './helpers';
+import { waitForEditorReady, setEditorContent, getChallengeId } from './helpers';
+
+let challengeId: string;
+
+test.beforeAll(async () => {
+  challengeId = await getChallengeId('express-basics', 1);
+});
 
 test.describe('Timer', () => {
   test('timer starts on editor change and shows non-zero value', async ({ page }) => {
-    await page.goto('/challenge/ch_express_1');
+    await page.goto(`/challenge/${challengeId}`);
     await waitForEditorReady(page);
 
     // Timer should show 00:00 initially
@@ -17,7 +23,7 @@ test.describe('Timer', () => {
   });
 
   test('timer value displayed in results banner after submission', async ({ page }) => {
-    await page.goto('/challenge/ch_express_1');
+    await page.goto(`/challenge/${challengeId}`);
     await waitForEditorReady(page);
 
     // Type to start the timer, then submit
