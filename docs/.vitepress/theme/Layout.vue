@@ -143,6 +143,7 @@ function withBasePath(path) {
     <template v-if="isHome">
       <div class="nt-hero" v-if="frontmatter.hero">
         <h1 class="nt-hero-name">{{ frontmatter.hero.name }}</h1>
+        <p class="nt-hero-text" v-if="frontmatter.hero.text">{{ frontmatter.hero.text }}</p>
         <p class="nt-hero-tagline">{{ frontmatter.hero.tagline }}</p>
         <div class="nt-hero-actions" v-if="frontmatter.hero.actions">
           <a

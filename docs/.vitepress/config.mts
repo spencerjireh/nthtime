@@ -11,23 +11,15 @@ export default defineConfig({
     [
       'link',
       {
-        rel: 'preconnect',
-        href: 'https://fonts.googleapis.com',
-      },
-    ],
-    [
-      'link',
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        crossorigin: '',
+        rel: 'stylesheet',
+        href: 'https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.css',
       },
     ],
     [
       'link',
       {
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap',
+        href: 'https://cdn.jsdelivr.net/fontsource/fonts/geist-mono:vf@latest/latin-wght-normal.css',
       },
     ],
   ],
@@ -39,8 +31,9 @@ export default defineConfig({
 
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
+      { text: 'Authoring', link: '/authoring/pack-authoring' },
       { text: 'API', link: '/api/shared' },
-      { text: 'Deep Dives', link: '/deep-dives/verification-engine' },
+      { text: 'Operations', link: '/operations/convex-backend' },
       { text: 'GitHub', link: 'https://github.com/spencerjireh/nthtime' },
     ],
 
@@ -51,7 +44,16 @@ export default defineConfig({
           items: [
             { text: 'Getting Started', link: '/guide/getting-started' },
             { text: 'Architecture', link: '/guide/architecture' },
-            { text: 'Contributing', link: '/guide/contributing' },
+            { text: 'Challenge Flow', link: '/guide/challenge-flow' },
+          ],
+        },
+      ],
+      '/authoring/': [
+        {
+          text: 'Authoring',
+          items: [
+            { text: 'Pack Authoring', link: '/authoring/pack-authoring' },
+            { text: 'Verification Engine', link: '/authoring/verification-engine' },
           ],
         },
       ],
@@ -66,15 +68,15 @@ export default defineConfig({
           ],
         },
       ],
-      '/deep-dives/': [
+      '/operations/': [
         {
-          text: 'Deep Dives',
+          text: 'Operations',
           items: [
-            { text: 'Verification Engine', link: '/deep-dives/verification-engine' },
-            { text: 'Pack Authoring', link: '/deep-dives/pack-authoring' },
-            { text: 'Convex Backend', link: '/deep-dives/convex-backend' },
-            { text: 'Docker & CI', link: '/deep-dives/docker-ci' },
-            { text: 'Design System', link: '/deep-dives/design-system' },
+            { text: 'Convex Backend', link: '/operations/convex-backend' },
+            { text: 'Docker & CI', link: '/operations/docker-ci' },
+            { text: 'Coolify Runbook', link: '/operations/coolify-runbook' },
+            { text: 'Design System', link: '/operations/design-system' },
+            { text: 'Contributing', link: '/operations/contributing' },
           ],
         },
       ],

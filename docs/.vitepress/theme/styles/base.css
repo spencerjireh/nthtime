@@ -7,14 +7,14 @@
 }
 
 html {
-  font-family: var(--nt-font-sans);
+  font-family: var(--nt-font-mono);
   font-size: 16px;
   line-height: 1.7;
   color: var(--nt-fg);
   background: var(--nt-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
 }
 
 body {
@@ -22,18 +22,19 @@ body {
 }
 
 a {
-  color: var(--nt-primary);
+  color: var(--nt-accent);
   text-decoration: none;
   transition: color 0.2s var(--nt-ease);
 }
 
 a:hover {
-  color: var(--nt-primary-hover);
+  color: var(--nt-accent-hover);
 }
 
-/* ── Headings ─────────────────────────────── */
+/* -- Headings ----------------------------------------- */
 h1, h2, h3, h4 {
-  font-weight: 600;
+  font-family: var(--nt-font-sans);
+  font-weight: 400;
   line-height: 1.3;
   color: var(--nt-fg);
 }
@@ -41,7 +42,7 @@ h1, h2, h3, h4 {
 h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.04em;
 }
 
 h2 {
@@ -50,41 +51,44 @@ h2 {
   margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--nt-border);
+  letter-spacing: -0.03em;
 }
 
 h3 {
   font-size: 1.2rem;
   margin-top: 2rem;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 h4 {
   font-size: 1.05rem;
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
 }
 
 p {
   margin-bottom: 1rem;
 }
 
-/* ── Inline code ──────────────────────────── */
+/* -- Inline code -------------------------------------- */
 :not(pre) > code {
   font-family: var(--nt-font-mono);
   font-size: 0.85em;
   padding: 0.15em 0.45em;
-  border-radius: 5px;
+  border-radius: 4px;
   background: var(--nt-code-bg);
-  color: var(--nt-primary);
+  color: var(--nt-code-fg);
   border: 1px solid var(--nt-code-border);
-  font-weight: 500;
+  font-weight: 400;
 }
 
-/* ── Code blocks ──────────────────────────── */
+/* -- Code blocks -------------------------------------- */
 div[class*='language-'] {
   position: relative;
   margin: 1.25rem 0;
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--nt-code-bg);
   border: 1px solid var(--nt-code-border);
   overflow-x: auto;
@@ -97,7 +101,7 @@ div[class*='language-'] > button.copy {
   width: 32px;
   height: 32px;
   border: 1px solid var(--nt-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--nt-bg-alt);
   color: var(--nt-fg-muted);
   cursor: pointer;
@@ -111,7 +115,7 @@ div[class*='language-']:hover > button.copy {
 
 div[class*='language-'] > button.copy:hover {
   background: var(--nt-bg-soft);
-  color: var(--nt-primary);
+  color: var(--nt-accent);
 }
 
 div[class*='language-'] > span.lang {
@@ -120,10 +124,10 @@ div[class*='language-'] > span.lang {
   right: 48px;
   font-family: var(--nt-font-mono);
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--nt-fg-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.02em;
   opacity: 0.6;
 }
 
@@ -139,7 +143,7 @@ pre code {
   font-weight: 400;
 }
 
-/* ── Lists ────────────────────────────────── */
+/* -- Lists -------------------------------------------- */
 ul, ol {
   padding-left: 1.5rem;
   margin-bottom: 1rem;
@@ -158,11 +162,11 @@ li::marker {
   color: var(--nt-fg-muted);
 }
 
-/* ── Blockquotes ──────────────────────────── */
+/* -- Blockquotes -------------------------------------- */
 blockquote {
   margin: 1.25rem 0;
   padding: 0.75rem 1.25rem;
-  border-left: 3px solid var(--nt-primary);
+  border-left: 3px solid var(--nt-accent);
   color: var(--nt-fg-muted);
   background: var(--nt-bg-alt);
   border-radius: 0 8px 8px 0;
@@ -172,7 +176,7 @@ blockquote p:last-child {
   margin-bottom: 0;
 }
 
-/* ── Tables ───────────────────────────────── */
+/* -- Tables ------------------------------------------- */
 table {
   width: 100%;
   margin: 1.25rem 0;
@@ -191,10 +195,10 @@ th, td {
 
 th {
   background: var(--nt-bg-alt);
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: -0.02em;
   color: var(--nt-fg-muted);
 }
 
@@ -208,82 +212,78 @@ tr:last-child td {
 }
 
 tr:nth-child(even) {
-  background: hsl(220 14% 96% / 0.5);
+  background: hsl(0 0% 0% / 0.02);
 }
 
 .dark tr:nth-child(even) {
-  background: hsl(222 24% 10% / 0.5);
+  background: hsl(0 0% 100% / 0.02);
 }
 
-/* ── Custom containers ────────────────────── */
+/* -- Custom containers -------------------------------- */
 .custom-block {
   margin: 1.25rem 0;
   padding: 1rem 1.25rem;
-  border-radius: 10px;
+  border-radius: 8px;
   border-left: 4px solid;
 }
 
 .custom-block-title {
-  font-weight: 600;
+  font-weight: 400;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .custom-block.tip {
   border-color: var(--nt-tip);
-  background: hsl(175 70% 38% / 0.05);
+  background: hsl(24 85% 55% / 0.05);
 }
 
 .dark .custom-block.tip {
-  background: hsl(175 65% 46% / 0.07);
+  background: hsl(24 85% 55% / 0.07);
 }
 
 .custom-block.warning {
   border-color: var(--nt-warning);
-  background: hsl(38 92% 50% / 0.05);
+  background: hsl(46 80% 50% / 0.05);
 }
 
 .dark .custom-block.warning {
-  background: hsl(38 92% 55% / 0.07);
+  background: hsl(46 80% 50% / 0.07);
 }
 
 .custom-block.danger {
   border-color: var(--nt-danger);
-  background: hsl(0 72% 55% / 0.05);
+  background: hsl(0 60% 50% / 0.05);
 }
 
 .dark .custom-block.danger {
-  background: hsl(0 72% 58% / 0.07);
+  background: hsl(0 60% 50% / 0.07);
 }
 
-/* ── Horizontal rules ─────────────────────── */
+/* -- Horizontal rules --------------------------------- */
 hr {
   margin: 2.5rem 0;
   border: none;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--nt-border) 20%,
-    var(--nt-border) 80%,
-    transparent
-  );
+  background: var(--nt-border);
 }
 
-/* ── Images ───────────────────────────────── */
+/* -- Images ------------------------------------------- */
 img {
   max-width: 100%;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
-/* ── Header anchors ───────────────────────── */
+/* -- Header anchors ----------------------------------- */
 .header-anchor {
   float: left;
   margin-left: -0.87em;
   padding-right: 0.23em;
-  font-weight: 500;
+  font-weight: 400;
   opacity: 0;
-  color: var(--nt-primary);
+  color: var(--nt-accent);
   transition: opacity 0.2s var(--nt-ease);
 }
 
@@ -294,8 +294,8 @@ h4:hover .header-anchor {
   opacity: 1;
 }
 
-/* ── Selection ────────────────────────────── */
+/* -- Selection ---------------------------------------- */
 ::selection {
-  background: hsl(175 65% 46% / 0.2);
+  background: hsl(24 85% 55% / 0.2);
   color: var(--nt-fg);
 }
