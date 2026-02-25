@@ -1,0 +1,26 @@
+{
+  "name": "@nthtime/cli",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/cli",
+        "command": "node scripts/copy-wasm.js && tsup"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/cli",
+        "command": "vitest run"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/cli",
+        "command": "tsc --build --emitDeclarationOnly"
+      }
+    }
+  }
+}

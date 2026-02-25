@@ -17,6 +17,9 @@
     },
     {
       "path": "./libs/editor"
+    },
+    {
+      "path": "./apps/cli"
     }
   ]
 }

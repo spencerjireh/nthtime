@@ -3,7 +3,9 @@ node_modules/
 
 # Build outputs
 dist/
+dist-test/
 out-tsc/
+apps/cli/wasm/
 .next/
 out/
 docs/.vitepress/dist/

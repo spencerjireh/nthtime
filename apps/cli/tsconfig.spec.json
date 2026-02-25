@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.lib.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist-test",
+    "tsBuildInfoFile": "dist-test/tsconfig.spec.tsbuildinfo",
+    "noUnusedLocals": false,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts"]
+}
