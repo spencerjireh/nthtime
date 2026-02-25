@@ -66,13 +66,25 @@ function discoverPacks(packsDir: string): string[] {
     .filter((p) => existsSync(p));
 }
 
-function loadPack(packJsonPath: string): { manifest: PackManifest; challenges: ChallengeFile[] } {
+interface LoadedChallenge extends ChallengeFile {
+  slug: string;
+}
+
+function deriveSlug(filename: string): string {
+  const match = filename.match(/^\d+-(.+)\.json$/);
+  if (!match) throw new Error(`Cannot derive slug from filename: ${filename}`);
+  return match[1];
+}
+
+function loadPack(packJsonPath: string): { manifest: PackManifest; challenges: LoadedChallenge[] } {
   const packDir = dirname(packJsonPath);
   const manifest: PackManifest = JSON.parse(readFileSync(packJsonPath, 'utf-8'));
 
-  const challenges: ChallengeFile[] = manifest.challenges.map((challengePath) => {
+  const challenges: LoadedChallenge[] = manifest.challenges.map((challengePath) => {
     const fullPath = resolve(packDir, challengePath);
-    return JSON.parse(readFileSync(fullPath, 'utf-8'));
+    const data: ChallengeFile = JSON.parse(readFileSync(fullPath, 'utf-8'));
+    const slug = deriveSlug(basename(challengePath));
+    return { ...data, slug };
   });
 
   return { manifest, challenges };
@@ -86,7 +98,7 @@ function getAdminSecret(): string {
   return secret;
 }
 
-function toSeedPayload(manifest: PackManifest, challenges: ChallengeFile[]) {
+function toSeedPayload(manifest: PackManifest, challenges: LoadedChallenge[]) {
   return {
     name: manifest.name,
     slug: manifest.slug,
@@ -97,6 +109,7 @@ function toSeedPayload(manifest: PackManifest, challenges: ChallengeFile[]) {
     author: manifest.author,
     tags: manifest.tags,
     challenges: challenges.map((c) => ({
+      slug: c.slug,
       title: c.title,
       prompt: c.prompt,
       difficulty: c.difficulty,

@@ -36,6 +36,7 @@ interface ChallengeFile {
 // ── Validation helpers ───────────────────────────────────────────────────────
 
 const VALID_DIFFICULTIES = ['beginner', 'intermediate', 'advanced'];
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function fail(msg: string): string {
   return msg;
@@ -130,9 +131,26 @@ async function validatePack(
   }
 
   // 2. Validate each challenge and run reference solution verification
+  const seenSlugs = new Set<string>();
+
   for (const challengePath of manifest.challenges) {
     const fullPath = resolve(packDir, challengePath);
     const filename = basename(challengePath);
+
+    // Derive and validate slug from filename
+    const slugMatch = filename.match(/^\d+-(.+)\.json$/);
+    if (!slugMatch) {
+      errors.push(`[${filename}] Cannot derive slug from filename (expected NN-slug-name.json)`);
+    } else {
+      const slug = slugMatch[1];
+      if (!SLUG_PATTERN.test(slug)) {
+        errors.push(`[${filename}] Invalid slug "${slug}" (must match ${SLUG_PATTERN})`);
+      }
+      if (seenSlugs.has(slug)) {
+        errors.push(`[${filename}] Duplicate slug "${slug}" within pack`);
+      }
+      seenSlugs.add(slug);
+    }
 
     let challenge: ChallengeFile;
     try {

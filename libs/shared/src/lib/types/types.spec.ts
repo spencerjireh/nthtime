@@ -90,6 +90,7 @@ describe('type compilation', () => {
       challenges: [
         {
           id: 'c1',
+          slug: 'challenge-1',
           title: 'Challenge 1',
           prompt: 'Do something',
           difficulty: Difficulty.Beginner,

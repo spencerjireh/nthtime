@@ -36,6 +36,7 @@ export const get = query({
 export const create = mutation({
   args: {
     packId: v.id('packs'),
+    slug: v.string(),
     title: v.string(),
     prompt: v.string(),
     difficulty: v.string(),
@@ -71,6 +72,7 @@ export const create = mutation({
 export const update = mutation({
   args: {
     challengeId: v.id('challenges'),
+    slug: v.optional(v.string()),
     title: v.optional(v.string()),
     prompt: v.optional(v.string()),
     difficulty: v.optional(v.string()),

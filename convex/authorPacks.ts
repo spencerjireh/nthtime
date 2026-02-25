@@ -65,6 +65,7 @@ export const getBySlug = query({
         .sort((a, b) => a.order - b.order)
         .map((c) => ({
           _id: c._id,
+          slug: c.slug,
           title: c.title,
           difficulty: c.difficulty,
           tags: c.tags,

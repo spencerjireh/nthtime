@@ -81,6 +81,7 @@ function PreviewInner({
   // Map Convex challenge document to Challenge type
   const challengeData: Challenge = {
     id: challenge._id,
+    slug: challenge.slug,
     title: challenge.title,
     prompt: challenge.prompt,
     difficulty: challenge.difficulty as Difficulty,

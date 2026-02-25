@@ -122,6 +122,7 @@ export const getChallenges = query({
       },
       challenges: challenges.map((c) => ({
         _id: c._id,
+        slug: c.slug,
         title: c.title,
         difficulty: c.difficulty,
         tags: c.tags,
@@ -146,6 +147,7 @@ export const search = query({
     return results.map((c) => ({
       _id: c._id,
       packId: c.packId,
+      slug: c.slug,
       title: c.title,
       difficulty: c.difficulty,
       tags: c.tags,

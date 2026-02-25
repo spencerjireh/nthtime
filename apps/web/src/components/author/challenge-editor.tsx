@@ -12,6 +12,13 @@ import { ValidationPanel } from './validation-panel';
 import { useCreateChallenge, useUpdateChallenge, useAuthorPack } from '@/hooks/use-author';
 import { ArrowLeft, Eye, Save } from 'lucide-react';
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 interface ChallengeEditorProps {
   packSlug: string;
   /** Existing challenge data for edit mode. Undefined = create mode. */
@@ -80,6 +87,7 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
       .filter(Boolean);
 
     const challengeData = {
+      slug: existingChallenge?.slug ?? slugify(metadata.title),
       title: metadata.title,
       prompt: metadata.prompt,
       difficulty: metadata.difficulty,

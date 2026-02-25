@@ -24,6 +24,7 @@ export default defineSchema({
 
   challenges: defineTable({
     packId: v.id('packs'),
+    slug: v.string(),
     title: v.string(),
     prompt: v.string(),
     difficulty: v.string(),
@@ -40,6 +41,7 @@ export default defineSchema({
     order: v.number(),
   })
     .index('by_pack', ['packId', 'order'])
+    .index('by_pack_slug', ['packId', 'slug'])
     .searchIndex('search_title', { searchField: 'title' }),
 
   attempts: defineTable({

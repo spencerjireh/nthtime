@@ -21,6 +21,7 @@ function makePack(slug: string, lang = 'javascript', tags = ['basics']) {
     tags,
     challenges: [
       {
+        slug: 'challenge-1',
         title: `Challenge in ${slug}`,
         prompt: 'Do it',
         difficulty: 'beginner',

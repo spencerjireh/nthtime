@@ -17,6 +17,7 @@ export interface PackSummary {
 
 export interface ChallengeSummary {
   _id: string;
+  slug: string;
   title: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   tags: string[];

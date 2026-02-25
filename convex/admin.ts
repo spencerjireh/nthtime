@@ -3,6 +3,7 @@ import type { MutationCtx } from './_generated/server';
 import { ConvexError, v } from 'convex/values';
 
 const packChallengeValidator = v.object({
+  slug: v.string(),
   title: v.string(),
   prompt: v.string(),
   difficulty: v.string(),
@@ -93,6 +94,7 @@ async function upsertPack(
     author: string;
     tags: string[];
     challenges: {
+      slug: string;
       title: string;
       prompt: string;
       difficulty: string;
@@ -151,6 +153,7 @@ async function upsertPack(
     const challenge = pack.challenges[i];
     await ctx.db.insert('challenges', {
       packId,
+      slug: challenge.slug,
       title: challenge.title,
       prompt: challenge.prompt,
       difficulty: challenge.difficulty,

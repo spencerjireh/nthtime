@@ -101,6 +101,7 @@ function useChallengesConvex(slug: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     challenges: data.challenges.map((c: any) => ({
       _id: c._id,
+      slug: c.slug,
       title: c.title,
       difficulty: c.difficulty as ChallengeSummary['difficulty'],
       tags: c.tags,
@@ -121,6 +122,7 @@ function useChallengeConvex(id: string) {
     if (!doc) return null;
     const mapped: Challenge = {
       id: doc._id,
+      slug: doc.slug,
       title: doc.title,
       prompt: doc.prompt,
       difficulty: doc.difficulty as Difficulty,

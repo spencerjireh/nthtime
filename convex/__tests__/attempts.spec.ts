@@ -42,6 +42,7 @@ describe('attempts functions', () => {
       tags: ['basics'],
       challenges: [
         {
+          slug: 'challenge-1',
           title: 'Challenge 1',
           prompt: 'Do it',
           difficulty: 'beginner',
