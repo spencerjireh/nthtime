@@ -14,6 +14,7 @@ import { useDataAccess } from '@/lib/data-access';
 import { getSettingsStore } from '@/lib/settings-store';
 import { challengeHref } from '@/lib/routes';
 import { getMonacoLanguage } from '@nthtime/editor';
+import { PromptText } from './prompt-text';
 import { cn } from '@/lib/utils';
 
 interface SolutionViewProps {
@@ -134,24 +135,7 @@ function SolutionViewContent({
                 ))}
               </div>
               <div className="prose prose-sm prose-invert max-w-none flex-1 text-muted-foreground">
-                {challenge.prompt.split('\n').map((line, i) => {
-                  if (line.startsWith('**') && line.endsWith('**')) {
-                    return (
-                      <p key={i} className="font-semibold text-foreground">
-                        {line.replace(/\*\*/g, '')}
-                      </p>
-                    );
-                  }
-                  if (line.startsWith('- ') || line.match(/^\d+\./)) {
-                    return (
-                      <p key={i} className="ml-2">
-                        {line}
-                      </p>
-                    );
-                  }
-                  if (line.trim() === '') return <br key={i} />;
-                  return <p key={i}>{line}</p>;
-                })}
+                <PromptText prompt={challenge.prompt} />
               </div>
             </div>
           </Panel>

@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button';
 import { getAssertionTechnicalDetail } from './assertion-detail';
 import { getSettingsStore } from '@/lib/settings-store';
 import { getMonacoLanguage, formatTime, loadDraft } from '@nthtime/editor';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 import { challengeHref, solutionHref } from '@/lib/routes';
+import { PromptText } from './prompt-text';
 import type { Challenge, Assertion } from '@nthtime/shared';
 
 interface ChallengeDetailViewProps {
@@ -76,24 +78,7 @@ export function ChallengeDetailView({
         <section className="mb-8">
           <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Description</h2>
           <div className="prose prose-sm prose-invert max-w-none text-muted-foreground">
-            {challenge.prompt.split('\n').map((line, i) => {
-              if (line.startsWith('**') && line.endsWith('**')) {
-                return (
-                  <p key={i} className="font-semibold text-foreground">
-                    {line.replace(/\*\*/g, '')}
-                  </p>
-                );
-              }
-              if (line.startsWith('- ') || line.match(/^\d+\./)) {
-                return (
-                  <p key={i} className="ml-2">
-                    {line}
-                  </p>
-                );
-              }
-              if (line.trim() === '') return <br key={i} />;
-              return <p key={i}>{line}</p>;
-            })}
+            <PromptText prompt={challenge.prompt} />
           </div>
         </section>
 
@@ -139,7 +124,7 @@ export function ChallengeDetailView({
         )}
 
         {/* Reference Solution */}
-        {challenge.referenceSolution !== undefined && (
+        {isFeatureEnabled('solutionView') && challenge.referenceSolution !== undefined && (
           <section className="mb-8">
             <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Reference Solution</h2>
             {feedback.showSolution ? (

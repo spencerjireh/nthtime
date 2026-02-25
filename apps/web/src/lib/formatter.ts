@@ -32,6 +32,21 @@ function getExtension(filePath: string): string {
 }
 
 /**
+ * Format all files, returning a Map of changed paths to their formatted content.
+ */
+export async function formatAllFiles(
+  files: Record<string, { content: string }>,
+  settings: LanguageFormatterSettings,
+): Promise<Map<string, string>> {
+  const changed = new Map<string, string>();
+  for (const [path, file] of Object.entries(files)) {
+    const formatted = await formatCode(file.content, path, settings);
+    if (formatted !== file.content) changed.set(path, formatted);
+  }
+  return changed;
+}
+
+/**
  * Format code using prettier/standalone with dynamic parser loading.
  * Returns original code unchanged on error or for unsupported languages (e.g. Python).
  */

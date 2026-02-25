@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import { useStore } from 'zustand';
 import {
   Dialog,
@@ -18,15 +19,16 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { getSettingsStore } from '@/lib/settings-store';
-import { RESET_LAYOUT_EVENT } from '@/components/challenge/default-layout';
-import type { FeedbackConfig, EditorKeybindings, FormatterTrigger } from '@nthtime/shared';
+import { isFeatureEnabled } from '@/lib/feature-flags';
+import { RESET_LAYOUT_EVENT, clearPanelStorage } from '@/components/challenge/default-layout';
+import type { FeedbackConfig, EditorKeybindings } from '@nthtime/shared';
 
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const FEEDBACK_FLAGS: { key: keyof FeedbackConfig; label: string }[] = [
+const ALL_FEEDBACK_FLAGS: { key: keyof FeedbackConfig; label: string }[] = [
   { key: 'showPassFail', label: 'Show pass/fail per assertion' },
   { key: 'showHints', label: 'Show hints' },
   { key: 'showAssertionDetails', label: 'Show assertion details and line numbers' },
@@ -34,9 +36,22 @@ const FEEDBACK_FLAGS: { key: keyof FeedbackConfig; label: string }[] = [
   { key: 'showSolution', label: 'Show reference solution' },
 ];
 
+const FEEDBACK_FLAGS = isFeatureEnabled('solutionView')
+  ? ALL_FEEDBACK_FLAGS
+  : ALL_FEEDBACK_FLAGS.filter((f) => f.key !== 'showSolution');
+
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const store = getSettingsStore();
   const settings = useStore(store, (s) => s.settings);
+
+  const updateFormatterDefault = useCallback(
+    (key: string, value: unknown) => {
+      store.getState().setFormatter({
+        defaults: { ...store.getState().settings.formatter.defaults, [key]: value },
+      });
+    },
+    [store],
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -126,14 +141,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 </label>
                 <Select
                   value={String(settings.formatter.defaults.tabSize)}
-                  onValueChange={(v) =>
-                    store.getState().setFormatter({
-                      defaults: {
-                        ...settings.formatter.defaults,
-                        tabSize: Number(v),
-                      },
-                    })
-                  }
+                  onValueChange={(v) => updateFormatterDefault('tabSize', Number(v))}
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue />
@@ -149,14 +157,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 <Checkbox
                   id="use-tabs"
                   checked={settings.formatter.defaults.useTabs}
-                  onCheckedChange={(checked) =>
-                    store.getState().setFormatter({
-                      defaults: {
-                        ...settings.formatter.defaults,
-                        useTabs: checked === true,
-                      },
-                    })
-                  }
+                  onCheckedChange={(checked) => updateFormatterDefault('useTabs', checked === true)}
                 />
                 <label
                   htmlFor="use-tabs"
@@ -170,14 +171,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               <label className="text-xs text-muted-foreground">Trigger</label>
               <Select
                 value={settings.formatter.defaults.trigger}
-                onValueChange={(v) =>
-                  store.getState().setFormatter({
-                    defaults: {
-                      ...settings.formatter.defaults,
-                      trigger: v as FormatterTrigger,
-                    },
-                  })
-                }
+                onValueChange={(v) => updateFormatterDefault('trigger', v)}
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue />
@@ -202,9 +196,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               variant="outline"
               size="sm"
               onClick={() => {
-                Object.keys(localStorage)
-                  .filter((k) => k.startsWith('react-resizable-panels'))
-                  .forEach((k) => localStorage.removeItem(k));
+                clearPanelStorage();
                 window.dispatchEvent(new CustomEvent(RESET_LAYOUT_EVENT));
               }}
             >

@@ -9,7 +9,7 @@ import { buildEditorStore, MOCK_VERIFICATION_RESULT } from '../../test-utils';
 const {
   mockStore: mockStoreRef,
   mockRunVerification,
-  mockFormatCode,
+  mockFormatAllFiles,
   mockCreateAttempt,
   mockFormatterTrigger,
   MOCK_CHALLENGE_DATA,
@@ -17,7 +17,7 @@ const {
   return {
     mockStore: { current: null as ReturnType<typeof createStore<EditorStore>> | null },
     mockRunVerification: vi.fn(),
-    mockFormatCode: vi.fn((code: string) => Promise.resolve(code)),
+    mockFormatAllFiles: vi.fn().mockResolvedValue(new Map()),
     mockCreateAttempt: vi.fn().mockResolvedValue(undefined),
     mockFormatterTrigger: { value: 'manual' },
     MOCK_CHALLENGE_DATA: {
@@ -94,7 +94,7 @@ vi.mock('@/lib/run-verification', () => ({
   runVerification: (...args: unknown[]) => mockRunVerification(...args),
 }));
 vi.mock('@/lib/formatter', () => ({
-  formatCode: (...args: unknown[]) => mockFormatCode(...args),
+  formatAllFiles: (...args: unknown[]) => mockFormatAllFiles(...args),
 }));
 vi.mock('@/lib/data-access', () => ({
   useDataAccess: () => ({
@@ -234,7 +234,7 @@ describe('ChallengeView', () => {
       screen.getByTestId('run-button').click();
     });
 
-    expect(mockFormatCode).toHaveBeenCalled();
+    expect(mockFormatAllFiles).toHaveBeenCalled();
   });
 
   it('handleRetry: calls store.retry()', () => {

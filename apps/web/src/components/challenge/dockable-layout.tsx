@@ -13,7 +13,8 @@ import { ChevronsUp } from 'lucide-react';
 import { PromptPanel } from './prompt-panel';
 import { EditorPanel } from './editor-panel';
 import { ChallengeToolbar } from './challenge-toolbar';
-import { DEFAULT_LAYOUT, LAYOUT_GROUP_ID, RESET_LAYOUT_EVENT } from './default-layout';
+import { useEditorStore } from './editor-store-context';
+import { DEFAULT_LAYOUT, LAYOUT_GROUP_ID, RESET_LAYOUT_EVENT, clearPanelStorage } from './default-layout';
 import { getSettingsStore } from '@/lib/settings-store';
 
 interface DockableLayoutProps {
@@ -27,6 +28,9 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
   const promptPanelRef = usePanelRef();
   const mountedRef = useRef(false);
 
+  const timerStartedAt = useEditorStore((s) => s.timer.startedAt);
+  const tickTimer = useEditorStore((s) => s.tickTimer);
+
   const store = getSettingsStore();
   const promptCollapsed = useStore(store, (s) => s.settings.promptCollapsed);
   const toolbarCollapsed = useStore(store, (s) => s.settings.toolbarCollapsed);
@@ -36,11 +40,16 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
   });
 
   const handleReset = useCallback(() => {
-    Object.keys(localStorage)
-      .filter((k) => k.startsWith('react-resizable-panels'))
-      .forEach((k) => localStorage.removeItem(k));
+    clearPanelStorage();
     setResetKey((k) => k + 1);
   }, []);
+
+  // Tick the timer every second while running (lives here so it survives toolbar collapse)
+  useEffect(() => {
+    if (timerStartedAt === null) return;
+    const interval = setInterval(tickTimer, 1000);
+    return () => clearInterval(interval);
+  }, [timerStartedAt, tickTimer]);
 
   useEffect(() => {
     window.addEventListener(RESET_LAYOUT_EVENT, handleReset);

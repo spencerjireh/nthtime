@@ -1,9 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useStore } from 'zustand';
 import dynamic from 'next/dynamic';
-import type { OnMount } from '@monaco-editor/react';
 import { useEditorStore } from './editor-store-context';
 import { MonacoWrapper } from './monaco-wrapper';
 import { SolutionPanel } from './solution-panel';
@@ -12,8 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getSettingsStore } from '@/lib/settings-store';
 import { getMonacoLanguage, formatTime } from '@nthtime/editor';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 import { cn } from '@/lib/utils';
-import { buildDecorationInputs } from '@/lib/build-result-decorations';
+import { useMonacoDecorations } from '@/hooks/use-monaco-decorations';
 import type { VerificationResult } from '@nthtime/shared';
 
 type CodeView = 'submitted' | 'diff' | 'solution';
@@ -43,57 +43,11 @@ export function ResultsView({ children }: ResultsViewProps) {
   const [activeFile, setActiveFile] = useState(() => filePaths[0] ?? null);
   const [codeView, setCodeView] = useState<CodeView>('submitted');
 
-  const [resultsEditor, setResultsEditor] = useState<Parameters<OnMount>[0] | null>(null);
-  const [resultsMonaco, setResultsMonaco] = useState<Parameters<OnMount>[1] | null>(null);
-  const decorationRef = useRef<ReturnType<Parameters<OnMount>[0]['createDecorationsCollection']> | null>(null);
-
-  const handleResultsMount: OnMount = useCallback((ed, mon) => {
-    setResultsEditor(ed);
-    setResultsMonaco(mon);
-    ed.onDidDispose(() => {
-      decorationRef.current = null;
-      setResultsEditor(null);
-      setResultsMonaco(null);
-    });
-  }, []);
-
-  // Apply decorations for failed assertions when showAssertionDetails is on
-  useEffect(() => {
-    if (!resultsEditor || !resultsMonaco || !result || !activeFile) return;
-    if (!feedback.showAssertionDetails) {
-      if (decorationRef.current) {
-        decorationRef.current.clear();
-        decorationRef.current = null;
-      }
-      return;
-    }
-
-    const fileResult = result.fileResults.find((f) => f.file === activeFile);
-    if (!fileResult) return;
-
-    const inputs = buildDecorationInputs(fileResult.results);
-    const decorations = inputs.map((d) => ({
-      range: new resultsMonaco.Range(d.startLine, d.startColumn, d.endLine, d.endColumn),
-      options: {
-        isWholeLine: true,
-        className: 'decoration-fail-line',
-        glyphMarginClassName: 'decoration-fail-glyph',
-        hoverMessage: { value: `**${d.description}**\n\n${d.message}` },
-      },
-    }));
-
-    if (decorationRef.current) {
-      decorationRef.current.clear();
-    }
-    decorationRef.current = resultsEditor.createDecorationsCollection(decorations);
-
-    return () => {
-      if (decorationRef.current) {
-        decorationRef.current.clear();
-        decorationRef.current = null;
-      }
-    };
-  }, [resultsEditor, resultsMonaco, result, activeFile, feedback.showAssertionDetails]);
+  const { onMount: handleResultsMount } = useMonacoDecorations(
+    result,
+    activeFile,
+    feedback.showAssertionDetails,
+  );
 
   const getFileStatus = useCallback(
     (path: string): 'pass' | 'fail' | null => {
@@ -111,7 +65,7 @@ export function ResultsView({ children }: ResultsViewProps) {
   const language = activeFile ? getMonacoLanguage(activeFile) : 'plaintext';
   const showGlyphMargin = feedback.showAssertionDetails;
   const canShowDiff = feedback.showDiff && !!scaffoldFiles;
-  const canShowSolution = feedback.showSolution && !!referenceSolutionFiles;
+  const canShowSolution = isFeatureEnabled('solutionView') && feedback.showSolution && !!referenceSolutionFiles;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">

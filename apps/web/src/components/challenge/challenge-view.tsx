@@ -8,7 +8,8 @@ import { ResultsView } from './results-view';
 import { ResultsNavigation } from './results-navigation';
 import { ChallengeDetailView } from './challenge-detail-view';
 import { runVerification } from '@/lib/run-verification';
-import { formatCode } from '@/lib/formatter';
+import { formatAllFiles } from '@/lib/formatter';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 import { getSettingsStore } from '@/lib/settings-store';
 import { useDataAccess } from '@/lib/data-access';
 import type { Challenge } from '@nthtime/shared';
@@ -126,13 +127,8 @@ function ChallengeViewEditor({
     // Format on submit if enabled
     const { formatter } = getSettingsStore().getState().settings;
     if (formatter.defaults.trigger === 'onSubmit') {
-      const entries = Object.entries(store.files);
-      for (const [path, file] of entries) {
-        const formatted = await formatCode(file.content, path, formatter.defaults);
-        if (formatted !== file.content) {
-          store.setFileContent(path, formatted);
-        }
-      }
+      const changed = await formatAllFiles(store.files, formatter.defaults);
+      changed.forEach((content, path) => store.setFileContent(path, content));
     }
 
     const files = store.getAllFileEntries();
@@ -201,7 +197,7 @@ function ChallengeViewInner({
     );
   }
 
-  if (viewMode === 'solution') {
+  if (viewMode === 'solution' && isFeatureEnabled('solutionView')) {
     return <InlineSolutionLayout />;
   }
 

@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useStore } from 'zustand';
 import { PanelLeft, PanelLeftClose, ChevronsDown } from 'lucide-react';
 import { useEditorStore } from './editor-store-context';
 import { formatTime } from '@nthtime/editor';
 import { Button } from '@/components/ui/button';
 import { getSettingsStore } from '@/lib/settings-store';
-import { formatCode } from '@/lib/formatter';
+import { formatAllFiles } from '@/lib/formatter';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 import { challengeHref } from '@/lib/routes';
 
 interface ChallengeToolbarProps {
@@ -30,7 +31,6 @@ export function ChallengeToolbar({
 }: ChallengeToolbarProps) {
   const runState = useEditorStore((s) => s.runState);
   const timer = useEditorStore((s) => s.timer);
-  const tickTimer = useEditorStore((s) => s.tickTimer);
   const formatter = useStore(getSettingsStore(), (s) => s.settings.formatter);
   const showSolutionSetting = useStore(
     getSettingsStore(),
@@ -44,22 +44,9 @@ export function ChallengeToolbar({
     (s) => s.challengeMetadata?.timeEstimateSeconds ?? 0,
   );
 
-  // Tick the timer every second while running
-  useEffect(() => {
-    if (timer.startedAt === null) return;
-    const interval = setInterval(tickTimer, 1000);
-    return () => clearInterval(interval);
-  }, [timer.startedAt, tickTimer]);
-
   const handleFormat = useCallback(async () => {
-    const settings = formatter.defaults;
-    const entries = Object.entries(files);
-    for (const [path, file] of entries) {
-      const formatted = await formatCode(file.content, path, settings);
-      if (formatted !== file.content) {
-        setFileContent(path, formatted);
-      }
-    }
+    const changed = await formatAllFiles(files, formatter.defaults);
+    changed.forEach((content, path) => setFileContent(path, content));
   }, [files, formatter.defaults, setFileContent]);
 
   const showFormatButton = formatter.defaults.trigger === 'manual';
@@ -81,19 +68,13 @@ export function ChallengeToolbar({
         {timeEstimate > 0 && (
           <span>est. {formatTime(timeEstimate)}</span>
         )}
-        <Link
-          href={challengeHref(challengeId, packSlug, 'details')}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          Details
-        </Link>
-        {showSolutionSetting && referenceSolutionFiles && (
-          <button
-            onClick={showSolution}
-            className="text-muted-foreground hover:text-foreground"
-          >
+        <Button variant="ghost" size="sm" asChild>
+          <Link href={challengeHref(challengeId, packSlug, 'details')}>Details</Link>
+        </Button>
+        {isFeatureEnabled('solutionView') && showSolutionSetting && referenceSolutionFiles && (
+          <Button variant="ghost" size="sm" onClick={showSolution}>
             Solution
-          </button>
+          </Button>
         )}
       </div>
       <div className="flex items-center gap-2">

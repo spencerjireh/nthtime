@@ -1,6 +1,7 @@
 'use client';
 
 import { useEditorStore } from './editor-store-context';
+import { PromptText } from './prompt-text';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
@@ -33,24 +34,7 @@ export function PromptPanel() {
       </div>
 
       <div className="prose prose-sm prose-invert mb-6 max-w-none flex-1 text-muted-foreground">
-        {prompt.split('\n').map((line, i) => {
-          if (line.startsWith('**') && line.endsWith('**')) {
-            return (
-              <p key={i} className="font-semibold text-foreground">
-                {line.replace(/\*\*/g, '')}
-              </p>
-            );
-          }
-          if (line.startsWith('- ') || line.match(/^\d+\./)) {
-            return (
-              <p key={i} className="ml-2">
-                {line}
-              </p>
-            );
-          }
-          if (line.trim() === '') return <br key={i} />;
-          return <p key={i}>{line}</p>;
-        })}
+        <PromptText prompt={prompt} />
       </div>
 
       <div className="border-t border-border pt-4">
