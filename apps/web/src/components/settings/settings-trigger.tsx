@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SettingsDialog } from './settings-dialog';
+import { useSettingsSync } from './use-settings-sync';
 
 export function SettingsTrigger() {
+  useSettingsSync();
   const [open, setOpen] = useState(false);
 
   return (
