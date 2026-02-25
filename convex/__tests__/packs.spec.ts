@@ -3,6 +3,11 @@ import { convexTest } from 'convex-test';
 import { api } from '../_generated/api';
 import schema from '../schema';
 
+// Mock rate limiter to bypass in tests
+vi.mock('../rateLimits', () => ({
+  rateLimiter: { limit: vi.fn().mockResolvedValue({ ok: true }) },
+}));
+
 const modules = import.meta.glob('../**/*.ts');
 
 function makePack(slug: string, lang = 'javascript', tags = ['basics']) {
@@ -35,13 +40,14 @@ describe('packs queries', () => {
     vi.stubEnv('ADMIN_SECRET', 'test-secret');
   });
 
-  it('list returns all packs', async () => {
+  it('list returns all packs with availableTags', async () => {
     const t = convexTest(schema, modules);
     await t.mutation(api.admin.seedPack, { adminSecret: 'test-secret', ...makePack('pack-a') });
     await t.mutation(api.admin.seedPack, { adminSecret: 'test-secret', ...makePack('pack-b') });
 
-    const packs = await t.query(api.packs.list, {});
-    expect(packs).toHaveLength(2);
+    const result = await t.query(api.packs.list, {});
+    expect(result.packs).toHaveLength(2);
+    expect(result.availableTags).toEqual(['basics']);
   });
 
   it('list filters by language', async () => {
@@ -49,9 +55,11 @@ describe('packs queries', () => {
     await t.mutation(api.admin.seedPack, { adminSecret: 'test-secret', ...makePack('js-pack', 'javascript') });
     await t.mutation(api.admin.seedPack, { adminSecret: 'test-secret', ...makePack('py-pack', 'python') });
 
-    const jsPacks = await t.query(api.packs.list, { language: 'javascript' });
-    expect(jsPacks).toHaveLength(1);
-    expect(jsPacks[0].slug).toBe('js-pack');
+    const result = await t.query(api.packs.list, { language: 'javascript' });
+    expect(result.packs).toHaveLength(1);
+    expect(result.packs[0].slug).toBe('js-pack');
+    // availableTags includes tags from ALL packs (collected before filtering)
+    expect(result.availableTags).toEqual(['basics']);
   });
 
   it('list filters by tags', async () => {
@@ -59,9 +67,10 @@ describe('packs queries', () => {
     await t.mutation(api.admin.seedPack, { adminSecret: 'test-secret', ...makePack('pack-a', 'javascript', ['react', 'frontend']) });
     await t.mutation(api.admin.seedPack, { adminSecret: 'test-secret', ...makePack('pack-b', 'javascript', ['express', 'backend']) });
 
-    const reactPacks = await t.query(api.packs.list, { tags: ['react'] });
-    expect(reactPacks).toHaveLength(1);
-    expect(reactPacks[0].slug).toBe('pack-a');
+    const result = await t.query(api.packs.list, { tags: ['react'] });
+    expect(result.packs).toHaveLength(1);
+    expect(result.packs[0].slug).toBe('pack-a');
+    expect(result.availableTags).toEqual(['backend', 'express', 'frontend', 'react']);
   });
 
   it('getChallenges returns pack and challenges', async () => {

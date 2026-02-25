@@ -29,14 +29,13 @@ export function CatalogPage({
     [tags],
   );
 
-  const { packs, isLoading } = usePackList({
+  const { packs, availableTags, isLoading } = usePackList({
     language,
     difficulty,
     tags: selectedTags,
     status,
     searchQuery,
   });
-  const { packs: allPacks } = usePackList({});
 
   const updateParams = useCallback(
     (updates: Record<string, string>) => {
@@ -76,14 +75,6 @@ export function CatalogPage({
     (s: CompletionStatus) => updateParams({ status: s }),
     [updateParams],
   );
-
-  const availableTags = useMemo(() => {
-    const tagSet = new Set<string>();
-    for (const pack of allPacks) {
-      for (const tag of pack.tags) tagSet.add(tag);
-    }
-    return [...tagSet].sort();
-  }, [allPacks]);
 
   return (
     <div className="mx-auto max-w-screen-2xl space-y-6 px-9 py-10">

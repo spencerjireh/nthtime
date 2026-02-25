@@ -44,6 +44,7 @@ export interface CreateAttemptArgs {
 export interface DataAccessHooks {
   usePackList: (filters: PackListFilters) => {
     packs: PackSummary[];
+    availableTags: string[];
     isLoading: boolean;
   };
   useChallenges: (slug: string) => {

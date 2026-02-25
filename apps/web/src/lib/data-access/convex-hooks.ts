@@ -23,16 +23,20 @@ function getApi() {
 }
 
 function usePackListConvex(filters: PackListFilters) {
-  const rawPacks = useQuery(getApi().packs.list, {
+  const args = {
     language: filters.language || undefined,
     difficulty: filters.difficulty || undefined,
     tags: filters.tags?.length ? filters.tags : undefined,
-  });
+  };
+  const data = useQuery(getApi().packs.list, args) as
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | { packs: any[]; availableTags: string[] }
+    | undefined;
 
-  if (!rawPacks) return { packs: [] as PackSummary[], isLoading: true };
+  if (!data) return { packs: [] as PackSummary[], availableTags: [] as string[], isLoading: true };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let packs: PackSummary[] = rawPacks.map((p: any) => ({
+  let packs: PackSummary[] = data.packs.map((p: any) => ({
     _id: p._id,
     name: p.name,
     slug: p.slug,
@@ -68,17 +72,27 @@ function usePackListConvex(filters: PackListFilters) {
     });
   }
 
-  return { packs, isLoading: false };
+  return { packs, availableTags: data.availableTags, isLoading: false };
 }
 
 function useChallengesConvex(slug: string) {
-  const data = useQuery(getApi().packs.getChallenges, { slug });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = useQuery(getApi().packs.getChallenges, { slug }) as any | undefined;
 
-  if (!data) {
+  // undefined = still loading; null = pack not found
+  if (data === undefined) {
     return {
       pack: null,
       challenges: [] as ChallengeSummary[],
       isLoading: true,
+    };
+  }
+
+  if (data === null) {
+    return {
+      pack: null,
+      challenges: [] as ChallengeSummary[],
+      isLoading: false,
     };
   }
 
@@ -99,9 +113,11 @@ function useChallengesConvex(slug: string) {
 }
 
 function useChallengeConvex(id: string) {
-  const doc = useQuery(getApi().challenges.get, { id });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const doc = useQuery(getApi().challenges.get, { id }) as any | undefined;
 
   const challenge = useMemo(() => {
+    // undefined = loading, null = not found
     if (!doc) return null;
     const mapped: Challenge = {
       id: doc._id,

@@ -12,8 +12,25 @@ export const list = query({
     const userId = await getAuthUserId(ctx);
     const packs = await ctx.db.query('packs').collect();
 
+    // Fetch all user attempts once (N+1 fix: was inside per-pack loop)
+    let passedChallengeIds = new Set<string>();
+    if (userId) {
+      const attempts = await ctx.db
+        .query('attempts')
+        .withIndex('by_user', (q) => q.eq('userId', userId))
+        .collect();
+      passedChallengeIds = new Set(
+        attempts.filter((a) => a.passed).map((a) => a.challengeId),
+      );
+    }
+
+    // Collect all tags across packs before filtering
+    const allTags = new Set<string>();
+
     const result = await Promise.all(
       packs.map(async (pack) => {
+        for (const tag of pack.tags) allTags.add(tag);
+
         const challenges = await ctx.db
           .query('challenges')
           .withIndex('by_pack', (q) => q.eq('packId', pack._id))
@@ -24,19 +41,9 @@ export const list = query({
           ? challenges.filter((c) => c.difficulty === args.difficulty)
           : challenges;
 
-        let passedCount = 0;
-        if (userId) {
-          const attempts = await ctx.db
-            .query('attempts')
-            .withIndex('by_user', (q) => q.eq('userId', userId))
-            .collect();
-          const passedChallengeIds = new Set(
-            attempts.filter((a) => a.passed).map((a) => a.challengeId),
-          );
-          passedCount = filtered.filter((c) =>
-            passedChallengeIds.has(c._id),
-          ).length;
-        }
+        const passedCount = filtered.filter((c) =>
+          passedChallengeIds.has(c._id),
+        ).length;
 
         return {
           ...pack,
@@ -55,7 +62,7 @@ export const list = query({
       const tagSet = new Set(args.tags);
       filtered = filtered.filter((p) => p.tags.some((t: string) => tagSet.has(t)));
     }
-    return filtered;
+    return { packs: filtered, availableTags: [...allTags].sort() };
   },
 });
 
