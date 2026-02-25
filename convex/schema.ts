@@ -14,7 +14,13 @@ export default defineSchema({
     version: v.string(),
     author: v.string(),
     tags: v.array(v.string()),
-  }).index('by_slug', ['slug']),
+    authorUserId: v.optional(v.id('users')),
+    visibility: v.optional(v.string()),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
+  })
+    .index('by_slug', ['slug'])
+    .index('by_author', ['authorUserId']),
 
   challenges: defineTable({
     packId: v.id('packs'),
@@ -45,7 +51,8 @@ export default defineSchema({
     timeSeconds: v.number(),
   })
     .index('by_user_challenge', ['userId', 'challengeId'])
-    .index('by_user', ['userId']),
+    .index('by_user', ['userId'])
+    .index('by_challenge', ['challengeId']),
 
   userSettings: defineTable({
     userId: v.id('users'),

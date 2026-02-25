@@ -4,6 +4,7 @@ import { ThemeToggle } from './theme-toggle';
 import { SettingsTrigger } from './settings/settings-trigger';
 import { ConditionalUserMenu } from './auth/conditional-user-menu';
 import { ConditionalFooter } from './conditional-footer';
+import { ConditionalAuthorLink } from './author/conditional-author-link';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -25,10 +26,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               nthtime
             </span>
           </Link>
-          <div className="flex items-center gap-1">
-            <SettingsTrigger />
-            <ThemeToggle />
-            <ConditionalUserMenu />
+          <div className="flex items-center gap-3">
+            <ConditionalAuthorLink />
+            <div className="flex items-center gap-1">
+              <SettingsTrigger />
+              <ThemeToggle />
+              <ConditionalUserMenu />
+            </div>
           </div>
         </div>
       </header>

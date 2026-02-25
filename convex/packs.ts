@@ -27,8 +27,15 @@ export const list = query({
     // Collect all tags across packs before filtering
     const allTags = new Set<string>();
 
+    // Filter out private/unlisted packs unless the user is the author
+    const visiblePacks = packs.filter((pack) => {
+      const vis = pack.visibility ?? 'public';
+      if (vis === 'public') return true;
+      return userId !== null && pack.authorUserId === userId;
+    });
+
     const result = await Promise.all(
-      packs.map(async (pack) => {
+      visiblePacks.map(async (pack) => {
         for (const tag of pack.tags) allTags.add(tag);
 
         const challenges = await ctx.db
@@ -75,6 +82,10 @@ export const getChallenges = query({
       .withIndex('by_slug', (q) => q.eq('slug', args.slug))
       .unique();
     if (!pack) return null;
+
+    // Private packs only visible to author
+    const vis = pack.visibility ?? 'public';
+    if (vis === 'private' && (!userId || pack.authorUserId !== userId)) return null;
 
     const challenges = await ctx.db
       .query('challenges')
