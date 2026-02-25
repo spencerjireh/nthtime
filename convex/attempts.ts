@@ -1,7 +1,7 @@
 import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 import { getAuthUserId } from '@convex-dev/auth/server';
-import { checkAttemptRateLimit } from './rateLimit';
+import { rateLimiter } from './rateLimits';
 
 export const create = mutation({
   args: {
@@ -15,7 +15,7 @@ export const create = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error('Not authenticated');
 
-    await checkAttemptRateLimit(ctx, userId, { maxRequests: 10, windowMs: 60_000 });
+    await rateLimiter.limit(ctx, 'attempts:create', { key: userId, throws: true });
 
     return await ctx.db.insert('attempts', {
       userId,

@@ -11,6 +11,11 @@ vi.mock('@convex-dev/auth/server', () => ({
   authTables: {},
 }));
 
+// Mock rate limiter to bypass in tests
+vi.mock('../rateLimits', () => ({
+  rateLimiter: { limit: vi.fn().mockResolvedValue({ ok: true }) },
+}));
+
 const modules = import.meta.glob('../**/*.ts');
 
 async function createTestUser(t: ReturnType<typeof convexTest>) {

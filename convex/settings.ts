@@ -1,7 +1,7 @@
 import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 import { getAuthUserId } from '@convex-dev/auth/server';
-import { checkSettingsRateLimit } from './rateLimit';
+import { rateLimiter } from './rateLimits';
 
 // Keep in sync with libs/shared/src/lib/types/settings.ts DEFAULT_FEEDBACK
 const DEFAULT_FEEDBACK = {
@@ -80,7 +80,7 @@ export const update = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error('Not authenticated');
 
-    await checkSettingsRateLimit(ctx, userId, { maxRequests: 20, windowMs: 60_000 });
+    await rateLimiter.limit(ctx, 'settings:update', { key: userId, throws: true });
 
     const existing = await ctx.db
       .query('userSettings')

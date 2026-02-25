@@ -11,6 +11,11 @@ vi.mock('@convex-dev/auth/server', () => ({
   authTables: {},
 }));
 
+// Mock rate limiter to bypass in tests
+vi.mock('../rateLimits', () => ({
+  rateLimiter: { limit: vi.fn().mockResolvedValue({ ok: true }) },
+}));
+
 const modules = import.meta.glob('../**/*.ts');
 
 async function createTestUser(t: ReturnType<typeof convexTest>) {
@@ -55,25 +60,18 @@ describe('settings functions', () => {
   });
 
   it('update patches existing settings', async () => {
-    vi.useFakeTimers();
     const t = convexTest(schema, modules);
     _mockUserId = await createTestUser(t);
 
     await t.mutation(api.settings.update, { keybindings: 'vim' });
-
-    // Advance past rate limit window (minInterval = 60000/20 = 3s)
-    vi.advanceTimersByTime(4000);
-
     await t.mutation(api.settings.update, { darkMode: false });
 
     const settings = await t.query(api.settings.get, {});
     expect(settings.keybindings).toBe('vim');
     expect(settings.darkMode).toBe(false);
-    vi.useRealTimers();
   });
 
   it('update saves feedback flags', async () => {
-    vi.useFakeTimers();
     const t = convexTest(schema, modules);
     _mockUserId = await createTestUser(t);
 
@@ -86,7 +84,6 @@ describe('settings functions', () => {
     expect(settings.feedback.showSolution).toBe(true);
     // Other feedback flags at defaults
     expect(settings.feedback.showPassFail).toBe(true);
-    vi.useRealTimers();
   });
 
   it('update rejects unauthenticated user', async () => {
