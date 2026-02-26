@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useStore } from 'zustand';
 import dynamic from 'next/dynamic';
+import { useTheme } from 'next-themes';
 import { useEditorStore } from './editor-store-context';
 import { MonacoWrapper } from './monaco-wrapper';
 import { SolutionPanel } from './solution-panel';
@@ -35,6 +36,8 @@ export function ResultsView({ children }: ResultsViewProps) {
   const totalHints = useEditorStore((s) => s.totalHints);
   const revealNextHint = useEditorStore((s) => s.revealNextHint);
   const feedback = useStore(getSettingsStore(), (s) => s.settings.feedback);
+  const { resolvedTheme } = useTheme();
+  const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
 
   const filePaths = useMemo(
     () => (submittedFiles ? Object.keys(submittedFiles) : []),
@@ -166,7 +169,7 @@ export function ResultsView({ children }: ResultsViewProps) {
               <MonacoWrapper
                 value={activeContent}
                 language={language}
-                theme="vs-dark"
+                theme={monacoTheme}
                 onMount={handleResultsMount}
                 options={{ readOnly: true, glyphMargin: showGlyphMargin }}
               />

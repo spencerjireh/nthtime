@@ -62,11 +62,10 @@ export async function formatCode(
   if (!parser) return code;
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const prettier = await import('prettier/standalone') as any;
+    const prettier = await import('prettier/standalone');
     const plugin = await getPlugin(parser === 'json' ? 'babel' : parser);
 
-    const result: string = prettier.format(code, {
+    const result: string = await prettier.format(code, {
       parser: parser === 'json' ? 'json' : parser,
       plugins: [plugin],
       tabWidth: settings.tabSize,

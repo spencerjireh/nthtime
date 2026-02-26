@@ -10,4 +10,7 @@ export default defineConfig({
   clean: true,
   noExternal: ['@nthtime/shared', '@nthtime/verification'],
   external: ['web-tree-sitter', 'fsevents'],
+  esbuildOptions(options) {
+    options.jsx = 'automatic';
+  },
 });

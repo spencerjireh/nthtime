@@ -4,7 +4,6 @@ import { GeistMono } from 'geist/font/mono';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AppShell } from '@/components/app-shell';
 import { ConvexClientProvider } from '@/lib/convex/provider';
-import { DataAccessProvider } from '@/lib/data-access';
 
 export const metadata = {
   title: 'nthtime',
@@ -24,11 +23,9 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body className="font-mono">
         <ConvexClientProvider>
-          <DataAccessProvider>
-            <ThemeProvider>
-              <AppShell>{children}</AppShell>
-            </ThemeProvider>
-          </DataAccessProvider>
+          <ThemeProvider>
+            <AppShell>{children}</AppShell>
+          </ThemeProvider>
         </ConvexClientProvider>
       </body>
     </html>

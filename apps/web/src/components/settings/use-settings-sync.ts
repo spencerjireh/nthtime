@@ -29,11 +29,6 @@ export function useSettingsSync() {
   const initialSyncDone = useRef(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  // Hydrate from localStorage on mount
-  useEffect(() => {
-    store.getState().hydrate();
-  }, [store]);
-
   // Fetch server settings when authenticated
   const serverSettings = useQuery(getApi().settings.get, isAuthenticated ? {} : 'skip') as
     | Record<string, unknown>

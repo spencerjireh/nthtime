@@ -75,9 +75,9 @@ function usePackListConvex(filters: PackListFilters) {
   return { packs, availableTags: data.availableTags, isLoading: false };
 }
 
-function useChallengesConvex(slug: string) {
+function useChallengesConvex(slug: string | undefined) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data = useQuery(getApi().packs.getChallenges, { slug }) as any | undefined;
+  const data = useQuery(getApi().packs.getChallenges, slug ? { slug } : 'skip') as any | undefined;
 
   // undefined = still loading; null = pack not found
   if (data === undefined) {

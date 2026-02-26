@@ -82,88 +82,77 @@ function loadFromLocalStorage(): UserSettings | null {
 }
 
 export function createSettingsStore() {
-  return createStore<SettingsStore>((set) => ({
-    settings: DEFAULT_SETTINGS,
-    loaded: false,
-
-    setFeedback(config) {
+  return createStore<SettingsStore>((set) => {
+    const update = (patch: Partial<UserSettings>) =>
       set((state) => {
-        const settings = {
-          ...state.settings,
-          feedback: { ...state.settings.feedback, ...config },
-        };
+        const settings = { ...state.settings, ...patch };
         persistToLocalStorage(settings);
         return { settings };
       });
-    },
 
-    setKeybindings(kb) {
-      set((state) => {
-        const settings = { ...state.settings, keybindings: kb };
-        persistToLocalStorage(settings);
-        return { settings };
-      });
-    },
+    return {
+      settings: DEFAULT_SETTINGS,
+      loaded: false,
 
-    setDarkMode(dark) {
-      set((state) => {
-        const settings = { ...state.settings, darkMode: dark };
-        persistToLocalStorage(settings);
-        return { settings };
-      });
-    },
+      setFeedback(config) {
+        set((state) => {
+          const settings = {
+            ...state.settings,
+            feedback: { ...state.settings.feedback, ...config },
+          };
+          persistToLocalStorage(settings);
+          return { settings };
+        });
+      },
 
-    setAutocomplete(enabled) {
-      set((state) => {
-        const settings = { ...state.settings, autocomplete: enabled };
-        persistToLocalStorage(settings);
-        return { settings };
-      });
-    },
+      setKeybindings(kb) {
+        update({ keybindings: kb });
+      },
 
-    setPromptCollapsed(collapsed) {
-      set((state) => {
-        const settings = { ...state.settings, promptCollapsed: collapsed };
-        persistToLocalStorage(settings);
-        return { settings };
-      });
-    },
+      setDarkMode(dark) {
+        update({ darkMode: dark });
+      },
 
-    setToolbarCollapsed(collapsed) {
-      set((state) => {
-        const settings = { ...state.settings, toolbarCollapsed: collapsed };
-        persistToLocalStorage(settings);
-        return { settings };
-      });
-    },
+      setAutocomplete(enabled) {
+        update({ autocomplete: enabled });
+      },
 
-    setFormatter(config) {
-      set((state) => {
-        const settings = {
-          ...state.settings,
-          formatter: { ...state.settings.formatter, ...config },
-        };
-        persistToLocalStorage(settings);
-        return { settings };
-      });
-    },
+      setPromptCollapsed(collapsed) {
+        update({ promptCollapsed: collapsed });
+      },
 
-    syncFromServer(serverSettings) {
-      set((state) => ({
-        settings: { ...state.settings, ...serverSettings },
-        loaded: true,
-      }));
-    },
+      setToolbarCollapsed(collapsed) {
+        update({ toolbarCollapsed: collapsed });
+      },
 
-    hydrate() {
-      const stored = loadFromLocalStorage();
-      if (stored) {
-        set({ settings: { ...DEFAULT_SETTINGS, ...stored }, loaded: true });
-      } else {
-        set({ loaded: true });
-      }
-    },
-  }));
+      setFormatter(config) {
+        set((state) => {
+          const settings = {
+            ...state.settings,
+            formatter: { ...state.settings.formatter, ...config },
+          };
+          persistToLocalStorage(settings);
+          return { settings };
+        });
+      },
+
+      syncFromServer(serverSettings) {
+        set((state) => ({
+          settings: { ...state.settings, ...serverSettings },
+          loaded: true,
+        }));
+      },
+
+      hydrate() {
+        const stored = loadFromLocalStorage();
+        if (stored) {
+          set({ settings: { ...DEFAULT_SETTINGS, ...stored }, loaded: true });
+        } else {
+          set({ loaded: true });
+        }
+      },
+    };
+  });
 }
 
 // Singleton store for app-wide usage.

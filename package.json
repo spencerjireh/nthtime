@@ -18,7 +18,8 @@
     "benchmark": "npx tsx tools/benchmark.ts",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "nthtime": "node apps/cli/dist/cli.js"
   },
   "packageManager": "pnpm@10.23.0",
   "private": true,

@@ -54,59 +54,47 @@ export function FileEditorTab({ initialFiles, onChange }: FileEditorTabProps) {
 
   const isDirty = useCallback((path: string) => store.getState().isDirty(path), [store]);
 
+  const notifyParent = useCallback(() => {
+    onChange?.(
+      Object.values(store.getState().files).map((f) => ({
+        path: f.path,
+        content: f.content,
+      })),
+    );
+  }, [store, onChange]);
+
   const handleFileChange = useCallback(
     (value: string | undefined) => {
       if (activeFilePath && value !== undefined) {
         store.getState().setFileContent(activeFilePath, value);
-        // Notify parent of all files
-        onChange?.(
-          Object.values(store.getState().files).map((f) => ({
-            path: f.path,
-            content: f.content,
-          })),
-        );
+        notifyParent();
       }
     },
-    [activeFilePath, store, onChange],
+    [activeFilePath, store, notifyParent],
   );
 
   const handleCreateFile = useCallback(
     (path: string) => {
       store.getState().createFile(path, '');
-      onChange?.(
-        Object.values(store.getState().files).map((f) => ({
-          path: f.path,
-          content: f.content,
-        })),
-      );
+      notifyParent();
     },
-    [store, onChange],
+    [store, notifyParent],
   );
 
   const handleRenameFile = useCallback(
     (oldPath: string, newPath: string) => {
       store.getState().renameFile(oldPath, newPath);
-      onChange?.(
-        Object.values(store.getState().files).map((f) => ({
-          path: f.path,
-          content: f.content,
-        })),
-      );
+      notifyParent();
     },
-    [store, onChange],
+    [store, notifyParent],
   );
 
   const handleDeleteFile = useCallback(
     (path: string) => {
       store.getState().deleteFile(path);
-      onChange?.(
-        Object.values(store.getState().files).map((f) => ({
-          path: f.path,
-          content: f.content,
-        })),
-      );
+      notifyParent();
     },
-    [store, onChange],
+    [store, notifyParent],
   );
 
   return (

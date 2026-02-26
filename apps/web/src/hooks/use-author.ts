@@ -46,33 +46,11 @@ export function useCheckSlugAvailable(slug: string, excludePackId?: string) {
 // -- Pack mutations --
 
 export function useCreatePack() {
-  const create = useMutation(getApi().authorPacks.create);
-  return useCallback(
-    async (args: {
-      name: string;
-      slug: string;
-      description: string;
-      language: string;
-      framework?: string;
-      version: string;
-      tags: string[];
-      visibility?: string;
-    }) => {
-      return await create(args);
-    },
-    [create],
-  );
+  return useMutation(getApi().authorPacks.create);
 }
 
 export function useUpdatePack() {
-  const update = useMutation(getApi().authorPacks.update);
-  return useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (args: { packId: any } & Record<string, unknown>) => {
-      return await update(args);
-    },
-    [update],
-  );
+  return useMutation(getApi().authorPacks.update);
 }
 
 export function useDeletePack() {
@@ -89,7 +67,6 @@ export function useDeletePack() {
 // -- Challenge queries --
 
 export function useAuthorChallenge(challengeId: string | null) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data = useQuery(getApi().authorChallenges.get, challengeId ? { challengeId } : 'skip') as
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any | undefined;
@@ -100,25 +77,11 @@ export function useAuthorChallenge(challengeId: string | null) {
 // -- Challenge mutations --
 
 export function useCreateChallenge() {
-  const create = useMutation(getApi().authorChallenges.create);
-  return useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (args: any) => {
-      return await create(args);
-    },
-    [create],
-  );
+  return useMutation(getApi().authorChallenges.create);
 }
 
 export function useUpdateChallenge() {
-  const update = useMutation(getApi().authorChallenges.update);
-  return useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (args: any) => {
-      return await update(args);
-    },
-    [update],
-  );
+  return useMutation(getApi().authorChallenges.update);
 }
 
 export function useDeleteChallenge() {

@@ -3,21 +3,10 @@
 import { PackCard } from './pack-card';
 import { PackGridSkeleton } from './pack-grid-skeleton';
 import { EmptyState } from './empty-state';
-
-interface PackData {
-  _id: string;
-  name: string;
-  slug: string;
-  description: string;
-  language: string;
-  framework?: string;
-  tags: string[];
-  challengeCount: number;
-  passedCount: number;
-}
+import type { PackSummary } from '@/lib/data-access/types';
 
 interface PackGridProps {
-  packs: PackData[] | undefined;
+  packs: PackSummary[] | undefined;
   isLoading: boolean;
   searchQuery?: string;
 }

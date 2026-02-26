@@ -82,7 +82,7 @@ export function renderWithEditorStore(
 ) {
   const store = buildEditorStore(overrides);
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <EditorStoreContext.Provider value={store}>{children}</EditorStoreContext.Provider>
+    <EditorStoreContext value={store}>{children}</EditorStoreContext>
   );
   return {
     store,
@@ -128,7 +128,7 @@ export const MOCK_VERIFICATION_RESULT: VerificationResult = {
   crossFileResults: [
     {
       assertion: {
-        type: 'exportPresence',
+        type: 'exportDeclaration',
         name: 'greet',
         exportKind: 'named',
         description: 'greet is exported',

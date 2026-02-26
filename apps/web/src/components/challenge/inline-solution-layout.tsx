@@ -6,6 +6,7 @@ import {
   Panel,
   Separator,
 } from 'react-resizable-panels';
+import { useTheme } from 'next-themes';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MonacoWrapper } from './monaco-wrapper';
@@ -18,6 +19,9 @@ export default function InlineSolutionLayout() {
   const referenceSolutionFiles = useEditorStore((s) => s.referenceSolutionFiles);
   const metadata = useEditorStore((s) => s.challengeMetadata);
   const hideSolution = useEditorStore((s) => s.hideSolution);
+
+  const { resolvedTheme } = useTheme();
+  const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
 
   const files = referenceSolutionFiles
     ? Object.values(referenceSolutionFiles)
@@ -55,7 +59,7 @@ export default function InlineSolutionLayout() {
                       </Badge>
                     ))}
                   </div>
-                  <div className="prose prose-sm prose-invert max-w-none flex-1 text-muted-foreground">
+                  <div className="prose prose-sm dark:prose-invert max-w-none flex-1 text-muted-foreground">
                     <PromptText prompt={metadata.prompt} />
                   </div>
                 </>
@@ -87,7 +91,7 @@ export default function InlineSolutionLayout() {
                 <MonacoWrapper
                   value={activeFile.content}
                   language={language}
-                  theme="vs-dark"
+                  theme={monacoTheme}
                   options={{ readOnly: true }}
                 />
               </div>

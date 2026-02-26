@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from 'next-themes';
 import { MonacoWrapper } from './monaco-wrapper';
 
 interface SolutionPanelProps {
@@ -8,6 +9,9 @@ interface SolutionPanelProps {
 }
 
 export function SolutionPanel({ content, language }: SolutionPanelProps) {
+  const { resolvedTheme } = useTheme();
+  const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
+
   return (
     <div className="flex h-full flex-col" data-testid="solution-panel">
       <div className="flex shrink-0 items-center border-b border-border bg-muted/30 px-3 py-1">
@@ -17,7 +21,7 @@ export function SolutionPanel({ content, language }: SolutionPanelProps) {
         <MonacoWrapper
           value={content}
           language={language}
-          theme="vs-dark"
+          theme={monacoTheme}
           options={{ readOnly: true }}
         />
       </div>

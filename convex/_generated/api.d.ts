@@ -11,6 +11,8 @@
 import type * as admin from "../admin.js";
 import type * as attempts from "../attempts.js";
 import type * as auth from "../auth.js";
+import type * as authorChallenges from "../authorChallenges.js";
+import type * as authorPacks from "../authorPacks.js";
 import type * as challenges from "../challenges.js";
 import type * as http from "../http.js";
 import type * as packs from "../packs.js";
@@ -27,6 +29,8 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   attempts: typeof attempts;
   auth: typeof auth;
+  authorChallenges: typeof authorChallenges;
+  authorPacks: typeof authorPacks;
   challenges: typeof challenges;
   http: typeof http;
   packs: typeof packs;

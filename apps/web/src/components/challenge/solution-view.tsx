@@ -8,6 +8,7 @@ import {
   Panel,
   Separator,
 } from 'react-resizable-panels';
+import { useTheme } from 'next-themes';
 import { Badge } from '@/components/ui/badge';
 import { MonacoWrapper } from './monaco-wrapper';
 import { useDataAccess } from '@/lib/data-access';
@@ -16,6 +17,7 @@ import { challengeHref } from '@/lib/routes';
 import { getMonacoLanguage } from '@nthtime/editor';
 import { PromptText } from './prompt-text';
 import { cn } from '@/lib/utils';
+import type { Challenge } from '@nthtime/shared';
 
 interface SolutionViewProps {
   challengeId: string;
@@ -92,16 +94,13 @@ function SolutionViewContent({
   challengeId,
   packSlug,
 }: {
-  challenge: {
-    title: string;
-    prompt: string;
-    difficulty: string;
-    tags: readonly string[];
-    referenceSolution?: readonly { path: string; content: string }[];
-  };
+  challenge: Challenge;
   challengeId: string;
   packSlug?: string;
 }) {
+  const { resolvedTheme } = useTheme();
+  const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
+
   const files = challenge.referenceSolution!;
   const [activeFilePath, setActiveFilePath] = useState(files[0].path);
   const activeFile = files.find((f) => f.path === activeFilePath) ?? files[0];
@@ -125,7 +124,7 @@ function SolutionViewContent({
                 {challenge.title}
               </h2>
               <div className="mb-4 flex flex-wrap gap-1.5">
-                <Badge variant={challenge.difficulty as 'beginner' | 'intermediate' | 'advanced'}>
+                <Badge variant={challenge.difficulty}>
                   {challenge.difficulty}
                 </Badge>
                 {challenge.tags.map((tag) => (
@@ -134,7 +133,7 @@ function SolutionViewContent({
                   </Badge>
                 ))}
               </div>
-              <div className="prose prose-sm prose-invert max-w-none flex-1 text-muted-foreground">
+              <div className="prose prose-sm dark:prose-invert max-w-none flex-1 text-muted-foreground">
                 <PromptText prompt={challenge.prompt} />
               </div>
             </div>
@@ -164,7 +163,7 @@ function SolutionViewContent({
                 <MonacoWrapper
                   value={activeFile.content}
                   language={language}
-                  theme="vs-dark"
+                  theme={monacoTheme}
                   options={{ readOnly: true }}
                 />
               </div>

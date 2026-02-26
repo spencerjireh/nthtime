@@ -11,13 +11,7 @@ import { AssertionEditor } from './assertion-editor';
 import { ValidationPanel } from './validation-panel';
 import { useCreateChallenge, useUpdateChallenge, useAuthorPack } from '@/hooks/use-author';
 import { ArrowLeft, Eye, Save } from 'lucide-react';
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
+import { slugify } from '@/lib/author/slug-utils';
 
 interface ChallengeEditorProps {
   packSlug: string;

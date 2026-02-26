@@ -66,7 +66,7 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
         promptPanelRef.current?.collapse();
       });
     }
-  }, [promptCollapsed, promptPanelRef]);
+  }, []);
 
   const togglePrompt = useCallback(() => {
     const panel = promptPanelRef.current;

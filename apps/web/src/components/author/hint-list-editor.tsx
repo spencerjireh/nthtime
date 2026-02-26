@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
@@ -11,45 +10,33 @@ interface HintListEditorProps {
 }
 
 export function HintListEditor({ hints, onChange }: HintListEditorProps) {
-  const addHint = useCallback(() => {
+  const addHint = () => {
     onChange([...hints, '']);
-  }, [hints, onChange]);
+  };
 
-  const removeHint = useCallback(
-    (index: number) => {
-      onChange(hints.filter((_, i) => i !== index));
-    },
-    [hints, onChange],
-  );
+  const removeHint = (index: number) => {
+    onChange(hints.filter((_, i) => i !== index));
+  };
 
-  const updateHint = useCallback(
-    (index: number, value: string) => {
-      const updated = [...hints];
-      updated[index] = value;
-      onChange(updated);
-    },
-    [hints, onChange],
-  );
+  const updateHint = (index: number, value: string) => {
+    const updated = [...hints];
+    updated[index] = value;
+    onChange(updated);
+  };
 
-  const moveUp = useCallback(
-    (index: number) => {
-      if (index === 0) return;
-      const updated = [...hints];
-      [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
-      onChange(updated);
-    },
-    [hints, onChange],
-  );
+  const moveUp = (index: number) => {
+    if (index === 0) return;
+    const updated = [...hints];
+    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
+    onChange(updated);
+  };
 
-  const moveDown = useCallback(
-    (index: number) => {
-      if (index === hints.length - 1) return;
-      const updated = [...hints];
-      [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
-      onChange(updated);
-    },
-    [hints, onChange],
-  );
+  const moveDown = (index: number) => {
+    if (index === hints.length - 1) return;
+    const updated = [...hints];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
+    onChange(updated);
+  };
 
   return (
     <div className="space-y-2">

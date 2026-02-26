@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTheme } from 'next-themes';
 import { DiffEditor } from '@monaco-editor/react';
 import { cn } from '@/lib/utils';
 
@@ -16,6 +17,8 @@ export function DiffView({
   language,
 }: DiffViewProps) {
   const [renderSideBySide, setRenderSideBySide] = useState(true);
+  const { resolvedTheme } = useTheme();
+  const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
 
   return (
     <div className="flex h-full flex-col">
@@ -53,7 +56,7 @@ export function DiffView({
           original={originalContent}
           modified={modifiedContent}
           language={language}
-          theme="vs-dark"
+          theme={monacoTheme}
           keepCurrentOriginalModel
           keepCurrentModifiedModel
           options={{

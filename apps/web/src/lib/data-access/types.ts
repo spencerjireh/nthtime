@@ -48,7 +48,7 @@ export interface DataAccessHooks {
     availableTags: string[];
     isLoading: boolean;
   };
-  useChallenges: (slug: string) => {
+  useChallenges: (slug: string | undefined) => {
     pack: { name: string; slug: string; description: string; language: string; tags: string[] } | null;
     challenges: ChallengeSummary[];
     isLoading: boolean;

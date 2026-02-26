@@ -33,7 +33,7 @@ export function PromptPanel() {
         </div>
       </div>
 
-      <div className="prose prose-sm prose-invert mb-6 max-w-none flex-1 text-muted-foreground">
+      <div className="prose prose-sm dark:prose-invert mb-6 max-w-none flex-1 text-muted-foreground">
         <PromptText prompt={prompt} />
       </div>
 

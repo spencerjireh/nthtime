@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { createEditorStore } from '@nthtime/editor';
+import { createEditorStore, type EditorStore } from '@nthtime/editor';
+import type { StoreApi } from 'zustand/vanilla';
 import { EditorStoreContext, useEditorStore } from './editor-store-context';
 import dynamic from 'next/dynamic';
 import { ResultsView } from './results-view';
@@ -90,27 +91,31 @@ function ChallengeViewEditor({
   packSlug?: string;
   challengeData: Challenge;
 }) {
-  const storeRef = useRef(createEditorStore());
+  const storeRef = useRef<StoreApi<EditorStore> | null>(null);
+  if (!storeRef.current) {
+    storeRef.current = createEditorStore();
+  }
+  const store = storeRef.current;
   const draftTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
   const { useCreateAttempt, useChallenges } = useDataAccess();
   const createAttempt = useCreateAttempt();
-  const { challenges } = useChallenges(packSlug ?? '');
+  const { challenges } = useChallenges(packSlug);
   const challengeIds = useMemo(
     () => [...challenges].sort((a, b) => a.order - b.order).map((c) => c._id),
     [challenges],
   );
 
   useEffect(() => {
-    storeRef.current.getState().initFromChallenge(challengeData, challengeId);
+    store.getState().initFromChallenge(challengeData, challengeId);
   }, [challengeId, challengeData]);
 
   // Debounced draft saving on file changes
   useEffect(() => {
-    const unsubscribe = storeRef.current.subscribe((state, prevState) => {
+    const unsubscribe = store.subscribe((state, prevState) => {
       if (state.files !== prevState.files && state.viewMode === 'editing') {
         if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
         draftTimerRef.current = setTimeout(() => {
-          storeRef.current.getState().saveDraft();
+          store.getState().saveDraft();
         }, 500);
       }
     });
@@ -121,44 +126,44 @@ function ChallengeViewEditor({
   }, []);
 
   const handleRun = useCallback(async () => {
-    const store = storeRef.current.getState();
-    store.setRunState('running');
+    const state = store.getState();
+    state.setRunState('running');
 
     // Format on submit if enabled
     const { formatter } = getSettingsStore().getState().settings;
     if (formatter.defaults.trigger === 'onSubmit') {
-      const changed = await formatAllFiles(store.files, formatter.defaults);
-      changed.forEach((content, path) => store.setFileContent(path, content));
+      const changed = await formatAllFiles(state.files, formatter.defaults);
+      changed.forEach((content, path) => state.setFileContent(path, content));
     }
 
-    const files = store.getAllFileEntries();
+    const files = state.getAllFileEntries();
     const result = await runVerification(challengeData.assertions, files);
 
-    store.setVerificationResult(result);
-    store.setRunState('complete');
-    store.submit();
+    state.setVerificationResult(result);
+    state.setRunState('complete');
+    state.submit();
 
     // Persist attempt (fire-and-forget)
     createAttempt({
       challengeId,
       passed: result.passed,
       assertionResults: result.fileResults,
-      hintsUsed: store.hintsRevealed,
-      timeSeconds: store.timer.elapsedSeconds,
+      hintsUsed: state.hintsRevealed,
+      timeSeconds: state.timer.elapsedSeconds,
     });
 
     // Clear draft on successful submission
     if (result.passed) {
-      store.clearDraft();
+      state.clearDraft();
     }
-  }, [challengeData.assertions, challengeId, createAttempt]);
+  }, [challengeData.assertions, challengeId, createAttempt, store]);
 
   const handleRetry = useCallback(() => {
-    storeRef.current.getState().retry();
-  }, []);
+    store.getState().retry();
+  }, [store]);
 
   return (
-    <EditorStoreContext value={storeRef.current}>
+    <EditorStoreContext value={store}>
       <ChallengeViewInner
         onRun={handleRun}
         onRetry={handleRetry}

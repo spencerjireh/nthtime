@@ -77,7 +77,7 @@ export function ChallengeDetailView({
         {/* Description */}
         <section className="mb-8">
           <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Description</h2>
-          <div className="prose prose-sm prose-invert max-w-none text-muted-foreground">
+          <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
             <PromptText prompt={challenge.prompt} />
           </div>
         </section>
