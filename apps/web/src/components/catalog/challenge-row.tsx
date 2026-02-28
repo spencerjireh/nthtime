@@ -33,7 +33,7 @@ export function ChallengeRow({
   const href = challengeHref(id, packSlug);
 
   return (
-    <div className="group relative flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/30">
+    <div className="group relative flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/30">
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
         {order}
       </span>
@@ -56,7 +56,7 @@ export function ChallengeRow({
         )}
       </div>
 
-      <div className="pointer-events-none relative z-10 flex shrink-0 items-center gap-2">
+      <div className="pointer-events-none relative z-10 ml-auto flex shrink-0 items-center gap-2">
         <span className="text-xs text-muted-foreground">
           {formatTime(timeEstimateSeconds)}
         </span>
