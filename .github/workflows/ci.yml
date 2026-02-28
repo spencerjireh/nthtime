@@ -38,8 +38,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Validate packs
+      - name: Validate packs (structural)
         run: pnpm validate
+
+      - name: Validate packs (behavioral - JS/TS)
+        run: pnpm validate:behavioral
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate packs (behavioral - Python)
+        run: pnpm validate:python
 
       - name: Lint (affected)
         run: npx nx affected --target=lint
