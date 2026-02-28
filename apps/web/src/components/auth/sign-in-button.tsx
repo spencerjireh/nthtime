@@ -1,6 +1,5 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 
 export function SignInButton() {
@@ -8,7 +7,9 @@ export function SignInButton() {
     <Button
       variant="outline"
       size="sm"
-      onClick={() => void signIn('github')}
+      onClick={() => {
+        window.location.href = '/api/auth/signin';
+      }}
     >
       Sign in with GitHub
     </Button>

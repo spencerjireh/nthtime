@@ -1,15 +1,9 @@
-import { NextResponse } from 'next/server';
-import { attemptRepository } from '@/lib/data-access/repositories';
-import { requireAuth } from '@/lib/api-helpers';
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const [userId, authErr] = await requireAuth();
-  if (authErr) return authErr;
-
   const { id } = await params;
-  const attempts = await attemptRepository.listAttempts(userId, id);
-  return NextResponse.json(attempts);
+  return proxyToSpringBoot(req, `/api/challenges/${encodeURIComponent(id)}/attempts`);
 }

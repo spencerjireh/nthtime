@@ -1,30 +1,9 @@
-import { NextResponse } from 'next/server';
-import { httpClient, getApi } from '../../../../../lib/convex-http';
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
 
-interface Params {
-  packSlug: string;
-}
-
-export async function GET(_req: Request, { params }: { params: Promise<Params> }) {
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ packSlug: string }> },
+) {
   const { packSlug } = await params;
-  const api = getApi();
-
-  const data = await httpClient.query(api.packs.getChallenges, { slug: packSlug });
-  if (!data) {
-    return NextResponse.json({ error: 'Pack not found' }, { status: 404 });
-  }
-
-  return NextResponse.json({
-    name: data.pack.name,
-    slug: data.pack.slug,
-    language: data.pack.language,
-    framework: data.pack.framework,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    challenges: data.challenges.map((c: any) => ({
-      title: c.title,
-      slug: c.slug,
-      order: c.order,
-      difficulty: c.difficulty,
-    })),
-  });
+  return proxyToSpringBoot(req, `/api/cli/pack/${encodeURIComponent(packSlug)}`);
 }

@@ -1,12 +1,10 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ConvexHttpClient } from 'convex/browser';
-import { api } from '../convex/_generated/api.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// -- Types ------------------------------------------------------------------
 
 interface PackManifest {
   name: string;
@@ -34,26 +32,14 @@ interface ChallengeFile {
   };
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// -- Helpers ----------------------------------------------------------------
 
-function getConvexUrl(): string {
-  // Try env var first
-  const envUrl = process.env.CONVEX_URL;
-  if (envUrl) return envUrl;
+function getApiBase(): string {
+  const url = process.env.SPRING_BOOT_URL;
+  if (url) return url;
 
-  // Try .env.local
-  const envLocalPath = resolve(__dirname, '..', '.env.local');
-  if (existsSync(envLocalPath)) {
-    const contents = readFileSync(envLocalPath, 'utf-8');
-    for (const line of contents.split('\n')) {
-      const match = line.match(/^NEXT_PUBLIC_CONVEX_URL=(.+)$/);
-      if (match) return match[1].trim();
-    }
-  }
-
-  throw new Error(
-    'No Convex URL found. Set CONVEX_URL env var or NEXT_PUBLIC_CONVEX_URL in .env.local',
-  );
+  // Fallback for local dev
+  return 'http://localhost:8080';
 }
 
 function discoverPacks(packsDir: string): string[] {
@@ -120,17 +106,16 @@ function toSeedPayload(manifest: PackManifest, challenges: LoadedChallenge[]) {
   };
 }
 
-// ── Main ─────────────────────────────────────────────────────────────────────
+// -- Main -------------------------------------------------------------------
 
 async function main(): Promise<void> {
-  const convexUrl = getConvexUrl();
+  const apiBase = getApiBase();
   const adminSecret = getAdminSecret();
   const useSync = process.argv.includes('--sync');
-  console.log(`Connecting to Convex: ${convexUrl}`);
+  console.log(`Connecting to Spring Boot: ${apiBase}`);
   if (useSync) console.log('Mode: sync (batch + stale cleanup)');
   console.log();
 
-  const client = new ConvexHttpClient(convexUrl);
   const packsDir = resolve(__dirname, '..', 'packs');
   const packJsonPaths = discoverPacks(packsDir);
 
@@ -142,37 +127,45 @@ async function main(): Promise<void> {
   console.log(`Found ${packJsonPaths.length} pack(s).\n`);
 
   if (useSync) {
-    // Batch sync: send all packs in one mutation + clean up stale packs
     const packs = packJsonPaths.map((p) => {
       const { manifest, challenges } = loadPack(p);
       return toSeedPayload(manifest, challenges);
     });
 
-    try {
-      await client.mutation(api.admin.syncPacks, { adminSecret, packs });
-      for (const pack of packs) {
-        console.log(`  SYNCED  ${pack.slug} (${pack.challenges.length} challenges)`);
-      }
-    } catch (e) {
-      console.error(`  SYNC FAILED: ${e}`);
+    const res = await fetch(`${apiBase}/api/admin/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminSecret, packs }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      console.error(`  SYNC FAILED: ${res.status} ${body}`);
       process.exit(1);
     }
+
+    for (const pack of packs) {
+      console.log(`  SYNCED  ${pack.slug} (${pack.challenges.length} challenges)`);
+    }
   } else {
-    // Individual seed: one mutation per pack
     for (const packJsonPath of packJsonPaths) {
       const packName = basename(dirname(packJsonPath));
       const { manifest, challenges } = loadPack(packJsonPath);
+      const payload = toSeedPayload(manifest, challenges);
 
-      try {
-        await client.mutation(api.admin.seedPack, {
-          adminSecret,
-          ...toSeedPayload(manifest, challenges),
-        });
-        console.log(`  SEEDED  ${packName} (${challenges.length} challenges)`);
-      } catch (e) {
-        console.error(`  FAILED  ${packName}: ${e}`);
+      const res = await fetch(`${apiBase}/api/admin/seed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminSecret, ...payload }),
+      });
+
+      if (!res.ok) {
+        const body = await res.text();
+        console.error(`  FAILED  ${packName}: ${res.status} ${body}`);
         process.exit(1);
       }
+
+      console.log(`  SEEDED  ${packName} (${challenges.length} challenges)`);
     }
   }
 

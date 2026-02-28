@@ -28,51 +28,52 @@ pnpm dev
 
 This runs the Next.js 16 development server in **webpack mode**. Turbopack is not supported because Nx's dynamic `require()` calls break under it. The `--webpack` flag is configured in `apps/web/project.json` so you do not need to pass it manually.
 
-The app will be available at `http://localhost:3000`. A Convex backend is **required** -- the app throws at startup without `NEXT_PUBLIC_CONVEX_URL`.
+The app will be available at `http://localhost:3000`. For full-stack development, start the Spring Boot backend alongside the dev server.
 
-## Convex backend
+## Spring Boot backend
 
-1. Create a Convex project at [dashboard.convex.dev](https://dashboard.convex.dev).
-2. Set the environment variable in a `.env.local` file at the repo root:
+The backend uses Spring Boot 3.4 with PostgreSQL 16. The easiest way to run it locally is with Docker Compose:
+
+```bash
+docker compose up
+```
+
+This starts PostgreSQL (port 5432), Spring Boot API (port 8080), and the Next.js dev server (port 3000).
+
+Alternatively, run Spring Boot manually:
+
+1. Start a PostgreSQL 16 instance.
+2. Create a `.env.local` file at the repo root:
 
    ```env
-   NEXT_PUBLIC_CONVEX_URL=https://<your-deployment>.convex.cloud
+   SPRING_BOOT_URL=http://localhost:8080
+   FRONTEND_URL=http://localhost:3000
    ```
 
-3. Start the Convex dev server alongside the Next.js dev server:
+3. Start Spring Boot:
 
    ```bash
-   npx convex dev
+   cd services/api
+   DB_HOST=localhost DB_PORT=5432 DB_NAME=nthtime DB_USER=postgres DB_PASSWORD=postgres ./gradlew bootRun
    ```
 
-   Convex functions live at the repo root in `convex/`. This directory is **not** an Nx project.
+   Flyway runs database migrations automatically on startup.
 
 ## Auth setup (GitHub OAuth)
 
-Authentication uses GitHub OAuth via `@convex-dev/auth` (wraps Auth.js).
+Authentication uses GitHub OAuth via Spring Security OAuth2 Client.
 
 1. Create a GitHub OAuth App in your GitHub developer settings.
-2. Set the following Convex environment variables:
+2. Set the callback URL to `http://localhost:3000/api/auth/callback/github`.
+3. Set the following environment variables for Spring Boot:
 
    ```
-   AUTH_GITHUB_ID=<your-github-client-id>
-   AUTH_GITHUB_SECRET=<your-github-client-secret>
-   SITE_URL=http://localhost:3000
+   GITHUB_CLIENT_ID=<your-github-client-id>
+   GITHUB_CLIENT_SECRET=<your-github-client-secret>
+   FRONTEND_URL=http://localhost:3000
    ```
 
-3. Generate JWT keys:
-
-   ```bash
-   npx @convex-dev/auth
-   ```
-
-   This sets `JWT_PRIVATE_KEY` and `JWKS` on your Convex deployment. It will not overwrite existing values.
-
-4. To manually set `JWT_PRIVATE_KEY` with real newlines:
-
-   ```bash
-   npx convex env set JWT_PRIVATE_KEY -- "$(cat key.pem)"
-   ```
+Sessions are stored in PostgreSQL via Spring Session JDBC. No JWT keys are required.
 
 ## Commands
 
@@ -86,7 +87,7 @@ Authentication uses GitHub OAuth via `@convex-dev/auth` (wraps Auth.js).
 | `pnpm format`    | Prettier write                                     |
 | `pnpm e2e`       | Playwright E2E tests (apps/web)                    |
 | `pnpm validate`  | Validate all challenge packs (reference solutions) |
-| `pnpm seed`      | Seed packs to Convex (requires `CONVEX_URL`)       |
+| `pnpm seed`      | Seed packs to Spring Boot (requires `SPRING_BOOT_URL`) |
 | `pnpm docs:dev`  | VitePress dev server for documentation             |
 | `pnpm docs:build`| Build VitePress documentation                      |
 
@@ -119,7 +120,7 @@ npx vitest run libs/verification/src/lib/verification.spec.ts
    cp .env.production.example .env.production
    ```
 
-2. Fill in `NEXT_PUBLIC_CONVEX_URL` (and any other required variables) in `.env.production`.
+2. Fill in `SPRING_BOOT_URL`, `FRONTEND_URL`, database credentials, and GitHub OAuth variables in `.env.production`.
 
 3. Build and run:
 
@@ -128,4 +129,4 @@ npx vitest run libs/verification/src/lib/verification.spec.ts
    docker compose up
    ```
 
-The production image is a multi-stage build producing a standalone Next.js container (~100--200 MB). The service runs on port 3000 with a built-in healthcheck at `GET /api/health`.
+Docker Compose runs 3 containers: PostgreSQL 16 (internal), Spring Boot API (internal), and Next.js (port 3000). The Next.js container has a built-in healthcheck at `GET /api/health`.

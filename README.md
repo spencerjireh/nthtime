@@ -35,7 +35,7 @@ pnpm install
 pnpm dev
 ```
 
-Requires a Convex backend. Set `NEXT_PUBLIC_CONVEX_URL` in `.env.local` and run `npx convex dev` alongside the dev server. See the [getting started guide](docs/guide/getting-started.md) for full setup.
+For full-stack development, start Spring Boot and PostgreSQL with `docker compose up` alongside the dev server. See the [getting started guide](docs/guide/getting-started.md) for full setup.
 
 ## Challenge packs
 
@@ -54,7 +54,7 @@ Packs are portable JSON -- [author your own](docs/deep-dives/pack-authoring.md) 
 | | |
 |---|---|
 | **Frontend** | Next.js 16, React 19, Tailwind v3, shadcn/ui |
-| **Backend** | Convex (real-time, serverless) |
+| **Backend** | Spring Boot 3.4 + PostgreSQL 16 |
 | **Verification** | Tree-sitter WASM (client-side) |
 | **Editor** | Monaco |
 | **State** | Zustand 5 (vanilla stores) |
@@ -67,10 +67,10 @@ Packs are portable JSON -- [author your own](docs/deep-dives/pack-authoring.md) 
 apps/web/          Next.js frontend
 libs/
   shared/          Types: Pack, Challenge, Assertion, Verification
-  data-access/     Repository interfaces + Convex impl
+  data-access/     Repository interfaces
   verification/    Tree-sitter verification engine (12 evaluators)
   editor/          Zustand store, language mapping, draft storage
-convex/            Backend: schema, auth, server functions
+services/api/      Spring Boot backend (Java 21, PostgreSQL 16)
 packs/             Challenge pack JSON (git-versioned)
 tools/             CLI: validate-packs, seed
 ```

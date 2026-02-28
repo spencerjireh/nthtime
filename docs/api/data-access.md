@@ -1,6 +1,6 @@
 # Data Access Layer (`@nthtime/data-access`)
 
-The `@nthtime/data-access` library defines repository interfaces for packs, attempts, and settings. These interfaces decouple the application from any specific backend, enabling a mock implementation for offline/local development and a Convex implementation for production.
+The `@nthtime/data-access` library defines repository interfaces for packs, attempts, and settings. These interfaces decouple the application from any specific backend.
 
 ```
 npm: @nthtime/data-access
@@ -75,36 +75,25 @@ interface SettingsRepository {
 
 ---
 
-## DataAccessProvider Pattern
+## Spring Boot Proxy Pattern
 
-The application uses a React context provider (`DataAccessProvider`) in `apps/web/src/lib/data-access/` that selects between two hook implementations at build time:
+The frontend uses **TanStack React Query** to call REST endpoints at `/api/v1/`. Next.js API routes in `apps/web/src/app/api/v1/` are thin proxies that forward requests to Spring Boot via `apps/web/src/lib/spring-boot-proxy.ts`.
 
-- **Mock hooks** -- used when `NEXT_PUBLIC_CONVEX_URL` is not set. Returns static data from `apps/web/src/lib/mock-packs.ts`.
-- **Convex hooks** -- used when `NEXT_PUBLIC_CONVEX_URL` is set. Connects to the Convex backend for real data.
+The proxy forwards the `JSESSIONID` session cookie to Spring Boot for authentication context. Client hooks in `apps/web/src/hooks/` fetch from `/api/v1/` routes via `apps/web/src/lib/api-client.ts`.
 
-Components consume data access through the `useDataAccess()` hook, which returns the active set of hooks.
-
-### Hook Selection
-
-The provider switches implementations based on the build-time environment variable:
-
-```typescript
-const useConvex = !!process.env.NEXT_PUBLIC_CONVEX_URL;
+```
+Browser --> /api/v1/* (Next.js) --> Spring Boot (http://api:8080/api/*)
 ```
 
-**Important:** The selection must use `process.env.NEXT_PUBLIC_CONVEX_URL` (inlined at build time by Next.js), never `typeof window`. Using `typeof window` would cause a hydration mismatch because the server renders with mock data while the client renders with a loading state from Convex.
+### Mock Data
 
----
-
-## Mock Data
-
-When running without a Convex backend, mock data provides 3 packs with 10 challenges each:
+For E2E tests and offline development, mock data provides 3 packs with 10 challenges each:
 
 - **express-basics** -- JavaScript / Express.js
 - **react-fundamentals** -- TypeScript / React (TSX)
 - **fastapi-basics** -- Python / FastAPI
 
-Mock data is defined in `apps/web/src/lib/mock-packs.ts` and used by the mock hooks implementation.
+Mock data is defined in `apps/web/src/lib/mock-packs.ts`.
 
 ---
 

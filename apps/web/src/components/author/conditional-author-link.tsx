@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { isFeatureEnabled } from '@/lib/feature-flags';
+import { useAuthSession } from '@/hooks/use-auth-session';
 
 export function ConditionalAuthorLink() {
   if (!isFeatureEnabled('auth')) return null;
@@ -10,7 +10,7 @@ export function ConditionalAuthorLink() {
 }
 
 function AuthorLink() {
-  const { status } = useSession();
+  const { status } = useAuthSession();
   if (status !== 'authenticated') return null;
 
   return (

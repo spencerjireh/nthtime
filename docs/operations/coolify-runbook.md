@@ -4,21 +4,21 @@
 
 - Coolify instance with a connected server
 - Git repository accessible from Coolify (GitHub/GitLab/self-hosted)
-- Convex deployment with env vars configured (see [Auth setup](#convex-env-vars))
+- PostgreSQL 16 database (can be provisioned via Coolify)
 
 ## 1. Create the service
 
 1. In Coolify, go to **Projects** > select or create a project
 2. Click **Add Resource** > **Public Repository** (or private, if applicable)
 3. Enter the repository URL and select the `main` branch
-4. Set **Build Pack** to **Dockerfile**
+4. Set **Build Pack** to **Docker Compose**
 
 ## 2. Configure build settings
 
 | Setting | Value |
 |---|---|
-| Build Pack | Dockerfile |
-| Dockerfile Location | `/Dockerfile` |
+| Build Pack | Docker Compose |
+| Docker Compose Location | `/docker-compose.yml` |
 | Base Directory | `/` |
 | Port Exposes | `3000` |
 
@@ -26,24 +26,26 @@
 
 Add these in the Coolify service's **Environment Variables** section.
 
-### Build-time variables
-
-These are inlined by Next.js during the build step. Mark them as **Build Variable** in Coolify.
+### Spring Boot variables
 
 | Variable | Description |
 |---|---|
-| `NEXT_PUBLIC_CONVEX_URL` | Convex deployment URL (e.g. `https://your-deployment.convex.cloud`) |
+| `DB_HOST` | PostgreSQL host (e.g., `postgres` if using Coolify-managed DB) |
+| `DB_PORT` | PostgreSQL port (default: `5432`) |
+| `DB_NAME` | Database name |
+| `DB_USER` | Database user |
+| `DB_PASSWORD` | Database password |
+| `GITHUB_CLIENT_ID` | GitHub OAuth app client ID |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth app client secret |
+| `ADMIN_SECRET` | Secret for seed/sync operations |
+| `FRONTEND_URL` | Your production domain (e.g., `https://nthtime.yourdomain.com`) |
 
-> If `NEXT_PUBLIC_CONVEX_URL` is not set, the app runs in mock-data mode with no backend.
+### Next.js variables
 
-### Runtime variables
-
-These are already set in the Dockerfile but can be overridden if needed.
-
-| Variable | Default | Description |
-|---|---|---|
-| `NODE_ENV` | `production` | Set in Dockerfile |
-| `PORT` | `3000` | Set in Dockerfile |
+| Variable | Description |
+|---|---|
+| `SPRING_BOOT_URL` | Internal URL to Spring Boot (e.g., `http://api:8080`) |
+| `FRONTEND_URL` | Your production domain (must match Spring Boot's `FRONTEND_URL`) |
 
 ## 4. Configure health check
 
@@ -62,39 +64,15 @@ The health endpoint returns `{ "status": "ok", "timestamp": <epoch_ms> }`.
 
 ## 5. Set up domain
 
-1. In the service's **Settings**, add your domain (e.g. `nthtime.yourdomain.com`)
+1. In the service's **Settings**, add your domain (e.g., `nthtime.yourdomain.com`)
 2. Coolify handles TLS via Let's Encrypt automatically
-3. Update `SITE_URL` in your **Convex dashboard** to match this domain (required for OAuth callbacks)
+3. Update `FRONTEND_URL` in both Spring Boot and Next.js environment variables to match this domain (required for OAuth callbacks)
 
 ## 6. Deploy
 
-Push to `main`. Coolify will detect the push, build the Docker image, and deploy.
+Push to `main`. Coolify will detect the push, build the Docker images, and deploy.
 
-First build takes a few minutes (pnpm install + Next.js build + WASM bundling). Subsequent builds are faster due to Docker layer caching.
-
-## Convex env vars
-
-These are set in the **Convex dashboard**, not in Coolify:
-
-| Variable | Description |
-|---|---|
-| `AUTH_GITHUB_ID` | GitHub OAuth app client ID |
-| `AUTH_GITHUB_SECRET` | GitHub OAuth app client secret |
-| `SITE_URL` | Your production domain (must match Coolify domain) |
-| `JWT_PRIVATE_KEY` | Generated via `npx @convex-dev/auth` |
-| `JWKS` | Generated via `npx @convex-dev/auth` |
-
-To generate JWT keys:
-
-```bash
-npx @convex-dev/auth
-```
-
-To set a multiline key:
-
-```bash
-npx convex env set JWT_PRIVATE_KEY -- "$(cat key.pem)"
-```
+First build takes a few minutes (Gradle build + pnpm install + Next.js build + WASM bundling). Subsequent builds are faster due to Docker layer caching.
 
 ## Troubleshooting
 
@@ -106,14 +84,14 @@ The Dockerfile pins `pnpm@10.23.0`. If your `pnpm-lock.yaml` was generated with 
 pnpm install --lockfile-only
 ```
 
-### App loads but shows mock data
-
-`NEXT_PUBLIC_CONVEX_URL` is missing or was set as a runtime variable instead of a build variable. It must be available during `pnpm build`. Rebuild after fixing.
-
 ### OAuth login fails
 
-Check that `SITE_URL` in the Convex dashboard matches your Coolify domain exactly (including `https://`). Also verify the GitHub OAuth app's callback URL points to `https://yourdomain.com`.
+Check that `FRONTEND_URL` in Spring Boot matches your Coolify domain exactly (including `https://`). Also verify the GitHub OAuth app's callback URL points to `https://yourdomain.com/api/auth/callback/github`.
 
 ### Health check failing
 
-Verify the container is listening on port 3000. Check Coolify logs for startup errors. Common cause: missing or malformed environment variables preventing Next.js from starting.
+Verify the container is listening on port 3000. Check Coolify logs for startup errors. Common cause: missing or malformed environment variables preventing Next.js or Spring Boot from starting.
+
+### Database connection errors
+
+Verify `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` are correct. If using a Coolify-managed PostgreSQL instance, ensure the database service is running and accessible from the Spring Boot container's network.

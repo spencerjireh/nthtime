@@ -61,7 +61,7 @@ npx vitest run path/to/file.spec.ts  # Run a single test file
 
 ### E2E tests (Playwright)
 
-Playwright tests run against the dev server with mock data fallback (no Convex or auth setup needed).
+Playwright tests run against the dev server with mock data (runs against mock data).
 
 ```bash
 pnpm e2e                           # Run all E2E tests
@@ -137,14 +137,6 @@ Both `build` and `dev` targets in `apps/web/project.json` are overridden to use 
 ### Nx sync may need two runs
 
 Nx sync sometimes reports "out of sync" and then "already up to date" on a second run. If you see sync errors, run the command again.
-
-### convex/tsconfig.json must exclude \_\_tests\_\_
-
-Test files under `convex/__tests__/` use Vitest-only types (e.g., `import.meta.glob`) that break `npx convex dev`. The `convex/tsconfig.json` excludes this directory. Do not remove the exclusion.
-
-### typeof window causes hydration mismatches
-
-The `DataAccessProvider` must use **only** `process.env.NEXT_PUBLIC_CONVEX_URL` (inlined at build time) to switch between mock and Convex hooks. Using `typeof window` causes the server to render mock data while the client renders a loading state, producing a hydration mismatch.
 
 ### monaco-editor is not hoisted
 

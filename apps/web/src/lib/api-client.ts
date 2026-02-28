@@ -122,7 +122,7 @@ export function patchSettings(partial: Partial<UserSettings>): Promise<UserSetti
 
 export function fetchSession(): Promise<{
   authenticated: boolean;
-  convexUserId?: string;
+  userId?: string;
 }> {
   return request('/auth/session');
 }

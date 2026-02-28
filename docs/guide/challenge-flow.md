@@ -10,7 +10,7 @@ The home page (`/`) is the catalog. It displays all available challenge packs as
 
 Two filter mechanisms help narrow the catalog:
 
-- **Search** -- Matches against pack and challenge titles. Backed by a Convex search index for fast results.
+- **Search** -- Matches against pack and challenge titles. Backed by a PostgreSQL tsvector index for fast results.
 - **Language filter** -- Filter by JavaScript, TypeScript, Python, HTML, or CSS.
 - **Difficulty filter** -- Filter by beginner, intermediate, or advanced.
 

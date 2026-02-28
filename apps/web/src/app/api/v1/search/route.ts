@@ -1,8 +1,5 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import { packRepository } from '@/lib/data-access/repositories';
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
 
-export async function GET(req: NextRequest) {
-  const q = req.nextUrl.searchParams.get('q') ?? '';
-  const results = await packRepository.search(q);
-  return NextResponse.json(results);
+export async function GET(req: Request) {
+  return proxyToSpringBoot(req, '/api/search');
 }

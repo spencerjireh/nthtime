@@ -3,10 +3,10 @@
 import { useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createAttempt, fetchAttempts } from '@/lib/api-client';
-import { useSession } from 'next-auth/react';
+import { useAuthSession } from '@/hooks/use-auth-session';
 
 export function useCreateAttempt() {
-  const { status } = useSession();
+  const { status } = useAuthSession();
   const queryClient = useQueryClient();
 
   const { mutateAsync } = useMutation({
@@ -40,7 +40,7 @@ export function useCreateAttempt() {
 }
 
 export function useAttemptList(challengeId: string) {
-  const { status } = useSession();
+  const { status } = useAuthSession();
   return useQuery({
     queryKey: ['attempts', challengeId],
     queryFn: () => fetchAttempts(challengeId),

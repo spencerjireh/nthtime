@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test';
-import { ConvexHttpClient } from 'convex/browser';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { api } from '../../../convex/_generated/api.js';
+
+const SPRING_BOOT_URL = process.env.SPRING_BOOT_URL || 'http://localhost:8080';
 
 /** Set Monaco editor content via the browser's Monaco API. */
 export async function setEditorContent(page: Page, content: string) {
@@ -46,12 +45,12 @@ export const EXPRESS_SOLUTION = [
   'export default app;',
 ].join('\n');
 
-/** Resolve a Convex challenge document ID by pack slug and order number. */
+/** Resolve a challenge ID by pack slug and order number via Spring Boot API. */
 export async function getChallengeId(packSlug: string, order: number): Promise<string> {
-  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
-  if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL required for E2E tests');
-  const client = new ConvexHttpClient(url);
-  const challenge = await client.query(api.challenges.getByPackAndOrder, { packSlug, order });
+  const res = await fetch(`${SPRING_BOOT_URL}/api/packs/${encodeURIComponent(packSlug)}`);
+  if (!res.ok) throw new Error(`Failed to fetch pack ${packSlug}: ${res.status}`);
+  const data = await res.json();
+  const challenge = data.challenges.find((c: { order: number }) => c.order === order);
   if (!challenge) throw new Error(`Challenge not found: ${packSlug} #${order}`);
   return challenge._id;
 }

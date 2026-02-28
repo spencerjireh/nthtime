@@ -1,10 +1,10 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { SignInButton } from '@/components/auth/sign-in-button';
+import { useAuthSession } from '@/hooks/use-auth-session';
 
 export default function AuthorLayout({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
+  const { status } = useAuthSession();
 
   if (status === 'loading') {
     return (

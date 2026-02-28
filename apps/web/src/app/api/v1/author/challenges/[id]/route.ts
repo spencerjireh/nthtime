@@ -1,56 +1,25 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import { authorRepository } from '@/lib/data-access/repositories';
-import { requireAuth, notFound } from '@/lib/api-helpers';
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const [userId, authErr] = await requireAuth();
-  if (authErr) return authErr;
-
   const { id } = await params;
-  const challenge = await authorRepository.getChallenge(userId, id);
-  if (!challenge) return notFound('Challenge not found');
-  return NextResponse.json(challenge);
+  return proxyToSpringBoot(req, `/api/author/challenges/${encodeURIComponent(id)}`);
 }
 
 export async function PATCH(
-  req: NextRequest,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const [userId, authErr] = await requireAuth();
-  if (authErr) return authErr;
-
   const { id } = await params;
-  const body = await req.json();
-  const {
-    slug, title, prompt, difficulty, tags, timeEstimateSeconds,
-    hints, assertions, referenceSolution,
-  } = body;
-  await authorRepository.updateChallenge(userId, {
-    challengeId: id,
-    slug,
-    title,
-    prompt,
-    difficulty,
-    tags,
-    timeEstimateSeconds,
-    hints,
-    assertions,
-    referenceSolution,
-  });
-  return NextResponse.json({ ok: true });
+  return proxyToSpringBoot(req, `/api/author/challenges/${encodeURIComponent(id)}`);
 }
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const [userId, authErr] = await requireAuth();
-  if (authErr) return authErr;
-
   const { id } = await params;
-  await authorRepository.removeChallenge(userId, id);
-  return NextResponse.json({ ok: true });
+  return proxyToSpringBoot(req, `/api/author/challenges/${encodeURIComponent(id)}`);
 }

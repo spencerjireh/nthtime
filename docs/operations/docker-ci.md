@@ -120,14 +120,7 @@ Copy the example file and fill in values before running:
 cp .env.production.example .env.production
 ```
 
-The `.env.production.example` contains:
-
-```
-NEXT_PUBLIC_CONVEX_URL=
-ADMIN_SECRET=
-```
-
-Set `NEXT_PUBLIC_CONVEX_URL` to your Convex deployment URL. `ADMIN_SECRET` is only needed if you are seeding data.
+The `.env.production.example` contains the required environment variables for Spring Boot (database credentials, GitHub OAuth, `ADMIN_SECRET`) and Next.js (`SPRING_BOOT_URL`, `FRONTEND_URL`). See the [Spring Boot Backend](/operations/spring-boot-backend) page for the full variable list.
 
 ### Running
 
@@ -243,7 +236,7 @@ jobs:
 
 10. **Install Playwright browsers** -- installs Chromium for E2E tests.
 
-11. **E2E tests** -- runs Playwright tests against the dev server using mock data (no Convex/auth needed).
+11. **E2E tests** -- runs Playwright tests against the dev server using mock data.
 
 12. **Docker build (verify)** -- builds the Docker image to verify the Dockerfile is valid. Does not push.
 

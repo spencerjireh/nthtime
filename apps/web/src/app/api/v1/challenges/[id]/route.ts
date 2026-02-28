@@ -1,13 +1,9 @@
-import { NextResponse } from 'next/server';
-import { packRepository } from '@/lib/data-access/repositories';
-import { notFound } from '@/lib/api-helpers';
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const challenge = await packRepository.getChallenge(id);
-  if (!challenge) return notFound('Challenge not found');
-  return NextResponse.json(challenge);
+  return proxyToSpringBoot(req, `/api/challenges/${encodeURIComponent(id)}`);
 }

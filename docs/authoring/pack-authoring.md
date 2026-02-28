@@ -54,7 +54,7 @@ The `pack.json` manifest defines metadata and lists all challenge files in order
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | Yes | Display name |
-| `slug` | string | Yes | URL-safe identifier, used in routing and Convex index |
+| `slug` | string | Yes | URL-safe identifier, used in routing and database lookups |
 | `description` | string | Yes | Short description shown in the catalog |
 | `language` | string | Yes | Primary language (`javascript`, `typescript`, `python`, etc.) |
 | `framework` | string | No | Optional framework name (`express`, `react`, `fastapi`, etc.) |
@@ -164,7 +164,7 @@ This distinction is central to how packs work:
 
 - **`scaffold`**: The starter template the user sees when they open the challenge. This typically contains boilerplate, comments, and empty function bodies. When a challenge has `scaffolded: true`, the `scaffold` array is required.
 
-The seed script (`pnpm seed`) maps `scaffold` to the Convex `files` field -- meaning what gets stored in the database and served to users is the starter template, not the reference solution:
+The seed script (`pnpm seed`) maps `scaffold` to the database `files` field -- meaning what gets stored in the database and served to users is the starter template, not the reference solution:
 
 ```ts
 // tools/seed.ts
@@ -377,20 +377,20 @@ If a reference solution fails its own assertions, the validator prints detailed 
 
 The validator resets the WASM grammar cache between packs using `resetCache()` to avoid stale state.
 
-## Seeding to Convex
+## Seeding to Spring Boot
 
-Run `pnpm seed` to push pack data to the Convex backend. This executes `tools/seed.ts`, which:
+Run `pnpm seed` to push pack data to the Spring Boot backend. This executes `tools/seed.ts`, which:
 
-1. Reads `CONVEX_URL` from environment or `.env.local`
-2. Requires `ADMIN_SECRET` for authenticated mutation access
-3. For each pack, calls `api.admin.seedPack` with the manifest and challenges
-4. Maps `scaffold` (not `files`) to the Convex `files` field
+1. Reads `SPRING_BOOT_URL` from environment or `.env.local`
+2. Requires `ADMIN_SECRET` for authenticated access to the admin endpoint
+3. For each pack, calls `POST /api/admin/seed` with the manifest and challenges
+4. Maps `scaffold` (not `files`) to the database `files` field
 
 ```bash
-CONVEX_URL=https://your-deployment.convex.cloud ADMIN_SECRET=your-secret pnpm seed
+SPRING_BOOT_URL=http://localhost:8080 ADMIN_SECRET=your-secret pnpm seed
 ```
 
-The `--sync` flag uses a batch mutation (`api.admin.syncPacks`) that also cleans up stale packs that no longer exist in the `packs/` directory:
+The `--sync` flag calls `POST /api/admin/sync` which also cleans up stale packs that no longer exist in the `packs/` directory:
 
 ```bash
 pnpm seed -- --sync

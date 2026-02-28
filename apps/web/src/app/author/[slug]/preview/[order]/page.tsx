@@ -78,7 +78,7 @@ function PreviewInner({
     );
   }
 
-  // Map Convex challenge document to Challenge type
+  // Map challenge response to Challenge type
   const challengeData: Challenge = {
     id: challenge._id,
     slug: challenge.slug,

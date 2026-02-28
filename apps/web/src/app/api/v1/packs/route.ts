@@ -1,19 +1,5 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import { packRepository } from '@/lib/data-access/repositories';
-import { getSessionUserId } from '@/lib/api-helpers';
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
 
-export async function GET(req: NextRequest) {
-  const params = req.nextUrl.searchParams;
-  const userId = await getSessionUserId();
-
-  const result = await packRepository.listPacks(
-    {
-      language: params.get('language') ?? undefined,
-      difficulty: params.get('difficulty') ?? undefined,
-      tags: params.get('tags') ? params.get('tags')!.split(',') : undefined,
-    },
-    userId ?? undefined,
-  );
-
-  return NextResponse.json(result);
+export async function GET(req: Request) {
+  return proxyToSpringBoot(req, '/api/packs');
 }

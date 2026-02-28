@@ -1,14 +1,61 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nthtime
+      POSTGRES_USER: nthtime
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U nthtime']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: services/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: nthtime
+      DB_USER: nthtime
+      DB_PASSWORD: ${DB_PASSWORD}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      ADMIN_SECRET: ${ADMIN_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8080/api/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
   web:
     build: .
     ports:
       - '3000:3000'
-    env_file:
-      - .env.production
     restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      SPRING_BOOT_URL: http://api:8080
+      FRONTEND_URL: ${FRONTEND_URL}
     healthcheck:
       test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:3000/api/health']
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
+
+volumes:
+  pgdata:

@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+logging:
+  level:
+    com.spencerjireh.nthtime: DEBUG
+    org.springframework.security: DEBUG

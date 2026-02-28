@@ -13,7 +13,7 @@ nthtime/
     data-access/      Repository interfaces: PackRepository, AttemptRepository, SettingsRepository
     verification/     Tree-sitter WASM verification engine (12 evaluators + pipeline)
     editor/           Zustand vanilla store (EditorStore), language mapping, time formatting, drafts
-  convex/             Backend schema + server functions (NOT an Nx project, lives at repo root)
+  services/api/       Spring Boot 3.4 backend (Java 21, PostgreSQL 16)
   packs/              Challenge pack JSON files (pack.json + challenges/*.json per pack)
   tools/              CLI scripts: validate-packs.ts, seed.ts
   docs/               VitePress documentation site
@@ -23,8 +23,8 @@ nthtime/
 
 - **`apps/web`** is the only deployable application. It consumes all four libraries.
 - **`libs/`** packages are framework-agnostic (no React imports except where noted). They export pure logic and types.
-- **`convex/`** lives at the repo root and is not managed by Nx. It has its own `tsconfig.json` that must exclude `__tests__/` to prevent Vitest-only types from blocking `npx convex dev`.
-- **`packs/`** contains challenge content as JSON. Validated by `tools/validate-packs.ts` and seeded to Convex by `tools/seed.ts`.
+- **`services/api/`** is the Spring Boot backend (Java 21, Gradle Kotlin DSL). It has its own build system and is not managed by Nx.
+- **`packs/`** contains challenge content as JSON. Validated by `tools/validate-packs.ts` and seeded to Spring Boot by `tools/seed.ts`.
 - **`tools/`** scripts use direct relative imports (not workspace packages) and `fileURLToPath(import.meta.url)` for `__dirname` because `import.meta.dirname` is undefined under `npx tsx`.
 
 ## Nx Crystal plugins
@@ -121,17 +121,10 @@ Catalog (/) --> Pack (/pack/[slug]) --> Challenge (/challenge/[id]?pack=slug)
 
 ## Data access layer
 
-`apps/web/src/lib/data-access/` implements a provider pattern that switches between **mock hooks** (no backend) and **Convex hooks** at build time.
+The frontend uses **TanStack React Query** to call REST endpoints at `/api/v1/`. Next.js API routes at `apps/web/src/app/api/v1/` are thin proxies that forward requests to Spring Boot via `apps/web/src/lib/spring-boot-proxy.ts`, including the `JSESSIONID` session cookie for authentication context.
 
 ```
-DataAccessProvider
-  |
-  +-- process.env.NEXT_PUBLIC_CONVEX_URL defined?
-        |
-        +-- Yes --> Convex hooks (real backend queries/mutations)
-        +-- No  --> Mock hooks (static data, localStorage)
+Browser --> Next.js API route (/api/v1/*) --> Spring Boot (http://api:8080/api/*)
 ```
 
-The switch uses **only** `process.env.NEXT_PUBLIC_CONVEX_URL` (inlined at build time). It must **never** use `typeof window` to choose hooks, because that causes hydration mismatches (server renders mock data, client renders loading state).
-
-Components call `useDataAccess()` to get the active hook implementations, keeping UI code backend-agnostic.
+Client hooks in `apps/web/src/hooks/` fetch from `/api/v1/` routes via `apps/web/src/lib/api-client.ts`. The `useAuthSession()` hook checks auth status by querying `/api/v1/auth/session`.

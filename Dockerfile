@@ -12,7 +12,6 @@ RUN pnpm install --frozen-lockfile
 
 # Stage 2: Build
 FROM node:22-alpine AS build
-ARG NEXT_PUBLIC_CONVEX_URL
 RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules

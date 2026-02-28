@@ -1,0 +1,12 @@
+spring:
+  flyway:
+    enabled: true
+
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never
+
+nthtime:
+  admin-secret: test_admin_secret
+  frontend-url: http://localhost:3000

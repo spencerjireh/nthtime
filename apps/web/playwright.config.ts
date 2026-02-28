@@ -1,9 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL;
+const SPRING_BOOT_URL = process.env.SPRING_BOOT_URL;
 
-if (!CONVEX_URL && process.env.CI) {
-  throw new Error('NEXT_PUBLIC_CONVEX_URL is required for E2E tests');
+if (!SPRING_BOOT_URL && process.env.CI) {
+  throw new Error('SPRING_BOOT_URL is required for E2E tests');
 }
 
 export default defineConfig({
@@ -19,7 +19,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: `NEXT_PUBLIC_CONVEX_URL=${CONVEX_URL} npx nx dev @nthtime/web -- --port 3000`,
+    command: `SPRING_BOOT_URL=${SPRING_BOOT_URL || 'http://localhost:8080'} npx nx dev @nthtime/web -- --port 3000`,
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },

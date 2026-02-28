@@ -2,10 +2,10 @@
 
 import { useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
 import { useStore } from 'zustand';
 import { getSettingsStore } from '@/lib/settings-store';
 import { fetchSettings, patchSettings } from '@/lib/api-client';
+import { useAuthSession } from '@/hooks/use-auth-session';
 
 /**
  * Hook that syncs settings between the local Zustand store and the REST API.
@@ -17,7 +17,7 @@ export function useSettingsSync() {
   const store = getSettingsStore();
   const settings = useStore(store, (s) => s.settings);
   const loaded = useStore(store, (s) => s.loaded);
-  const { status } = useSession();
+  const { status } = useAuthSession();
   const isAuthenticated = status === 'authenticated';
 
   const initialSyncDone = useRef(false);

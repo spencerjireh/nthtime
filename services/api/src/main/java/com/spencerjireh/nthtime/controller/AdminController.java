@@ -1,0 +1,46 @@
+package com.spencerjireh.nthtime.controller;
+
+import com.spencerjireh.nthtime.dto.request.SeedPackRequest;
+import com.spencerjireh.nthtime.dto.request.SyncPacksRequest;
+import com.spencerjireh.nthtime.exception.ForbiddenException;
+import com.spencerjireh.nthtime.service.AdminService;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/admin")
+public class AdminController {
+
+  private final AdminService adminService;
+  private final String adminSecret;
+
+  public AdminController(
+      AdminService adminService, @Value("${nthtime.admin-secret}") String adminSecret) {
+    this.adminService = adminService;
+    this.adminSecret = adminSecret;
+  }
+
+  @PostMapping("/seed")
+  public Map<String, Boolean> seedPack(@RequestBody SeedPackRequest input) {
+    verifyAdminSecret(input.adminSecret());
+    adminService.seedPack(input);
+    return Map.of("ok", true);
+  }
+
+  @PostMapping("/sync")
+  public Map<String, Boolean> syncPacks(@RequestBody SyncPacksRequest input) {
+    verifyAdminSecret(input.adminSecret());
+    adminService.syncPacks(input.packs());
+    return Map.of("ok", true);
+  }
+
+  private void verifyAdminSecret(String secret) {
+    if (secret == null || !secret.equals(adminSecret)) {
+      throw new ForbiddenException("Invalid admin secret");
+    }
+  }
+}

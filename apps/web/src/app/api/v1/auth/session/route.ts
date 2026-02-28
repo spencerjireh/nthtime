@@ -1,13 +1,5 @@
-import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
 
-export async function GET() {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ authenticated: false });
-  }
-  return NextResponse.json({
-    authenticated: true,
-    convexUserId: session.convexUserId,
-  });
+export async function GET(req: Request) {
+  return proxyToSpringBoot(req, '/api/auth/session');
 }

@@ -1,15 +1,5 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import { authorRepository } from '@/lib/data-access/repositories';
-import { requireAuth, badRequest } from '@/lib/api-helpers';
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
 
-export async function GET(req: NextRequest) {
-  const [, authErr] = await requireAuth();
-  if (authErr) return authErr;
-
-  const slug = req.nextUrl.searchParams.get('slug');
-  if (!slug) return badRequest('slug parameter required');
-
-  const excludePackId = req.nextUrl.searchParams.get('excludePackId') ?? undefined;
-  const available = await authorRepository.checkSlugAvailable(slug, excludePackId);
-  return NextResponse.json({ available });
+export async function GET(req: Request) {
+  return proxyToSpringBoot(req, '/api/author/packs/check-slug');
 }

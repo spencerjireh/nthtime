@@ -34,7 +34,7 @@ export default defineConfig({
       { text: 'Authoring', link: '/authoring/pack-authoring' },
       { text: 'API', link: '/api/shared' },
       { text: 'Specs', link: '/specs/00-monorepo-foundation' },
-      { text: 'Operations', link: '/operations/convex-backend' },
+      { text: 'Operations', link: '/operations/spring-boot-backend' },
       { text: 'GitHub', link: 'https://github.com/spencerjireh/nthtime' },
     ],
 
@@ -94,7 +94,7 @@ export default defineConfig({
         {
           text: 'Operations',
           items: [
-            { text: 'Convex Backend', link: '/operations/convex-backend' },
+            { text: 'Spring Boot Backend', link: '/operations/spring-boot-backend' },
             { text: 'Docker & CI', link: '/operations/docker-ci' },
             { text: 'Coolify Runbook', link: '/operations/coolify-runbook' },
             { text: 'Design System', link: '/operations/design-system' },

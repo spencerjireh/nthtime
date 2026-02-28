@@ -7,12 +7,12 @@ test.beforeAll(async () => {
   challengeId = await getChallengeId('express-basics', 1);
 });
 
-test.describe('Attempt persistence (Convex)', () => {
+test.describe('Attempt persistence', () => {
   test('submit challenge and verify attempt persists', async ({ page }) => {
     await page.goto(`/challenge/${challengeId}`);
     await submitAndWaitForResults(page, EXPRESS_SOLUTION);
 
-    // After submitting, the attempt should be persisted to Convex.
+    // After submitting, the attempt should be persisted to the backend.
     // Navigate away and back -- the challenge should reflect the attempt.
     await page.goto('/pack/express-basics');
 

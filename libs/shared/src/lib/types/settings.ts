@@ -6,7 +6,6 @@ export interface FeedbackConfig {
   readonly showSolution: boolean;
 }
 
-// Keep in sync with convex/settings.ts DEFAULT_FEEDBACK
 export const DEFAULT_FEEDBACK: FeedbackConfig = {
   showPassFail: true,
   showHints: true,
