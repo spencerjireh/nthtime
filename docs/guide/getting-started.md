@@ -28,11 +28,9 @@ pnpm dev
 
 This runs the Next.js 16 development server in **webpack mode**. Turbopack is not supported because Nx's dynamic `require()` calls break under it. The `--webpack` flag is configured in `apps/web/project.json` so you do not need to pass it manually.
 
-The app will be available at `http://localhost:3000`. Without a Convex backend configured, the app falls back to mock data automatically.
+The app will be available at `http://localhost:3000`. A Convex backend is **required** -- the app throws at startup without `NEXT_PUBLIC_CONVEX_URL`.
 
-## Optional: Convex backend
-
-To enable the full backend (packs, attempts, user settings, auth):
+## Convex backend
 
 1. Create a Convex project at [dashboard.convex.dev](https://dashboard.convex.dev).
 2. Set the environment variable in a `.env.local` file at the repo root:
@@ -49,7 +47,7 @@ To enable the full backend (packs, attempts, user settings, auth):
 
    Convex functions live at the repo root in `convex/`. This directory is **not** an Nx project.
 
-## Optional: Auth setup (GitHub OAuth)
+## Auth setup (GitHub OAuth)
 
 Authentication uses GitHub OAuth via `@convex-dev/auth` (wraps Auth.js).
 

@@ -35,9 +35,7 @@ pnpm install
 pnpm dev
 ```
 
-Runs with mock data out of the box -- no backend needed. Open `http://localhost:3000` and start drilling.
-
-> For persistent data (attempt history, auth), set `NEXT_PUBLIC_CONVEX_URL` and run `npx convex dev`. See the [getting started guide](docs/guide/getting-started.md).
+Requires a Convex backend. Set `NEXT_PUBLIC_CONVEX_URL` in `.env.local` and run `npx convex dev` alongside the dev server. See the [getting started guide](docs/guide/getting-started.md) for full setup.
 
 ## Challenge packs
 
