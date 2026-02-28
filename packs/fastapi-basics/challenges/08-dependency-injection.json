@@ -2,9 +2,12 @@
   "title": "Dependency Injection",
   "prompt": "Use FastAPI's dependency injection system to share logic across endpoints.\n\n**Requirements in `deps.py`:**\n1. Define a function `get_db` that returns a mock database connection dict\n\n**Requirements in `main.py`:**\n1. Import `FastAPI` and `Depends` from `fastapi`\n2. Import `get_db` from `deps`\n3. Create an app instance\n4. Define a function `list_items` decorated with `@app.get('/items')` that uses `Depends(get_db)` as a parameter",
   "difficulty": "intermediate",
-  "tags": ["dependency-injection", "depends", "architecture"],
+  "tags": [
+    "dependency-injection",
+    "depends",
+    "architecture"
+  ],
   "timeEstimateSeconds": 600,
-  "scaffolded": true,
   "files": [
     {
       "path": "deps.py",
@@ -13,16 +16,6 @@
     {
       "path": "main.py",
       "content": "from fastapi import FastAPI, Depends\nfrom deps import get_db\n\napp = FastAPI()\n\n\n@app.get(\"/items\")\ndef list_items(db=Depends(get_db)):\n    return db[\"items\"]\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "deps.py",
-      "content": "# Define dependency functions\n"
-    },
-    {
-      "path": "main.py",
-      "content": "# Create endpoints using dependency injection\n"
     }
   ],
   "hints": [
@@ -44,13 +37,18 @@
         {
           "type": "pythonImport",
           "module": "fastapi",
-          "names": ["FastAPI", "Depends"],
+          "names": [
+            "FastAPI",
+            "Depends"
+          ],
           "description": "Import FastAPI and Depends"
         },
         {
           "type": "pythonImport",
           "module": "deps",
-          "names": ["get_db"],
+          "names": [
+            "get_db"
+          ],
           "description": "Import the database dependency"
         },
         {

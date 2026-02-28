@@ -26,9 +26,7 @@ interface ChallengeFile {
   difficulty: string;
   tags: string[];
   timeEstimateSeconds: number;
-  scaffolded: boolean;
   files: FileEntry[];
-  scaffold: FileEntry[];
   hints: string[];
   assertions: AssertionSet;
 }
@@ -84,8 +82,6 @@ function validateChallengeJson(challenge: ChallengeFile, filename: string): stri
     errors.push(fail(`[${filename}] Missing "assertions" object`));
   if (!Array.isArray(challenge.hints))
     errors.push(fail(`[${filename}] Missing "hints" array`));
-  if (challenge.scaffolded && (!Array.isArray(challenge.scaffold) || challenge.scaffold.length === 0))
-    errors.push(fail(`[${filename}] Scaffolded challenge missing "scaffold" array`));
 
   // Validate assertion structure
   if (challenge.assertions) {

@@ -2,19 +2,16 @@
   "title": "Hello Endpoint",
   "prompt": "Create a basic FastAPI application with a single endpoint.\n\n**Requirements:**\n1. Import `FastAPI` from `fastapi`\n2. Create an app instance: `app = FastAPI()`\n3. Define a function `read_root` decorated with `@app.get('/')` that returns `{\"message\": \"Hello World\"}`",
   "difficulty": "beginner",
-  "tags": ["endpoints", "get", "basics"],
+  "tags": [
+    "endpoints",
+    "get",
+    "basics"
+  ],
   "timeEstimateSeconds": 300,
-  "scaffolded": true,
   "files": [
     {
       "path": "main.py",
       "content": "from fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Hello World\"}\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "main.py",
-      "content": "# Create a FastAPI app with a hello endpoint\n"
     }
   ],
   "hints": [
@@ -28,7 +25,9 @@
         {
           "type": "pythonImport",
           "module": "fastapi",
-          "names": ["FastAPI"],
+          "names": [
+            "FastAPI"
+          ],
           "description": "Import FastAPI from fastapi"
         },
         {

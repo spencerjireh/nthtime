@@ -2,19 +2,15 @@
   "title": "Props Display",
   "prompt": "Create a greeting component that accepts props.\n\n**Requirements:**\n1. Create and export a function `Greeting` component\n2. Accept a `name` prop\n3. Render an `<h1>` element displaying `Hello, {name}!`",
   "difficulty": "beginner",
-  "tags": ["props", "components"],
+  "tags": [
+    "props",
+    "components"
+  ],
   "timeEstimateSeconds": 240,
-  "scaffolded": true,
   "files": [
     {
       "path": "Greeting.tsx",
       "content": "export function Greeting({ name }: { name: string }) {\n  return <h1>Hello, {name}!</h1>;\n}\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "Greeting.tsx",
-      "content": "// Create a Greeting component that displays a name\n"
     }
   ],
   "hints": [

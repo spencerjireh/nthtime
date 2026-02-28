@@ -2,19 +2,16 @@
   "title": "Path Parameters",
   "prompt": "Create a FastAPI endpoint that accepts path parameters.\n\n**Requirements:**\n1. Import `FastAPI` from `fastapi`\n2. Create an app instance\n3. Define a function `get_item` decorated with `@app.get('/items/{item_id}')` that accepts an `item_id` parameter\n4. Return the item ID in a JSON response",
   "difficulty": "beginner",
-  "tags": ["endpoints", "path-params", "get"],
+  "tags": [
+    "endpoints",
+    "path-params",
+    "get"
+  ],
   "timeEstimateSeconds": 300,
-  "scaffolded": true,
   "files": [
     {
       "path": "main.py",
       "content": "from fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int):\n    return {\"item_id\": item_id}\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "main.py",
-      "content": "# Create a FastAPI endpoint with path parameters\n"
     }
   ],
   "hints": [
@@ -28,7 +25,9 @@
         {
           "type": "pythonImport",
           "module": "fastapi",
-          "names": ["FastAPI"],
+          "names": [
+            "FastAPI"
+          ],
           "description": "Import FastAPI from fastapi"
         },
         {

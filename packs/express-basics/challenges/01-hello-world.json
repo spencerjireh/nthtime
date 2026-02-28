@@ -2,23 +2,16 @@
   "title": "Hello World Server",
   "prompt": "Create a basic Express.js server that responds with a JSON message.\n\n**Requirements:**\n1. Import `express` and create an app instance stored in a `const` variable called `app`\n2. Add a GET route at `/api/hello` that returns `{ message: \"Hello World\" }`\n3. Export the app as the default export\n\nThe server setup (listening on a port) is already provided in `server.js`.",
   "difficulty": "beginner",
-  "tags": ["routes", "get", "json"],
+  "tags": [
+    "routes",
+    "get",
+    "json"
+  ],
   "timeEstimateSeconds": 300,
-  "scaffolded": true,
   "files": [
     {
       "path": "app.js",
       "content": "import express from 'express';\n\nconst app = express();\n\napp.get('/api/hello', (req, res) => {\n  res.json({ message: 'Hello World' });\n});\n\nexport default app;\n"
-    },
-    {
-      "path": "server.js",
-      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "app.js",
-      "content": "// Create your Express app here\n"
     },
     {
       "path": "server.js",

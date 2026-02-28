@@ -26,9 +26,7 @@ interface ChallengeFile {
   difficulty: string;
   tags: string[];
   timeEstimateSeconds: number;
-  scaffolded: boolean;
   files: { path: string; content: string }[];
-  scaffold: { path: string; content: string }[];
   hints: string[];
   assertions: {
     perFile: Record<string, unknown[]>;
@@ -115,11 +113,9 @@ function toSeedPayload(manifest: PackManifest, challenges: LoadedChallenge[]) {
       difficulty: c.difficulty,
       tags: c.tags,
       timeEstimateSeconds: c.timeEstimateSeconds,
-      scaffolded: c.scaffolded,
-      files: c.scaffold ?? c.files,
       hints: c.hints,
       assertions: c.assertions,
-      referenceSolution: c.scaffold ? c.files : undefined,
+      referenceSolution: c.files,
     })),
   };
 }

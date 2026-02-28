@@ -2,9 +2,12 @@
   "title": "Express Router",
   "prompt": "Organize routes using Express Router in a separate module.\n\n**Requirements in `routes/users.js`:**\n1. Import `Router` from `express` (named import)\n2. Create a `const` variable `router` using `Router()`\n3. Add a GET route at `/` on the router that returns a list of users\n4. Export `router` as the default export\n\n**Requirements in `app.js`:**\n1. Import `express` and import `router` from `./routes/users.js`\n2. Create an app instance and mount the router at `/api/users` with `app.use()`\n3. Export the app as the default export",
   "difficulty": "intermediate",
-  "tags": ["router", "modules", "organization"],
+  "tags": [
+    "router",
+    "modules",
+    "organization"
+  ],
   "timeEstimateSeconds": 600,
-  "scaffolded": true,
   "files": [
     {
       "path": "routes/users.js",
@@ -13,20 +16,6 @@
     {
       "path": "app.js",
       "content": "import express from 'express';\nimport router from './routes/users.js';\n\nconst app = express();\n\napp.use('/api/users', router);\n\nexport default app;\n"
-    },
-    {
-      "path": "server.js",
-      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "routes/users.js",
-      "content": "// Create an Express Router for user routes\n"
-    },
-    {
-      "path": "app.js",
-      "content": "// Import express and your router, then mount it\n"
     },
     {
       "path": "server.js",
@@ -45,7 +34,9 @@
         {
           "type": "importDeclaration",
           "source": "express",
-          "specifiers": ["Router"],
+          "specifiers": [
+            "Router"
+          ],
           "description": "Import Router from express"
         },
         {

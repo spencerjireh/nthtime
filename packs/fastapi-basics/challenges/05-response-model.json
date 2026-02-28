@@ -2,9 +2,12 @@
   "title": "Response Model",
   "prompt": "Create endpoints with explicit response models for documentation and validation.\n\n**Requirements in `models.py`:**\n1. Import `BaseModel` from `pydantic`\n2. Define a class `ItemResponse` that inherits from `BaseModel` with `id`, `name`, and `price` fields\n\n**Requirements in `main.py`:**\n1. Import `FastAPI` from `fastapi`\n2. Import `ItemResponse` from `models`\n3. Create an app instance\n4. Define a function `get_item` decorated with `@app.get('/items/{item_id}')` that returns an `ItemResponse`",
   "difficulty": "intermediate",
-  "tags": ["pydantic", "response-model", "typing"],
+  "tags": [
+    "pydantic",
+    "response-model",
+    "typing"
+  ],
   "timeEstimateSeconds": 480,
-  "scaffolded": true,
   "files": [
     {
       "path": "models.py",
@@ -13,16 +16,6 @@
     {
       "path": "main.py",
       "content": "from fastapi import FastAPI\nfrom models import ItemResponse\n\napp = FastAPI()\n\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int) -> ItemResponse:\n    return ItemResponse(id=item_id, name=\"Widget\", price=9.99)\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "models.py",
-      "content": "# Define Pydantic response models\n"
-    },
-    {
-      "path": "main.py",
-      "content": "# Create endpoints with response models\n"
     }
   ],
   "hints": [
@@ -36,13 +29,17 @@
         {
           "type": "pythonImport",
           "module": "pydantic",
-          "names": ["BaseModel"],
+          "names": [
+            "BaseModel"
+          ],
           "description": "Import BaseModel from pydantic"
         },
         {
           "type": "pythonClassDef",
           "name": "ItemResponse",
-          "bases": ["BaseModel"],
+          "bases": [
+            "BaseModel"
+          ],
           "description": "Define an ItemResponse model"
         }
       ],
@@ -50,13 +47,17 @@
         {
           "type": "pythonImport",
           "module": "fastapi",
-          "names": ["FastAPI"],
+          "names": [
+            "FastAPI"
+          ],
           "description": "Import FastAPI"
         },
         {
           "type": "pythonImport",
           "module": "models",
-          "names": ["ItemResponse"],
+          "names": [
+            "ItemResponse"
+          ],
           "description": "Import the response model"
         },
         {

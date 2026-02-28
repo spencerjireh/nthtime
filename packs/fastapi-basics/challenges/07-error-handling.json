@@ -2,19 +2,16 @@
   "title": "Error Handling",
   "prompt": "Create a FastAPI endpoint that raises HTTP exceptions for error cases.\n\n**Requirements:**\n1. Import `FastAPI` from `fastapi`\n2. Import `HTTPException` from `fastapi`\n3. Create an app instance\n4. Define a function `get_item` decorated with `@app.get('/items/{item_id}')` that raises an `HTTPException` with status 404 if the item is not found",
   "difficulty": "intermediate",
-  "tags": ["errors", "exceptions", "http-status"],
+  "tags": [
+    "errors",
+    "exceptions",
+    "http-status"
+  ],
   "timeEstimateSeconds": 420,
-  "scaffolded": true,
   "files": [
     {
       "path": "main.py",
       "content": "from fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\nitems = {1: \"Widget\", 2: \"Gadget\"}\n\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int):\n    if item_id not in items:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return {\"item_id\": item_id, \"name\": items[item_id]}\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "main.py",
-      "content": "# Create a FastAPI endpoint with error handling\n"
     }
   ],
   "hints": [
@@ -28,7 +25,10 @@
         {
           "type": "pythonImport",
           "module": "fastapi",
-          "names": ["FastAPI", "HTTPException"],
+          "names": [
+            "FastAPI",
+            "HTTPException"
+          ],
           "description": "Import FastAPI and HTTPException"
         },
         {

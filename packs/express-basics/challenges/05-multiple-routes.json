@@ -2,23 +2,17 @@
   "title": "Multiple Routes",
   "prompt": "Create an Express server with multiple route handlers for a simple API.\n\n**Requirements:**\n1. Import `express` and create an app instance\n2. Enable JSON body parsing with `express.json()`\n3. Add a GET route at `/api/items` that returns all items\n4. Add a POST route at `/api/items` that adds a new item\n5. Export the app as the default export",
   "difficulty": "intermediate",
-  "tags": ["routes", "get", "post", "crud"],
+  "tags": [
+    "routes",
+    "get",
+    "post",
+    "crud"
+  ],
   "timeEstimateSeconds": 480,
-  "scaffolded": true,
   "files": [
     {
       "path": "app.js",
       "content": "import express from 'express';\n\nconst app = express();\n\napp.use(express.json());\n\nconst items = [];\n\napp.get('/api/items', (req, res) => {\n  res.json(items);\n});\n\napp.post('/api/items', (req, res) => {\n  const item = { id: items.length + 1, ...req.body };\n  items.push(item);\n  res.status(201).json(item);\n});\n\nexport default app;\n"
-    },
-    {
-      "path": "server.js",
-      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "app.js",
-      "content": "// Build an Express app with GET and POST routes for /api/items\n"
     },
     {
       "path": "server.js",

@@ -2,23 +2,17 @@
   "title": "Query String Filtering",
   "prompt": "Create an Express server that filters data using query string parameters.\n\n**Requirements:**\n1. Import `express` and create an app instance\n2. Define a `const` variable `items` with sample data\n3. Add a GET route at `/api/items` that reads `req.query` and returns filtered results with `res.json()`\n4. Export the app as the default export",
   "difficulty": "beginner",
-  "tags": ["routes", "query", "get", "filtering"],
+  "tags": [
+    "routes",
+    "query",
+    "get",
+    "filtering"
+  ],
   "timeEstimateSeconds": 420,
-  "scaffolded": true,
   "files": [
     {
       "path": "app.js",
       "content": "import express from 'express';\n\nconst app = express();\n\nconst items = [\n  { id: 1, name: 'Widget', category: 'tools' },\n  { id: 2, name: 'Gadget', category: 'electronics' },\n  { id: 3, name: 'Wrench', category: 'tools' },\n];\n\napp.get('/api/items', (req, res) => {\n  const { category } = req.query;\n  const filtered = category\n    ? items.filter(item => item.category === category)\n    : items;\n  res.json(filtered);\n});\n\nexport default app;\n"
-    },
-    {
-      "path": "server.js",
-      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "app.js",
-      "content": "// Create an Express app that filters items by query string\n"
     },
     {
       "path": "server.js",

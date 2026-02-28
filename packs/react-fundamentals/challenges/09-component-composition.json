@@ -2,9 +2,13 @@
   "title": "Component Composition",
   "prompt": "Build a set of reusable components and compose them together.\n\n**Requirements in `Button.tsx`:**\n1. Create and export a function `Button` component that renders a `<button>` element\n\n**Requirements in `Card.tsx`:**\n1. Create and export a function `Card` component that renders a `<div>` wrapping its children\n\n**Requirements in `App.tsx`:**\n1. Import `Button` from `./Button` and `Card` from `./Card`\n2. Create and export a function `App` component\n3. Compose the Card and Button components together in the render output",
   "difficulty": "advanced",
-  "tags": ["composition", "components", "reuse", "multi-file"],
+  "tags": [
+    "composition",
+    "components",
+    "reuse",
+    "multi-file"
+  ],
   "timeEstimateSeconds": 600,
-  "scaffolded": true,
   "files": [
     {
       "path": "Button.tsx",
@@ -17,20 +21,6 @@
     {
       "path": "App.tsx",
       "content": "import { Button } from './Button';\nimport { Card } from './Card';\n\nexport function App() {\n  return (\n    <Card title=\"Welcome\">\n      <p>Click the button below.</p>\n      <Button onClick={() => console.log('clicked')}>Click me</Button>\n    </Card>\n  );\n}\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "Button.tsx",
-      "content": "// Create a reusable Button component\n"
-    },
-    {
-      "path": "Card.tsx",
-      "content": "// Create a reusable Card component\n"
-    },
-    {
-      "path": "App.tsx",
-      "content": "// Compose Button and Card together\n"
     }
   ],
   "hints": [
@@ -75,13 +65,17 @@
         {
           "type": "importDeclaration",
           "source": "./Button",
-          "specifiers": ["Button"],
+          "specifiers": [
+            "Button"
+          ],
           "description": "Import the Button component"
         },
         {
           "type": "importDeclaration",
           "source": "./Card",
-          "specifiers": ["Card"],
+          "specifiers": [
+            "Card"
+          ],
           "description": "Import the Card component"
         },
         {

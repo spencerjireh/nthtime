@@ -2,19 +2,16 @@
   "title": "Conditional Rendering",
   "prompt": "Build a status badge component that renders different content based on a prop.\n\n**Requirements:**\n1. Create and export a function `StatusBadge` component\n2. Accept a `status` prop of type `'online' | 'offline' | 'away'`\n3. Render a `<span>` element with the status text\n4. Use conditional logic to display different content based on the status value",
   "difficulty": "beginner",
-  "tags": ["conditional", "props", "components"],
+  "tags": [
+    "conditional",
+    "props",
+    "components"
+  ],
   "timeEstimateSeconds": 300,
-  "scaffolded": true,
   "files": [
     {
       "path": "StatusBadge.tsx",
       "content": "export function StatusBadge({ status }: { status: 'online' | 'offline' | 'away' }) {\n  const label = status === 'online' ? 'Online' : status === 'away' ? 'Away' : 'Offline';\n\n  return <span>{label}</span>;\n}\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "StatusBadge.tsx",
-      "content": "// Build a StatusBadge that renders based on status prop\n"
     }
   ],
   "hints": [

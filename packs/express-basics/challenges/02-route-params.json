@@ -2,23 +2,16 @@
   "title": "Route Parameters",
   "prompt": "Create an Express server that uses route parameters to serve user data.\n\n**Requirements:**\n1. Import `express` and create an app instance\n2. Add a GET route at `/api/users/:id` that reads the `id` parameter from `req.params`\n3. Return a JSON response with `{ id: req.params.id, name: \"User \" + req.params.id }`\n4. Export the app as the default export",
   "difficulty": "beginner",
-  "tags": ["routes", "params", "get"],
+  "tags": [
+    "routes",
+    "params",
+    "get"
+  ],
   "timeEstimateSeconds": 300,
-  "scaffolded": true,
   "files": [
     {
       "path": "app.js",
       "content": "import express from 'express';\n\nconst app = express();\n\napp.get('/api/users/:id', (req, res) => {\n  res.json({ id: req.params.id, name: 'User ' + req.params.id });\n});\n\nexport default app;\n"
-    },
-    {
-      "path": "server.js",
-      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
-    }
-  ],
-  "scaffold": [
-    {
-      "path": "app.js",
-      "content": "// Build a route that reads a user ID from the URL\n"
     },
     {
       "path": "server.js",
