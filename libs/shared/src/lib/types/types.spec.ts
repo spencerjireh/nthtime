@@ -96,9 +96,8 @@ describe('type compilation', () => {
           difficulty: Difficulty.Beginner,
           tags: [],
           timeEstimateSeconds: 60,
-          scaffolded: true,
-          files: [{ path: 'index.ts', content: '' }],
           hints: [],
+          referenceSolution: [{ path: 'index.ts', content: '' }],
           assertions: { perFile: {}, crossFile: [] },
         },
       ],
@@ -113,6 +112,7 @@ describe('type compilation', () => {
       keybindings: 'vim',
       darkMode: true,
       autocomplete: true,
+      fileStubs: true,
       formatter: {
         defaults: {
           enabled: true,
@@ -123,7 +123,6 @@ describe('type compilation', () => {
         overrides: {},
       },
       promptCollapsed: false,
-      toolbarCollapsed: false,
     };
     expect(settings.feedback.showPassFail).toBe(true);
     expect(settings.feedback.showDiff).toBe(false);

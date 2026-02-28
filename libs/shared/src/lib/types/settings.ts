@@ -45,5 +45,5 @@ export interface UserSettings {
   readonly darkMode: boolean;
   readonly autocomplete: boolean;
   readonly promptCollapsed: boolean;
-  readonly toolbarCollapsed: boolean;
+  readonly fileStubs: boolean;
 }

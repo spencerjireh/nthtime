@@ -7,7 +7,7 @@ import { Difficulty } from '@nthtime/shared';
 let store: StoreApi<EditorStore>;
 
 const mockChallenge = {
-  files: [
+  referenceSolution: [
     { path: 'app.js', content: 'const app = express();' },
     { path: 'server.js', content: 'app.listen(3000);' },
   ],
@@ -16,7 +16,6 @@ const mockChallenge = {
   prompt: 'Create a basic Express server',
   difficulty: Difficulty.Beginner,
   tags: ['express', 'node'] as const,
-  timeEstimateSeconds: 300,
 };
 
 beforeEach(() => {
@@ -33,15 +32,16 @@ describe('createEditorStore', () => {
     expect(state.hintsRevealed).toBe(0);
     expect(state.viewMode).toBe('editing');
     expect(state.submittedFiles).toBeNull();
-    expect(state.scaffoldFiles).toBeNull();
+    expect(state.resultsCodeView).toBe('submitted');
   });
 
-  it('initializes from a challenge', () => {
+  it('initializes from a challenge with file stubs', () => {
     store.getState().initFromChallenge(mockChallenge);
     const state = store.getState();
 
     expect(Object.keys(state.files)).toHaveLength(2);
-    expect(state.files['app.js'].content).toBe('const app = express();');
+    expect(state.files['app.js'].content).toBe('');
+    expect(state.files['server.js'].content).toBe('');
     expect(state.activeFilePath).toBe('app.js');
     expect(state.totalHints).toBe(2);
     expect(state.hints).toEqual(['Use express()', 'Call app.listen()']);
@@ -49,22 +49,13 @@ describe('createEditorStore', () => {
     expect(state.challengeMetadata?.difficulty).toBe('beginner');
   });
 
-  it('stores scaffold files on init', () => {
+  it('stores reference solution files on init', () => {
     store.getState().initFromChallenge(mockChallenge);
     const state = store.getState();
 
-    expect(state.scaffoldFiles).not.toBeNull();
-    expect(state.scaffoldFiles!['app.js'].content).toBe('const app = express();');
-    expect(state.scaffoldFiles!['server.js'].content).toBe('app.listen(3000);');
-  });
-
-  it('preserves scaffold files after file edits', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().setFileContent('app.js', 'updated content');
-
-    const state = store.getState();
-    expect(state.files['app.js'].content).toBe('updated content');
-    expect(state.scaffoldFiles!['app.js'].content).toBe('const app = express();');
+    expect(state.referenceSolutionFiles).not.toBeNull();
+    expect(state.referenceSolutionFiles!['app.js'].content).toBe('const app = express();');
+    expect(state.referenceSolutionFiles!['server.js'].content).toBe('app.listen(3000);');
   });
 
   it('sets file content', () => {
@@ -102,21 +93,9 @@ describe('createEditorStore', () => {
     expect(store.getState().hintsRevealed).toBe(2);
   });
 
-  it('manages timer', () => {
-    store.getState().startTimer();
-    expect(store.getState().timer.startedAt).not.toBeNull();
-
-    // Calling start again does nothing
-    const firstStart = store.getState().timer.startedAt;
-    store.getState().startTimer();
-    expect(store.getState().timer.startedAt).toBe(firstStart);
-
-    store.getState().stopTimer();
-    expect(store.getState().timer.startedAt).toBeNull();
-  });
-
   it('returns all file entries', () => {
     store.getState().initFromChallenge(mockChallenge);
+    store.getState().setFileContent('app.js', 'some code');
     const entries = store.getState().getAllFileEntries();
 
     expect(entries).toHaveLength(2);
@@ -135,38 +114,6 @@ describe('createEditorStore', () => {
     expect(state.challengeMetadata).toBeNull();
     expect(state.viewMode).toBe('editing');
     expect(state.submittedFiles).toBeNull();
-    expect(state.scaffoldFiles).toBeNull();
-  });
-});
-
-describe('isDirty', () => {
-  it('returns false for unmodified files', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    expect(store.getState().isDirty('app.js')).toBe(false);
-    expect(store.getState().isDirty('server.js')).toBe(false);
-  });
-
-  it('returns true after modifying a file', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().setFileContent('app.js', 'modified content');
-    expect(store.getState().isDirty('app.js')).toBe(true);
-    expect(store.getState().isDirty('server.js')).toBe(false);
-  });
-
-  it('returns false after restoring original content', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().setFileContent('app.js', 'modified');
-    store.getState().setFileContent('app.js', 'const app = express();');
-    expect(store.getState().isDirty('app.js')).toBe(false);
-  });
-
-  it('returns false for unknown paths', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    expect(store.getState().isDirty('nonexistent.js')).toBe(false);
-  });
-
-  it('returns false before initialization', () => {
-    expect(store.getState().isDirty('app.js')).toBe(false);
   });
 });
 
@@ -183,9 +130,10 @@ describe('createFile', () => {
 
   it('no-ops on duplicate path', () => {
     store.getState().initFromChallenge(mockChallenge);
+    store.getState().setFileContent('app.js', 'original');
     store.getState().createFile('app.js', 'duplicate');
 
-    expect(store.getState().files['app.js'].content).toBe('const app = express();');
+    expect(store.getState().files['app.js'].content).toBe('original');
   });
 
   it('creates with empty content by default', () => {
@@ -213,16 +161,6 @@ describe('renameFile', () => {
     store.getState().renameFile('app.js', 'server.js');
 
     expect(store.getState().files['app.js']).toBeDefined();
-    expect(store.getState().files['server.js'].content).toBe('app.listen(3000);');
-  });
-
-  it('updates scaffoldFiles on rename', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().renameFile('app.js', 'index.js');
-
-    const state = store.getState();
-    expect(state.scaffoldFiles!['index.js']).toBeDefined();
-    expect(state.scaffoldFiles!['app.js']).toBeUndefined();
   });
 
   it('does not change activeFilePath when renaming non-active file', () => {
@@ -248,7 +186,7 @@ describe('deleteFile', () => {
   it('selects null when deleting the last file', () => {
     store.getState().initFromChallenge({
       ...mockChallenge,
-      files: [{ path: 'only.js', content: 'solo' }],
+      referenceSolution: [{ path: 'only.js', content: 'solo' }],
     });
     store.getState().deleteFile('only.js');
 
@@ -265,48 +203,34 @@ describe('deleteFile', () => {
   });
 });
 
-describe('blank canvas (scaffolded=false)', () => {
-  const blankChallenge = {
-    ...mockChallenge,
-    scaffolded: false as const,
-  };
-
-  it('starts with empty files when scaffolded=false', () => {
-    store.getState().initFromChallenge(blankChallenge);
+describe('fileStubs=false (blank canvas)', () => {
+  it('starts with empty files when fileStubs=false', () => {
+    store.getState().initFromChallenge(mockChallenge, undefined, false);
     const state = store.getState();
     expect(Object.keys(state.files)).toHaveLength(0);
     expect(state.activeFilePath).toBeNull();
   });
 
-  it('sets scaffoldFiles to null when scaffolded=false', () => {
-    store.getState().initFromChallenge(blankChallenge);
-    expect(store.getState().scaffoldFiles).toBeNull();
+  it('still builds referenceSolutionFiles when fileStubs=false', () => {
+    store.getState().initFromChallenge(mockChallenge, undefined, false);
+    expect(store.getState().referenceSolutionFiles).not.toBeNull();
+    expect(store.getState().referenceSolutionFiles!['app.js'].content).toBe('const app = express();');
   });
 
-  it('still loads metadata when scaffolded=false', () => {
-    store.getState().initFromChallenge(blankChallenge);
+  it('still loads metadata when fileStubs=false', () => {
+    store.getState().initFromChallenge(mockChallenge, undefined, false);
     expect(store.getState().challengeMetadata?.title).toBe('Express Basics');
     expect(store.getState().totalHints).toBe(2);
   });
 
-  it('defaults to scaffolded=true when not specified', () => {
+  it('defaults to fileStubs=true when not specified', () => {
     store.getState().initFromChallenge(mockChallenge);
     expect(Object.keys(store.getState().files)).toHaveLength(2);
-    expect(store.getState().scaffoldFiles).not.toBeNull();
-  });
-});
-
-describe('isDirty with new files', () => {
-  it('returns false for files not in scaffold', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().createFile('new.js', 'content');
-    // new.js has no scaffold entry, so isDirty returns false
-    expect(store.getState().isDirty('new.js')).toBe(false);
   });
 });
 
 describe('tabOrder', () => {
-  it('populates tabOrder from files on init', () => {
+  it('populates tabOrder from file stubs on init', () => {
     store.getState().initFromChallenge(mockChallenge);
     expect(store.getState().tabOrder).toEqual(['app.js', 'server.js']);
   });
@@ -342,7 +266,7 @@ describe('tabOrder', () => {
   it('closeTab on last tab sets activeFilePath to null', () => {
     store.getState().initFromChallenge({
       ...mockChallenge,
-      files: [{ path: 'only.js', content: '' }],
+      referenceSolution: [{ path: 'only.js', content: '' }],
     });
     store.getState().closeTab('only.js');
     expect(store.getState().tabOrder).toEqual([]);
@@ -423,40 +347,6 @@ describe('split pane', () => {
   });
 });
 
-describe('showSolution and hideSolution', () => {
-  const challengeWithSolution = {
-    ...mockChallenge,
-    referenceSolution: [
-      { path: 'app.js', content: 'const app = express();\napp.get("/", (req, res) => res.send("ok"));' },
-    ],
-  };
-
-  it('showSolution sets viewMode to solution when referenceSolutionFiles exist', () => {
-    store.getState().initFromChallenge(challengeWithSolution);
-    expect(store.getState().referenceSolutionFiles).not.toBeNull();
-
-    store.getState().showSolution();
-    expect(store.getState().viewMode).toBe('solution');
-  });
-
-  it('showSolution is no-op when referenceSolutionFiles is null', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    expect(store.getState().referenceSolutionFiles).toBeNull();
-
-    store.getState().showSolution();
-    expect(store.getState().viewMode).toBe('editing');
-  });
-
-  it('hideSolution sets viewMode back to editing', () => {
-    store.getState().initFromChallenge(challengeWithSolution);
-    store.getState().showSolution();
-    expect(store.getState().viewMode).toBe('solution');
-
-    store.getState().hideSolution();
-    expect(store.getState().viewMode).toBe('editing');
-  });
-});
-
 describe('submit and retry', () => {
   it('submit snapshots files and switches to results', () => {
     store.getState().initFromChallenge(mockChallenge);
@@ -467,28 +357,7 @@ describe('submit and retry', () => {
     expect(state.viewMode).toBe('results');
     expect(state.submittedFiles).not.toBeNull();
     expect(state.submittedFiles!['app.js'].content).toBe('submitted code');
-  });
-
-  it('submit stops the timer', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().startTimer();
-    expect(store.getState().timer.startedAt).not.toBeNull();
-
-    store.getState().submit();
-    expect(store.getState().timer.startedAt).toBeNull();
-  });
-
-  it('submit preserves elapsed time', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    // Manually set a known elapsed time
-    store.getState().startTimer();
-    store.getState().tickTimer();
-
-    store.getState().submit();
-    const state = store.getState();
-    expect(state.timer.startedAt).toBeNull();
-    // elapsedSeconds should be preserved (not reset)
-    expect(state.timer.elapsedSeconds).toBeGreaterThanOrEqual(0);
+    expect(state.resultsCodeView).toBe('submitted');
   });
 
   it('retry restores submitted files and switches to editing', () => {
@@ -506,27 +375,29 @@ describe('submit and retry', () => {
     expect(state.runState).toBe('idle');
     expect(state.verificationResult).toBeNull();
     expect(state.files['app.js'].content).toBe('submitted code');
+    expect(state.resultsCodeView).toBe('submitted');
   });
 
   it('retry without submitted files preserves current files', () => {
     store.getState().initFromChallenge(mockChallenge);
-    const originalContent = store.getState().files['app.js'].content;
+    store.getState().setFileContent('app.js', 'content');
+    const currentContent = store.getState().files['app.js'].content;
 
     store.getState().retry();
 
-    expect(store.getState().files['app.js'].content).toBe(originalContent);
+    expect(store.getState().files['app.js'].content).toBe(currentContent);
     expect(store.getState().viewMode).toBe('editing');
   });
 
-  it('full submit-retry cycle preserves scaffold files', () => {
+  it('full submit-retry cycle preserves reference solution files', () => {
     store.getState().initFromChallenge(mockChallenge);
-    const originalScaffold = store.getState().scaffoldFiles;
+    const originalRef = store.getState().referenceSolutionFiles;
 
     store.getState().setFileContent('app.js', 'modified');
     store.getState().submit();
     store.getState().retry();
 
-    expect(store.getState().scaffoldFiles).toEqual(originalScaffold);
+    expect(store.getState().referenceSolutionFiles).toEqual(originalRef);
   });
 
   it('viewMode transitions correctly through full cycle', () => {
@@ -541,5 +412,28 @@ describe('submit and retry', () => {
 
     store.getState().submit();
     expect(store.getState().viewMode).toBe('results');
+  });
+});
+
+describe('resultsCodeView', () => {
+  it('setResultsCodeView changes the results code view', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    store.getState().submit();
+    expect(store.getState().resultsCodeView).toBe('submitted');
+
+    store.getState().setResultsCodeView('diff');
+    expect(store.getState().resultsCodeView).toBe('diff');
+
+    store.getState().setResultsCodeView('solution');
+    expect(store.getState().resultsCodeView).toBe('solution');
+  });
+
+  it('submit resets resultsCodeView to submitted', () => {
+    store.getState().initFromChallenge(mockChallenge);
+    store.getState().submit();
+    store.getState().setResultsCodeView('diff');
+    store.getState().retry();
+    store.getState().submit();
+    expect(store.getState().resultsCodeView).toBe('submitted');
   });
 });

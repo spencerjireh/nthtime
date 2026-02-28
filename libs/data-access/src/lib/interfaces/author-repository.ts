@@ -22,7 +22,6 @@ export interface AuthorChallengeSummary {
   readonly difficulty: string;
   readonly tags: readonly string[];
   readonly timeEstimateSeconds: number;
-  readonly scaffolded: boolean;
   readonly order: number;
 }
 
@@ -39,11 +38,9 @@ export interface AuthorChallengeDetail {
   readonly difficulty: string;
   readonly tags: readonly string[];
   readonly timeEstimateSeconds: number;
-  readonly scaffolded: boolean;
-  readonly files: readonly FileEntry[];
   readonly hints: readonly string[];
   readonly assertions: { perFile: unknown; crossFile: unknown };
-  readonly referenceSolution?: readonly FileEntry[];
+  readonly referenceSolution: readonly FileEntry[];
   readonly order: number;
 }
 
@@ -61,11 +58,9 @@ export interface AuthorPackExport {
     readonly difficulty: string;
     readonly tags: readonly string[];
     readonly timeEstimateSeconds: number;
-    readonly scaffolded: boolean;
-    readonly files: readonly FileEntry[];
     readonly hints: readonly string[];
     readonly assertions: { perFile: unknown; crossFile: unknown };
-    readonly referenceSolution?: readonly FileEntry[];
+    readonly referenceSolution: readonly FileEntry[];
     readonly order: number;
   }[];
 }
@@ -101,11 +96,9 @@ export interface CreateChallengeInput {
   readonly difficulty: string;
   readonly tags: string[];
   readonly timeEstimateSeconds: number;
-  readonly scaffolded: boolean;
-  readonly files: FileEntry[];
   readonly hints: string[];
   readonly assertions: { perFile: unknown; crossFile: unknown };
-  readonly referenceSolution?: FileEntry[];
+  readonly referenceSolution: FileEntry[];
 }
 
 export interface UpdateChallengeInput {
@@ -116,8 +109,6 @@ export interface UpdateChallengeInput {
   readonly difficulty?: string;
   readonly tags?: string[];
   readonly timeEstimateSeconds?: number;
-  readonly scaffolded?: boolean;
-  readonly files?: FileEntry[];
   readonly hints?: string[];
   readonly assertions?: { perFile: unknown; crossFile: unknown };
   readonly referenceSolution?: FileEntry[];

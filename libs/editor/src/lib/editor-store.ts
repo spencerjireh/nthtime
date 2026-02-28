@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import type { EditorStore, EditorState, EditorFile } from './types.js';
+import type { EditorStore, EditorState, EditorFile, ResultsCodeView } from './types.js';
 import {
   saveDraft as saveDraftToStorage,
   loadDraft as loadDraftFromStorage,
@@ -16,13 +16,12 @@ const initialState: EditorState = {
   hintsRevealed: 0,
   totalHints: 0,
   hints: [],
-  timer: { startedAt: null, elapsedSeconds: 0 },
   challengeMetadata: null,
   splitMode: 'single',
   secondActiveFilePath: null,
   viewMode: 'editing',
+  resultsCodeView: 'submitted',
   submittedFiles: null,
-  scaffoldFiles: null,
   referenceSolutionFiles: null,
 };
 
@@ -30,34 +29,26 @@ export function createEditorStore() {
   return createStore<EditorStore>((set, get) => ({
     ...initialState,
 
-    initFromChallenge(challenge, challengeId) {
-      const isScaffolded = challenge.scaffolded !== false;
-
+    initFromChallenge(challenge, challengeId, fileStubs = true) {
       const files: Record<string, EditorFile> = {};
-      const scaffoldFiles: Record<string, EditorFile> = {};
       let firstPath: string | null = null;
 
-      if (isScaffolded) {
-        for (const file of challenge.files) {
-          files[file.path] = { path: file.path, content: file.content };
-          scaffoldFiles[file.path] = { path: file.path, content: file.content };
+      if (fileStubs) {
+        for (const file of challenge.referenceSolution) {
+          files[file.path] = { path: file.path, content: '' };
           if (!firstPath) firstPath = file.path;
         }
       }
 
-      let referenceSolutionFiles: Record<string, EditorFile> | null = null;
-      if (challenge.referenceSolution?.length) {
-        referenceSolutionFiles = {};
-        for (const file of challenge.referenceSolution) {
-          referenceSolutionFiles[file.path] = { path: file.path, content: file.content };
-        }
+      const referenceSolutionFiles: Record<string, EditorFile> = {};
+      for (const file of challenge.referenceSolution) {
+        referenceSolutionFiles[file.path] = { path: file.path, content: file.content };
       }
 
       const baseState: EditorState = {
         ...initialState,
         challengeId: challengeId ?? null,
         files,
-        scaffoldFiles: isScaffolded ? scaffoldFiles : null,
         referenceSolutionFiles,
         activeFilePath: firstPath,
         tabOrder: Object.keys(files),
@@ -68,12 +59,11 @@ export function createEditorStore() {
           prompt: challenge.prompt,
           difficulty: challenge.difficulty,
           tags: [...challenge.tags],
-          timeEstimateSeconds: challenge.timeEstimateSeconds,
         },
       };
 
-      // Attempt to restore draft (only for scaffolded challenges)
-      if (isScaffolded && challengeId) {
+      // Attempt to restore draft
+      if (challengeId) {
         const draft = loadDraftFromStorage(challengeId);
         if (draft) {
           set({
@@ -115,23 +105,13 @@ export function createEditorStore() {
     },
 
     renameFile(oldPath, newPath) {
-      const { files, activeFilePath, scaffoldFiles, tabOrder } = get();
+      const { files, activeFilePath, tabOrder } = get();
       if (!files[oldPath] || files[newPath]) return; // missing source or duplicate target
       const { [oldPath]: file, ...rest } = files;
       const updatedFiles = { ...rest, [newPath]: { path: newPath, content: file.content } };
 
-      let updatedScaffold = scaffoldFiles;
-      if (scaffoldFiles && scaffoldFiles[oldPath]) {
-        const { [oldPath]: sf, ...scaffoldRest } = scaffoldFiles;
-        updatedScaffold = {
-          ...scaffoldRest,
-          [newPath]: { path: newPath, content: sf.content },
-        };
-      }
-
       set({
         files: updatedFiles,
-        scaffoldFiles: updatedScaffold,
         activeFilePath: activeFilePath === oldPath ? newPath : activeFilePath,
         tabOrder: tabOrder.map((p) => (p === oldPath ? newPath : p)),
       });
@@ -231,36 +211,12 @@ export function createEditorStore() {
       }));
     },
 
-    startTimer() {
-      const { timer } = get();
-      if (timer.startedAt !== null) return;
-      set({ timer: { ...timer, startedAt: Date.now() } });
-    },
-
-    tickTimer() {
-      const { timer } = get();
-      if (timer.startedAt === null) return;
-      const elapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
-      set({ timer: { ...timer, elapsedSeconds: elapsed } });
-    },
-
-    stopTimer() {
-      set((state) => ({
-        timer: { ...state.timer, startedAt: null },
-      }));
-    },
-
     submit() {
-      const { files, timer } = get();
-      // Snapshot files and stop timer
-      const elapsed =
-        timer.startedAt !== null
-          ? Math.floor((Date.now() - timer.startedAt) / 1000)
-          : timer.elapsedSeconds;
+      const { files } = get();
       set({
         submittedFiles: { ...files },
         viewMode: 'results',
-        timer: { startedAt: null, elapsedSeconds: elapsed },
+        resultsCodeView: 'submitted',
       });
     },
 
@@ -268,6 +224,7 @@ export function createEditorStore() {
       const { submittedFiles } = get();
       set({
         viewMode: 'editing',
+        resultsCodeView: 'submitted',
         runState: 'idle',
         verificationResult: null,
         // Restore submitted code into editor
@@ -279,14 +236,8 @@ export function createEditorStore() {
       set(initialState);
     },
 
-    showSolution() {
-      if (get().referenceSolutionFiles) {
-        set({ viewMode: 'solution' });
-      }
-    },
-
-    hideSolution() {
-      set({ viewMode: 'editing' });
+    setResultsCodeView(view: ResultsCodeView) {
+      set({ resultsCodeView: view });
     },
 
     getAllFileEntries() {
@@ -323,10 +274,5 @@ export function createEditorStore() {
       }
     },
 
-    isDirty(path) {
-      const { files, scaffoldFiles } = get();
-      if (!scaffoldFiles || !files[path] || !scaffoldFiles[path]) return false;
-      return files[path].content !== scaffoldFiles[path].content;
-    },
   }));
 }

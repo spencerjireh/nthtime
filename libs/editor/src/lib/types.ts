@@ -7,21 +7,17 @@ export interface EditorFile {
 
 export type RunState = 'idle' | 'running' | 'complete';
 
-export type ViewMode = 'editing' | 'results' | 'solution';
+export type ViewMode = 'editing' | 'results';
 
 export type SplitMode = 'single' | 'horizontal';
 
-export interface TimerState {
-  startedAt: number | null;
-  elapsedSeconds: number;
-}
+export type ResultsCodeView = 'submitted' | 'diff' | 'solution';
 
 export interface ChallengeMetadata {
   readonly title: string;
   readonly prompt: string;
   readonly difficulty: Difficulty;
   readonly tags: readonly string[];
-  readonly timeEstimateSeconds: number;
 }
 
 export interface EditorState {
@@ -34,30 +30,27 @@ export interface EditorState {
   hintsRevealed: number;
   totalHints: number;
   hints: string[];
-  timer: TimerState;
   challengeMetadata: ChallengeMetadata | null;
   splitMode: SplitMode;
   secondActiveFilePath: string | null;
   viewMode: ViewMode;
+  resultsCodeView: ResultsCodeView;
   submittedFiles: Record<string, EditorFile> | null;
-  scaffoldFiles: Record<string, EditorFile> | null;
   referenceSolutionFiles: Record<string, EditorFile> | null;
 }
 
 export interface EditorActions {
   initFromChallenge(
     challenge: {
-      files: readonly { path: string; content: string }[];
       hints: readonly string[];
       title: string;
       prompt: string;
       difficulty: Difficulty;
       tags: readonly string[];
-      timeEstimateSeconds: number;
-      scaffolded?: boolean;
-      referenceSolution?: readonly { path: string; content: string }[];
+      referenceSolution: readonly { path: string; content: string }[];
     },
     challengeId?: string,
+    fileStubs?: boolean,
   ): void;
   setFileContent(path: string, content: string): void;
   setActiveFile(path: string): void;
@@ -73,19 +66,14 @@ export interface EditorActions {
   setRunState(state: RunState): void;
   setVerificationResult(result: VerificationResult | null): void;
   revealNextHint(): void;
-  startTimer(): void;
-  tickTimer(): void;
-  stopTimer(): void;
   submit(): void;
   retry(): void;
   reset(): void;
-  showSolution(): void;
-  hideSolution(): void;
+  setResultsCodeView(view: ResultsCodeView): void;
   getAllFileEntries(): { path: string; content: string }[];
   saveDraft(): void;
   loadDraft(challengeId: string): boolean;
   clearDraft(): void;
-  isDirty(path: string): boolean;
 }
 
 export type EditorStore = EditorState & EditorActions;

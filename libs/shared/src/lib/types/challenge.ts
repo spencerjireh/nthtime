@@ -10,9 +10,7 @@ export interface Challenge {
   readonly difficulty: Difficulty;
   readonly tags: readonly string[];
   readonly timeEstimateSeconds: number;
-  readonly scaffolded: boolean;
-  readonly files: readonly FileEntry[];
   readonly hints: readonly string[];
   readonly assertions: AssertionSet;
-  readonly referenceSolution?: readonly FileEntry[];
+  readonly referenceSolution: readonly FileEntry[];
 }

@@ -5,7 +5,6 @@ export interface CreateAttemptInput {
   readonly passed: boolean;
   readonly assertionResults: readonly AssertionResult[];
   readonly hintsUsed: number;
-  readonly timeSeconds: number;
 }
 
 export interface AttemptRecord {
@@ -15,7 +14,6 @@ export interface AttemptRecord {
   readonly passed: boolean;
   readonly assertionResults: readonly AssertionResult[];
   readonly hintsUsed: number;
-  readonly timeSeconds: number;
 }
 
 export interface AttemptRepository {

@@ -7,11 +7,10 @@ export type {
   RunState,
   ViewMode,
   SplitMode,
-  TimerState,
+  ResultsCodeView,
   ChallengeMetadata,
 } from './lib/types.js';
-export { getMonacoLanguage } from './lib/language.js';
-export { formatTime } from './lib/format-time.js';
+export { getMonacoLanguage, getLanguageDisplayName } from './lib/language.js';
 export {
   saveDraft,
   loadDraft,

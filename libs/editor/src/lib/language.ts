@@ -22,3 +22,21 @@ export function getMonacoLanguage(filePath: string): string {
   const ext = filePath.slice(dot);
   return EXTENSION_TO_MONACO[ext] ?? 'plaintext';
 }
+
+const DISPLAY_NAMES: Record<string, string> = {
+  javascript: 'JavaScript',
+  typescript: 'TypeScript',
+  python: 'Python',
+  html: 'HTML',
+  css: 'CSS',
+  json: 'JSON',
+  markdown: 'Markdown',
+  yaml: 'YAML',
+  toml: 'TOML',
+  shell: 'Shell',
+  plaintext: 'Plain Text',
+};
+
+export function getLanguageDisplayName(filePath: string): string {
+  return DISPLAY_NAMES[getMonacoLanguage(filePath)] ?? 'Plain Text';
+}
