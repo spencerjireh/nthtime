@@ -4,6 +4,9 @@
   "license": "AGPL-3.0",
   "scripts": {
     "dev": "nx dev @nthtime/web",
+    "dev:db": "docker compose -f docker-compose.dev.yml up -d --wait",
+    "dev:db:stop": "docker compose -f docker-compose.dev.yml down",
+    "dev:api": "cd services/api && ./gradlew bootRun",
     "build": "nx run-many --target=build",
     "lint": "nx run-many --target=lint",
     "test": "nx run-many --target=test",

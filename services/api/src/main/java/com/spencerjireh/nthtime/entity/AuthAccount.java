@@ -15,7 +15,7 @@ import java.time.Instant;
 @Entity
 @Table(
     name = "auth_accounts",
-    uniqueConstraints = @UniqueConstraint(columns = {"provider", "provider_account_id"}))
+    uniqueConstraints = @UniqueConstraint(columnNames = {"provider", "provider_account_id"}))
 public class AuthAccount {
 
   @Id

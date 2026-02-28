@@ -1,8 +1,7 @@
 package com.spencerjireh.nthtime.config;
 
 import com.spencerjireh.nthtime.exception.RateLimitExceededException;
-import io.bucket4j.Bandwidth;
-import io.bucket4j.Bucket;
+import io.github.bucket4j.Bucket;
 import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Component;
@@ -24,18 +23,15 @@ public class RateLimitConfig {
     return switch (operation) {
       case "attempts:create" ->
           Bucket.builder()
-              .addLimit(
-                  Bandwidth.builder().capacity(3).refillGreedy(10, Duration.ofMinutes(1)).build())
+              .addLimit(limit -> limit.capacity(3).refillGreedy(10, Duration.ofMinutes(1)))
               .build();
       case "settings:update" ->
           Bucket.builder()
-              .addLimit(
-                  Bandwidth.builder().capacity(5).refillGreedy(20, Duration.ofMinutes(1)).build())
+              .addLimit(limit -> limit.capacity(5).refillGreedy(20, Duration.ofMinutes(1)))
               .build();
       case "authorPacks:write", "authorChallenges:write" ->
           Bucket.builder()
-              .addLimit(
-                  Bandwidth.builder().capacity(10).refillGreedy(30, Duration.ofMinutes(1)).build())
+              .addLimit(limit -> limit.capacity(10).refillGreedy(30, Duration.ofMinutes(1)))
               .build();
       default -> throw new IllegalArgumentException("Unknown rate limit: " + operation);
     };

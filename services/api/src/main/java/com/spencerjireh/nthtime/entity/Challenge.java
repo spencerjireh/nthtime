@@ -18,8 +18,8 @@ import org.hibernate.annotations.Type;
 @Table(
     name = "challenges",
     uniqueConstraints = {
-      @UniqueConstraint(columns = {"pack_id", "slug"}),
-      @UniqueConstraint(columns = {"pack_id", "\"order\""})
+      @UniqueConstraint(columnNames = {"pack_id", "slug"}),
+      @UniqueConstraint(columnNames = {"pack_id", "\"order\""})
     })
 public class Challenge {
 

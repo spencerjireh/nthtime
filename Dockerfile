@@ -16,12 +16,14 @@ RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
-COPY --from=deps /app/libs/shared/node_modules ./libs/shared/node_modules 2>/dev/null || true
-COPY --from=deps /app/libs/data-access/node_modules ./libs/data-access/node_modules 2>/dev/null || true
-COPY --from=deps /app/libs/verification/node_modules ./libs/verification/node_modules 2>/dev/null || true
-COPY --from=deps /app/libs/editor/node_modules ./libs/editor/node_modules 2>/dev/null || true
+COPY --from=deps /app/libs/ /tmp/libs/
+RUN for lib in shared data-access verification editor; do \
+      if [ -d "/tmp/libs/$lib/node_modules" ]; then \
+        mkdir -p "./libs/$lib" && cp -r "/tmp/libs/$lib/node_modules" "./libs/$lib/node_modules"; \
+      fi; \
+    done && rm -rf /tmp/libs/
 COPY . .
-RUN pnpm build
+RUN npx nx build @nthtime/web
 
 # Stage 3: Production runtime
 FROM node:22-alpine AS runtime
