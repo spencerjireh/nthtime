@@ -58,6 +58,12 @@
             "router"
           ],
           "description": "Import the items router"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute))",
+          "description": "Call app.include_router() to mount the router",
+          "hint": "Use app.include_router(router, prefix='/items')"
         }
       ]
     },

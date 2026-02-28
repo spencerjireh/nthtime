@@ -51,9 +51,22 @@
         },
         {
           "type": "methodCall",
+          "object": "items",
+          "method": "filter",
+          "description": "Filter the items array based on query parameters",
+          "hint": "Use Array.filter() to narrow results by category"
+        },
+        {
+          "type": "methodCall",
           "object": "res",
           "method": "json",
           "description": "Return JSON response"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(ternary_expression)",
+          "description": "Use conditional logic for filtering",
+          "hint": "Return all items when no filter is provided, filtered items otherwise"
         }
       ]
     },

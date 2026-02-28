@@ -52,7 +52,14 @@
           "type": "pythonFunctionDef",
           "name": "create_item",
           "decorator": "app.post",
-          "description": "Define a POST endpoint"
+          "params": ["item"],
+          "description": "Define a POST endpoint that accepts an Item body"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(typed_parameter)",
+          "description": "Use type annotations on function parameters",
+          "hint": "Annotate the parameter as item: Item for automatic validation"
         }
       ]
     },

@@ -51,6 +51,26 @@
           "description": "Define a POST route handler"
         },
         {
+          "type": "methodCall",
+          "object": "app",
+          "method": "use",
+          "description": "Register middleware with app.use()",
+          "hint": "Enable JSON body parsing with app.use(express.json())"
+        },
+        {
+          "type": "methodCall",
+          "object": "express",
+          "method": "json",
+          "description": "Call express.json() for body parsing"
+        },
+        {
+          "type": "methodCall",
+          "object": "res",
+          "method": "status",
+          "description": "Set HTTP status code on response",
+          "hint": "Use res.status(201) for created resources"
+        },
+        {
           "type": "exportDeclaration",
           "name": "app",
           "isDefault": true,

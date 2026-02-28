@@ -34,7 +34,14 @@
           "type": "pythonFunctionDef",
           "name": "list_items",
           "decorator": "app.get",
-          "description": "Define a GET endpoint with query parameters"
+          "params": ["skip", "limit"],
+          "description": "Define a GET endpoint with skip and limit query parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(typed_default_parameter)",
+          "description": "Use typed default parameter values for query params",
+          "hint": "Provide defaults like skip: int = 0, limit: int = 10"
         }
       ]
     },

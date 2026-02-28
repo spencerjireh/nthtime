@@ -64,7 +64,14 @@
           "type": "pythonFunctionDef",
           "name": "get_item",
           "decorator": "app.get",
+          "params": ["item_id"],
           "description": "Define a GET endpoint with response model"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(function_definition return_type: (type))",
+          "description": "Use a return type annotation for the response model",
+          "hint": "Add -> ItemResponse to the function signature"
         }
       ]
     },

@@ -55,6 +55,11 @@
           "description": "Define a Card component"
         },
         {
+          "type": "jsxElement",
+          "name": "div",
+          "description": "Render a div wrapper for the card content"
+        },
+        {
           "type": "exportDeclaration",
           "name": "Card",
           "isDefault": false,
@@ -86,7 +91,13 @@
         {
           "type": "jsxElement",
           "name": "Card",
-          "description": "Use the Card component"
+          "props": ["title"],
+          "description": "Use the Card component with a title prop"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Button",
+          "description": "Use the Button component inside the Card"
         },
         {
           "type": "exportDeclaration",

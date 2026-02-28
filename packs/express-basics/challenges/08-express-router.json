@@ -52,6 +52,12 @@
           "description": "Define a GET route on the router"
         },
         {
+          "type": "methodCall",
+          "object": "res",
+          "method": "json",
+          "description": "Return a JSON response with user data"
+        },
+        {
           "type": "exportDeclaration",
           "name": "router",
           "isDefault": true,
@@ -73,7 +79,9 @@
           "type": "methodCall",
           "object": "app",
           "method": "use",
-          "description": "Mount the router with app.use()"
+          "args": ["/api/users"],
+          "description": "Mount the router at the /api/users path",
+          "hint": "Use app.use('/api/users', router) to mount at a prefix"
         },
         {
           "type": "exportDeclaration",

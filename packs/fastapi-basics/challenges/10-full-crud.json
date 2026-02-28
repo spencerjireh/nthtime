@@ -54,9 +54,18 @@
           "type": "pythonImport",
           "module": "fastapi",
           "names": [
-            "APIRouter"
+            "APIRouter",
+            "HTTPException"
           ],
-          "description": "Import APIRouter"
+          "description": "Import APIRouter and HTTPException"
+        },
+        {
+          "type": "pythonImport",
+          "module": "models",
+          "names": [
+            "Item"
+          ],
+          "description": "Import the Item model"
         },
         {
           "type": "pythonFunctionDef",
@@ -75,6 +84,12 @@
           "name": "delete_item",
           "decorator": "router.delete",
           "description": "Define DELETE endpoint for removing items"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(raise_statement (call))",
+          "description": "Raise HTTPException for missing items",
+          "hint": "Use raise HTTPException(status_code=404) when an item is not found"
         }
       ],
       "main.py": [
@@ -93,6 +108,12 @@
             "router"
           ],
           "description": "Import the items router"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute))",
+          "description": "Call app.include_router() to mount the items router",
+          "hint": "Use app.include_router(router, prefix='/items')"
         }
       ]
     },

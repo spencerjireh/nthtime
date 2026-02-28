@@ -38,14 +38,33 @@
           "description": "Define the ContactForm component"
         },
         {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState to track form field values"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "handleSubmit",
+          "description": "Define a form submission handler"
+        },
+        {
           "type": "jsxElement",
           "name": "form",
-          "description": "Render a form element"
+          "props": ["onSubmit"],
+          "description": "Render a form with an onSubmit handler",
+          "hint": "Use onSubmit to handle form submission"
         },
         {
           "type": "jsxElement",
           "name": "input",
-          "description": "Render input elements"
+          "props": ["value", "onChange"],
+          "description": "Render controlled input elements",
+          "hint": "Controlled inputs require both value and onChange props"
+        },
+        {
+          "type": "jsxElement",
+          "name": "button",
+          "description": "Render a submit button"
         },
         {
           "type": "exportDeclaration",

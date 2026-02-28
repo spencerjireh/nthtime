@@ -71,6 +71,19 @@
           "description": "Define DELETE route for removing items"
         },
         {
+          "type": "methodCall",
+          "object": "res",
+          "method": "status",
+          "description": "Set HTTP status code on response",
+          "hint": "Use res.status(201) for created, res.status(204) for deleted, res.status(404) for not found"
+        },
+        {
+          "type": "methodCall",
+          "object": "res",
+          "method": "json",
+          "description": "Return a JSON response body"
+        },
+        {
           "type": "exportDeclaration",
           "name": "router",
           "isDefault": true,
@@ -93,6 +106,12 @@
           "name": "app",
           "kind": "const",
           "description": "Create an Express application"
+        },
+        {
+          "type": "methodCall",
+          "object": "express",
+          "method": "json",
+          "description": "Call express.json() for body parsing"
         },
         {
           "type": "methodCall",

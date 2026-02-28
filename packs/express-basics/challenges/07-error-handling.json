@@ -56,6 +56,25 @@
           "description": "Register the error handler"
         },
         {
+          "type": "methodCall",
+          "object": "app",
+          "method": "get",
+          "description": "Define a GET route that triggers an error"
+        },
+        {
+          "type": "methodCall",
+          "object": "res",
+          "method": "status",
+          "description": "Set HTTP error status code",
+          "hint": "Use res.status(500) to indicate a server error"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(throw_statement)",
+          "description": "Throw an error in the route handler",
+          "hint": "Use throw new Error('message') to trigger the error handler"
+        },
+        {
           "type": "exportDeclaration",
           "name": "app",
           "isDefault": true,

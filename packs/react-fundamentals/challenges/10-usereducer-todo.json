@@ -34,6 +34,12 @@
           "description": "Define the todo reducer function"
         },
         {
+          "type": "sexpression",
+          "pattern": "(switch_statement)",
+          "description": "Use a switch statement to handle different action types",
+          "hint": "Handle 'add' and 'toggle' actions in separate case branches"
+        },
+        {
           "type": "exportDeclaration",
           "name": "todoReducer",
           "isDefault": false,
@@ -63,9 +69,34 @@
           "description": "Define the TodoApp component"
         },
         {
+          "type": "methodCall",
+          "method": "useReducer",
+          "description": "Call useReducer to manage todo state",
+          "hint": "Use useReducer(todoReducer, []) to initialize"
+        },
+        {
           "type": "jsxElement",
           "name": "form",
-          "description": "Render a form for adding todos"
+          "props": ["onSubmit"],
+          "description": "Render a form with onSubmit handler for adding todos"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["value", "onChange"],
+          "description": "Render a controlled input for todo text"
+        },
+        {
+          "type": "jsxElement",
+          "name": "ul",
+          "description": "Render an unordered list of todos"
+        },
+        {
+          "type": "jsxElement",
+          "name": "li",
+          "props": ["key", "onClick"],
+          "description": "Render todo items with key and onClick for toggling",
+          "hint": "Use onClick to dispatch a toggle action for each todo"
         },
         {
           "type": "exportDeclaration",

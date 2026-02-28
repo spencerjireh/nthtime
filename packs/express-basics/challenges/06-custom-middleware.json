@@ -34,7 +34,14 @@
         {
           "type": "functionDeclaration",
           "name": "logger",
-          "description": "Define a logger middleware function"
+          "params": ["req", "res", "next"],
+          "description": "Define a logger middleware function with (req, res, next) parameters"
+        },
+        {
+          "type": "methodCall",
+          "method": "next",
+          "description": "Call next() to pass control to the next middleware",
+          "hint": "Middleware must call next() to continue the request chain"
         },
         {
           "type": "exportDeclaration",

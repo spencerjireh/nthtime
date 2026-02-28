@@ -41,6 +41,25 @@
           "description": "Define the custom hook"
         },
         {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState inside the custom hook"
+        },
+        {
+          "type": "methodCall",
+          "object": "localStorage",
+          "method": "getItem",
+          "description": "Read from localStorage on initialization",
+          "hint": "Use localStorage.getItem(key) to restore persisted values"
+        },
+        {
+          "type": "methodCall",
+          "object": "localStorage",
+          "method": "setItem",
+          "description": "Write to localStorage when value changes",
+          "hint": "Use localStorage.setItem(key, value) to persist updates"
+        },
+        {
           "type": "exportDeclaration",
           "name": "useLocalStorage",
           "isDefault": false,
@@ -64,7 +83,9 @@
         {
           "type": "jsxElement",
           "name": "input",
-          "description": "Render an input element"
+          "props": ["value", "onChange"],
+          "description": "Render a controlled input bound to the stored value",
+          "hint": "Use value and onChange props to bind the input to the hook's state"
         },
         {
           "type": "exportDeclaration",

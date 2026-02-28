@@ -36,9 +36,17 @@
           "description": "Define a Counter component"
         },
         {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState to initialize counter state",
+          "hint": "Use useState(0) to start the count at zero"
+        },
+        {
           "type": "jsxElement",
           "name": "button",
-          "description": "Render a button element"
+          "props": ["onClick"],
+          "description": "Render a button with an onClick handler",
+          "hint": "Add an onClick prop to increment the count"
         },
         {
           "type": "exportDeclaration",

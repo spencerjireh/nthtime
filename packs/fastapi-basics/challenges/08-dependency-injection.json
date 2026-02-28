@@ -31,6 +31,11 @@
           "type": "pythonFunctionDef",
           "name": "get_db",
           "description": "Define a database dependency function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement (dictionary))",
+          "description": "Return a mock database dictionary"
         }
       ],
       "main.py": [
@@ -56,6 +61,12 @@
           "name": "list_items",
           "decorator": "app.get",
           "description": "Define an endpoint with dependency injection"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(default_parameter value: (call))",
+          "description": "Use Depends() as a default parameter value",
+          "hint": "Inject the dependency with db=Depends(get_db)"
         }
       ]
     },

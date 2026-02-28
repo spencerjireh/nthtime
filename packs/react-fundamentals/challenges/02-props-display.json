@@ -32,6 +32,12 @@
           "description": "Render an h1 element"
         },
         {
+          "type": "sexpression",
+          "pattern": "(jsx_expression)",
+          "description": "Use a JSX expression to interpolate the name prop",
+          "hint": "Use curly braces {name} inside JSX to display the prop value"
+        },
+        {
           "type": "exportDeclaration",
           "name": "Greeting",
           "isDefault": false,

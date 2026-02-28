@@ -50,7 +50,13 @@
           "type": "pythonFunctionDef",
           "name": "create_user",
           "decorator": "app.post",
-          "description": "Define a POST endpoint"
+          "params": ["user"],
+          "description": "Define a POST endpoint that accepts a User body"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement (dictionary))",
+          "description": "Return a dictionary with user data including an id field"
         }
       ]
     },

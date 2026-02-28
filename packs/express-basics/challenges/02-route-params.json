@@ -43,6 +43,19 @@
           "description": "Define a GET route with parameter"
         },
         {
+          "type": "methodCall",
+          "object": "res",
+          "method": "json",
+          "description": "Return a JSON response",
+          "hint": "Use res.json() to send the user data"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(member_expression object: (member_expression) property: (property_identifier))",
+          "description": "Access a nested property like req.params.id",
+          "hint": "Read the route parameter with req.params.id"
+        },
+        {
           "type": "exportDeclaration",
           "name": "app",
           "isDefault": true,

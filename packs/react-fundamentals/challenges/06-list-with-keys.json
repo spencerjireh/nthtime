@@ -32,6 +32,11 @@
           "description": "Import useState from React"
         },
         {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState to store the todo items array"
+        },
+        {
           "type": "functionDeclaration",
           "name": "TodoList",
           "description": "Define a TodoList component"
@@ -48,6 +53,12 @@
             "key"
           ],
           "description": "Render list items with key props"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call_expression function: (member_expression property: (property_identifier)))",
+          "description": "Use .map() to transform the array into JSX elements",
+          "hint": "Call todos.map() to render each item as an <li>"
         },
         {
           "type": "exportDeclaration",

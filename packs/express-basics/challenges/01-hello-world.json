@@ -45,6 +45,13 @@
           "description": "Define a GET route handler"
         },
         {
+          "type": "methodCall",
+          "object": "res",
+          "method": "json",
+          "description": "Return a JSON response",
+          "hint": "Use res.json() to send a JSON response body"
+        },
+        {
           "type": "exportDeclaration",
           "name": "app",
           "isDefault": true,

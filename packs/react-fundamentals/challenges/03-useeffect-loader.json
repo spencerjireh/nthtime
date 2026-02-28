@@ -39,8 +39,30 @@
         },
         {
           "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState to store user data"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Call useEffect to trigger data loading on mount",
+          "hint": "Pass an empty dependency array [] to run only on mount"
+        },
+        {
+          "type": "methodCall",
           "method": "fetch",
-          "description": "Call fetch to load data"
+          "description": "Call fetch to load data from the API"
+        },
+        {
+          "type": "jsxElement",
+          "name": "ul",
+          "description": "Render an unordered list for users"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call_expression function: (member_expression property: (property_identifier)))",
+          "description": "Chain method calls for Promise handling",
+          "hint": "Use .then() to parse JSON and update state"
         },
         {
           "type": "exportDeclaration",

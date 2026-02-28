@@ -40,9 +40,23 @@
         },
         {
           "type": "methodCall",
+          "object": "express",
+          "method": "json",
+          "description": "Call express.json() for body parsing",
+          "hint": "Use express.json() to parse JSON request bodies"
+        },
+        {
+          "type": "methodCall",
           "object": "app",
           "method": "post",
           "description": "Define a POST route handler"
+        },
+        {
+          "type": "methodCall",
+          "object": "res",
+          "method": "json",
+          "description": "Return a JSON response",
+          "hint": "Use res.json() to send the response body"
         },
         {
           "type": "exportDeclaration",

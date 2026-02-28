@@ -34,7 +34,13 @@
           "type": "pythonFunctionDef",
           "name": "get_item",
           "decorator": "app.get",
-          "description": "Define a GET endpoint with path parameter"
+          "params": ["item_id"],
+          "description": "Define a GET endpoint that accepts an item_id parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement (dictionary))",
+          "description": "Return a dictionary with the item data"
         }
       ]
     },

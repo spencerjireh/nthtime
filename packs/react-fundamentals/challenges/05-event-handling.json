@@ -32,6 +32,12 @@
           "description": "Import useState from React"
         },
         {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState to track toggle state",
+          "hint": "Use useState(false) to start in the off state"
+        },
+        {
           "type": "functionDeclaration",
           "name": "ToggleButton",
           "description": "Define a ToggleButton component"

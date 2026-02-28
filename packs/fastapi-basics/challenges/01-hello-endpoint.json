@@ -35,6 +35,12 @@
           "name": "read_root",
           "decorator": "app.get",
           "description": "Define a GET endpoint handler"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement (dictionary))",
+          "description": "Return a dictionary from the endpoint",
+          "hint": "Return a dict like {\"message\": \"Hello World\"}"
         }
       ]
     },

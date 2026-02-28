@@ -33,6 +33,12 @@
           "description": "Render a span element"
         },
         {
+          "type": "sexpression",
+          "pattern": "(ternary_expression)",
+          "description": "Use conditional logic to determine display content",
+          "hint": "Use ternary operators or if/else to map status values to labels"
+        },
+        {
           "type": "exportDeclaration",
           "name": "StatusBadge",
           "isDefault": false,

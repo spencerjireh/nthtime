@@ -35,7 +35,20 @@
           "type": "pythonFunctionDef",
           "name": "get_item",
           "decorator": "app.get",
+          "params": ["item_id"],
           "description": "Define a GET endpoint with error handling"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(raise_statement (call))",
+          "description": "Raise an HTTPException for error cases",
+          "hint": "Use raise HTTPException(status_code=404, detail='Item not found')"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Use conditional logic to check for missing items",
+          "hint": "Check if the item_id exists before returning data"
         }
       ]
     },

@@ -46,7 +46,32 @@
           "type": "methodCall",
           "object": "app",
           "method": "use",
-          "description": "Register middleware"
+          "description": "Register middleware with app.use()"
+        },
+        {
+          "type": "methodCall",
+          "method": "cors",
+          "description": "Call the cors() function",
+          "hint": "Invoke cors() to create the CORS middleware"
+        },
+        {
+          "type": "methodCall",
+          "object": "express",
+          "method": "static",
+          "description": "Call express.static() to serve static files",
+          "hint": "Use express.static('public') to serve files from the public directory"
+        },
+        {
+          "type": "methodCall",
+          "object": "app",
+          "method": "get",
+          "description": "Define a GET route for the health endpoint"
+        },
+        {
+          "type": "methodCall",
+          "object": "res",
+          "method": "json",
+          "description": "Return a JSON response"
         },
         {
           "type": "exportDeclaration",
