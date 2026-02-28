@@ -1,107 +1,195 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useMutation, useQuery } from 'convex/react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type {
+  CreatePackInput,
+  UpdatePackInput,
+  CreateChallengeInput,
+  UpdateChallengeInput,
+} from '@nthtime/data-access';
+import {
+  fetchAuthorPacks,
+  fetchAuthorPack,
+  fetchAuthorPackExport,
+  checkSlugAvailable,
+  createAuthorPack,
+  updateAuthorPack,
+  deleteAuthorPack,
+  fetchAuthorChallenge,
+  createAuthorChallenge,
+  updateAuthorChallenge,
+  deleteAuthorChallenge,
+  reorderAuthorChallenges,
+} from '@/lib/api-client';
 
-// Same lazy-load pattern as convex-hooks.ts to avoid TS6059 rootDir issues
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _api: any;
-function getApi() {
-  if (!_api) {
-    _api = require('../../../../convex/_generated/api').api;
-  }
-  return _api;
-}
+type UpdatePackBody = Omit<UpdatePackInput, 'packId'>;
+type CreateChallengeBody = Omit<CreateChallengeInput, 'packId'>;
+type UpdateChallengeBody = Omit<UpdateChallengeInput, 'challengeId'>;
 
 // -- Pack queries --
 
 export function useMyPacks() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data = useQuery(getApi().authorPacks.myPacks) as any[] | undefined;
-  return { packs: data ?? [], isLoading: data === undefined };
+  const { data, isLoading } = useQuery({
+    queryKey: ['author-packs'],
+    queryFn: fetchAuthorPacks,
+  });
+  return { packs: data ?? [], isLoading };
 }
 
 export function useAuthorPack(slug: string) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data = useQuery(getApi().authorPacks.getBySlug, { slug }) as any | undefined;
-  if (data === undefined) return { pack: null, isLoading: true };
+  const { data, isLoading } = useQuery({
+    queryKey: ['author-pack', slug],
+    queryFn: () => fetchAuthorPack(slug),
+    enabled: !!slug,
+  });
+  if (isLoading || data === undefined) return { pack: null, isLoading: true };
   return { pack: data, isLoading: false };
 }
 
 export function useAuthorPackForExport(slug: string) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data = useQuery(getApi().authorPacks.getForExport, { slug }) as any | undefined;
-  if (data === undefined) return { packData: null, isLoading: true };
+  const { data, isLoading } = useQuery({
+    queryKey: ['author-pack-export', slug],
+    queryFn: () => fetchAuthorPackExport(slug),
+    enabled: !!slug,
+  });
+  if (isLoading || data === undefined) return { packData: null, isLoading: true };
   return { packData: data, isLoading: false };
 }
 
 export function useCheckSlugAvailable(slug: string, excludePackId?: string) {
-  const args = { slug, excludePackId: excludePackId || undefined };
-  const data = useQuery(getApi().authorPacks.checkSlugAvailable, slug ? args : 'skip') as
-    | boolean
-    | undefined;
-  return data;
+  const { data } = useQuery({
+    queryKey: ['check-slug', slug, excludePackId],
+    queryFn: () => checkSlugAvailable(slug, excludePackId),
+    enabled: !!slug,
+  });
+  return data?.available;
 }
 
 // -- Pack mutations --
 
 export function useCreatePack() {
-  return useMutation(getApi().authorPacks.create);
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: (args: CreatePackInput) => createAuthorPack(args),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-packs'] });
+    },
+  });
+  return useCallback(
+    async (args: CreatePackInput) => {
+      const result = await mutateAsync(args);
+      return result.id;
+    },
+    [mutateAsync],
+  );
 }
 
 export function useUpdatePack() {
-  return useMutation(getApi().authorPacks.update);
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: ({ slug, body }: { slug: string; body: UpdatePackBody }) =>
+      updateAuthorPack(slug, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-packs'] });
+      queryClient.invalidateQueries({ queryKey: ['author-pack'] });
+    },
+  });
+  return useCallback(
+    async (slug: string, body: UpdatePackBody) => {
+      await mutateAsync({ slug, body });
+    },
+    [mutateAsync],
+  );
 }
 
 export function useDeletePack() {
-  const remove = useMutation(getApi().authorPacks.remove);
-  return useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (packId: any) => {
-      return await remove({ packId });
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: deleteAuthorPack,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-packs'] });
     },
-    [remove],
-  );
+  });
+  return mutateAsync;
 }
 
 // -- Challenge queries --
 
 export function useAuthorChallenge(challengeId: string | null) {
-  const data = useQuery(getApi().authorChallenges.get, challengeId ? { challengeId } : 'skip') as
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    any | undefined;
-  if (data === undefined) return { challenge: null, isLoading: true };
+  const { data, isLoading } = useQuery({
+    queryKey: ['author-challenge', challengeId],
+    queryFn: () => fetchAuthorChallenge(challengeId!),
+    enabled: !!challengeId,
+  });
+  if (isLoading || data === undefined) return { challenge: null, isLoading: true };
   return { challenge: data, isLoading: false };
 }
 
 // -- Challenge mutations --
 
 export function useCreateChallenge() {
-  return useMutation(getApi().authorChallenges.create);
-}
-
-export function useUpdateChallenge() {
-  return useMutation(getApi().authorChallenges.update);
-}
-
-export function useDeleteChallenge() {
-  const remove = useMutation(getApi().authorChallenges.remove);
-  return useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (challengeId: any) => {
-      return await remove({ challengeId });
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: ({ packSlug, ...body }: { packSlug: string } & CreateChallengeBody) =>
+      createAuthorChallenge(packSlug, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-pack'] });
+      queryClient.invalidateQueries({ queryKey: ['author-packs'] });
     },
-    [remove],
+  });
+  return useCallback(
+    async (args: { packSlug: string } & CreateChallengeBody) => {
+      const result = await mutateAsync(args);
+      return result.id;
+    },
+    [mutateAsync],
   );
 }
 
-export function useReorderChallenges() {
-  const reorder = useMutation(getApi().authorChallenges.reorder);
-  return useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (packId: any, challengeIds: any[]) => {
-      return await reorder({ packId, challengeIds });
+export function useUpdateChallenge() {
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: ({ challengeId, ...body }: { challengeId: string } & UpdateChallengeBody) =>
+      updateAuthorChallenge(challengeId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-pack'] });
+      queryClient.invalidateQueries({ queryKey: ['author-challenge'] });
     },
-    [reorder],
+  });
+  return mutateAsync;
+}
+
+export function useDeleteChallenge() {
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: deleteAuthorChallenge,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-pack'] });
+      queryClient.invalidateQueries({ queryKey: ['author-packs'] });
+    },
+  });
+  return mutateAsync;
+}
+
+export function useReorderChallenges() {
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: ({
+      packSlug,
+      challengeIds,
+    }: {
+      packSlug: string;
+      challengeIds: string[];
+    }) => reorderAuthorChallenges(packSlug, challengeIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-pack'] });
+    },
+  });
+  return useCallback(
+    async (packSlug: string, challengeIds: string[]) => {
+      await mutateAsync({ packSlug, challengeIds });
+    },
+    [mutateAsync],
   );
 }

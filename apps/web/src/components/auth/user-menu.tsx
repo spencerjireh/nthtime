@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuthActions } from '@convex-dev/auth/react';
-import { useConvexAuth } from 'convex/react';
+import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { SignInButton } from './sign-in-button';
 
@@ -12,18 +11,17 @@ const Skeleton = () => (
 
 export function UserMenu() {
   const [mounted, setMounted] = useState(false);
-  const { isAuthenticated, isLoading } = useConvexAuth();
-  const { signOut } = useAuthActions();
+  const { status } = useSession();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted || isLoading) {
+  if (!mounted || status === 'loading') {
     return <Skeleton />;
   }
 
-  if (!isAuthenticated) {
+  if (status !== 'authenticated') {
     return <SignInButton />;
   }
 

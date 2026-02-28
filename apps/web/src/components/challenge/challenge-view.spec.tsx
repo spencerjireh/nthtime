@@ -96,12 +96,14 @@ vi.mock('@/lib/run-verification', () => ({
 vi.mock('@/lib/formatter', () => ({
   formatAllFiles: (...args: unknown[]) => mockFormatAllFiles(...args),
 }));
-vi.mock('@/lib/data-access', () => ({
-  useDataAccess: () => ({
-    useChallenge: () => ({ challenge: MOCK_CHALLENGE_DATA, isLoading: false }),
-    useCreateAttempt: () => mockCreateAttempt,
-    useChallenges: () => ({ pack: null, challenges: [], isLoading: false }),
-  }),
+vi.mock('@/hooks/use-challenge', () => ({
+  useChallenge: () => ({ challenge: MOCK_CHALLENGE_DATA, isLoading: false }),
+}));
+vi.mock('@/hooks/use-attempts', () => ({
+  useCreateAttempt: () => mockCreateAttempt,
+}));
+vi.mock('@/hooks/use-packs', () => ({
+  useChallenges: () => ({ pack: null, challenges: [], isLoading: false }),
 }));
 vi.mock('@/lib/settings-store', () => ({
   getSettingsStore: () =>

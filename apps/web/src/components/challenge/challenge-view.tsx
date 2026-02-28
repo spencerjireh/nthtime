@@ -12,7 +12,9 @@ import { runVerification } from '@/lib/run-verification';
 import { formatAllFiles } from '@/lib/formatter';
 import { isFeatureEnabled } from '@/lib/feature-flags';
 import { getSettingsStore } from '@/lib/settings-store';
-import { useDataAccess } from '@/lib/data-access';
+import { useChallenge } from '@/hooks/use-challenge';
+import { useCreateAttempt } from '@/hooks/use-attempts';
+import { useChallenges } from '@/hooks/use-packs';
 import type { Challenge } from '@nthtime/shared';
 
 const DockableLayout = dynamic(() =>
@@ -37,7 +39,6 @@ export function ChallengeView({
   challenge,
   initialView,
 }: ChallengeViewProps) {
-  const { useChallenge } = useDataAccess();
   const { challenge: fetched, isLoading } = useChallenge(challengeId);
 
   const challengeData = challenge ?? fetched;
@@ -97,7 +98,6 @@ function ChallengeViewEditor({
   }
   const store = storeRef.current;
   const draftTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
-  const { useCreateAttempt, useChallenges } = useDataAccess();
   const createAttempt = useCreateAttempt();
   const { challenges } = useChallenges(packSlug);
   const challengeIds = useMemo(

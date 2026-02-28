@@ -3,7 +3,7 @@ import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AppShell } from '@/components/app-shell';
-import { ConvexClientProvider } from '@/lib/convex/provider';
+import { Providers } from '@/providers/providers';
 
 export const metadata = {
   title: 'nthtime',
@@ -22,11 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body className="font-mono">
-        <ConvexClientProvider>
+        <Providers>
           <ThemeProvider>
             <AppShell>{children}</AppShell>
           </ThemeProvider>
-        </ConvexClientProvider>
+        </Providers>
       </body>
     </html>
   );

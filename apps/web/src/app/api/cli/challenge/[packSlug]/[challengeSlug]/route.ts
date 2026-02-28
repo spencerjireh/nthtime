@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { httpClient, api } from '../../../../../../lib/convex-http';
+import { httpClient, getApi } from '../../../../../../lib/convex-http';
 
 interface Params {
   packSlug: string;
@@ -8,6 +8,7 @@ interface Params {
 
 export async function GET(_req: Request, { params }: { params: Promise<Params> }) {
   const { packSlug, challengeSlug } = await params;
+  const api = getApi();
 
   // Visibility gate: getChallenges returns null for private packs (unauthenticated)
   const packData = await httpClient.query(api.packs.getChallenges, { slug: packSlug });

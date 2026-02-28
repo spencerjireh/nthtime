@@ -3,7 +3,7 @@
 import { ChallengeRow } from './challenge-row';
 import { ChallengeListSkeleton } from './challenge-list-skeleton';
 import { EmptyState } from './empty-state';
-import type { ChallengeSummary } from '@/lib/data-access';
+import type { ChallengeSummary } from '@nthtime/data-access';
 
 interface ChallengeListProps {
   challenges: ChallengeSummary[] | undefined;

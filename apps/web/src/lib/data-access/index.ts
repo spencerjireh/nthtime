@@ -1,14 +1,7 @@
-import { convexHooks } from './convex-hooks';
-import type { DataAccessHooks } from './types';
-
-export function useDataAccess(): DataAccessHooks {
-  return convexHooks;
-}
-
-export type {
-  ChallengeSummary,
-  CreateAttemptArgs,
-  DataAccessHooks,
-  PackListFilters,
-  PackSummary,
-} from './types';
+// Server-side repositories (use in API routes only, not in React components)
+export {
+  packRepository,
+  attemptRepository,
+  settingsRepository,
+  authorRepository,
+} from './repositories';

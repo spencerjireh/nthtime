@@ -17,7 +17,7 @@ interface ChallengeSummary {
 interface ChallengeOrderListProps {
   packId: string;
   packSlug: string;
-  challenges: ChallengeSummary[];
+  challenges: readonly ChallengeSummary[];
 }
 
 export function ChallengeOrderList({ packId, packSlug, challenges }: ChallengeOrderListProps) {
@@ -59,9 +59,9 @@ export function ChallengeOrderList({ packId, packSlug, challenges }: ChallengeOr
       setDragIndex(null);
       setDropIndex(null);
 
-      await reorder(packId, reordered.map((c) => c._id));
+      await reorder(packSlug, reordered.map((c) => c._id));
     },
-    [dragIndex, dropIndex, sorted, reorder, packId],
+    [dragIndex, dropIndex, sorted, reorder, packSlug],
   );
 
   const handleDelete = useCallback(

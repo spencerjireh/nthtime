@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useConvexAuth } from 'convex/react';
+import { useSession } from 'next-auth/react';
 import { isFeatureEnabled } from '@/lib/feature-flags';
 
 export function ConditionalAuthorLink() {
@@ -10,8 +10,8 @@ export function ConditionalAuthorLink() {
 }
 
 function AuthorLink() {
-  const { isAuthenticated } = useConvexAuth();
-  if (!isAuthenticated) return null;
+  const { status } = useSession();
+  if (status !== 'authenticated') return null;
 
   return (
     <Link

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChallengeList } from './challenge-list';
-import { useDataAccess } from '@/lib/data-access';
+import { useChallenges } from '@/hooks/use-packs';
 import { ArrowLeft } from 'lucide-react';
 
 interface PackPageProps {
@@ -12,7 +12,6 @@ interface PackPageProps {
 }
 
 export function PackPage({ slug }: PackPageProps) {
-  const { useChallenges } = useDataAccess();
   const { pack, challenges, isLoading } = useChallenges(slug);
 
   if (isLoading) {

@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import { registerConfigCommand } from './config-command.js';
 import { runVerify } from './verify-command.js';
 import { prepareStart } from './start-command.js';
 import { startWatchMode } from './watch.js';
@@ -38,5 +39,7 @@ program
       process.exit(1);
     }
   });
+
+registerConfigCommand(program);
 
 program.parse();

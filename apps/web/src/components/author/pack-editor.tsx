@@ -53,8 +53,7 @@ export function PackEditor({ slug }: PackEditorProps) {
         .map((t) => t.trim())
         .filter(Boolean);
 
-      await updatePack({
-        packId: pack._id,
+      await updatePack(slug, {
         name: data.name,
         slug: data.slug,
         description: data.description,
@@ -80,7 +79,7 @@ export function PackEditor({ slug }: PackEditorProps) {
     if (!pack) return;
     if (!confirm(`Delete "${pack.name}"? This will delete all challenges and attempts.`)) return;
     try {
-      await deletePack(pack._id);
+      await deletePack(slug);
       router.push('/author');
     } catch (err) {
       console.error('Failed to delete pack:', err);

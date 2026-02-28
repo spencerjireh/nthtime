@@ -1,12 +1,12 @@
 'use client';
 
-import { useConvexAuth } from 'convex/react';
+import { useSession } from 'next-auth/react';
 import { SignInButton } from '@/components/auth/sign-in-button';
 
 export default function AuthorLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { status } = useSession();
 
-  if (isLoading) {
+  if (status === 'loading') {
     return (
       <div className="mx-auto flex max-w-screen-2xl items-center justify-center px-9 py-16 text-muted-foreground">
         Loading...
@@ -14,7 +14,7 @@ export default function AuthorLayout({ children }: { children: React.ReactNode }
     );
   }
 
-  if (!isAuthenticated) {
+  if (status !== 'authenticated') {
     return (
       <div className="mx-auto flex max-w-screen-2xl flex-col items-center justify-center gap-4 px-9 py-16 text-center">
         <h2 className="font-sans text-lg font-semibold text-foreground">

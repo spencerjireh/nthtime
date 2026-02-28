@@ -8,7 +8,7 @@ interface ChallengeRowProps {
   order: number;
   title: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  tags: string[];
+  tags: readonly string[];
   timeEstimateSeconds: number;
   status: 'not-attempted' | 'failed' | 'passed';
   packSlug?: string;

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { httpClient, api } from '../../../../../lib/convex-http';
+import { httpClient, getApi } from '../../../../../lib/convex-http';
 
 interface Params {
   packSlug: string;
@@ -7,6 +7,7 @@ interface Params {
 
 export async function GET(_req: Request, { params }: { params: Promise<Params> }) {
   const { packSlug } = await params;
+  const api = getApi();
 
   const data = await httpClient.query(api.packs.getChallenges, { slug: packSlug });
   if (!data) {
@@ -18,7 +19,8 @@ export async function GET(_req: Request, { params }: { params: Promise<Params> }
     slug: data.pack.slug,
     language: data.pack.language,
     framework: data.pack.framework,
-    challenges: data.challenges.map((c) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    challenges: data.challenges.map((c: any) => ({
       title: c.title,
       slug: c.slug,
       order: c.order,

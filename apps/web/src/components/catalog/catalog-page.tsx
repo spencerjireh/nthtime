@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { PackGrid } from './pack-grid';
 import { CatalogSearch } from './catalog-search';
 import { CatalogFilters, type CompletionStatus } from './catalog-filters';
-import { useDataAccess } from '@/lib/data-access';
+import { usePackList } from '@/hooks/use-packs';
 
 interface CatalogPageProps {
   searchQuery: string;
@@ -23,7 +23,6 @@ export function CatalogPage({
   status,
 }: CatalogPageProps) {
   const router = useRouter();
-  const { usePackList } = useDataAccess();
   const selectedTags = useMemo(
     () => (tags ? tags.split(',').filter(Boolean) : []),
     [tags],

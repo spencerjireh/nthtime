@@ -3,7 +3,7 @@
 import { PackCard } from './pack-card';
 import { PackGridSkeleton } from './pack-grid-skeleton';
 import { EmptyState } from './empty-state';
-import type { PackSummary } from '@/lib/data-access/types';
+import type { PackSummary } from '@nthtime/data-access';
 
 interface PackGridProps {
   packs: PackSummary[] | undefined;

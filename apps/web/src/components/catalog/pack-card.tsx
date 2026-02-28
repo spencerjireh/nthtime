@@ -15,7 +15,7 @@ interface PackCardProps {
   description: string;
   language: string;
   framework?: string;
-  tags: string[];
+  tags: readonly string[];
   challengeCount: number;
   passedCount: number;
 }

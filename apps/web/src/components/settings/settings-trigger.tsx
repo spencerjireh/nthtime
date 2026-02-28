@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SettingsDialog } from './settings-dialog';
-import { useSettingsSync } from './use-settings-sync';
+import { useSettingsSync } from '@/hooks/use-settings-query';
 
 export function SettingsTrigger() {
   useSettingsSync();

@@ -6,7 +6,7 @@ import type { CliConfig } from './types.js';
 const paths = envPaths('nthtime', { suffix: '' });
 const defaultConfigPath = join(paths.config, 'config.json');
 
-export const DEFAULT_SERVER_URL = 'https://nthtime.dev';
+export const DEFAULT_SERVER_URL = 'https://nthtime.spencerjireh.com';
 
 export function resolveServerUrl(
   envUrl: string | undefined,

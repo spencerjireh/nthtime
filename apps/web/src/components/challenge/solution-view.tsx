@@ -11,7 +11,7 @@ import {
 import { useTheme } from 'next-themes';
 import { Badge } from '@/components/ui/badge';
 import { MonacoWrapper } from './monaco-wrapper';
-import { useDataAccess } from '@/lib/data-access';
+import { useChallenge } from '@/hooks/use-challenge';
 import { getSettingsStore } from '@/lib/settings-store';
 import { challengeHref } from '@/lib/routes';
 import { getMonacoLanguage } from '@nthtime/editor';
@@ -25,7 +25,6 @@ interface SolutionViewProps {
 }
 
 export function SolutionView({ challengeId, packSlug }: SolutionViewProps) {
-  const { useChallenge } = useDataAccess();
   const { challenge, isLoading } = useChallenge(challengeId);
   const showSolution = useStore(
     getSettingsStore(),

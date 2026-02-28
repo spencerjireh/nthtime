@@ -43,7 +43,7 @@ export default function NewPackPage() {
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const packId = await createPack({
+      await createPack({
         name: data.name,
         slug: data.slug,
         description: data.description,
@@ -58,7 +58,8 @@ export default function NewPackPage() {
       if (importData?.challenges) {
         for (const challenge of importData.challenges) {
           await createChallenge({
-            packId,
+            packSlug: data.slug,
+            slug: challenge.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
             title: challenge.title,
             prompt: challenge.prompt,
             difficulty: challenge.difficulty,

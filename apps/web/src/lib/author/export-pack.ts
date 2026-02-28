@@ -1,30 +1,30 @@
 import { zipSync, strToU8 } from 'fflate';
 
 interface ExportChallenge {
-  title: string;
-  prompt: string;
-  difficulty: string;
-  tags: string[];
-  timeEstimateSeconds: number;
-  scaffolded: boolean;
+  readonly title: string;
+  readonly prompt: string;
+  readonly difficulty: string;
+  readonly tags: readonly string[];
+  readonly timeEstimateSeconds: number;
+  readonly scaffolded: boolean;
   /** In Convex, "files" = scaffold (starter code). In JSON, this becomes "scaffold". */
-  files: { path: string; content: string }[];
-  hints: string[];
-  assertions: { perFile: unknown; crossFile: unknown };
+  readonly files: readonly { readonly path: string; readonly content: string }[];
+  readonly hints: readonly string[];
+  readonly assertions: { readonly perFile: unknown; readonly crossFile: unknown };
   /** In Convex, "referenceSolution" = solution. In JSON, this becomes "files". */
-  referenceSolution?: { path: string; content: string }[];
-  order: number;
+  readonly referenceSolution?: readonly { readonly path: string; readonly content: string }[];
+  readonly order: number;
 }
 
 interface ExportPack {
-  name: string;
-  slug: string;
-  description: string;
-  language: string;
-  framework?: string;
-  version: string;
-  tags: string[];
-  challenges: ExportChallenge[];
+  readonly name: string;
+  readonly slug: string;
+  readonly description: string;
+  readonly language: string;
+  readonly framework?: string;
+  readonly version: string;
+  readonly tags: readonly string[];
+  readonly challenges: readonly ExportChallenge[];
 }
 
 function slugifyTitle(title: string, order: number): string {
@@ -89,7 +89,7 @@ export function exportPackAsZip(pack: ExportPack): void {
   const zipData = zipSync(zipEntries);
 
   // Trigger download
-  const blob = new Blob([zipData], { type: 'application/zip' });
+  const blob = new Blob([zipData as BlobPart], { type: 'application/zip' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

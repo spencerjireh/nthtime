@@ -1,11 +1,9 @@
 'use client';
 
-import { useAuthActions } from '@convex-dev/auth/react';
+import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 
 export function SignInButton() {
-  const { signIn } = useAuthActions();
-
   return (
     <Button
       variant="outline"

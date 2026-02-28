@@ -1,4 +1,4 @@
-import type { Attempt, AssertionResult } from '@nthtime/shared';
+import type { AssertionResult } from '@nthtime/shared';
 
 export interface CreateAttemptInput {
   readonly challengeId: string;
@@ -8,7 +8,17 @@ export interface CreateAttemptInput {
   readonly timeSeconds: number;
 }
 
+export interface AttemptRecord {
+  readonly _id: string;
+  readonly userId: string;
+  readonly challengeId: string;
+  readonly passed: boolean;
+  readonly assertionResults: readonly AssertionResult[];
+  readonly hintsUsed: number;
+  readonly timeSeconds: number;
+}
+
 export interface AttemptRepository {
-  createAttempt(input: CreateAttemptInput): Promise<Attempt>;
-  listAttempts(challengeId: string): Promise<readonly Attempt[]>;
+  createAttempt(userId: string, input: CreateAttemptInput): Promise<string>;
+  listAttempts(userId: string, challengeId: string): Promise<readonly AttemptRecord[]>;
 }

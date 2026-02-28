@@ -103,7 +103,7 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
         });
       } else {
         await createChallenge({
-          packId: pack._id,
+          packSlug,
           ...challengeData,
         });
       }
