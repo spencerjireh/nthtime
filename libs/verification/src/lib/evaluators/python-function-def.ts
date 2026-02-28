@@ -40,10 +40,11 @@ export function evaluatePythonFunctionDef(
     if (assertion.params) {
       const paramsNode = fn.childForFieldName('parameters');
       if (paramsNode) {
+        const paramTypes = ['identifier', 'typed_parameter', 'default_parameter', 'typed_default_parameter'];
         const paramNames = paramsNode.namedChildren
-          .filter((c) => c.type === 'identifier' || c.type === 'typed_parameter' || c.type === 'default_parameter')
+          .filter((c) => paramTypes.includes(c.type))
           .map((c) => {
-            if (c.type === 'typed_parameter' || c.type === 'default_parameter') {
+            if (c.type !== 'identifier') {
               return c.childForFieldName('name')?.text ?? c.firstNamedChild?.text ?? c.text;
             }
             return c.text;
