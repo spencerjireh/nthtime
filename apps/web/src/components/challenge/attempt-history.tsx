@@ -1,13 +1,11 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { formatTime } from '@nthtime/editor';
 
 interface AttemptRecord {
   _id: string;
   passed: boolean;
   hintsUsed: number;
-  timeSeconds: number;
   _creationTime: number;
 }
 
@@ -56,9 +54,6 @@ export function AttemptHistory({ attempts }: AttemptHistoryProps) {
           >
             {attempt.passed ? 'pass' : 'fail'}
           </Badge>
-          <span className="font-mono text-muted-foreground">
-            {formatTime(attempt.timeSeconds)}
-          </span>
           {attempt.hintsUsed > 0 && (
             <span className="text-muted-foreground">
               {attempt.hintsUsed} hint{attempt.hintsUsed > 1 ? 's' : ''}

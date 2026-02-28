@@ -28,11 +28,9 @@ export async function POST(
     difficulty: body.difficulty ?? 'beginner',
     tags: body.tags ?? [],
     timeEstimateSeconds: body.timeEstimateSeconds ?? 300,
-    scaffolded: body.scaffolded ?? false,
-    files: body.files ?? [],
     hints: body.hints ?? [],
     assertions: body.assertions ?? { perFile: {}, crossFile: [] },
-    referenceSolution: body.referenceSolution,
+    referenceSolution: body.referenceSolution ?? [],
   });
 
   return NextResponse.json({ id }, { status: 201 });

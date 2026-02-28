@@ -24,7 +24,7 @@ export function DiffView({
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center justify-between border-b border-border bg-muted/30 px-3 py-1">
         <span className="text-xs text-muted-foreground">
-          Scaffold vs Submitted
+          Your Code vs Solution
         </span>
         <div className="flex gap-1">
           <button

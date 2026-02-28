@@ -9,31 +9,32 @@ import {
   useDefaultLayout,
   usePanelRef,
 } from 'react-resizable-panels';
-import { ChevronsUp } from 'lucide-react';
 import { PromptPanel } from './prompt-panel';
+import { ResultsPanel } from './results-panel';
 import { EditorPanel } from './editor-panel';
-import { ChallengeToolbar } from './challenge-toolbar';
-import { useEditorStore } from './editor-store-context';
+import { StatusBar } from './status-bar';
 import { DEFAULT_LAYOUT, LAYOUT_GROUP_ID, RESET_LAYOUT_EVENT, clearPanelStorage } from './default-layout';
+import { useEditorStore } from './editor-store-context';
 import { getSettingsStore } from '@/lib/settings-store';
 
 interface DockableLayoutProps {
   onRun: () => void;
-  challengeId: string;
+  onRetry: () => void;
   packSlug?: string;
+  challengeIds?: string[];
 }
 
-export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutProps) {
+export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: DockableLayoutProps) {
   const [resetKey, setResetKey] = useState(0);
   const promptPanelRef = usePanelRef();
   const mountedRef = useRef(false);
+  const statusBarRef = useRef<HTMLDivElement>(null);
 
-  const timerStartedAt = useEditorStore((s) => s.timer.startedAt);
-  const tickTimer = useEditorStore((s) => s.tickTimer);
-
+  const viewMode = useEditorStore((s) => s.viewMode);
   const store = getSettingsStore();
   const promptCollapsed = useStore(store, (s) => s.settings.promptCollapsed);
-  const toolbarCollapsed = useStore(store, (s) => s.settings.toolbarCollapsed);
+  const keybindings = useStore(store, (s) => s.settings.keybindings);
+  const isResults = viewMode === 'results';
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: LAYOUT_GROUP_ID,
@@ -43,13 +44,6 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
     clearPanelStorage();
     setResetKey((k) => k + 1);
   }, []);
-
-  // Tick the timer every second while running (lives here so it survives toolbar collapse)
-  useEffect(() => {
-    if (timerStartedAt === null) return;
-    const interval = setInterval(tickTimer, 1000);
-    return () => clearInterval(interval);
-  }, [timerStartedAt, tickTimer]);
 
   useEffect(() => {
     window.addEventListener(RESET_LAYOUT_EVENT, handleReset);
@@ -80,15 +74,6 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
     }
   }, [promptPanelRef, store]);
 
-  const toggleToolbar = useCallback(() => {
-    const current = store.getState().settings.toolbarCollapsed;
-    store.getState().setToolbarCollapsed(!current);
-  }, [store]);
-
-  const showToolbar = useCallback(() => {
-    store.getState().setToolbarCollapsed(false);
-  }, [store]);
-
   // Handle panel collapse/expand via drag (user drags panel to zero)
   const handlePromptResize = useCallback(
     (size: { asPercentage: number }) => {
@@ -101,7 +86,14 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
     [store],
   );
 
-  // All keyboard shortcuts live here so they work even when toolbar is collapsed
+  // Auto-expand left panel when results come in
+  useEffect(() => {
+    if (isResults && promptPanelRef.current?.isCollapsed()) {
+      promptPanelRef.current.expand();
+    }
+  }, [isResults, promptPanelRef]);
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const mod = e.ctrlKey || e.metaKey;
@@ -110,13 +102,6 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
       if (mod && e.key === 'Enter') {
         e.preventDefault();
         onRun();
-        return;
-      }
-
-      // Ctrl+Shift+B: toggle toolbar
-      if (mod && e.shiftKey && e.key === 'B') {
-        e.preventDefault();
-        toggleToolbar();
         return;
       }
 
@@ -130,7 +115,7 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onRun, togglePrompt, toggleToolbar]);
+  }, [onRun, togglePrompt]);
 
   return (
     <div className="relative flex h-full w-full flex-col">
@@ -151,34 +136,29 @@ export function DockableLayout({ onRun, challengeId, packSlug }: DockableLayoutP
             panelRef={promptPanelRef}
             onResize={handlePromptResize}
           >
-            <PromptPanel />
+            {isResults ? (
+              <ResultsPanel
+                onRetry={onRetry}
+                packSlug={packSlug}
+                challengeIds={challengeIds}
+              />
+            ) : (
+              <PromptPanel />
+            )}
           </Panel>
           <Separator className="w-1 bg-border transition-colors hover:bg-primary active:bg-primary" />
           <Panel id="editor" defaultSize="70%" minSize="25%">
-            <EditorPanel />
+            <EditorPanel statusBarRef={statusBarRef} />
           </Panel>
         </Group>
       </div>
-      {!toolbarCollapsed ? (
-        <div className="shrink-0 border-t border-border">
-          <ChallengeToolbar
-            onRun={onRun}
-            challengeId={challengeId}
-            packSlug={packSlug}
-            isPromptCollapsed={promptCollapsed}
-            onPromptToggle={togglePrompt}
-            onToolbarCollapse={toggleToolbar}
-          />
-        </div>
-      ) : (
-        <button
-          className="absolute bottom-3 right-3 z-10 rounded-md border border-border bg-muted/80 p-1.5 text-muted-foreground backdrop-blur-sm hover:text-foreground"
-          onClick={showToolbar}
-          title="Show toolbar (Ctrl+Shift+B)"
-        >
-          <ChevronsUp className="h-4 w-4" />
-        </button>
-      )}
+      <StatusBar
+        onRun={onRun}
+        isPromptCollapsed={promptCollapsed}
+        onPromptToggle={togglePrompt}
+        statusBarRef={statusBarRef}
+        keybindings={keybindings}
+      />
     </div>
   );
 }

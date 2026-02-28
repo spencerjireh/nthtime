@@ -8,7 +8,6 @@ describe('FileTree', () => {
   const defaultProps = {
     files: mockFiles,
     activeFile: 'app.js',
-    isDirty: vi.fn().mockReturnValue(false),
     onSelect: vi.fn(),
     onCreateFile: vi.fn(),
     onRenameFile: vi.fn(),
@@ -132,15 +131,6 @@ describe('FileTree', () => {
     expect(defaultProps.onDeleteFile).not.toHaveBeenCalled();
   });
 
-  it('dirty indicator: primary dot visible when isDirty returns true', () => {
-    const isDirty = vi.fn((path: string) => path === 'app.js');
-    render(<FileTree {...defaultProps} isDirty={isDirty} />);
-    // The dirty dot has class bg-primary, and is a 1.5x1.5 circle
-    const { container } = render(<FileTree {...defaultProps} isDirty={isDirty} />);
-    const dots = container.querySelectorAll('.bg-primary');
-    expect(dots.length).toBeGreaterThanOrEqual(1);
-  });
-
   it('fileStatus: shows pass dot (bg-pass) for passing files', () => {
     const fileStatus = vi.fn((path: string) => (path === 'app.js' ? 'pass' : null) as 'pass' | 'fail' | null);
     const { container } = render(
@@ -159,25 +149,13 @@ describe('FileTree', () => {
     expect(failDots).toHaveLength(1);
   });
 
-  it('fileStatus: overrides isDirty when status is non-null', () => {
-    const isDirty = vi.fn().mockReturnValue(true);
-    const fileStatus = vi.fn(() => 'pass' as const);
-    const { container } = render(
-      <FileTree {...defaultProps} isDirty={isDirty} fileStatus={fileStatus} />,
-    );
-    // Pass dots shown, no dirty dots
-    expect(container.querySelectorAll('.bg-pass').length).toBeGreaterThanOrEqual(1);
-    expect(container.querySelectorAll('.bg-primary')).toHaveLength(0);
-  });
-
-  it('fileStatus: falls back to isDirty when status is null', () => {
-    const isDirty = vi.fn((path: string) => path === 'app.js');
+  it('fileStatus: shows no dot when status is null', () => {
     const fileStatus = vi.fn(() => null);
     const { container } = render(
-      <FileTree {...defaultProps} isDirty={isDirty} fileStatus={fileStatus} />,
+      <FileTree {...defaultProps} fileStatus={fileStatus} />,
     );
-    // fileStatus returns null, so isDirty primary dot shows for app.js
-    const dirtyDots = container.querySelectorAll('.bg-primary');
-    expect(dirtyDots).toHaveLength(1);
+    expect(container.querySelectorAll('.bg-pass')).toHaveLength(0);
+    expect(container.querySelectorAll('.bg-fail')).toHaveLength(0);
+    expect(container.querySelectorAll('.bg-primary')).toHaveLength(0);
   });
 });

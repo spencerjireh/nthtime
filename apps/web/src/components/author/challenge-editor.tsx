@@ -42,14 +42,8 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
     difficulty: existingChallenge?.difficulty ?? 'beginner',
     tags: existingChallenge?.tags?.join(', ') ?? '',
     timeEstimateSeconds: existingChallenge?.timeEstimateSeconds ?? 300,
-    scaffolded: existingChallenge?.scaffolded ?? true,
     hints: existingChallenge?.hints ?? [],
   }));
-
-  // File state (scaffold = starter code for students)
-  const [scaffoldFiles, setScaffoldFiles] = useState<{ path: string; content: string }[]>(
-    () => existingChallenge?.files ?? [],
-  );
 
   // Solution state (reference solution used for validation)
   const [solutionFiles, setSolutionFiles] = useState<{ path: string; content: string }[]>(
@@ -87,11 +81,9 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
       difficulty: metadata.difficulty,
       tags: tagsArray,
       timeEstimateSeconds: metadata.timeEstimateSeconds,
-      scaffolded: metadata.scaffolded,
-      files: scaffoldFiles,
       hints: metadata.hints,
       assertions,
-      referenceSolution: solutionFiles.length > 0 ? solutionFiles : undefined,
+      referenceSolution: solutionFiles,
     };
 
     setIsSaving(true);
@@ -116,7 +108,6 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
   }, [
     pack,
     metadata,
-    scaffoldFiles,
     solutionFiles,
     assertionsJson,
     isEdit,
@@ -160,7 +151,6 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
       <Tabs defaultValue="metadata">
         <TabsList>
           <TabsTrigger value="metadata">Metadata</TabsTrigger>
-          <TabsTrigger value="scaffold">Scaffold</TabsTrigger>
           <TabsTrigger value="solution">Solution</TabsTrigger>
           <TabsTrigger value="assertions">Assertions</TabsTrigger>
           <TabsTrigger value="validate">Validate</TabsTrigger>
@@ -168,16 +158,6 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
 
         <TabsContent value="metadata">
           <ChallengeMetadataTab metadata={metadata} onChange={setMetadata} />
-        </TabsContent>
-
-        <TabsContent value="scaffold">
-          <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">
-              Starter code provided to the student. This is what they see when they begin the
-              challenge.
-            </p>
-            <FileEditorTab initialFiles={scaffoldFiles} onChange={setScaffoldFiles} />
-          </div>
         </TabsContent>
 
         <TabsContent value="solution">

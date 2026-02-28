@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { formatTime } from '@nthtime/editor';
 import { challengeHref } from '@/lib/routes';
 
 interface ChallengeRowProps {
@@ -9,7 +8,6 @@ interface ChallengeRowProps {
   title: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   tags: readonly string[];
-  timeEstimateSeconds: number;
   status: 'not-attempted' | 'failed' | 'passed';
   packSlug?: string;
 }
@@ -26,7 +24,6 @@ export function ChallengeRow({
   title,
   difficulty,
   tags,
-  timeEstimateSeconds,
   status,
   packSlug,
 }: ChallengeRowProps) {
@@ -57,9 +54,6 @@ export function ChallengeRow({
       </div>
 
       <div className="pointer-events-none relative z-10 ml-auto flex shrink-0 items-center gap-2">
-        <span className="text-xs text-muted-foreground">
-          {formatTime(timeEstimateSeconds)}
-        </span>
         <Badge variant={difficulty}>{difficulty}</Badge>
         <Badge
           variant={

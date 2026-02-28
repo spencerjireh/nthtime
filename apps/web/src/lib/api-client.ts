@@ -90,7 +90,6 @@ export function createAttempt(body: {
   passed: boolean;
   assertionResults: unknown;
   hintsUsed: number;
-  timeSeconds: number;
 }): Promise<{ id: string }> {
   return request('/attempts', {
     method: 'POST',

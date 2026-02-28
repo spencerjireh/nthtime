@@ -1,7 +1,6 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -19,7 +18,6 @@ export interface ChallengeMetadata {
   difficulty: string;
   tags: string;
   timeEstimateSeconds: number;
-  scaffolded: boolean;
   hints: string[];
 }
 
@@ -87,28 +85,15 @@ export function ChallengeMetadataTab({ metadata, onChange }: ChallengeMetadataTa
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">
-            Tags (comma-separated)
-          </label>
-          <Input
-            value={metadata.tags}
-            onChange={(e) => update({ tags: e.target.value })}
-            placeholder="hooks, state"
-          />
-        </div>
-
-        <div className="flex items-end gap-2 pb-1">
-          <Checkbox
-            id="scaffolded"
-            checked={metadata.scaffolded}
-            onCheckedChange={(checked) => update({ scaffolded: checked === true })}
-          />
-          <label htmlFor="scaffolded" className="text-sm text-foreground">
-            Scaffolded (provide starter code)
-          </label>
-        </div>
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-muted-foreground">
+          Tags (comma-separated)
+        </label>
+        <Input
+          value={metadata.tags}
+          onChange={(e) => update({ tags: e.target.value })}
+          placeholder="hooks, state"
+        />
       </div>
 
       <HintListEditor hints={metadata.hints} onChange={(hints) => update({ hints })} />

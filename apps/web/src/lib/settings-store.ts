@@ -20,8 +20,8 @@ export interface SettingsActions {
   setDarkMode(dark: boolean): void;
   setFormatter(config: Partial<FormatterConfig>): void;
   setAutocomplete(enabled: boolean): void;
+  setFileStubs(enabled: boolean): void;
   setPromptCollapsed(collapsed: boolean): void;
-  setToolbarCollapsed(collapsed: boolean): void;
   syncFromServer(settings: Partial<UserSettings>): void;
   hydrate(): void;
 }
@@ -43,8 +43,8 @@ const DEFAULT_SETTINGS: UserSettings = {
   },
   darkMode: true,
   autocomplete: true,
+  fileStubs: true,
   promptCollapsed: false,
-  toolbarCollapsed: false,
 };
 
 function persistToLocalStorage(settings: UserSettings): void {
@@ -117,12 +117,12 @@ export function createSettingsStore() {
         update({ autocomplete: enabled });
       },
 
-      setPromptCollapsed(collapsed) {
-        update({ promptCollapsed: collapsed });
+      setFileStubs(enabled) {
+        update({ fileStubs: enabled });
       },
 
-      setToolbarCollapsed(collapsed) {
-        update({ toolbarCollapsed: collapsed });
+      setPromptCollapsed(collapsed) {
+        update({ promptCollapsed: collapsed });
       },
 
       setFormatter(config) {

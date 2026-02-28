@@ -46,10 +46,9 @@ const CHALLENGE = {
   difficulty: 'beginner',
   tags: [],
   timeEstimateSeconds: 300,
-  scaffolded: false,
-  files: [],
   hints: [],
   assertions: { perFile: {}, crossFile: [] },
+  referenceSolution: [],
   order: 1,
 };
 
@@ -80,8 +79,6 @@ describe('PATCH /api/v1/author/challenges/[id]', () => {
       prompt: undefined,
       tags: undefined,
       timeEstimateSeconds: undefined,
-      scaffolded: undefined,
-      files: undefined,
       hints: undefined,
       assertions: undefined,
       referenceSolution: undefined,

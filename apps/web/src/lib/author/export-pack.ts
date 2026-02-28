@@ -6,13 +6,9 @@ interface ExportChallenge {
   readonly difficulty: string;
   readonly tags: readonly string[];
   readonly timeEstimateSeconds: number;
-  readonly scaffolded: boolean;
-  /** In Convex, "files" = scaffold (starter code). In JSON, this becomes "scaffold". */
-  readonly files: readonly { readonly path: string; readonly content: string }[];
   readonly hints: readonly string[];
   readonly assertions: { readonly perFile: unknown; readonly crossFile: unknown };
-  /** In Convex, "referenceSolution" = solution. In JSON, this becomes "files". */
-  readonly referenceSolution?: readonly { readonly path: string; readonly content: string }[];
+  readonly referenceSolution: readonly { readonly path: string; readonly content: string }[];
   readonly order: number;
 }
 
@@ -39,10 +35,6 @@ function slugifyTitle(title: string, order: number): string {
 
 /**
  * Export a pack (with full challenge data) as a ZIP file matching the packs/ directory format.
- *
- * The naming convention flips from Convex to JSON:
- * - Convex `files` (scaffold) -> JSON `scaffold`
- * - Convex `referenceSolution` -> JSON `files`
  */
 export function exportPackAsZip(pack: ExportPack): void {
   const sorted = [...pack.challenges].sort((a, b) => a.order - b.order);
@@ -54,16 +46,13 @@ export function exportPackAsZip(pack: ExportPack): void {
     const filename = `challenges/${slugifyTitle(challenge.title, challenge.order)}.json`;
     challengePaths.push(filename);
 
-    // Build the JSON file format (naming flip)
     const jsonChallenge = {
       title: challenge.title,
       prompt: challenge.prompt,
       difficulty: challenge.difficulty,
       tags: challenge.tags,
       timeEstimateSeconds: challenge.timeEstimateSeconds,
-      scaffolded: challenge.scaffolded,
-      files: challenge.referenceSolution ?? [], // solution -> "files" in JSON
-      scaffold: challenge.files, // scaffold -> "scaffold" in JSON
+      files: challenge.referenceSolution,
       hints: challenge.hints,
       assertions: challenge.assertions,
     };

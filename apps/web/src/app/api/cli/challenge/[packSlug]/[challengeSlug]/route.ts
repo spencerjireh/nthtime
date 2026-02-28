@@ -29,7 +29,7 @@ export async function GET(_req: Request, { params }: { params: Promise<Params> }
     slug: challenge.slug,
     prompt: challenge.prompt,
     difficulty: challenge.difficulty,
-    scaffold: challenge.files,
+    expectedFiles: (challenge.referenceSolution ?? []).map((f: { path: string }) => f.path),
     assertions: challenge.assertions,
     hints: challenge.hints,
     webUrl: `/challenge/${challenge._id}?pack=${packSlug}`,

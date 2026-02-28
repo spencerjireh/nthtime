@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { type NextAuthResult } from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import { ConvexHttpClient } from 'convex/browser';
 
@@ -24,7 +24,7 @@ function getApi() {
   return _api;
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+const nextAuth = NextAuth({
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID,
@@ -67,3 +67,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
 });
+
+export const handlers: NextAuthResult['handlers'] = nextAuth.handlers;
+export const signIn: NextAuthResult['signIn'] = nextAuth.signIn;
+export const signOut: NextAuthResult['signOut'] = nextAuth.signOut;
+export const auth: NextAuthResult['auth'] = nextAuth.auth;

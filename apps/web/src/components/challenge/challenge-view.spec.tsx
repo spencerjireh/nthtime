@@ -26,11 +26,9 @@ const {
       prompt: 'Write a test',
       difficulty: 'beginner' as const,
       tags: ['test'] as const,
-      timeEstimateSeconds: 300,
       hints: ['hint 1', 'hint 2'],
       assertions: { perFile: [{ file: 'app.js', assertions: [] }], crossFile: [] },
-      files: [{ path: 'app.js', content: 'const a = 1;' }],
-      scaffolded: true,
+      referenceSolution: [{ path: 'app.js', content: 'const a = 1;' }],
     },
   };
 });
@@ -49,45 +47,28 @@ vi.mock('./challenge-detail-view', () => ({
   ChallengeDetailView: () => <div data-testid="challenge-detail-view" />,
 }));
 
-// Mock dynamic imports -- challenge-view.tsx calls dynamic() twice in module scope:
-// 1st call = DockableLayout, 2nd call = InlineSolutionLayout
+// Mock dynamic imports -- challenge-view.tsx calls dynamic() for DockableLayout
 vi.mock('next/dynamic', () => {
-  let callIndex = 0;
   return {
     __esModule: true,
     default: () => {
-      const i = callIndex++;
-      if (i === 0) {
-        const Stub = (props: { onRun: () => void }) => (
-          <div data-testid="dockable-layout">
-            <div data-testid="prompt-panel" />
-            <div data-testid="editor-panel" />
-            <button data-testid="run-button" onClick={props.onRun}>
-              Run
-            </button>
-          </div>
-        );
-        Stub.displayName = 'DockableLayoutStub';
-        return Stub;
-      }
-      const SolutionStub = () => <div data-testid="inline-solution-layout" />;
-      SolutionStub.displayName = 'InlineSolutionLayoutStub';
-      return SolutionStub;
+      const Stub = (props: { onRun: () => void; onRetry: () => void }) => (
+        <div data-testid="dockable-layout">
+          <div data-testid="prompt-panel" />
+          <div data-testid="editor-panel" />
+          <button data-testid="run-button" onClick={props.onRun}>
+            Run
+          </button>
+          <button data-testid="retry-button" onClick={props.onRetry}>
+            Retry
+          </button>
+        </div>
+      );
+      Stub.displayName = 'DockableLayoutStub';
+      return Stub;
     },
   };
 });
-vi.mock('./results-view', () => ({
-  ResultsView: ({ children }: { children?: React.ReactNode }) => (
-    <div data-testid="results-view">{children}</div>
-  ),
-}));
-vi.mock('./results-navigation', () => ({
-  ResultsNavigation: ({ onRetry }: { onRetry: () => void }) => (
-    <button data-testid="retry-button" onClick={onRetry}>
-      Retry
-    </button>
-  ),
-}));
 
 // --- Mock external dependencies ---
 vi.mock('@/lib/run-verification', () => ({
@@ -109,6 +90,7 @@ vi.mock('@/lib/settings-store', () => ({
   getSettingsStore: () =>
     createStore(() => ({
       settings: {
+        fileStubs: true,
         formatter: {
           defaults: {
             enabled: true,
@@ -145,6 +127,7 @@ describe('ChallengeView', () => {
     expect(getStore().getState().initFromChallenge).toHaveBeenCalledWith(
       MOCK_CHALLENGE_DATA,
       'ch_test_1',
+      true,
     );
   });
 
@@ -155,20 +138,11 @@ describe('ChallengeView', () => {
     expect(screen.getByTestId('run-button')).toBeInTheDocument();
   });
 
-  it('renders results view when store viewMode is results', () => {
+  it('always renders dockable layout regardless of viewMode', () => {
     mockStoreRef.current = buildEditorStore({ viewMode: 'results' });
     render(<ChallengeView challengeId="ch_test_1" />);
-    expect(screen.getByTestId('results-view')).toBeInTheDocument();
+    expect(screen.getByTestId('dockable-layout')).toBeInTheDocument();
     expect(screen.getByTestId('retry-button')).toBeInTheDocument();
-    expect(screen.queryByTestId('prompt-panel')).not.toBeInTheDocument();
-  });
-
-  it('renders inline solution layout when viewMode is solution', () => {
-    mockStoreRef.current = buildEditorStore({ viewMode: 'solution' });
-    render(<ChallengeView challengeId="ch_test_1" />);
-    expect(screen.getByTestId('inline-solution-layout')).toBeInTheDocument();
-    expect(screen.queryByTestId('dockable-layout')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('results-view')).not.toBeInTheDocument();
   });
 
   it('handleRun: calls setRunState, runVerification, setVerificationResult, submit', async () => {

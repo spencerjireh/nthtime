@@ -3,14 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { createEditorStore, type EditorStore } from '@nthtime/editor';
 import type { StoreApi } from 'zustand/vanilla';
-import { EditorStoreContext, useEditorStore } from './editor-store-context';
+import { EditorStoreContext } from './editor-store-context';
 import dynamic from 'next/dynamic';
-import { ResultsView } from './results-view';
-import { ResultsNavigation } from './results-navigation';
 import { ChallengeDetailView } from './challenge-detail-view';
 import { runVerification } from '@/lib/run-verification';
 import { formatAllFiles } from '@/lib/formatter';
-import { isFeatureEnabled } from '@/lib/feature-flags';
 import { getSettingsStore } from '@/lib/settings-store';
 import { useChallenge } from '@/hooks/use-challenge';
 import { useCreateAttempt } from '@/hooks/use-attempts';
@@ -21,10 +18,6 @@ const DockableLayout = dynamic(() =>
   import('./dockable-layout').then((m) => ({ default: m.DockableLayout })),
   { ssr: false },
 );
-
-const InlineSolutionLayout = dynamic(() => import('./inline-solution-layout'), {
-  ssr: false,
-});
 
 interface ChallengeViewProps {
   challengeId: string;
@@ -106,7 +99,8 @@ function ChallengeViewEditor({
   );
 
   useEffect(() => {
-    store.getState().initFromChallenge(challengeData, challengeId);
+    const { fileStubs } = getSettingsStore().getState().settings;
+    store.getState().initFromChallenge(challengeData, challengeId, fileStubs);
   }, [challengeId, challengeData]);
 
   // Debounced draft saving on file changes
@@ -149,7 +143,6 @@ function ChallengeViewEditor({
       passed: result.passed,
       assertionResults: result.fileResults,
       hintsUsed: state.hintsRevealed,
-      timeSeconds: state.timer.elapsedSeconds,
     });
 
     // Clear draft on successful submission
@@ -164,47 +157,12 @@ function ChallengeViewEditor({
 
   return (
     <EditorStoreContext value={store}>
-      <ChallengeViewInner
+      <DockableLayout
         onRun={handleRun}
         onRetry={handleRetry}
-        challengeId={challengeId}
         packSlug={packSlug}
         challengeIds={challengeIds}
       />
     </EditorStoreContext>
   );
-}
-
-function ChallengeViewInner({
-  onRun,
-  onRetry,
-  challengeId,
-  packSlug,
-  challengeIds,
-}: {
-  onRun: () => void;
-  onRetry: () => void;
-  challengeId: string;
-  packSlug?: string;
-  challengeIds?: string[];
-}) {
-  const viewMode = useEditorStore((s) => s.viewMode);
-
-  if (viewMode === 'results') {
-    return (
-      <ResultsView>
-        <ResultsNavigation
-          onRetry={onRetry}
-          packSlug={packSlug}
-          challengeIds={challengeIds}
-        />
-      </ResultsView>
-    );
-  }
-
-  if (viewMode === 'solution' && isFeatureEnabled('solutionView')) {
-    return <InlineSolutionLayout />;
-  }
-
-  return <DockableLayout onRun={onRun} challengeId={challengeId} packSlug={packSlug} />;
 }

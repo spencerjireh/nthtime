@@ -26,7 +26,7 @@ export async function PATCH(
   const body = await req.json();
   const {
     slug, title, prompt, difficulty, tags, timeEstimateSeconds,
-    scaffolded, files, hints, assertions, referenceSolution,
+    hints, assertions, referenceSolution,
   } = body;
   await authorRepository.updateChallenge(userId, {
     challengeId: id,
@@ -36,8 +36,6 @@ export async function PATCH(
     difficulty,
     tags,
     timeEstimateSeconds,
-    scaffolded,
-    files,
     hints,
     assertions,
     referenceSolution,

@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
     passed: body.passed,
     assertionResults: body.assertionResults ?? [],
     hintsUsed: body.hintsUsed ?? 0,
-    timeSeconds: body.timeSeconds ?? 0,
   });
 
   return NextResponse.json({ id }, { status: 201 });

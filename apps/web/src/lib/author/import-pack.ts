@@ -6,11 +6,8 @@ export interface PackImportChallenge {
   difficulty: string;
   tags: string[];
   timeEstimateSeconds: number;
-  scaffolded: boolean;
-  /** Scaffold files (starter code for students). */
-  scaffoldFiles: { path: string; content: string }[];
   /** Reference solution files. */
-  solutionFiles: { path: string; content: string }[];
+  referenceSolution: { path: string; content: string }[];
   hints: string[];
   assertions: { perFile: unknown; crossFile: unknown };
 }
@@ -31,10 +28,6 @@ export interface PackImportData {
  * 1. Root `pack.json` -> standard directory format
  * 2. Nested `<name>/pack.json` -> directory format with prefix
  * 3. Single JSON with `challenges` array inline -> flat format
- *
- * The naming convention flips from JSON to Convex:
- * - JSON `files` (solution) -> `solutionFiles`
- * - JSON `scaffold` (starter) -> `scaffoldFiles`
  */
 export function importPackFromZip(data: ArrayBuffer): PackImportData {
   const files = unzipSync(new Uint8Array(data));
@@ -103,10 +96,7 @@ function mapChallenge(raw: Record<string, unknown>): PackImportChallenge {
     difficulty: (raw.difficulty as string) ?? 'beginner',
     tags: (raw.tags as string[]) ?? [],
     timeEstimateSeconds: (raw.timeEstimateSeconds as number) ?? 300,
-    scaffolded: (raw.scaffolded as boolean) ?? true,
-    // JSON "files" = reference solution, JSON "scaffold" = starter code
-    solutionFiles: (raw.files as { path: string; content: string }[]) ?? [],
-    scaffoldFiles: (raw.scaffold as { path: string; content: string }[]) ?? [],
+    referenceSolution: (raw.files as { path: string; content: string }[]) ?? [],
     hints: (raw.hints as string[]) ?? [],
     assertions: (raw.assertions as { perFile: unknown; crossFile: unknown }) ?? {
       perFile: {},

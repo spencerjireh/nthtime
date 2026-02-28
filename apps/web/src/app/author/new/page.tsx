@@ -65,12 +65,9 @@ export default function NewPackPage() {
             difficulty: challenge.difficulty,
             tags: challenge.tags,
             timeEstimateSeconds: challenge.timeEstimateSeconds,
-            scaffolded: challenge.scaffolded,
-            files: challenge.scaffoldFiles,
             hints: challenge.hints,
             assertions: challenge.assertions,
-            referenceSolution:
-              challenge.solutionFiles.length > 0 ? challenge.solutionFiles : undefined,
+            referenceSolution: challenge.referenceSolution,
           });
         }
       }

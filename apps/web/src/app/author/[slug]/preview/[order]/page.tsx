@@ -87,11 +87,9 @@ function PreviewInner({
     difficulty: challenge.difficulty as Difficulty,
     tags: challenge.tags,
     timeEstimateSeconds: challenge.timeEstimateSeconds,
-    scaffolded: challenge.scaffolded,
-    files: challenge.files,
     hints: challenge.hints,
     assertions: challenge.assertions as AssertionSet,
-    referenceSolution: challenge.referenceSolution,
+    referenceSolution: challenge.referenceSolution ?? [],
   };
 
   return (

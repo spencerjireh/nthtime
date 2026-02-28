@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getAssertionTechnicalDetail } from './assertion-detail';
 import { getSettingsStore } from '@/lib/settings-store';
-import { getMonacoLanguage, formatTime, loadDraft } from '@nthtime/editor';
+import { getMonacoLanguage, loadDraft } from '@nthtime/editor';
 import { isFeatureEnabled } from '@/lib/feature-flags';
 import { challengeHref, solutionHref } from '@/lib/routes';
 import { PromptText } from './prompt-text';
@@ -25,8 +25,8 @@ export function ChallengeDetailView({
   packSlug,
 }: ChallengeDetailViewProps) {
   const feedback = useStore(getSettingsStore(), (s) => s.settings.feedback);
-  const language = challenge.files.length > 0
-    ? getMonacoLanguage(challenge.files[0].path)
+  const language = challenge.referenceSolution.length > 0
+    ? getMonacoLanguage(challenge.referenceSolution[0].path)
     : undefined;
 
   const [hasDraft, setHasDraft] = useState(false);
@@ -66,11 +66,6 @@ export function ChallengeDetailView({
                 {tag}
               </Badge>
             ))}
-            {challenge.timeEstimateSeconds > 0 && (
-              <span className="text-sm text-muted-foreground">
-                est. {formatTime(challenge.timeEstimateSeconds)}
-              </span>
-            )}
           </div>
         </header>
 

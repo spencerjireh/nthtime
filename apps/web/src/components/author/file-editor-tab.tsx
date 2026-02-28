@@ -24,19 +24,23 @@ export function FileEditorTab({ initialFiles, onChange }: FileEditorTabProps) {
   if (!storeRef.current) {
     const store = createEditorStore();
     // Initialize with provided files (using a minimal challenge shape)
+    const filesToLoad = initialFiles.length > 0 ? initialFiles : [{ path: 'index.ts', content: '' }];
     store.getState().initFromChallenge(
       {
         title: '',
         prompt: '',
         difficulty: Difficulty.Beginner,
         tags: [],
-        timeEstimateSeconds: 0,
-        scaffolded: true,
-        files: initialFiles.length > 0 ? initialFiles : [{ path: 'index.ts', content: '' }],
+        referenceSolution: filesToLoad,
         hints: [],
       },
       undefined,
+      true,
     );
+    // Override empty stubs with actual file contents for editing
+    for (const file of filesToLoad) {
+      store.getState().setFileContent(file.path, file.content);
+    }
     storeRef.current = store;
   }
   const store = storeRef.current;
@@ -51,8 +55,6 @@ export function FileEditorTab({ initialFiles, onChange }: FileEditorTabProps) {
   const filePaths = useMemo(() => Object.keys(files), [files]);
   const activeContent = activeFilePath ? files[activeFilePath]?.content ?? '' : '';
   const language = activeFilePath ? getMonacoLanguage(activeFilePath) : 'plaintext';
-
-  const isDirty = useCallback((path: string) => store.getState().isDirty(path), [store]);
 
   const notifyParent = useCallback(() => {
     onChange?.(
@@ -102,7 +104,6 @@ export function FileEditorTab({ initialFiles, onChange }: FileEditorTabProps) {
       <FileTree
         files={filePaths}
         activeFile={activeFilePath}
-        isDirty={isDirty}
         onSelect={(path) => store.getState().openTab(path)}
         onCreateFile={handleCreateFile}
         onRenameFile={handleRenameFile}
@@ -112,7 +113,6 @@ export function FileEditorTab({ initialFiles, onChange }: FileEditorTabProps) {
         <TabBar
           tabs={tabOrder}
           activeTab={activeFilePath}
-          isDirty={isDirty}
           onSelect={(path) => store.getState().setActiveFile(path)}
           onClose={(path) => store.getState().closeTab(path)}
           onReorder={(from, to) => store.getState().reorderTabs(from, to)}

@@ -59,7 +59,6 @@ function buildTree(paths: string[]): TreeNode[] {
 interface FileTreeProps {
   files: string[];
   activeFile: string | null;
-  isDirty: (path: string) => boolean;
   onSelect: (path: string) => void;
   onCreateFile?: (path: string) => void;
   onRenameFile?: (oldPath: string, newPath: string) => void;
@@ -70,7 +69,6 @@ interface FileTreeProps {
 export function FileTree({
   files,
   activeFile,
-  isDirty,
   onSelect,
   onCreateFile,
   onRenameFile,
@@ -161,7 +159,6 @@ export function FileTree({
             node={node}
             depth={0}
             activeFile={activeFile}
-            isDirty={isDirty}
             expandedFolders={expandedFolders}
             creating={creating}
             renaming={renaming}
@@ -193,7 +190,6 @@ function TreeNodeRow({
   node,
   depth,
   activeFile,
-  isDirty,
   expandedFolders,
   creating,
   renaming,
@@ -210,7 +206,6 @@ function TreeNodeRow({
   node: TreeNode;
   depth: number;
   activeFile: string | null;
-  isDirty: (path: string) => boolean;
   expandedFolders: Set<string>;
   creating: string | null;
   renaming: string | null;
@@ -259,7 +254,6 @@ function TreeNodeRow({
                 node={child}
                 depth={depth + 1}
                 activeFile={activeFile}
-                isDirty={isDirty}
                 expandedFolders={expandedFolders}
                 creating={creating}
                 renaming={renaming}
@@ -318,7 +312,7 @@ function TreeNodeRow({
           {getFileIcon(node.path)}
         </span>
         <span className="truncate">{node.name}</span>
-        <FileIndicatorDot path={node.path} isDirty={isDirty} fileStatus={fileStatus} />
+        <FileIndicatorDot path={node.path} fileStatus={fileStatus} />
       </button>
       {showCrud && (
         <span className="mr-1 flex shrink-0 gap-0.5 opacity-0 group-hover:opacity-100">
@@ -344,17 +338,14 @@ function TreeNodeRow({
 
 function FileIndicatorDot({
   path,
-  isDirty,
   fileStatus,
 }: {
   path: string;
-  isDirty: (path: string) => boolean;
   fileStatus?: (path: string) => 'pass' | 'fail' | null;
 }) {
   const status = fileStatus?.(path) ?? null;
   const color = status === 'pass' ? 'bg-pass'
     : status === 'fail' ? 'bg-fail'
-    : isDirty(path) ? 'bg-primary'
     : null;
   if (!color) return null;
   return (

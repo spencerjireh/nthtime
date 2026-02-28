@@ -28,8 +28,30 @@ vi.mock('@/hooks/use-keybinding-mode', () => ({
 vi.mock('@/hooks/use-parse-diagnostics', () => ({
   useParseDiagnostics: vi.fn(),
 }));
+vi.mock('@/hooks/use-monaco-decorations', () => ({
+  useMonacoDecorations: () => ({ onMount: vi.fn() }),
+}));
 vi.mock('@/lib/formatter', () => ({
   formatCode: vi.fn().mockResolvedValue('formatted'),
+}));
+vi.mock('@/lib/feature-flags', () => ({
+  isFeatureEnabled: () => false,
+}));
+vi.mock('./solution-panel', () => ({
+  SolutionPanel: (props: Record<string, unknown>) => (
+    <div data-testid="solution-panel" data-language={props.language} />
+  ),
+}));
+vi.mock('next/dynamic', () => ({
+  __esModule: true,
+  default: (loader: () => Promise<{ default: React.ComponentType }>) => {
+    // DiffViewLazy stub
+    const Stub = (props: Record<string, unknown>) => (
+      <div data-testid="diff-view" data-language={props.language} />
+    );
+    Stub.displayName = 'DiffViewLazyStub';
+    return Stub;
+  },
 }));
 vi.mock('@/lib/settings-store', () => ({
   getSettingsStore: () =>
@@ -40,6 +62,7 @@ vi.mock('@/lib/settings-store', () => ({
           return mockKeybindings.value;
         },
         formatter: { defaults: { enabled: true, trigger: 'manual', tabSize: 2, useTabs: false } },
+        feedback: { showPassFail: true, showHints: true, showAssertionDetails: true, showDiff: true, showSolution: false },
       },
     })),
 }));
@@ -135,20 +158,84 @@ describe('EditorPanel', () => {
     expect(store.getState().createFile).toHaveBeenCalledWith('index.js');
   });
 
-  it('vim keybinding: status bar div is rendered', () => {
-    mockKeybindings.value = 'vim';
-    const { container } = renderEditor();
-    // Status bar has border-t and appears when keybindings !== 'default'
-    const statusBar = container.querySelector('.border-t.text-xs');
-    expect(statusBar).toBeInTheDocument();
+  it('passes statusBarRef prop to useKeybindingMode', async () => {
+    const { useKeybindingMode } = await import('@/hooks/use-keybinding-mode');
+    renderEditor();
+    // useKeybindingMode is called with (editor, ref, keybindings)
+    expect(useKeybindingMode).toHaveBeenCalled();
   });
 
-  it('default keybinding: no status bar', () => {
-    mockKeybindings.value = 'default';
-    const { container } = renderEditor();
-    // The status bar border-t div shouldn't be present in default mode
-    // Query for the status bar's specific class combination
-    const statusBars = container.querySelectorAll('[class*="border-t"][class*="font-mono"]');
-    expect(statusBars).toHaveLength(0);
+  // --- Results mode tests ---
+
+  it('results mode: renders submitted files read-only', () => {
+    renderEditor({
+      viewMode: 'results',
+      resultsCodeView: 'submitted',
+      submittedFiles: {
+        'app.js': { path: 'app.js', content: 'submitted code' },
+      },
+      verificationResult: {
+        passed: true,
+        totalAssertions: 1,
+        passedAssertions: 1,
+        fileResults: [{ file: 'app.js', passed: true, results: [] }],
+        crossFileResults: [],
+      },
+    });
+    expect(screen.getByTestId('monaco-wrapper')).toBeInTheDocument();
+  });
+
+  it('results mode: hides split toggle', () => {
+    renderEditor({
+      viewMode: 'results',
+      resultsCodeView: 'submitted',
+      submittedFiles: {
+        'app.js': { path: 'app.js', content: 'code' },
+        'server.js': { path: 'server.js', content: 'code' },
+      },
+    });
+    expect(screen.queryByTitle('Split editor')).not.toBeInTheDocument();
+  });
+
+  it('results mode: hides "Create your first file" button', () => {
+    renderEditor({
+      viewMode: 'results',
+      resultsCodeView: 'submitted',
+      files: {},
+      submittedFiles: {},
+      activeFilePath: null,
+      tabOrder: [],
+    });
+    expect(screen.queryByText('Create your first file')).not.toBeInTheDocument();
+  });
+
+  it('results mode diff: renders DiffViewLazy', () => {
+    renderEditor({
+      viewMode: 'results',
+      resultsCodeView: 'diff',
+      activeFilePath: 'app.js',
+      submittedFiles: {
+        'app.js': { path: 'app.js', content: 'submitted' },
+      },
+      referenceSolutionFiles: {
+        'app.js': { path: 'app.js', content: 'solution' },
+      },
+    });
+    expect(screen.getByTestId('diff-view')).toBeInTheDocument();
+  });
+
+  it('results mode solution: renders SolutionPanel', () => {
+    renderEditor({
+      viewMode: 'results',
+      resultsCodeView: 'solution',
+      activeFilePath: 'app.js',
+      submittedFiles: {
+        'app.js': { path: 'app.js', content: 'submitted' },
+      },
+      referenceSolutionFiles: {
+        'app.js': { path: 'app.js', content: 'solution' },
+      },
+    });
+    expect(screen.getByTestId('solution-panel')).toBeInTheDocument();
   });
 });

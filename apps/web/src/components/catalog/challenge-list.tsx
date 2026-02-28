@@ -36,7 +36,6 @@ export function ChallengeList({
           title={challenge.title}
           difficulty={challenge.difficulty}
           tags={challenge.tags}
-          timeEstimateSeconds={challenge.timeEstimateSeconds}
           status={challenge.status}
           packSlug={packSlug}
         />

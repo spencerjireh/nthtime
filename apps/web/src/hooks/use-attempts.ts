@@ -27,7 +27,6 @@ export function useCreateAttempt() {
       passed: boolean;
       assertionResults: unknown;
       hintsUsed: number;
-      timeSeconds: number;
     }) => {
       if (status !== 'authenticated') return;
       try {

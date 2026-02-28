@@ -56,11 +56,9 @@ function mapChallenge(doc: any): Challenge {
     difficulty: doc.difficulty as Difficulty,
     tags: doc.tags,
     timeEstimateSeconds: doc.timeEstimateSeconds,
-    scaffolded: doc.scaffolded,
-    files: doc.files,
     hints: doc.hints,
     assertions: doc.assertions as AssertionSet,
-    referenceSolution: doc.referenceSolution,
+    referenceSolution: doc.referenceSolution ?? [],
   };
 }
 
@@ -126,7 +124,6 @@ export const attemptRepository: AttemptRepository = {
       passed: input.passed,
       assertionResults: input.assertionResults,
       hintsUsed: input.hintsUsed,
-      timeSeconds: input.timeSeconds,
     });
     return id as string;
   },
@@ -146,7 +143,6 @@ export const attemptRepository: AttemptRepository = {
       passed: a.passed,
       assertionResults: a.assertionResults,
       hintsUsed: a.hintsUsed,
-      timeSeconds: a.timeSeconds,
     }));
   },
 };
@@ -243,11 +239,9 @@ export const authorRepository: AuthorRepository = {
       difficulty: input.difficulty,
       tags: input.tags,
       timeEstimateSeconds: input.timeEstimateSeconds,
-      scaffolded: input.scaffolded,
-      files: input.files as { path: string; content: string }[],
       hints: input.hints,
       assertions: input.assertions,
-      referenceSolution: input.referenceSolution as { path: string; content: string }[] | undefined,
+      referenceSolution: input.referenceSolution as { path: string; content: string }[],
     });
     return id as string;
   },
@@ -259,7 +253,6 @@ export const authorRepository: AuthorRepository = {
       userId,
       challengeId,
       ...rest,
-      files: rest.files as { path: string; content: string }[] | undefined,
       referenceSolution: rest.referenceSolution as { path: string; content: string }[] | undefined,
     });
   },

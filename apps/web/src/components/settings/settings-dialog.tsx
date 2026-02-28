@@ -32,7 +32,7 @@ const ALL_FEEDBACK_FLAGS: { key: keyof FeedbackConfig; label: string }[] = [
   { key: 'showPassFail', label: 'Show pass/fail per assertion' },
   { key: 'showHints', label: 'Show hints' },
   { key: 'showAssertionDetails', label: 'Show assertion details and line numbers' },
-  { key: 'showDiff', label: 'Show diff (scaffold vs submitted)' },
+  { key: 'showDiff', label: 'Show diff (your code vs reference solution)' },
   { key: 'showSolution', label: 'Show reference solution' },
 ];
 
@@ -128,6 +128,26 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             </div>
             <p className="text-xs text-muted-foreground">
               Show code suggestions as you type. Disable for a distraction-free editor.
+            </p>
+          </section>
+
+          {/* File Stubs */}
+          <section className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="file-stubs"
+                checked={settings.fileStubs}
+                onCheckedChange={(checked) =>
+                  store.getState().setFileStubs(checked === true)
+                }
+              />
+              <label htmlFor="file-stubs" className="text-sm text-foreground">
+                Start with file stubs
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Create empty files at the expected paths when starting a challenge.
+              Disable to start with a completely blank editor.
             </p>
           </section>
 
