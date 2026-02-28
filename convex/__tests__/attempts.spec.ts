@@ -48,9 +48,8 @@ describe('attempts functions', () => {
           difficulty: 'beginner',
           tags: ['basics'],
           timeEstimateSeconds: 300,
-          scaffolded: true,
-          files: [{ path: 'index.js', content: 'console.log("hello")' }],
           hints: [],
+          referenceSolution: [{ path: 'index.js', content: 'console.log("hello")' }],
           assertions: { perFile: [], crossFile: [] },
         },
       ],
@@ -71,7 +70,6 @@ describe('attempts functions', () => {
       passed: true,
       assertionResults: [],
       hintsUsed: 0,
-      timeSeconds: 42,
     });
 
     const attempts = await t.run(async (ctx) => {
@@ -79,7 +77,6 @@ describe('attempts functions', () => {
     });
     expect(attempts).toHaveLength(1);
     expect(attempts[0].passed).toBe(true);
-    expect(attempts[0].timeSeconds).toBe(42);
   });
 
   it('create rejects unauthenticated user', async () => {
@@ -93,7 +90,6 @@ describe('attempts functions', () => {
         passed: false,
         assertionResults: [],
         hintsUsed: 0,
-        timeSeconds: 10,
       }),
     ).rejects.toThrow('Not authenticated');
   });
@@ -108,14 +104,12 @@ describe('attempts functions', () => {
       passed: false,
       assertionResults: [],
       hintsUsed: 0,
-      timeSeconds: 30,
     });
     await t.mutation(api.attempts.create, {
       challengeId,
       passed: true,
       assertionResults: [],
       hintsUsed: 1,
-      timeSeconds: 60,
     });
 
     const attempts = await t.query(api.attempts.list, { challengeId });

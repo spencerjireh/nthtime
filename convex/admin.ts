@@ -9,14 +9,12 @@ const packChallengeValidator = v.object({
   difficulty: v.string(),
   tags: v.array(v.string()),
   timeEstimateSeconds: v.number(),
-  scaffolded: v.boolean(),
-  files: v.array(v.object({ path: v.string(), content: v.string() })),
   hints: v.array(v.string()),
   assertions: v.object({
     perFile: v.any(),
     crossFile: v.any(),
   }),
-  referenceSolution: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
+  referenceSolution: v.array(v.object({ path: v.string(), content: v.string() })),
 });
 
 const packValidator = v.object({
@@ -100,11 +98,9 @@ async function upsertPack(
       difficulty: string;
       tags: string[];
       timeEstimateSeconds: number;
-      scaffolded: boolean;
-      files: { path: string; content: string }[];
       hints: string[];
       assertions: { perFile: unknown; crossFile: unknown };
-      referenceSolution?: { path: string; content: string }[];
+      referenceSolution: { path: string; content: string }[];
     }[];
   },
 ) {
@@ -159,8 +155,6 @@ async function upsertPack(
       difficulty: challenge.difficulty,
       tags: challenge.tags,
       timeEstimateSeconds: challenge.timeEstimateSeconds,
-      scaffolded: challenge.scaffolded,
-      files: challenge.files,
       hints: challenge.hints,
       assertions: challenge.assertions,
       referenceSolution: challenge.referenceSolution,

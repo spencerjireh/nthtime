@@ -9,7 +9,6 @@ export const create = mutation({
     passed: v.boolean(),
     assertionResults: v.any(),
     hintsUsed: v.number(),
-    timeSeconds: v.number(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -23,7 +22,6 @@ export const create = mutation({
       passed: args.passed,
       assertionResults: args.assertionResults,
       hintsUsed: args.hintsUsed,
-      timeSeconds: args.timeSeconds,
     });
   },
 });

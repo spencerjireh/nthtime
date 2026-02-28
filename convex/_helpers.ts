@@ -126,7 +126,6 @@ export async function getChallengesHelper(
       difficulty: c.difficulty,
       tags: c.tags,
       timeEstimateSeconds: c.timeEstimateSeconds,
-      scaffolded: c.scaffolded,
       order: c.order,
       status: (statusMap.get(c._id) as 'passed' | 'failed') ?? 'not-attempted',
     })),

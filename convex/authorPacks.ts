@@ -70,7 +70,6 @@ export const getBySlug = query({
           difficulty: c.difficulty,
           tags: c.tags,
           timeEstimateSeconds: c.timeEstimateSeconds,
-          scaffolded: c.scaffolded,
           order: c.order,
         })),
     };
@@ -110,8 +109,6 @@ export const getForExport = query({
           difficulty: c.difficulty,
           tags: c.tags,
           timeEstimateSeconds: c.timeEstimateSeconds,
-          scaffolded: c.scaffolded,
-          files: c.files,
           hints: c.hints,
           assertions: c.assertions,
           referenceSolution: c.referenceSolution,

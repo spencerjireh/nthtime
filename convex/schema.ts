@@ -30,14 +30,14 @@ export default defineSchema({
     difficulty: v.string(),
     tags: v.array(v.string()),
     timeEstimateSeconds: v.number(),
-    scaffolded: v.boolean(),
-    files: v.array(v.object({ path: v.string(), content: v.string() })),
+    scaffolded: v.optional(v.boolean()),
+    files: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
     hints: v.array(v.string()),
     assertions: v.object({
       perFile: v.any(),
       crossFile: v.any(),
     }),
-    referenceSolution: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
+    referenceSolution: v.array(v.object({ path: v.string(), content: v.string() })),
     order: v.number(),
   })
     .index('by_pack', ['packId', 'order'])
@@ -50,7 +50,7 @@ export default defineSchema({
     passed: v.boolean(),
     assertionResults: v.any(),
     hintsUsed: v.number(),
-    timeSeconds: v.number(),
+    timeSeconds: v.optional(v.number()),
   })
     .index('by_user_challenge', ['userId', 'challengeId'])
     .index('by_user', ['userId'])
@@ -66,6 +66,7 @@ export default defineSchema({
     keybindings: v.string(),
     darkMode: v.boolean(),
     formatter: v.any(),
+    fileStubs: v.optional(v.boolean()),
     updatedAt: v.optional(v.number()),
   }).index('by_user', ['userId']),
 });

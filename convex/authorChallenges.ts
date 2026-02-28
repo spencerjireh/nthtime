@@ -42,11 +42,9 @@ export const create = mutation({
     difficulty: v.string(),
     tags: v.array(v.string()),
     timeEstimateSeconds: v.number(),
-    scaffolded: v.boolean(),
-    files: v.array(v.object({ path: v.string(), content: v.string() })),
     hints: v.array(v.string()),
     assertions: v.object({ perFile: v.any(), crossFile: v.any() }),
-    referenceSolution: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
+    referenceSolution: v.array(v.object({ path: v.string(), content: v.string() })),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -78,8 +76,6 @@ export const update = mutation({
     difficulty: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     timeEstimateSeconds: v.optional(v.number()),
-    scaffolded: v.optional(v.boolean()),
-    files: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
     hints: v.optional(v.array(v.string())),
     assertions: v.optional(v.object({ perFile: v.any(), crossFile: v.any() })),
     referenceSolution: v.optional(

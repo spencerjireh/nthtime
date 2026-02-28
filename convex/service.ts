@@ -110,7 +110,6 @@ export const createAttempt = mutation({
     passed: v.boolean(),
     assertionResults: v.any(),
     hintsUsed: v.number(),
-    timeSeconds: v.number(),
   },
   handler: async (ctx, args) => {
     verifyServiceToken(args.serviceToken);
@@ -125,7 +124,6 @@ export const createAttempt = mutation({
       passed: args.passed,
       assertionResults: args.assertionResults,
       hintsUsed: args.hintsUsed,
-      timeSeconds: args.timeSeconds,
     });
   },
 });
@@ -347,7 +345,6 @@ export const authorGetBySlug = query({
           difficulty: c.difficulty,
           tags: c.tags,
           timeEstimateSeconds: c.timeEstimateSeconds,
-          scaffolded: c.scaffolded,
           order: c.order,
         })),
     };
@@ -388,8 +385,6 @@ export const authorGetForExport = query({
           difficulty: c.difficulty,
           tags: c.tags,
           timeEstimateSeconds: c.timeEstimateSeconds,
-          scaffolded: c.scaffolded,
-          files: c.files,
           hints: c.hints,
           assertions: c.assertions,
           referenceSolution: c.referenceSolution,
@@ -576,11 +571,9 @@ export const authorCreateChallenge = mutation({
     difficulty: v.string(),
     tags: v.array(v.string()),
     timeEstimateSeconds: v.number(),
-    scaffolded: v.boolean(),
-    files: v.array(v.object({ path: v.string(), content: v.string() })),
     hints: v.array(v.string()),
     assertions: v.object({ perFile: v.any(), crossFile: v.any() }),
-    referenceSolution: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
+    referenceSolution: v.array(v.object({ path: v.string(), content: v.string() })),
   },
   handler: async (ctx, args) => {
     verifyServiceToken(args.serviceToken);
@@ -615,8 +608,6 @@ export const authorUpdateChallenge = mutation({
     difficulty: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     timeEstimateSeconds: v.optional(v.number()),
-    scaffolded: v.optional(v.boolean()),
-    files: v.optional(v.array(v.object({ path: v.string(), content: v.string() }))),
     hints: v.optional(v.array(v.string())),
     assertions: v.optional(v.object({ perFile: v.any(), crossFile: v.any() })),
     referenceSolution: v.optional(
