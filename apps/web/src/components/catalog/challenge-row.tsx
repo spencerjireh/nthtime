@@ -56,7 +56,7 @@ export function ChallengeRow({
         )}
       </div>
 
-      <div className="relative z-10 flex shrink-0 items-center gap-2">
+      <div className="pointer-events-none relative z-10 flex shrink-0 items-center gap-2">
         <span className="text-xs text-muted-foreground">
           {formatTime(timeEstimateSeconds)}
         </span>
