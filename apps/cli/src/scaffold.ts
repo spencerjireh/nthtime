@@ -5,12 +5,20 @@ import type { NthtimeMetadata } from './types.js';
 
 const METADATA_FILE = '.nthtime.json';
 
-export function scaffoldChallenge(dir: string, scaffold: readonly FileEntry[]): void {
+export function initChallengeFiles(
+  dir: string,
+  expectedFiles: readonly string[],
+  fileStubs: boolean,
+): void {
   mkdirSync(dir, { recursive: true });
-  for (const file of scaffold) {
-    const filePath = join(dir, file.path);
-    mkdirSync(dirname(filePath), { recursive: true });
-    writeFileSync(filePath, file.content);
+  if (fileStubs) {
+    for (const filePath of expectedFiles) {
+      const fullPath = join(dir, filePath);
+      mkdirSync(dirname(fullPath), { recursive: true });
+      if (!existsSync(fullPath)) {
+        writeFileSync(fullPath, '');
+      }
+    }
   }
 }
 
@@ -28,11 +36,11 @@ export function readMetadata(dir: string): NthtimeMetadata | null {
   }
 }
 
-export function readChallengeFiles(dir: string, scaffold: readonly FileEntry[]): FileEntry[] {
-  return scaffold.map((file) => {
-    const filePath = join(dir, file.path);
-    const content = existsSync(filePath) ? readFileSync(filePath, 'utf-8') : '';
-    return { path: file.path, content };
+export function readChallengeFiles(dir: string, expectedFiles: readonly string[]): FileEntry[] {
+  return expectedFiles.map((filePath) => {
+    const fullPath = join(dir, filePath);
+    const content = existsSync(fullPath) ? readFileSync(fullPath, 'utf-8') : '';
+    return { path: filePath, content };
   });
 }
 

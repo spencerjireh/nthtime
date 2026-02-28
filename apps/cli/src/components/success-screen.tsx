@@ -1,16 +1,12 @@
 import { Box, Text } from 'ink';
-import { formatElapsed } from '../utils/timer.js';
 
 interface SuccessScreenProps {
   title: string;
-  startedAt: number;
   webUrl: string;
   serverUrl: string;
 }
 
-export function SuccessScreen({ title, startedAt, webUrl, serverUrl }: SuccessScreenProps) {
-  const elapsed = formatElapsed(startedAt);
-
+export function SuccessScreen({ title, webUrl, serverUrl }: SuccessScreenProps) {
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
@@ -18,7 +14,6 @@ export function SuccessScreen({ title, startedAt, webUrl, serverUrl }: SuccessSc
       </Box>
 
       <Text>Challenge: {title}</Text>
-      <Text>Time: {elapsed}</Text>
 
       <Box marginTop={1}>
         <Text dimColor>

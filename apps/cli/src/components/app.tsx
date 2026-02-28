@@ -8,8 +8,9 @@ import { ResultsScreen } from './results-screen.js';
 import { SuccessScreen } from './success-screen.js';
 import { ResumePrompt } from './resume-prompt.js';
 import { openUrl } from '../utils/open-url.js';
-import { scaffoldChallenge, writeMetadata } from '../scaffold.js';
+import { initChallengeFiles, writeMetadata } from '../scaffold.js';
 import { fetchChallenge } from '../api.js';
+import { getFileStubs } from '../config.js';
 
 type Screen = 'resume' | 'prompt' | 'results' | 'success';
 
@@ -28,7 +29,7 @@ export function App({ dir, metadata: initialMetadata, resumed }: AppProps) {
   const { result, isVerifying, error, runVerification } = useVerification({
     dir,
     assertions: metadata.assertions,
-    scaffold: metadata.scaffold,
+    expectedFiles: metadata.expectedFiles,
   });
 
   const handleFilesChanged = useCallback(async () => {
@@ -77,13 +78,13 @@ export function App({ dir, metadata: initialMetadata, resumed }: AppProps) {
   const handleStartFresh = async () => {
     try {
       const data = await fetchChallenge(metadata.serverUrl, metadata.packSlug, metadata.challengeSlug);
-      scaffoldChallenge(dir, data.scaffold);
+      const fileStubs = getFileStubs();
+      initChallengeFiles(dir, data.expectedFiles, fileStubs);
       const fresh: NthtimeMetadata = {
         ...metadata,
         assertions: data.assertions,
         hints: data.hints,
-        scaffold: data.scaffold,
-        startedAt: Date.now(),
+        expectedFiles: data.expectedFiles,
       };
       writeMetadata(dir, fresh);
       setMetadata(fresh);
@@ -123,7 +124,6 @@ export function App({ dir, metadata: initialMetadata, resumed }: AppProps) {
       {currentScreen === 'success' && (
         <SuccessScreen
           title={metadata.title}
-          startedAt={metadata.startedAt}
           webUrl={metadata.webUrl}
           serverUrl={metadata.serverUrl}
         />

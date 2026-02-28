@@ -1,7 +1,7 @@
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { scaffoldChallenge, writeMetadata } from '../scaffold.js';
+import { initChallengeFiles, writeMetadata } from '../scaffold.js';
 import { SlugParseError } from '../utils/slug.js';
 import type { NthtimeMetadata } from '../types.js';
 
@@ -46,7 +46,7 @@ const sampleMetadata: NthtimeMetadata = {
     crossFile: [],
   },
   hints: [],
-  scaffold: [{ path: 'index.js', content: '// starter' }],
+  expectedFiles: ['index.js'],
   webUrl: '/challenge/123',
   startedAt: Date.now(),
 };
@@ -77,7 +77,7 @@ describe('prepareVerify', () => {
 
   it('reads slug from metadata when no arg given', async () => {
     const dir = makeTmpDir();
-    scaffoldChallenge(dir, sampleMetadata.scaffold);
+    initChallengeFiles(dir, sampleMetadata.expectedFiles, true);
     writeMetadata(dir, sampleMetadata);
     writeFileSync(join(dir, 'index.js'), 'function hello() {}');
 
@@ -89,7 +89,7 @@ describe('prepareVerify', () => {
 
   it('slug argument overrides metadata slug', async () => {
     const dir = makeTmpDir();
-    scaffoldChallenge(dir, sampleMetadata.scaffold);
+    initChallengeFiles(dir, sampleMetadata.expectedFiles, true);
     writeMetadata(dir, sampleMetadata);
     writeFileSync(join(dir, 'index.js'), 'function hello() {}');
 
@@ -99,7 +99,7 @@ describe('prepareVerify', () => {
       slug: 'other',
       prompt: '',
       difficulty: 'beginner',
-      scaffold: [{ path: 'index.js', content: '' }],
+      expectedFiles: ['index.js'],
       assertions: { perFile: {}, crossFile: [] },
       hints: [],
       webUrl: '/challenge/other',
@@ -109,7 +109,7 @@ describe('prepareVerify', () => {
     // so it won't fetch unless we clear metadata assertions.
     // Test that slug parsing works for override by using a dir without metadata.
     const emptyDir = makeTmpDir();
-    scaffoldChallenge(emptyDir, [{ path: 'index.js', content: '' }]);
+    initChallengeFiles(emptyDir, ['index.js'], true);
 
     const { result } = await prepareVerify('other-pack/other-challenge', emptyDir);
     expect(result).toBeDefined();
@@ -126,33 +126,33 @@ describe('prepareVerify', () => {
     const metadataNoAssertions: NthtimeMetadata = {
       ...sampleMetadata,
       assertions: undefined as unknown as NthtimeMetadata['assertions'],
-      scaffold: undefined as unknown as NthtimeMetadata['scaffold'],
+      expectedFiles: undefined as unknown as NthtimeMetadata['expectedFiles'],
     };
     writeMetadata(dir, metadataNoAssertions);
 
     // Actually we need a scenario where metadata HAS assertions but the fetch path
     // is taken and fails. Let's use a slug override on a dir WITH metadata.
     const dirWithMeta = makeTmpDir();
-    const metaNoScaffold = {
+    const metaNoExpectedFiles = {
       ...sampleMetadata,
-      scaffold: undefined as unknown as NthtimeMetadata['scaffold'],
+      expectedFiles: undefined as unknown as NthtimeMetadata['expectedFiles'],
     };
-    writeMetadata(dirWithMeta, metaNoScaffold);
-    scaffoldChallenge(dirWithMeta, sampleMetadata.scaffold);
+    writeMetadata(dirWithMeta, metaNoExpectedFiles);
+    initChallengeFiles(dirWithMeta, sampleMetadata.expectedFiles, true);
     writeFileSync(join(dirWithMeta, 'index.js'), 'function hello() {}');
 
-    // The metadata has assertions but no scaffold, so it tries to fetch
+    // The metadata has assertions but no expectedFiles, so it tries to fetch
     // Fetch fails, falls back to metadata (which has assertions via original)
     fetchChallengeMock.mockRejectedValueOnce(new Error('network error'));
 
     // prepareVerify should use metadata fallback -- but only if metadata has both
-    // Let's set up a clean case: metadata has both, scaffold is missing
+    // Let's set up a clean case: metadata has both, expectedFiles is missing
     const dirFallback = makeTmpDir();
     writeMetadata(dirFallback, sampleMetadata);
-    scaffoldChallenge(dirFallback, sampleMetadata.scaffold);
+    initChallengeFiles(dirFallback, sampleMetadata.expectedFiles, true);
     writeFileSync(join(dirFallback, 'index.js'), 'function hello() {}');
 
-    // When metadata has assertions+scaffold, it doesn't fetch at all. That's tested above.
+    // When metadata has assertions+expectedFiles, it doesn't fetch at all. That's tested above.
     // The offline fallback is for when metadata is partial and fetch fails.
     // We test it differently -- metadata has no assertions, fetch fails, but full metadata IS there
     const { result, offlineMode } = await prepareVerify(undefined, dirFallback);

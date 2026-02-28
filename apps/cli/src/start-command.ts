@@ -1,6 +1,6 @@
 import { fetchChallenge } from './api.js';
-import { getServerUrl, getWorkspace } from './config.js';
-import { scaffoldChallenge, writeMetadata, readMetadata } from './scaffold.js';
+import { getServerUrl, getWorkspace, getFileStubs } from './config.js';
+import { initChallengeFiles, writeMetadata, readMetadata } from './scaffold.js';
 import { parseSlug } from './utils/slug.js';
 import { resolveStartDir } from './utils/resolve-dir.js';
 import type { NthtimeMetadata } from './types.js';
@@ -37,8 +37,9 @@ export async function prepareStart(
   // Fetch challenge data
   const data = await fetchChallenge(serverUrl, packSlug, challengeSlug);
 
-  // Scaffold files
-  scaffoldChallenge(dir, data.scaffold);
+  // Initialize files
+  const fileStubs = getFileStubs();
+  initChallengeFiles(dir, data.expectedFiles, fileStubs);
 
   const metadata: NthtimeMetadata = {
     packSlug,
@@ -48,9 +49,8 @@ export async function prepareStart(
     serverUrl,
     assertions: data.assertions,
     hints: data.hints,
-    scaffold: data.scaffold,
+    expectedFiles: data.expectedFiles,
     webUrl: data.webUrl,
-    startedAt: Date.now(),
   };
 
   writeMetadata(dir, metadata);

@@ -1,8 +1,8 @@
-import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import {
-  scaffoldChallenge,
+  initChallengeFiles,
   writeMetadata,
   readMetadata,
   readChallengeFiles,
@@ -14,10 +14,7 @@ function makeTmpDir(): string {
   return mkdtempSync(join(tmpdir(), 'nthtime-test-'));
 }
 
-const sampleScaffold = [
-  { path: 'index.js', content: '// starter' },
-  { path: 'lib/helper.js', content: '// helper' },
-];
+const sampleExpectedFiles = ['index.js', 'lib/helper.js'];
 
 const sampleMetadata: NthtimeMetadata = {
   packSlug: 'test-pack',
@@ -27,25 +24,41 @@ const sampleMetadata: NthtimeMetadata = {
   serverUrl: 'http://localhost:3000',
   assertions: { perFile: {}, crossFile: [] },
   hints: ['hint 1'],
-  scaffold: sampleScaffold,
+  expectedFiles: sampleExpectedFiles,
   webUrl: '/challenge/123?pack=test-pack',
   startedAt: 1000,
 };
 
-describe('scaffoldChallenge', () => {
-  it('writes files to disk', () => {
+describe('initChallengeFiles', () => {
+  it('creates empty stub files on disk when fileStubs is true', () => {
     const dir = makeTmpDir();
-    scaffoldChallenge(dir, sampleScaffold);
+    initChallengeFiles(dir, sampleExpectedFiles, true);
 
-    expect(readFileSync(join(dir, 'index.js'), 'utf-8')).toBe('// starter');
-    expect(readFileSync(join(dir, 'lib/helper.js'), 'utf-8')).toBe('// helper');
+    expect(readFileSync(join(dir, 'index.js'), 'utf-8')).toBe('');
+    expect(readFileSync(join(dir, 'lib/helper.js'), 'utf-8')).toBe('');
   });
 
   it('creates nested directories', () => {
     const dir = join(makeTmpDir(), 'nested', 'deep');
-    scaffoldChallenge(dir, sampleScaffold);
+    initChallengeFiles(dir, sampleExpectedFiles, true);
 
     expect(existsSync(join(dir, 'lib/helper.js'))).toBe(true);
+  });
+
+  it('creates directory but no files when fileStubs is false', () => {
+    const dir = join(makeTmpDir(), 'no-stubs');
+    initChallengeFiles(dir, sampleExpectedFiles, false);
+
+    expect(existsSync(dir)).toBe(true);
+    expect(existsSync(join(dir, 'index.js'))).toBe(false);
+  });
+
+  it('does not overwrite existing files', () => {
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, 'index.js'), 'existing content');
+    initChallengeFiles(dir, sampleExpectedFiles, true);
+
+    expect(readFileSync(join(dir, 'index.js'), 'utf-8')).toBe('existing content');
   });
 });
 
@@ -64,7 +77,6 @@ describe('metadata', () => {
 
   it('returns null for invalid JSON', () => {
     const dir = makeTmpDir();
-    const { writeFileSync } = require('node:fs');
     writeFileSync(join(dir, '.nthtime.json'), 'not json');
     expect(readMetadata(dir)).toBeNull();
   });
@@ -73,21 +85,19 @@ describe('metadata', () => {
 describe('readChallengeFiles', () => {
   it('reads current file contents from disk', () => {
     const dir = makeTmpDir();
-    scaffoldChallenge(dir, sampleScaffold);
+    initChallengeFiles(dir, sampleExpectedFiles, true);
 
     // Modify a file
-    const { writeFileSync } = require('node:fs');
     writeFileSync(join(dir, 'index.js'), 'const app = express();');
 
-    const files = readChallengeFiles(dir, sampleScaffold);
+    const files = readChallengeFiles(dir, sampleExpectedFiles);
     expect(files[0].content).toBe('const app = express();');
-    expect(files[1].content).toBe('// helper');
+    expect(files[1].content).toBe('');
   });
 
   it('returns empty string for missing files', () => {
     const dir = makeTmpDir();
-    // Don't scaffold, just read
-    const files = readChallengeFiles(dir, sampleScaffold);
+    const files = readChallengeFiles(dir, sampleExpectedFiles);
     expect(files[0].content).toBe('');
   });
 });

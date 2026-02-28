@@ -42,3 +42,7 @@ export function getConfigPath(): string {
 export function getWorkspace(configPathOverride?: string): string | null {
   return loadConfig(configPathOverride)?.workspace ?? null;
 }
+
+export function getFileStubs(configPathOverride?: string): boolean {
+  return loadConfig(configPathOverride)?.fileStubs ?? true;
+}

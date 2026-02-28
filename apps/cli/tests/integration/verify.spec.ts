@@ -5,7 +5,7 @@ describe('verify command', () => {
     const dir = setupChallengeDir({
       packSlug: 'test-pack',
       challengeSlug: 'hello-fn',
-      scaffold: [{ path: 'index.js', content: '// write hello' }],
+      expectedFiles: ['index.js'],
       solutionFiles: [{ path: 'index.js', content: 'function hello() { return "world"; }' }],
       assertions: {
         perFile: {
@@ -27,7 +27,7 @@ describe('verify command', () => {
     const dir = setupChallengeDir({
       packSlug: 'test-pack',
       challengeSlug: 'hello-fn',
-      scaffold: [{ path: 'index.js', content: '// write hello' }],
+      expectedFiles: ['index.js'],
       solutionFiles: [{ path: 'index.js', content: '// empty' }],
       assertions: {
         perFile: {
@@ -49,7 +49,7 @@ describe('verify command', () => {
     const dir = setupChallengeDir({
       packSlug: 'test-pack',
       challengeSlug: 'hello-fn',
-      scaffold: [{ path: 'index.js', content: '' }],
+      expectedFiles: ['index.js'],
       solutionFiles: [{ path: 'index.js', content: 'function greet() {}' }],
       assertions: {
         perFile: {
@@ -84,7 +84,7 @@ describe('verify command', () => {
     const dir = setupChallengeDir({
       packSlug: 'test-pack',
       challengeSlug: 'mixed',
-      scaffold: [{ path: 'index.js', content: '' }],
+      expectedFiles: ['index.js'],
       solutionFiles: [{ path: 'index.js', content: 'function hello() {}' }],
       assertions: {
         perFile: {

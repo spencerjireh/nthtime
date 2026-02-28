@@ -37,19 +37,19 @@ export async function prepareVerify(
 
   // Get assertions: prefer cached metadata, fall back to server
   let assertions = metadata?.assertions;
-  let scaffold = metadata?.scaffold;
+  let expectedFiles = metadata?.expectedFiles;
   let offlineMode = false;
 
-  if (!assertions || !scaffold) {
+  if (!assertions || !expectedFiles) {
     try {
       const serverUrl = getServerUrl();
       const data = await fetchChallenge(serverUrl, packSlug, challengeSlug);
       assertions = data.assertions;
-      scaffold = data.scaffold;
+      expectedFiles = data.expectedFiles;
     } catch (err) {
-      if (metadata?.assertions && metadata?.scaffold) {
+      if (metadata?.assertions && metadata?.expectedFiles) {
         assertions = metadata.assertions;
-        scaffold = metadata.scaffold;
+        expectedFiles = metadata.expectedFiles;
         offlineMode = true;
       } else {
         throw new Error(`Could not fetch challenge data: ${err}`);
@@ -57,7 +57,7 @@ export async function prepareVerify(
     }
   }
 
-  const files = readChallengeFiles(workDir, scaffold);
+  const files = readChallengeFiles(workDir, expectedFiles);
   const wasmBasePath = getWasmBasePath();
   const result = await verify(assertions, files, { wasmBasePath });
   const summary = formatResultSummary(result);

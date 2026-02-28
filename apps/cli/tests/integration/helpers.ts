@@ -50,7 +50,7 @@ export function runCli(args: string[], options: RunOptions = {}): Promise<RunRes
 export interface SetupChallengeOptions {
   packSlug: string;
   challengeSlug: string;
-  scaffold: { path: string; content: string }[];
+  expectedFiles: string[];
   solutionFiles: { path: string; content: string }[];
   assertions: { perFile: Record<string, unknown[]>; crossFile: unknown[] };
 }
@@ -74,7 +74,7 @@ export function setupChallengeDir(opts: SetupChallengeOptions): string {
     serverUrl: 'http://localhost:1',
     assertions: opts.assertions,
     hints: [],
-    scaffold: opts.scaffold,
+    expectedFiles: opts.expectedFiles,
     webUrl: '/challenge/test',
     startedAt: Date.now(),
   };

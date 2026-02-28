@@ -22,7 +22,7 @@ describe('fetchChallenge', () => {
       slug: 'hello-world',
       prompt: 'Create a server',
       difficulty: 'beginner',
-      scaffold: [{ path: 'index.js', content: '' }],
+      expectedFiles: ['index.js'],
       assertions: { perFile: {}, crossFile: [] },
       hints: [],
       webUrl: '/challenge/123',
@@ -31,7 +31,7 @@ describe('fetchChallenge', () => {
 
     const result = await fetchChallenge('http://localhost:3000', 'express-basics', 'hello-world');
     expect(result.title).toBe('Hello World');
-    expect(result.scaffold).toHaveLength(1);
+    expect(result.expectedFiles).toHaveLength(1);
   });
 
   it('throws ApiError on 404', async () => {

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import type { AssertionSet, FileEntry, VerificationResult } from '@nthtime/shared';
+import type { AssertionSet, VerificationResult } from '@nthtime/shared';
 import { verify } from '@nthtime/verification';
 import { readChallengeFiles } from '../scaffold.js';
 import { getWasmBasePath } from '../wasm.js';
@@ -7,10 +7,10 @@ import { getWasmBasePath } from '../wasm.js';
 interface UseVerificationOptions {
   dir: string;
   assertions: AssertionSet;
-  scaffold: readonly FileEntry[];
+  expectedFiles: readonly string[];
 }
 
-export function useVerification({ dir, assertions, scaffold }: UseVerificationOptions) {
+export function useVerification({ dir, assertions, expectedFiles }: UseVerificationOptions) {
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +19,7 @@ export function useVerification({ dir, assertions, scaffold }: UseVerificationOp
     setIsVerifying(true);
     setError(null);
     try {
-      const files = readChallengeFiles(dir, scaffold);
+      const files = readChallengeFiles(dir, expectedFiles);
       const wasmBasePath = getWasmBasePath();
       const res = await verify(assertions, files, { wasmBasePath });
       setResult(res);
@@ -28,7 +28,7 @@ export function useVerification({ dir, assertions, scaffold }: UseVerificationOp
     } finally {
       setIsVerifying(false);
     }
-  }, [dir, assertions, scaffold]);
+  }, [dir, assertions, expectedFiles]);
 
   return { result, isVerifying, error, runVerification };
 }
