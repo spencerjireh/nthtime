@@ -16,6 +16,14 @@ import type {
 
 const BASE = '/api/v1';
 
+const MUTATING_METHODS = new Set(['POST', 'PATCH', 'PUT', 'DELETE']);
+
+function getCsrfToken(): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : undefined;
+}
+
 class ApiError extends Error {
   constructor(
     public status: number,
@@ -27,10 +35,20 @@ class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const csrfHeaders: Record<string, string> = {};
+  const method = (init?.method ?? 'GET').toUpperCase();
+  if (MUTATING_METHODS.has(method)) {
+    const token = getCsrfToken();
+    if (token) {
+      csrfHeaders['X-XSRF-TOKEN'] = token;
+    }
+  }
+
   const res = await fetch(`${BASE}${path}`, {
     ...init,
     headers: {
       ...(init?.body ? { 'Content-Type': 'application/json' } : undefined),
+      ...csrfHeaders,
       ...init?.headers,
     },
   });

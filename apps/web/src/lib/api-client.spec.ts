@@ -80,4 +80,43 @@ describe('api-client request()', () => {
     expect(url).toContain('language=python');
     expect(url).toContain('tags=web%2Capi');
   });
+
+  it('attaches X-XSRF-TOKEN header on POST when CSRF cookie exists', async () => {
+    const cookieSpy = vi.spyOn(document, 'cookie', 'get').mockReturnValue('XSRF-TOKEN=abc123');
+    const spy = mockFetch(201, { id: 'x' });
+    await createAttempt({
+      challengeId: 'ch1',
+      passed: true,
+      assertionResults: [],
+      hintsUsed: 0,
+      timeSeconds: 10,
+    });
+    const [, init] = spy.mock.calls[0];
+    expect(init?.headers).toEqual(
+      expect.objectContaining({ 'X-XSRF-TOKEN': 'abc123' }),
+    );
+    cookieSpy.mockRestore();
+  });
+
+  it('does not attach X-XSRF-TOKEN header on GET requests', async () => {
+    const cookieSpy = vi.spyOn(document, 'cookie', 'get').mockReturnValue('XSRF-TOKEN=abc123');
+    const spy = mockFetch(200, { packs: [], availableTags: [] });
+    await fetchPacks();
+    const [, init] = spy.mock.calls[0];
+    expect(init?.headers).not.toHaveProperty('X-XSRF-TOKEN');
+    cookieSpy.mockRestore();
+  });
+
+  it('URL-decodes the CSRF token value', async () => {
+    const cookieSpy = vi
+      .spyOn(document, 'cookie', 'get')
+      .mockReturnValue('XSRF-TOKEN=a%3Db%26c');
+    const spy = mockFetch(200, { feedback: {}, keybindings: 'default' });
+    await patchSettings({ keybindings: 'default' as never });
+    const [, init] = spy.mock.calls[0];
+    expect(init?.headers).toEqual(
+      expect.objectContaining({ 'X-XSRF-TOKEN': 'a=b&c' }),
+    );
+    cookieSpy.mockRestore();
+  });
 });

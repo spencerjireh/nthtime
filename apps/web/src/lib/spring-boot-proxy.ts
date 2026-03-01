@@ -22,7 +22,14 @@ export async function proxyToSpringBoot(req: Request, path: string): Promise<Res
 
   const headers: Record<string, string> = {};
   if (sessionCookie) {
-    headers['Cookie'] = `JSESSIONID=${sessionCookie.value}`;
+    const xsrfCookie = cookieStore.get('XSRF-TOKEN');
+    headers['Cookie'] = xsrfCookie
+      ? `JSESSIONID=${sessionCookie.value}; XSRF-TOKEN=${xsrfCookie.value}`
+      : `JSESSIONID=${sessionCookie.value}`;
+  }
+  const csrfToken = req.headers.get('x-xsrf-token');
+  if (csrfToken) {
+    headers['X-XSRF-TOKEN'] = csrfToken;
   }
   const contentType = req.headers.get('content-type');
   if (contentType) {
@@ -38,9 +45,13 @@ export async function proxyToSpringBoot(req: Request, path: string): Promise<Res
 
   const responseHeaders = new Headers();
   for (const [key, value] of response.headers.entries()) {
+    if (key.toLowerCase() === 'set-cookie') continue;
     if (!HOP_BY_HOP.has(key.toLowerCase())) {
       responseHeaders.append(key, value);
     }
+  }
+  for (const cookie of response.headers.getSetCookie()) {
+    responseHeaders.append('Set-Cookie', cookie);
   }
 
   return new Response(response.body, {
