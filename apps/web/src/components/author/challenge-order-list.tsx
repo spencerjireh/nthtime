@@ -15,12 +15,11 @@ interface ChallengeSummary {
 }
 
 interface ChallengeOrderListProps {
-  packId: string;
   packSlug: string;
   challenges: readonly ChallengeSummary[];
 }
 
-export function ChallengeOrderList({ packId, packSlug, challenges }: ChallengeOrderListProps) {
+export function ChallengeOrderList({ packSlug, challenges }: ChallengeOrderListProps) {
   const reorder = useReorderChallenges();
   const deleteChallenge = useDeleteChallenge();
   const [dragIndex, setDragIndex] = useState<number | null>(null);

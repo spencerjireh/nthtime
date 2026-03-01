@@ -44,7 +44,9 @@ describe('settings store', () => {
     // Other flags unchanged
     expect(store.getState().settings.feedback.showPassFail).toBe(true);
 
-    const stored = JSON.parse(localStorage.getItem('nthtime:settings')!);
+    const raw = localStorage.getItem('nthtime:settings');
+    if (!raw) throw new Error('Expected settings to be persisted');
+    const stored = JSON.parse(raw);
     expect(stored.feedback.showDiff).toBe(true);
   });
 

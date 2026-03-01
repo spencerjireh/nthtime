@@ -51,11 +51,11 @@ describe('createEditorStore', () => {
 
   it('stores reference solution files on init', () => {
     store.getState().initFromChallenge(mockChallenge);
-    const state = store.getState();
+    const { referenceSolutionFiles } = store.getState();
 
-    expect(state.referenceSolutionFiles).not.toBeNull();
-    expect(state.referenceSolutionFiles!['app.js'].content).toBe('const app = express();');
-    expect(state.referenceSolutionFiles!['server.js'].content).toBe('app.listen(3000);');
+    if (!referenceSolutionFiles) throw new Error('Expected referenceSolutionFiles to be set');
+    expect(referenceSolutionFiles['app.js'].content).toBe('const app = express();');
+    expect(referenceSolutionFiles['server.js'].content).toBe('app.listen(3000);');
   });
 
   it('sets file content', () => {
@@ -213,8 +213,9 @@ describe('fileStubs=false (blank canvas)', () => {
 
   it('still builds referenceSolutionFiles when fileStubs=false', () => {
     store.getState().initFromChallenge(mockChallenge, undefined, false);
-    expect(store.getState().referenceSolutionFiles).not.toBeNull();
-    expect(store.getState().referenceSolutionFiles!['app.js'].content).toBe('const app = express();');
+    const { referenceSolutionFiles } = store.getState();
+    if (!referenceSolutionFiles) throw new Error('Expected referenceSolutionFiles to be set');
+    expect(referenceSolutionFiles['app.js'].content).toBe('const app = express();');
   });
 
   it('still loads metadata when fileStubs=false', () => {
@@ -355,8 +356,8 @@ describe('submit and retry', () => {
 
     const state = store.getState();
     expect(state.viewMode).toBe('results');
-    expect(state.submittedFiles).not.toBeNull();
-    expect(state.submittedFiles!['app.js'].content).toBe('submitted code');
+    if (!state.submittedFiles) throw new Error('Expected submittedFiles to be set after submit');
+    expect(state.submittedFiles['app.js'].content).toBe('submitted code');
     expect(state.resultsCodeView).toBe('submitted');
   });
 

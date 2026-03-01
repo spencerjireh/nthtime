@@ -120,7 +120,7 @@ export function createEditorStore() {
     deleteFile(path) {
       const { files, activeFilePath, tabOrder, secondActiveFilePath, splitMode } = get();
       if (!files[path]) return;
-      const { [path]: _, ...rest } = files;
+      const rest = Object.fromEntries(Object.entries(files).filter(([k]) => k !== path));
 
       let nextActive = activeFilePath;
       if (activeFilePath === path) {

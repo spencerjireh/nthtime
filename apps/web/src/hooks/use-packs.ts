@@ -58,7 +58,10 @@ export function usePackList(filters: PackListFilters) {
 export function useChallenges(slug: string | undefined) {
   const { data, isLoading, error } = useQuery({
     queryKey: ['pack-challenges', slug],
-    queryFn: () => fetchPackChallenges(slug!),
+    queryFn: () => {
+      if (!slug) throw new Error('slug is required');
+      return fetchPackChallenges(slug);
+    },
     enabled: !!slug,
   });
 

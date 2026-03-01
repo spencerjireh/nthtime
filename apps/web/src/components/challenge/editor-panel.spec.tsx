@@ -44,7 +44,7 @@ vi.mock('./solution-panel', () => ({
 }));
 vi.mock('next/dynamic', () => ({
   __esModule: true,
-  default: (loader: () => Promise<{ default: React.ComponentType }>) => {
+  default: () => {
     // DiffViewLazy stub
     const Stub = (props: Record<string, unknown>) => (
       <div data-testid="diff-view" data-language={props.language} />

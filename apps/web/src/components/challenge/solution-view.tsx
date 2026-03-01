@@ -100,7 +100,7 @@ function SolutionViewContent({
   const { resolvedTheme } = useTheme();
   const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
 
-  const files = challenge.referenceSolution!;
+  const files = challenge.referenceSolution ?? [];
   const [activeFilePath, setActiveFilePath] = useState(files[0].path);
   const activeFile = files.find((f) => f.path === activeFilePath) ?? files[0];
   const language = getMonacoLanguage(activeFile.path);

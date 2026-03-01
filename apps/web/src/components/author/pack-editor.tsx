@@ -145,7 +145,6 @@ export function PackEditor({ slug }: PackEditorProps) {
       <hr className="border-border" />
 
       <ChallengeOrderList
-        packId={pack._id}
         packSlug={pack.slug}
         challenges={pack.challenges}
       />

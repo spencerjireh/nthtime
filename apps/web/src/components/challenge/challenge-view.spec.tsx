@@ -119,7 +119,8 @@ describe('ChallengeView', () => {
   });
 
   function getStore() {
-    return mockStoreRef.current!;
+    if (!mockStoreRef.current) throw new Error('Expected mockStoreRef.current to be set');
+    return mockStoreRef.current;
   }
 
   it('calls initFromChallenge on mount', () => {

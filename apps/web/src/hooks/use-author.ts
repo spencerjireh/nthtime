@@ -119,7 +119,10 @@ export function useDeletePack() {
 export function useAuthorChallenge(challengeId: string | null) {
   const { data, isLoading } = useQuery({
     queryKey: ['author-challenge', challengeId],
-    queryFn: () => fetchAuthorChallenge(challengeId!),
+    queryFn: () => {
+      if (!challengeId) throw new Error('challengeId is required');
+      return fetchAuthorChallenge(challengeId);
+    },
     enabled: !!challengeId,
   });
   if (isLoading || data === undefined) return { challenge: null, isLoading: true };

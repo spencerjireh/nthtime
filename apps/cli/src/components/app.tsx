@@ -50,7 +50,7 @@ export function App({ dir, metadata: initialMetadata, resumed }: AppProps) {
     return screen;
   })();
 
-  useInput((input, _key) => {
+  useInput((input) => {
     if (input === 'q') {
       exit();
       return;

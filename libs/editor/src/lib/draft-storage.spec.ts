@@ -57,8 +57,12 @@ describe('draft-storage', () => {
     saveDraft('c1', makeDraft('one'));
     saveDraft('c2', makeDraft('two'));
 
-    expect(loadDraft('c1')!.files['app.js'].content).toBe('one');
-    expect(loadDraft('c2')!.files['app.js'].content).toBe('two');
+    const draft1 = loadDraft('c1');
+    const draft2 = loadDraft('c2');
+    if (!draft1) throw new Error('Expected draft for c1');
+    if (!draft2) throw new Error('Expected draft for c2');
+    expect(draft1.files['app.js'].content).toBe('one');
+    expect(draft2.files['app.js'].content).toBe('two');
   });
 
   it('clears a single draft', () => {
