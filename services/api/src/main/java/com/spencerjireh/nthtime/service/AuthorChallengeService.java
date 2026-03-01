@@ -6,6 +6,7 @@ import com.spencerjireh.nthtime.dto.request.UpdateChallengeRequest;
 import com.spencerjireh.nthtime.dto.response.AuthorChallengeDetailResponse;
 import com.spencerjireh.nthtime.entity.Challenge;
 import com.spencerjireh.nthtime.entity.Pack;
+import com.spencerjireh.nthtime.exception.ForbiddenException;
 import com.spencerjireh.nthtime.exception.ResourceNotFoundException;
 import com.spencerjireh.nthtime.repository.AttemptRepository;
 import com.spencerjireh.nthtime.repository.ChallengeRepository;
@@ -133,6 +134,9 @@ public class AuthorChallengeService {
           challengeRepository
               .findById(challengeIds.get(i))
               .orElseThrow(() -> new ResourceNotFoundException("Challenge not found"));
+      if (!challenge.getPack().getId().equals(packId)) {
+        throw new ForbiddenException("Challenge does not belong to this pack");
+      }
       challenge.setOrder(i + 1);
       challengeRepository.save(challenge);
     }
