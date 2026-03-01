@@ -20,8 +20,4 @@ public interface PackRepository extends JpaRepository<Pack, Long> {
 
   @Query("SELECT p FROM Pack p WHERE p.visibility = 'public'")
   List<Pack> findPublicPacks();
-
-  @Query(
-      "SELECT p FROM Pack p WHERE p.visibility = 'public' OR p.visibility = 'unlisted' OR p.authorUser.id = :userId")
-  List<Pack> findAccessiblePacks(@Param("userId") Long userId);
 }

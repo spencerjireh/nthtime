@@ -1,11 +1,12 @@
 package com.spencerjireh.nthtime.controller;
 
+import static com.spencerjireh.nthtime.util.SessionUtils.requireUserId;
+
 import com.spencerjireh.nthtime.dto.request.CreatePackRequest;
 import com.spencerjireh.nthtime.dto.request.UpdatePackRequest;
 import com.spencerjireh.nthtime.dto.response.AuthorPackDetailResponse;
 import com.spencerjireh.nthtime.dto.response.AuthorPackExportResponse;
 import com.spencerjireh.nthtime.dto.response.AuthorPackSummaryResponse;
-import com.spencerjireh.nthtime.exception.ForbiddenException;
 import com.spencerjireh.nthtime.exception.ResourceNotFoundException;
 import com.spencerjireh.nthtime.service.AuthorPackService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -103,17 +104,5 @@ public class AuthorPackController {
     requireUserId(request);
     boolean available = authorPackService.checkSlugAvailable(slug, excludePackId);
     return Map.of("available", available);
-  }
-
-  private Long getUserId(HttpServletRequest request) {
-    if (request.getSession(false) == null) return null;
-    Object attr = request.getSession().getAttribute("appUserId");
-    return attr instanceof Long l ? l : null;
-  }
-
-  private Long requireUserId(HttpServletRequest request) {
-    Long userId = getUserId(request);
-    if (userId == null) throw new ForbiddenException("Not authenticated");
-    return userId;
   }
 }

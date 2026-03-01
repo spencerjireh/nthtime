@@ -12,8 +12,6 @@ public interface AttemptRepository extends JpaRepository<Attempt, Long> {
 
   List<Attempt> findByUserIdAndChallengeId(Long userId, Long challengeId);
 
-  List<Attempt> findByUserId(Long userId);
-
   @Modifying
   void deleteByChallengeId(Long challengeId);
 

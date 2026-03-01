@@ -1,5 +1,7 @@
 package com.spencerjireh.nthtime.controller;
 
+import static com.spencerjireh.nthtime.util.SessionUtils.getUserId;
+
 import com.spencerjireh.nthtime.dto.response.SessionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +19,5 @@ public class AuthController {
       return new SessionResponse(false, null);
     }
     return new SessionResponse(true, appUserId.toString());
-  }
-
-  private Long getUserId(HttpServletRequest request) {
-    if (request.getSession(false) == null) return null;
-    Object attr = request.getSession().getAttribute("appUserId");
-    return attr instanceof Long l ? l : null;
   }
 }

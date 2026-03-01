@@ -1,5 +1,7 @@
 package com.spencerjireh.nthtime.controller;
 
+import static com.spencerjireh.nthtime.util.SessionUtils.getUserId;
+
 import com.spencerjireh.nthtime.dto.response.PackChallengesResponse;
 import com.spencerjireh.nthtime.dto.response.PackListResponse;
 import com.spencerjireh.nthtime.exception.ResourceNotFoundException;
@@ -41,11 +43,5 @@ public class PackController {
       throw new ResourceNotFoundException("Pack not found");
     }
     return response;
-  }
-
-  private Long getUserId(HttpServletRequest request) {
-    if (request.getSession(false) == null) return null;
-    Object attr = request.getSession().getAttribute("appUserId");
-    return attr instanceof Long l ? l : null;
   }
 }

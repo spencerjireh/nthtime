@@ -12,17 +12,12 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
   List<Challenge> findByPackIdOrderByOrderAsc(Long packId);
 
-  Optional<Challenge> findByPackIdAndOrder(Long packId, int order);
-
   Optional<Challenge> findByPackIdAndSlug(Long packId, String slug);
 
   int countByPackId(Long packId);
 
   @Query("SELECT MAX(c.order) FROM Challenge c WHERE c.pack.id = :packId")
   Optional<Integer> findMaxOrderByPackId(@Param("packId") Long packId);
-
-  @Modifying
-  void deleteByPackId(Long packId);
 
   @Modifying
   @Query("DELETE FROM Challenge c WHERE c.pack.id = :packId")

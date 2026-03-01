@@ -1,8 +1,9 @@
 package com.spencerjireh.nthtime.controller;
 
+import static com.spencerjireh.nthtime.util.SessionUtils.requireUserId;
+
 import com.spencerjireh.nthtime.dto.request.UpdateSettingsRequest;
 import com.spencerjireh.nthtime.dto.response.SettingsResponse;
-import com.spencerjireh.nthtime.exception.ForbiddenException;
 import com.spencerjireh.nthtime.service.SettingsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,17 +33,5 @@ public class SettingsController {
       @RequestBody UpdateSettingsRequest input, HttpServletRequest request) {
     Long userId = requireUserId(request);
     return settingsService.updateSettings(userId, input);
-  }
-
-  private Long getUserId(HttpServletRequest request) {
-    if (request.getSession(false) == null) return null;
-    Object attr = request.getSession().getAttribute("appUserId");
-    return attr instanceof Long l ? l : null;
-  }
-
-  private Long requireUserId(HttpServletRequest request) {
-    Long userId = getUserId(request);
-    if (userId == null) throw new ForbiddenException("Not authenticated");
-    return userId;
   }
 }

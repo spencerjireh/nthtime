@@ -17,8 +17,8 @@ public class ChallengeController {
   }
 
   @GetMapping("/api/challenges/{id}")
-  public ChallengeResponse getChallenge(@PathVariable String id) {
-    ChallengeResponse response = challengeService.getChallenge(Long.parseLong(id));
+  public ChallengeResponse getChallenge(@PathVariable Long id) {
+    ChallengeResponse response = challengeService.getChallenge(id);
     if (response == null) {
       throw new ResourceNotFoundException("Challenge not found");
     }

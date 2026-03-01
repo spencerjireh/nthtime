@@ -120,10 +120,10 @@ public class PackService {
       for (Object[] row : statuses) {
         Long challengeId = (Long) row[0];
         boolean passed = (boolean) row[1];
-        String current = statusMap.get(challengeId);
-        // "passed" overrides "failed"
-        if (passed || !"passed".equals(current)) {
-          statusMap.put(challengeId, passed ? "passed" : "failed");
+        if (passed) {
+          statusMap.put(challengeId, "passed");
+        } else {
+          statusMap.putIfAbsent(challengeId, "failed");
         }
       }
     }

@@ -24,15 +24,6 @@ public class ChallengeService {
     return challengeRepository.findById(id).map(this::toResponse).orElse(null);
   }
 
-  public ChallengeResponse getByPackAndOrder(String packSlug, int order) {
-    Pack pack = packRepository.findBySlug(packSlug).orElse(null);
-    if (pack == null) return null;
-    return challengeRepository
-        .findByPackIdAndOrder(pack.getId(), order)
-        .map(this::toResponse)
-        .orElse(null);
-  }
-
   public ChallengeResponse getByPackAndSlug(String packSlug, String challengeSlug) {
     Pack pack = packRepository.findBySlug(packSlug).orElse(null);
     if (pack == null) return null;

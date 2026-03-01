@@ -1,11 +1,12 @@
 package com.spencerjireh.nthtime.controller;
 
+import static com.spencerjireh.nthtime.util.SessionUtils.requireUserId;
+
 import com.spencerjireh.nthtime.dto.request.CreateChallengeRequest;
 import com.spencerjireh.nthtime.dto.request.ReorderChallengesRequest;
 import com.spencerjireh.nthtime.dto.request.UpdateChallengeRequest;
 import com.spencerjireh.nthtime.dto.response.AuthorChallengeDetailResponse;
 import com.spencerjireh.nthtime.dto.response.AuthorPackDetailResponse;
-import com.spencerjireh.nthtime.exception.ForbiddenException;
 import com.spencerjireh.nthtime.exception.ResourceNotFoundException;
 import com.spencerjireh.nthtime.service.AuthorChallengeService;
 import com.spencerjireh.nthtime.service.AuthorPackService;
@@ -62,10 +63,9 @@ public class AuthorChallengeController {
 
   @GetMapping("/api/author/challenges/{id}")
   public AuthorChallengeDetailResponse getChallenge(
-      @PathVariable String id, HttpServletRequest request) {
+      @PathVariable Long id, HttpServletRequest request) {
     Long userId = requireUserId(request);
-    AuthorChallengeDetailResponse response =
-        authorChallengeService.getChallenge(userId, Long.parseLong(id));
+    AuthorChallengeDetailResponse response = authorChallengeService.getChallenge(userId, id);
     if (response == null) {
       throw new ResourceNotFoundException("Challenge not found");
     }
@@ -74,18 +74,18 @@ public class AuthorChallengeController {
 
   @PatchMapping("/api/author/challenges/{id}")
   public Map<String, Boolean> updateChallenge(
-      @PathVariable String id,
+      @PathVariable Long id,
       @RequestBody UpdateChallengeRequest input,
       HttpServletRequest request) {
     Long userId = requireUserId(request);
-    authorChallengeService.updateChallenge(userId, Long.parseLong(id), input);
+    authorChallengeService.updateChallenge(userId, id, input);
     return Map.of("ok", true);
   }
 
   @DeleteMapping("/api/author/challenges/{id}")
-  public Map<String, Boolean> removeChallenge(@PathVariable String id, HttpServletRequest request) {
+  public Map<String, Boolean> removeChallenge(@PathVariable Long id, HttpServletRequest request) {
     Long userId = requireUserId(request);
-    authorChallengeService.removeChallenge(userId, Long.parseLong(id));
+    authorChallengeService.removeChallenge(userId, id);
     return Map.of("ok", true);
   }
 
@@ -95,17 +95,5 @@ public class AuthorChallengeController {
       throw new ResourceNotFoundException("Pack not found");
     }
     return Long.parseLong(pack.id());
-  }
-
-  private Long getUserId(HttpServletRequest request) {
-    if (request.getSession(false) == null) return null;
-    Object attr = request.getSession().getAttribute("appUserId");
-    return attr instanceof Long l ? l : null;
-  }
-
-  private Long requireUserId(HttpServletRequest request) {
-    Long userId = getUserId(request);
-    if (userId == null) throw new ForbiddenException("Not authenticated");
-    return userId;
   }
 }
