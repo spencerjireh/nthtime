@@ -6,7 +6,7 @@
     "dev": "nx dev @nthtime/web",
     "dev:db": "docker compose -f docker-compose.dev.yml up -d --wait",
     "dev:db:stop": "docker compose -f docker-compose.dev.yml down",
-    "dev:api": "cd services/api && ./gradlew bootRun",
+    "dev:api": "if [ -f .env ]; then set -a; . ./.env; set +a; fi; cd services/api && ./gradlew bootRun",
     "api:build": "cd services/api && ./gradlew build",
     "api:test": "cd services/api && ./gradlew test",
     "build": "nx run-many --target=build",
