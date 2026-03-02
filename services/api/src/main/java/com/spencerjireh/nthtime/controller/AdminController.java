@@ -4,6 +4,8 @@ import com.spencerjireh.nthtime.dto.request.SeedPackRequest;
 import com.spencerjireh.nthtime.dto.request.SyncPacksRequest;
 import com.spencerjireh.nthtime.exception.ForbiddenException;
 import com.spencerjireh.nthtime.service.AdminService;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +41,10 @@ public class AdminController {
   }
 
   private void verifyAdminSecret(String secret) {
-    if (secret == null || !secret.equals(adminSecret)) {
+    if (secret == null
+        || !MessageDigest.isEqual(
+            secret.getBytes(StandardCharsets.UTF_8),
+            adminSecret.getBytes(StandardCharsets.UTF_8))) {
       throw new ForbiddenException("Invalid admin secret");
     }
   }

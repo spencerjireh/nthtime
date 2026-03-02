@@ -37,9 +37,9 @@ services:
       DB_NAME: nthtime
       DB_USER: nthtime
       DB_PASSWORD: ${SERVICE_PASSWORD_64_POSTGRES}
-      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:?}
-      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:?}
-      ADMIN_SECRET: ${ADMIN_SECRET:?}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-unused}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-unused}
+      ADMIN_SECRET: ${ADMIN_SECRET:?ADMIN_SECRET must be set}
       FRONTEND_URL: ${FRONTEND_URL:?}
     healthcheck:
       test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8080/api/health']
@@ -58,9 +58,10 @@ services:
       SERVICE_FQDN_WEB_3000: ''
       SPRING_BOOT_URL: http://api:8080
       FRONTEND_URL: ${FRONTEND_URL:?}
-      # Optional feature flags (uncomment to disable):
-      # NEXT_PUBLIC_FF_AUTH: 'false'
-      # NEXT_PUBLIC_FF_SOLUTION_VIEW: 'false'
+      # Feature flags (both default to enabled at build time):
+      # NEXT_PUBLIC_FF_AUTH and NEXT_PUBLIC_FF_SOLUTION_VIEW are NEXT_PUBLIC_*
+      # vars, so Next.js inlines them during the build. To disable, set them
+      # as build args, not runtime env vars.
     healthcheck:
       test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:3000/api/health']
       interval: 30s
