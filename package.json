@@ -21,6 +21,7 @@
     "validate:python": "npx tsx packs/python-test-helpers.ts",
     "validate:all": "pnpm validate && pnpm validate:behavioral && pnpm validate:python",
     "seed": "npx tsx tools/seed.ts",
+    "seed:prod": "set -a; . ./.env.production; set +a; npx tsx tools/seed.ts",
     "bench": "vitest bench libs/verification",
     "benchmark": "npx tsx tools/benchmark.ts",
     "docs:dev": "vitepress dev docs",

@@ -38,6 +38,10 @@ function getApiBase(): string {
   const url = process.env.SPRING_BOOT_URL;
   if (url) return url;
 
+  // When seeding via the Next.js proxy (e.g. production)
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (frontendUrl) return frontendUrl;
+
   // Fallback for local dev
   return 'http://localhost:8080';
 }
