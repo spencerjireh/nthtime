@@ -7,8 +7,9 @@ COPY src ./src
 RUN gradle bootJar --no-daemon
 
 FROM eclipse-temurin:25-jre-alpine
+RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
-HEALTHCHECK CMD wget --spider -q http://localhost:8080/api/health || exit 1
+HEALTHCHECK CMD curl -sf http://localhost:8080/api/health || exit 1
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -27,15 +27,16 @@ RUN npx nx build @nthtime/web
 
 # Stage 3: Production runtime
 FROM node:22-alpine AS runtime
+RUN apk add --no-cache curl
 WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=80
 ENV HOSTNAME=0.0.0.0
 
 COPY --from=build /app/apps/web/.next/standalone ./
 COPY --from=build /app/apps/web/.next/static ./apps/web/.next/static
 COPY --from=build /app/apps/web/public ./apps/web/public
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["node", "apps/web/server.js"]
