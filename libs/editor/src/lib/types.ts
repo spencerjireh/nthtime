@@ -9,8 +9,6 @@ export type RunState = 'idle' | 'running' | 'complete';
 
 export type ViewMode = 'editing' | 'results';
 
-export type SplitMode = 'single' | 'horizontal';
-
 export type ResultsCodeView = 'submitted' | 'diff' | 'solution';
 
 export interface ChallengeMetadata {
@@ -31,8 +29,6 @@ export interface EditorState {
   totalHints: number;
   hints: string[];
   challengeMetadata: ChallengeMetadata | null;
-  splitMode: SplitMode;
-  secondActiveFilePath: string | null;
   viewMode: ViewMode;
   resultsCodeView: ResultsCodeView;
   submittedFiles: Record<string, EditorFile> | null;
@@ -60,9 +56,6 @@ export interface EditorActions {
   openTab(path: string): void;
   closeTab(path: string): void;
   reorderTabs(fromIndex: number, toIndex: number): void;
-  toggleSplit(): void;
-  setSecondActiveFile(path: string): void;
-  closeSplit(): void;
   setRunState(state: RunState): void;
   setVerificationResult(result: VerificationResult | null): void;
   revealNextHint(): void;

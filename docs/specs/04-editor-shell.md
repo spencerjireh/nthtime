@@ -7,7 +7,7 @@
 
 ## Overview
 
-The editor shell provides the interactive coding environment where users solve challenges. Built on a Zustand vanilla store (`@nthtime/editor`), it manages file state, tab order, split panes, run state, and view mode transitions. The web frontend wraps the store in React context and renders a 3-panel CSS Grid layout (prompt | editor | output) with a lazy-loaded Monaco editor. The store is framework-agnostic -- the CLI reuses the same verification logic without the Monaco UI.
+The editor shell provides the interactive coding environment where users solve challenges. Built on a Zustand vanilla store (`@nthtime/editor`), it manages file state, tab order, run state, and view mode transitions. The web frontend wraps the store in React context and renders a 3-panel CSS Grid layout (prompt | editor | output) with a lazy-loaded Monaco editor. The store is framework-agnostic -- the CLI reuses the same verification logic without the Monaco UI.
 
 ## Dependencies
 
@@ -34,7 +34,7 @@ The editor shell provides the interactive coding environment where users solve c
 3. Draft auto-saves via debounced localStorage persistence
 4. User can create, rename, or delete files via the file tree
 5. User can open multiple tabs and reorder them
-6. User can toggle split pane to view two files side-by-side
+6. ~~User can toggle split pane to view two files side-by-side~~ (removed)
 
 ### Multi-File Navigation
 
@@ -42,7 +42,7 @@ The editor shell provides the interactive coding environment where users solve c
 2. Clicking a file switches the active tab
 3. Tab bar shows open files with close buttons
 4. Tabs can be reordered by drag
-5. Split pane mode shows two editors side-by-side
+5. ~~Split pane mode shows two editors side-by-side~~ (removed)
 
 ## Acceptance Criteria
 
@@ -56,7 +56,7 @@ The editor shell provides the interactive coding environment where users solve c
 
 - [ ] **EDIT-04** -- `createFile()` adds a new file, opens a tab, and activates it. Duplicate paths are no-ops.
 - [ ] **EDIT-05** -- `renameFile()` updates the file path in files, tabOrder, and activeFilePath. Renaming to an existing path is a no-op.
-- [ ] **EDIT-06** -- `deleteFile()` removes the file and tab, selecting an adjacent file. Deleting the second pane file resets split mode.
+- [ ] **EDIT-06** -- `deleteFile()` removes the file and tab, selecting an adjacent file.
 - [ ] **EDIT-07** -- `setFileContent()` updates the content of an existing file.
 - [ ] **EDIT-08** -- `getAllFileEntries()` returns all files as a FileEntry array.
 
@@ -65,12 +65,6 @@ The editor shell provides the interactive coding environment where users solve c
 - [ ] **EDIT-09** -- `openTab()` adds a path to tabOrder and activates it without duplicating existing tabs.
 - [ ] **EDIT-10** -- `closeTab()` removes from tabOrder and selects an adjacent tab. Closing the last tab sets activeFilePath to null.
 - [ ] **EDIT-11** -- `reorderTabs()` swaps tab positions by index.
-
-### Split Pane
-
-- [ ] **EDIT-12** -- `toggleSplit()` enters horizontal mode with a second file and toggles back to single mode.
-- [ ] **EDIT-13** -- `setSecondActiveFile()` changes the file in the second pane.
-- [ ] **EDIT-14** -- `closeSplit()` returns to single mode.
 
 ### View Mode and Submit/Retry
 
@@ -102,7 +96,6 @@ The editor shell provides the interactive coding environment where users solve c
 | `apps/web/src/components/challenge/monaco-wrapper.tsx` | Monaco editor wrapper with theme and keybindings |
 | `apps/web/src/components/challenge/file-tree.tsx` | File list for multi-file challenges |
 | `apps/web/src/components/challenge/tab-bar.tsx` | Editor tabs with close and reorder |
-| `apps/web/src/components/challenge/split-resize-handle.tsx` | Draggable split separator |
 
 ### Patterns and Decisions
 
@@ -123,15 +116,12 @@ The editor shell provides the interactive coding environment where users solve c
 | EDIT-03 | `libs/editor/src/lib/editor-store.spec.ts` | stores reference solution files on init |
 | EDIT-04 | `libs/editor/src/lib/editor-store.spec.ts` | creates a new file and activates it; no-ops on duplicate |
 | EDIT-05 | `libs/editor/src/lib/editor-store.spec.ts` | renames a file and updates activeFilePath |
-| EDIT-06 | `libs/editor/src/lib/editor-store.spec.ts` | deletes a file and selects adjacent; deleteFile on second pane resets split |
+| EDIT-06 | `libs/editor/src/lib/editor-store.spec.ts` | deletes a file and selects adjacent |
 | EDIT-07 | `libs/editor/src/lib/editor-store.spec.ts` | sets file content |
 | EDIT-08 | `libs/editor/src/lib/editor-store.spec.ts` | returns all file entries |
 | EDIT-09 | `libs/editor/src/lib/editor-store.spec.ts` | openTab adds path and activates; activates without duplicating |
 | EDIT-10 | `libs/editor/src/lib/editor-store.spec.ts` | closeTab removes and selects adjacent; on last tab sets null |
 | EDIT-11 | `libs/editor/src/lib/editor-store.spec.ts` | reorderTabs swaps positions |
-| EDIT-12 | `libs/editor/src/lib/editor-store.spec.ts` | toggleSplit enters horizontal mode; toggles back |
-| EDIT-13 | `libs/editor/src/lib/editor-store.spec.ts` | setSecondActiveFile changes second pane |
-| EDIT-14 | `libs/editor/src/lib/editor-store.spec.ts` | closeSplit returns to single mode |
 | EDIT-15 | `libs/editor/src/lib/editor-store.spec.ts` | submit snapshots files and switches to results |
 | EDIT-16 | `libs/editor/src/lib/editor-store.spec.ts` | retry restores submitted files; full submit-retry cycle |
 | EDIT-17 | `libs/editor/src/lib/editor-store.spec.ts` | setResultsCodeView changes view; submit resets to submitted |

@@ -31,6 +31,9 @@ export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: Docka
   const statusBarRef = useRef<HTMLDivElement>(null);
 
   const viewMode = useEditorStore((s) => s.viewMode);
+  const tabOrder = useEditorStore((s) => s.tabOrder);
+  const activeFilePath = useEditorStore((s) => s.activeFilePath);
+  const setActiveFile = useEditorStore((s) => s.setActiveFile);
   const store = getSettingsStore();
   const promptCollapsed = useStore(store, (s) => s.settings.promptCollapsed);
   const keybindings = useStore(store, (s) => s.settings.keybindings);
@@ -111,11 +114,27 @@ export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: Docka
         togglePrompt();
         return;
       }
+
+      // Cmd+Shift+[ : previous tab
+      if (mod && e.shiftKey && e.key === '[') {
+        e.preventDefault();
+        const idx = tabOrder.indexOf(activeFilePath ?? '');
+        if (idx > 0) setActiveFile(tabOrder[idx - 1]);
+        return;
+      }
+
+      // Cmd+Shift+] : next tab
+      if (mod && e.shiftKey && e.key === ']') {
+        e.preventDefault();
+        const idx = tabOrder.indexOf(activeFilePath ?? '');
+        if (idx < tabOrder.length - 1) setActiveFile(tabOrder[idx + 1]);
+        return;
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onRun, togglePrompt]);
+  }, [onRun, togglePrompt, tabOrder, activeFilePath, setActiveFile]);
 
   return (
     <div className="relative flex h-full w-full flex-col">

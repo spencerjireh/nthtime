@@ -22,7 +22,7 @@ export enum Difficulty {
 
 export type EditorKeybindings = 'default' | 'vim' | 'emacs';
 
-export type FormatterTrigger = 'onSave' | 'onSubmit' | 'onPaste' | 'manual';
+export type FormatterTrigger = 'onSave' | 'onSubmit' | 'manual';
 
 export interface LanguageFormatterSettings {
   readonly enabled: boolean;

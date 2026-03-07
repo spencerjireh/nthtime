@@ -5,6 +5,7 @@ import { useTheme } from 'next-themes';
 import { useStore } from 'zustand';
 import dynamic from 'next/dynamic';
 import type { OnMount } from '@monaco-editor/react';
+import { toast } from 'sonner';
 import { useEditorStore } from './editor-store-context';
 import { MonacoWrapper } from './monaco-wrapper';
 import { SolutionPanel } from './solution-panel';
@@ -14,7 +15,6 @@ import { useKeybindingMode } from '@/hooks/use-keybinding-mode';
 import { useMonacoDecorations } from '@/hooks/use-monaco-decorations';
 import { FileTree } from './file-tree';
 import { TabBar } from './tab-bar';
-import { SplitResizeHandle } from './split-resize-handle';
 import { useParseDiagnostics } from '@/hooks/use-parse-diagnostics';
 import { formatCode } from '@/lib/formatter';
 
@@ -39,15 +39,11 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
   const files = useEditorStore((s) => s.files);
   const activeFilePath = useEditorStore((s) => s.activeFilePath);
   const tabOrder = useEditorStore((s) => s.tabOrder);
-  const splitMode = useEditorStore((s) => s.splitMode);
-  const secondActiveFilePath = useEditorStore((s) => s.secondActiveFilePath);
   const setActiveFile = useEditorStore((s) => s.setActiveFile);
   const setFileContent = useEditorStore((s) => s.setFileContent);
   const openTab = useEditorStore((s) => s.openTab);
   const closeTab = useEditorStore((s) => s.closeTab);
   const reorderTabs = useEditorStore((s) => s.reorderTabs);
-  const toggleSplit = useEditorStore((s) => s.toggleSplit);
-  const setSecondActiveFile = useEditorStore((s) => s.setSecondActiveFile);
   const autocomplete = useStore(getSettingsStore(), (s) => s.settings.autocomplete);
   const keybindings = useStore(getSettingsStore(), (s) => s.settings.keybindings);
   const formatter = useStore(getSettingsStore(), (s) => s.settings.formatter);
@@ -70,11 +66,9 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
   const displayFiles = isResults && submittedFiles ? submittedFiles : files;
   const filePaths = Object.keys(displayFiles);
   const activeFile = activeFilePath ? displayFiles[activeFilePath] : null;
-  const secondFile = secondActiveFilePath ? displayFiles[secondActiveFilePath] : null;
 
   const [editorInstance, setEditorInstance] = useState<Parameters<OnMount>[0] | null>(null);
   const [monacoInstance, setMonacoInstance] = useState<Parameters<OnMount>[1] | null>(null);
-  const [splitFraction, setSplitFraction] = useState(0.5);
 
   useKeybindingMode(editorInstance, statusBarRef ?? { current: null }, keybindings);
   useParseDiagnostics(editorInstance, monacoInstance, activeFilePath, activeFile?.content);
@@ -104,6 +98,18 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [isResults, formatter.defaults, activeFilePath, activeFile, setFileContent]);
+
+  // Modified-since-last-verify indicator
+  const modifiedPaths = useMemo(() => {
+    if (!submittedFiles) return undefined;
+    const set = new Set<string>();
+    for (const path of tabOrder) {
+      if (files[path]?.content !== submittedFiles[path]?.content) {
+        set.add(path);
+      }
+    }
+    return set.size > 0 ? set : undefined;
+  }, [files, submittedFiles, tabOrder]);
 
   const monacoOptions = useMemo(() => {
     const base = autocomplete
@@ -135,15 +141,6 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
     [isResults, activeFilePath, setFileContent],
   );
 
-  const handleSecondChange = useCallback(
-    (value: string | undefined) => {
-      if (isResults) return;
-      if (!secondActiveFilePath || value === undefined) return;
-      setFileContent(secondActiveFilePath, value);
-    },
-    [isResults, secondActiveFilePath, setFileContent],
-  );
-
   const handleFileSelect = useCallback(
     (path: string) => {
       if (isResults) {
@@ -153,6 +150,22 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
       }
     },
     [isResults, openTab, setActiveFile],
+  );
+
+  const handleDeleteFile = useCallback(
+    (path: string) => {
+      const content = files[path]?.content ?? '';
+      deleteFile(path);
+      toast('File deleted', {
+        description: path,
+        action: {
+          label: 'Undo',
+          onClick: () => createFile(path, content),
+        },
+        duration: 5000,
+      });
+    },
+    [files, deleteFile, createFile],
   );
 
   const getFileStatus = useCallback(
@@ -167,21 +180,6 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
 
   const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
   const language = activeFilePath ? getMonacoLanguage(activeFilePath) : 'plaintext';
-  const secondLanguage = secondActiveFilePath
-    ? getMonacoLanguage(secondActiveFilePath)
-    : 'plaintext';
-
-  const splitToggleButton = !isResults ? (
-    <button
-      onClick={toggleSplit}
-      className="px-2 text-xs text-muted-foreground hover:text-foreground"
-      title={splitMode === 'single' ? 'Split editor' : 'Close split'}
-    >
-      {splitMode === 'single' ? '||' : '|'}
-    </button>
-  ) : undefined;
-
-  const isHorizontalSplit = !isResults && splitMode === 'horizontal' && secondFile;
 
   // Determine what to render in the main editor area based on results code view
   const renderMainEditor = () => {
@@ -240,56 +238,27 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <TabBar
-        tabs={tabOrder}
-        activeTab={activeFilePath}
-        onSelect={setActiveFile}
-        onClose={isResults ? undefined : closeTab}
-        onReorder={isResults ? undefined : reorderTabs}
-        trailing={filePaths.length > 1 ? splitToggleButton : undefined}
+    <div className="flex h-full">
+      <FileTree
+        files={filePaths}
+        activeFile={activeFilePath}
+        onSelect={handleFileSelect}
+        onCreateFile={isResults ? undefined : createFile}
+        onRenameFile={isResults ? undefined : renameFile}
+        onDeleteFile={isResults ? undefined : handleDeleteFile}
+        fileStatus={isResults ? getFileStatus : undefined}
       />
-      <div className="flex min-h-0 flex-1">
-        <FileTree
-          files={filePaths}
-          activeFile={activeFilePath}
-          onSelect={handleFileSelect}
-          onCreateFile={isResults ? undefined : createFile}
-          onRenameFile={isResults ? undefined : renameFile}
-          onDeleteFile={isResults ? undefined : deleteFile}
-          fileStatus={isResults ? getFileStatus : undefined}
+      <div className="flex min-h-0 flex-1 flex-col">
+        <TabBar
+          tabs={tabOrder}
+          activeTab={activeFilePath}
+          onSelect={setActiveFile}
+          onClose={isResults ? undefined : closeTab}
+          onReorder={isResults ? undefined : reorderTabs}
+          modifiedPaths={modifiedPaths}
         />
-        <div className="flex flex-1">
-          <div style={isHorizontalSplit ? { width: `${splitFraction * 100}%` } : { flex: 1 }}>
-            {renderMainEditor()}
-          </div>
-          {isHorizontalSplit && (
-            <>
-              <SplitResizeHandle onResize={setSplitFraction} />
-              <div style={{ width: `${(1 - splitFraction) * 100}%` }}>
-                <div className="flex items-center border-b border-border bg-muted/30 px-3 py-1 text-xs text-muted-foreground">
-                  <select
-                    value={secondActiveFilePath ?? ''}
-                    onChange={(e) => setSecondActiveFile(e.target.value)}
-                    className="bg-transparent text-xs outline-none"
-                  >
-                    {filePaths.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <MonacoWrapper
-                  value={secondFile.content}
-                  language={secondLanguage}
-                  theme={monacoTheme}
-                  onChange={handleSecondChange}
-                  options={monacoOptions}
-                />
-              </div>
-            </>
-          )}
+        <div className="min-h-0 flex-1">
+          {renderMainEditor()}
         </div>
       </div>
     </div>

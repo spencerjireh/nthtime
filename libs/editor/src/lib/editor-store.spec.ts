@@ -299,55 +299,6 @@ describe('tabOrder', () => {
   });
 });
 
-describe('split pane', () => {
-  it('toggleSplit enters horizontal mode with a second file', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().toggleSplit();
-
-    const state = store.getState();
-    expect(state.splitMode).toBe('horizontal');
-    expect(state.secondActiveFilePath).toBe('server.js'); // first file != active
-  });
-
-  it('toggleSplit again returns to single mode', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().toggleSplit();
-    store.getState().toggleSplit();
-
-    const state = store.getState();
-    expect(state.splitMode).toBe('single');
-    expect(state.secondActiveFilePath).toBeNull();
-  });
-
-  it('setSecondActiveFile changes the second pane file', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().toggleSplit();
-    store.getState().setSecondActiveFile('app.js');
-
-    expect(store.getState().secondActiveFilePath).toBe('app.js');
-  });
-
-  it('closeSplit returns to single mode', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().toggleSplit();
-    store.getState().closeSplit();
-
-    expect(store.getState().splitMode).toBe('single');
-    expect(store.getState().secondActiveFilePath).toBeNull();
-  });
-
-  it('deleteFile on second pane resets split', () => {
-    store.getState().initFromChallenge(mockChallenge);
-    store.getState().toggleSplit();
-    expect(store.getState().secondActiveFilePath).toBe('server.js');
-
-    store.getState().deleteFile('server.js');
-
-    expect(store.getState().splitMode).toBe('single');
-    expect(store.getState().secondActiveFilePath).toBeNull();
-  });
-});
-
 describe('submit and retry', () => {
   it('submit snapshots files and switches to results', () => {
     store.getState().initFromChallenge(mockChallenge);

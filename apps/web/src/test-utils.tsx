@@ -21,8 +21,6 @@ export function buildEditorStore(
     activeFilePath: 'app.js',
     tabOrder: ['app.js', 'server.js'],
     runState: 'idle',
-    splitMode: 'single',
-    secondActiveFilePath: null,
     submittedFiles: null,
     referenceSolutionFiles: null,
     viewMode: 'editing',
@@ -50,9 +48,6 @@ export function buildEditorStore(
     openTab: vi.fn(),
     closeTab: vi.fn(),
     reorderTabs: vi.fn(),
-    toggleSplit: vi.fn(),
-    setSecondActiveFile: vi.fn(),
-    closeSplit: vi.fn(),
     setResultsCodeView: vi.fn(),
     getAllFileEntries: vi.fn().mockReturnValue([
       { path: 'app.js', content: 'const a = 1;' },

@@ -200,7 +200,6 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                   <SelectItem value="manual">Manual</SelectItem>
                   <SelectItem value="onSave">On save</SelectItem>
                   <SelectItem value="onSubmit">On submit</SelectItem>
-                  <SelectItem value="onPaste">On paste</SelectItem>
                 </SelectContent>
               </Select>
             </div>

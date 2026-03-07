@@ -6,7 +6,6 @@ export type {
   EditorFile,
   RunState,
   ViewMode,
-  SplitMode,
   ResultsCodeView,
   ChallengeMetadata,
 } from './lib/types.js';

@@ -115,20 +115,11 @@ describe('FileTree', () => {
     expect(defaultProps.onRenameFile).toHaveBeenCalledWith('app.js', 'renamed.js');
   });
 
-  it('delete: calls onDeleteFile when confirm returns true', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+  it('delete: calls onDeleteFile on click', () => {
     render(<FileTree {...defaultProps} />);
     const deleteButtons = screen.getAllByTitle('Delete');
     fireEvent.click(deleteButtons[0]);
     expect(defaultProps.onDeleteFile).toHaveBeenCalledWith('app.js');
-  });
-
-  it('delete: does NOT call onDeleteFile when confirm returns false', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
-    render(<FileTree {...defaultProps} />);
-    const deleteButtons = screen.getAllByTitle('Delete');
-    fireEvent.click(deleteButtons[0]);
-    expect(defaultProps.onDeleteFile).not.toHaveBeenCalled();
   });
 
   it('fileStatus: shows pass dot (bg-pass) for passing files', () => {

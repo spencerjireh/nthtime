@@ -9,7 +9,7 @@ interface TabBarProps {
   onSelect: (path: string) => void;
   onClose?: (path: string) => void;
   onReorder?: (fromIndex: number, toIndex: number) => void;
-  trailing?: React.ReactNode;
+  modifiedPaths?: Set<string>;
 }
 
 export function TabBar({
@@ -18,7 +18,7 @@ export function TabBar({
   onSelect,
   onClose,
   onReorder,
-  trailing,
+  modifiedPaths,
 }: TabBarProps) {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
@@ -62,6 +62,7 @@ export function TabBar({
         ref={scrollRef}
         className="flex flex-1 overflow-x-auto"
         style={{ scrollbarWidth: 'thin' }}
+        title="Switch tabs: Cmd+Shift+[ / ]"
       >
         {tabs.map((path, index) => (
           <div
@@ -82,6 +83,9 @@ export function TabBar({
             <button onClick={() => onSelect(path)} className="truncate">
               {path.split('/').pop()}
             </button>
+            {modifiedPaths?.has(path) && (
+              <span className="ml-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            )}
             {onClose && (
               <button
                 onClick={(e) => {
@@ -97,7 +101,6 @@ export function TabBar({
           </div>
         ))}
       </div>
-      {trailing && <div className="flex shrink-0 items-center">{trailing}</div>}
     </div>
   );
 }

@@ -17,8 +17,6 @@ const initialState: EditorState = {
   totalHints: 0,
   hints: [],
   challengeMetadata: null,
-  splitMode: 'single',
-  secondActiveFilePath: null,
   viewMode: 'editing',
   resultsCodeView: 'submitted',
   submittedFiles: null,
@@ -118,7 +116,7 @@ export function createEditorStore() {
     },
 
     deleteFile(path) {
-      const { files, activeFilePath, tabOrder, secondActiveFilePath, splitMode } = get();
+      const { files, activeFilePath, tabOrder } = get();
       if (!files[path]) return;
       const rest = Object.fromEntries(Object.entries(files).filter(([k]) => k !== path));
 
@@ -128,17 +126,10 @@ export function createEditorStore() {
         nextActive = tabOrder[idx + 1] ?? tabOrder[idx - 1] ?? null;
       }
 
-      // Reset split if second pane file is deleted
-      const splitUpdate =
-        splitMode === 'horizontal' && secondActiveFilePath === path
-          ? { splitMode: 'single' as const, secondActiveFilePath: null }
-          : {};
-
       set({
         files: rest,
         activeFilePath: nextActive,
         tabOrder: tabOrder.filter((p) => p !== path),
-        ...splitUpdate,
       });
     },
 
@@ -176,25 +167,6 @@ export function createEditorStore() {
       const [moved] = newOrder.splice(fromIndex, 1);
       newOrder.splice(toIndex, 0, moved);
       set({ tabOrder: newOrder });
-    },
-
-    toggleSplit() {
-      const { splitMode, files, activeFilePath } = get();
-      if (splitMode === 'horizontal') {
-        set({ splitMode: 'single', secondActiveFilePath: null });
-      } else {
-        const paths = Object.keys(files);
-        const second = paths.find((p) => p !== activeFilePath) ?? activeFilePath;
-        set({ splitMode: 'horizontal', secondActiveFilePath: second });
-      }
-    },
-
-    setSecondActiveFile(path) {
-      set({ secondActiveFilePath: path });
-    },
-
-    closeSplit() {
-      set({ splitMode: 'single', secondActiveFilePath: null });
     },
 
     setRunState(runState) {

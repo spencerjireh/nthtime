@@ -42,8 +42,6 @@ interface EditorState {
   hints: string[];
   timer: TimerState;
   challengeMetadata: ChallengeMetadata | null;
-  splitMode: SplitMode;
-  secondActiveFilePath: string | null;
   viewMode: ViewMode;
   submittedFiles: Record<string, EditorFile> | null;
   scaffoldFiles: Record<string, EditorFile> | null;
@@ -63,8 +61,6 @@ interface EditorState {
 | `hints` | Array of hint strings for the current challenge. |
 | `timer` | Timer tracking state. |
 | `challengeMetadata` | Metadata about the current challenge (title, prompt, difficulty, etc.). |
-| `splitMode` | Whether the editor is in single-pane or split-pane mode. |
-| `secondActiveFilePath` | Path of the file shown in the secondary pane during split mode. |
 | `viewMode` | Whether the user is editing or viewing results. |
 | `submittedFiles` | Snapshot of files at the time of submission. |
 | `scaffoldFiles` | Original scaffold files for dirty-checking. |
@@ -92,12 +88,6 @@ type RunState = 'idle' | 'running' | 'complete';
 
 ```typescript
 type ViewMode = 'editing' | 'results';
-```
-
-### SplitMode
-
-```typescript
-type SplitMode = 'single' | 'horizontal';
 ```
 
 ### TimerState
@@ -153,10 +143,6 @@ interface EditorActions {
   closeTab(path: string): void;
   reorderTabs(fromIndex: number, toIndex: number): void;
 
-  toggleSplit(): void;
-  setSecondActiveFile(path: string): void;
-  closeSplit(): void;
-
   setRunState(state: RunState): void;
   setVerificationResult(result: VerificationResult | null): void;
   revealNextHint(): void;
@@ -195,7 +181,7 @@ interface EditorActions {
 | `setFileContent(path, content)` | Updates the content of an existing file. |
 | `createFile(path, content?)` | Creates a new file. No-op if a file at the path already exists. Sets the new file as active and appends it to tab order. |
 | `renameFile(oldPath, newPath)` | Renames a file, updating active file path, tab order, and scaffold files if applicable. No-op if source is missing or target exists. |
-| `deleteFile(path)` | Removes a file. Selects an adjacent tab if the deleted file was active. Closes split mode if the deleted file was in the secondary pane. |
+| `deleteFile(path)` | Removes a file. Selects an adjacent tab if the deleted file was active. |
 
 #### Tab Management
 
@@ -205,14 +191,6 @@ interface EditorActions {
 | `openTab(path)` | Sets a file as active and adds it to the tab bar if not already present. |
 | `closeTab(path)` | Removes a tab from the tab bar. Selects an adjacent tab if the closed tab was active. |
 | `reorderTabs(fromIndex, toIndex)` | Moves a tab from one position to another. |
-
-#### Split Pane
-
-| Action | Description |
-|---|---|
-| `toggleSplit()` | Toggles between single and horizontal split mode. When entering split mode, selects a second file automatically. |
-| `setSecondActiveFile(path)` | Sets the file displayed in the secondary split pane. |
-| `closeSplit()` | Returns to single-pane mode. |
 
 #### Verification
 

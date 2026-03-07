@@ -16,9 +16,6 @@ vi.mock('./monaco-wrapper', () => ({
     <div data-testid="monaco-wrapper" data-language={props.language} />
   ),
 }));
-vi.mock('./split-resize-handle', () => ({
-  SplitResizeHandle: () => <div data-testid="split-resize-handle" />,
-}));
 vi.mock('next-themes', () => ({
   useTheme: () => ({ resolvedTheme: 'dark' }),
 }));
@@ -53,6 +50,7 @@ vi.mock('next/dynamic', () => ({
     return Stub;
   },
 }));
+vi.mock('sonner', () => ({ toast: vi.fn() }));
 vi.mock('@/lib/settings-store', () => ({
   getSettingsStore: () =>
     createStore(() => ({
@@ -118,31 +116,6 @@ describe('EditorPanel', () => {
     expect(screen.getByText('Create your first file')).toBeInTheDocument();
   });
 
-  it('renders split toggle button when multiple files', () => {
-    renderEditor();
-    expect(screen.getByTitle('Split editor')).toBeInTheDocument();
-  });
-
-  it('does not render split toggle with only one file', () => {
-    renderEditor({
-      files: { 'app.js': { path: 'app.js', content: 'const a = 1;' } },
-      tabOrder: ['app.js'],
-    });
-    expect(screen.queryByTitle('Split editor')).not.toBeInTheDocument();
-  });
-
-  // --- New tests ---
-
-  it('split mode: two monaco-wrapper elements and split-resize-handle visible', () => {
-    renderEditor({
-      splitMode: 'horizontal',
-      secondActiveFilePath: 'server.js',
-    });
-    const monacos = screen.getAllByTestId('monaco-wrapper');
-    expect(monacos).toHaveLength(2);
-    expect(screen.getByTestId('split-resize-handle')).toBeInTheDocument();
-  });
-
   it('blank canvas "Create your first file" button calls createFile', () => {
     const store = buildEditorStore({
       files: {},
@@ -183,18 +156,6 @@ describe('EditorPanel', () => {
       },
     });
     expect(screen.getByTestId('monaco-wrapper')).toBeInTheDocument();
-  });
-
-  it('results mode: hides split toggle', () => {
-    renderEditor({
-      viewMode: 'results',
-      resultsCodeView: 'submitted',
-      submittedFiles: {
-        'app.js': { path: 'app.js', content: 'code' },
-        'server.js': { path: 'server.js', content: 'code' },
-      },
-    });
-    expect(screen.queryByTitle('Split editor')).not.toBeInTheDocument();
   });
 
   it('results mode: hides "Create your first file" button', () => {

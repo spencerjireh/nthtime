@@ -4,6 +4,7 @@ import { GeistMono } from 'geist/font/mono';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AppShell } from '@/components/app-shell';
 import { Providers } from '@/providers/providers';
+import { Toaster } from 'sonner';
 
 export const metadata = {
   title: 'nthtime',
@@ -25,6 +26,7 @@ export default function RootLayout({
         <Providers>
           <ThemeProvider>
             <AppShell>{children}</AppShell>
+            <Toaster position="bottom-right" />
           </ThemeProvider>
         </Providers>
       </body>

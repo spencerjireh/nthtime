@@ -1,7 +1,14 @@
 'use client';
 
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import { Pencil, Trash2, FilePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 
 const FILE_ICONS: Record<string, string> = {
   '.js': 'JS',
@@ -120,9 +127,7 @@ export function FileTree({
 
   const handleDelete = useCallback(
     (path: string) => {
-      if (window.confirm(`Delete ${path}?`)) {
-        onDeleteFile?.(path);
-      }
+      onDeleteFile?.(path);
     },
     [onDeleteFile],
   );
@@ -138,17 +143,17 @@ export function FileTree({
 
   return (
     <div className="flex w-44 shrink-0 flex-col border-r border-border bg-muted/20">
-      <div className="flex items-center justify-between px-3 py-2">
+      <div className="flex items-center justify-between px-3 py-1.5">
         <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Files
         </span>
         {onCreateFile && (
           <button
             onClick={startCreateAtRoot}
-            className="text-xs text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground"
             title="New file"
           >
-            +
+            <FilePlus className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
@@ -223,29 +228,47 @@ function TreeNodeRow({
 
   if (node.isFolder) {
     const isExpanded = expandedFolders.has(node.path);
+
+    const folderRow = (
+      <div
+        className="group flex w-full items-center gap-1 py-1 text-left text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
+        style={{ paddingLeft }}
+      >
+        <button
+          onClick={() => onToggleFolder(node.path)}
+          className="flex flex-1 items-center gap-1 overflow-hidden"
+        >
+          <span className="shrink-0 text-[10px]">{isExpanded ? '\u25BE' : '\u25B8'}</span>
+          <span className="truncate font-medium">{node.name}</span>
+        </button>
+        {showCrud && (
+          <button
+            onClick={() => onStartCreate(node.path)}
+            className="mr-1 shrink-0 opacity-0 group-hover:opacity-100"
+            title="New file in folder"
+          >
+            <FilePlus className="h-3 w-3" />
+          </button>
+        )}
+      </div>
+    );
+
     return (
       <>
-        <div
-          className="group flex w-full items-center gap-1 py-1 text-left text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
-          style={{ paddingLeft }}
-        >
-          <button
-            onClick={() => onToggleFolder(node.path)}
-            className="flex flex-1 items-center gap-1 overflow-hidden"
-          >
-            <span className="shrink-0 text-[10px]">{isExpanded ? '\u25BE' : '\u25B8'}</span>
-            <span className="truncate font-medium">{node.name}</span>
-          </button>
-          {showCrud && (
-            <button
-              onClick={() => onStartCreate(node.path)}
-              className="mr-1 shrink-0 text-[10px] opacity-0 group-hover:opacity-100"
-              title="New file in folder"
-            >
-              +
-            </button>
-          )}
-        </div>
+        {showCrud ? (
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              {folderRow}
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem onClick={() => onStartCreate(node.path)}>
+                <FilePlus className="mr-2 h-3.5 w-3.5" /> New File
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        ) : (
+          folderRow
+        )}
         {isExpanded && (
           <>
             {node.children.map((child) => (
@@ -294,7 +317,7 @@ function TreeNodeRow({
     );
   }
 
-  return (
+  const fileRow = (
     <div
       className={cn(
         'group flex w-full items-center gap-1.5 py-1.5 text-left text-xs transition-colors',
@@ -318,22 +341,45 @@ function TreeNodeRow({
         <span className="mr-1 flex shrink-0 gap-0.5 opacity-0 group-hover:opacity-100">
           <button
             onClick={() => onStartRename(node.path)}
-            className="text-[10px] text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground"
             title="Rename"
           >
-            ab
+            <Pencil className="h-3 w-3" />
           </button>
           <button
             onClick={() => onDelete(node.path)}
-            className="text-[10px] text-muted-foreground hover:text-destructive"
+            className="text-muted-foreground hover:text-destructive"
             title="Delete"
           >
-            x
+            <Trash2 className="h-3 w-3" />
           </button>
         </span>
       )}
     </div>
   );
+
+  if (showCrud) {
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          {fileRow}
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem onClick={() => onStartRename(node.path)}>
+            <Pencil className="mr-2 h-3.5 w-3.5" /> Rename
+          </ContextMenuItem>
+          <ContextMenuItem
+            onClick={() => onDelete(node.path)}
+            className="text-destructive focus:text-destructive"
+          >
+            <Trash2 className="mr-2 h-3.5 w-3.5" /> Delete
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+    );
+  }
+
+  return fileRow;
 }
 
 function FileIndicatorDot({
