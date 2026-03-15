@@ -69,11 +69,12 @@ import { EditorPanel } from './editor-panel';
 
 function renderEditor(overrides?: Partial<EditorStore>) {
   const store = buildEditorStore(overrides);
-  return render(
+  const result = render(
     <EditorStoreContext.Provider value={store}>
       <EditorPanel />
     </EditorStoreContext.Provider>,
   );
+  return { ...result, store };
 }
 
 describe('EditorPanel', () => {
@@ -129,6 +130,24 @@ describe('EditorPanel', () => {
     );
     fireEvent.click(screen.getByText('Create your first file'));
     expect(store.getState().createFile).toHaveBeenCalledWith('index.js');
+  });
+
+  it('clicking a different tab calls setActiveFile', () => {
+    const { store } = renderEditor();
+    // Click the second tab (server.js)
+    const serverTab = screen.getAllByText('server.js').find(
+      (el) => el.closest('[draggable]') !== null,
+    );
+    expect(serverTab).toBeDefined();
+    fireEvent.click(serverTab!);
+    expect(store.getState().setActiveFile).toHaveBeenCalledWith('server.js');
+  });
+
+  it('clicking close button on tab calls closeTab', () => {
+    const { store } = renderEditor();
+    const closeButtons = screen.getAllByTitle('Close tab');
+    fireEvent.click(closeButtons[0]);
+    expect(store.getState().closeTab).toHaveBeenCalledWith('app.js');
   });
 
   it('passes statusBarRef prop to useKeybindingMode', async () => {
