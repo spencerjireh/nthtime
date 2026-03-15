@@ -12,7 +12,7 @@ The author web UI enables authenticated users to create, edit, and manage their 
 ## Dependencies
 
 - [AUTH-01], [AUTH-02] (authentication for author identity)
-- [AUTH-04], [AUTH-05] (Convex schema for packs/challenges)
+- [AUTH-04], [AUTH-05] (PostgreSQL schema for packs/challenges)
 - [AUTH-13] (AuthorRepository interface)
 - [AUTH-15] (rate limiting for author writes)
 - [VRFY-01] through [VRFY-19] (verification engine for client-side validation)
@@ -65,7 +65,7 @@ The author web UI enables authenticated users to create, edit, and manage their 
 
 1. Author opens the pack editor challenge list
 2. Author drags challenges to reorder them
-3. New order is saved to Convex, updating challenge order fields
+3. New order is saved to the database via Spring Boot API, updating challenge order fields
 
 ## Acceptance Criteria
 
@@ -78,7 +78,7 @@ The author web UI enables authenticated users to create, edit, and manage their 
 
 - [ ] **ATHR-03** -- Creating a pack requires name, slug, language, and description. Slug uniqueness is validated before creation.
 - [ ] **ATHR-04** -- Updating a pack allows changing name, slug, description, language, framework, version, tags, and visibility.
-- [ ] **ATHR-05** -- Deleting a pack removes the pack and all its challenges from Convex.
+- [ ] **ATHR-05** -- Deleting a pack removes the pack and all its challenges from the database.
 - [ ] **ATHR-06** -- Pack visibility can be set to private (author only), unlisted (accessible by URL), or public (visible in catalog).
 - [ ] **ATHR-07** -- Only the pack's author can edit or delete it (ownership verified on every mutation).
 
@@ -110,7 +110,7 @@ The author web UI enables authenticated users to create, edit, and manage their 
 ### API Security
 
 - [ ] **ATHR-21** -- All author API routes return 401 for unauthenticated requests.
-- [ ] **ATHR-22** -- Author API routes only pass allowlisted fields to Convex mutations, ignoring injected fields like packId or userId in request bodies.
+- [ ] **ATHR-22** -- Author API routes only pass allowlisted fields to Spring Boot API endpoints, ignoring injected fields like packId or userId in request bodies.
 - [ ] **ATHR-23** -- Author write operations are rate-limited to 30/min per user.
 
 ## Technical Context
@@ -131,33 +131,34 @@ The author web UI enables authenticated users to create, edit, and manage their 
 | `apps/web/src/components/author/hint-list-editor.tsx` | Hint CRUD |
 | `apps/web/src/components/author/conditional-author-link.tsx` | Auth-gated header link |
 | `apps/web/src/hooks/use-author.ts` | Author React Query hooks (lazy getApi pattern) |
-| `convex/authorPacks.ts` | Author pack queries and mutations |
-| `convex/authorChallenges.ts` | Author challenge queries and mutations |
+| `services/api/src/main/java/.../controller/AuthorPackController.java` | Author pack REST endpoints |
+| `services/api/src/main/java/.../controller/AuthorChallengeController.java` | Author challenge REST endpoints |
+| `services/api/src/main/java/.../service/AuthorPackService.java` | Author pack business logic |
+| `services/api/src/main/java/.../service/AuthorChallengeService.java` | Author challenge business logic |
 
 ### Patterns and Decisions
 
-- **Lazy `getApi()` in hooks** -- `use-author.ts` uses `require('../../../../convex/_generated/api')` at call time to avoid TS6059 rootDir errors. The require path traverses 4 parent directories from `apps/web/src/hooks/`.
 - **FileEditorTab creates own EditorStore** -- each file editor tab instantiates its own `createEditorStore()` to avoid state conflicts with the main challenge editor.
 - **fflate for ZIP** -- direct dependency for ZIP generation. Reference solution maps directly to JSON files (no naming flip).
 - **Attempt deletion on update** -- when a challenge's assertions change, existing attempts become invalid. The update mutation deletes all attempts for the affected challenge.
 - **Visibility filter in queries** -- `packs.list` filters private packs to author only; unlisted packs are accessible by direct URL but not listed in the catalog.
 
-### Convex Functions
+### Spring Boot Endpoints
 
-| Function | Type | Purpose |
-|----------|------|---------|
-| `authorPacks.myPacks` | query | List author's packs |
-| `authorPacks.getBySlug` | query | Get pack detail with challenges |
-| `authorPacks.getForExport` | query | Get pack data for ZIP export |
-| `authorPacks.checkSlugAvailable` | query | Validate slug uniqueness |
-| `authorPacks.createPack` | mutation | Create new pack |
-| `authorPacks.updatePack` | mutation | Update pack metadata |
-| `authorPacks.removePack` | mutation | Delete pack and challenges |
-| `authorChallenges.get` | query | Get challenge detail |
-| `authorChallenges.create` | mutation | Create challenge |
-| `authorChallenges.update` | mutation | Update challenge (deletes attempts) |
-| `authorChallenges.remove` | mutation | Delete challenge (renumbers) |
-| `authorChallenges.reorder` | mutation | Reorder challenges |
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/author/packs` | GET | List author's packs |
+| `/api/author/packs` | POST | Create pack |
+| `/api/author/packs/{slug}` | GET | Pack detail with challenges |
+| `/api/author/packs/{slug}` | PATCH | Update pack metadata |
+| `/api/author/packs/{slug}` | DELETE | Delete pack and all challenges |
+| `/api/author/packs/{slug}/export` | GET | Pack data for ZIP export |
+| `/api/author/packs/check-slug` | GET | Validate slug uniqueness |
+| `/api/author/challenges/{id}` | GET | Challenge detail |
+| `/api/author/packs/{slug}/challenges` | POST | Create challenge |
+| `/api/author/challenges/{id}` | PATCH | Update challenge (deletes attempts) |
+| `/api/author/challenges/{id}` | DELETE | Delete challenge (renumbers) |
+| `/api/author/packs/{slug}/challenges/reorder` | PUT | Reorder challenges |
 
 ### API Routes
 

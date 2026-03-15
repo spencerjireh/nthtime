@@ -213,7 +213,7 @@ A test harness can take a multi-file challenge definition (files + assertions), 
 
 ---
 
-## Phase 3 -- Auth + Convex Schema + Data Access Layer
+## Phase 3 -- Auth + Schema + Data Access Layer
 
 **Goal:** Authentication, database schema, server functions, and the repository pattern wiring.
 
@@ -241,20 +241,17 @@ A test harness can take a multi-file challenge definition (files + assertions), 
   - [x] `settings.update` -- update user settings
   - [x] `admin.syncPacks` -- validate and upsert pack data (admin-restricted action)
 - [x] Add rate limiting on mutations (`attempts.create`, `settings.update`)
-- [ ] Implement Convex repository in `libs/data-access/src/convex/` (deferred -- using Convex hooks directly):
-  - [ ] `ConvexPackRepository` implementing `PackRepository`
-  - [ ] `ConvexAttemptRepository` implementing `AttemptRepository`
-  - [ ] `ConvexSettingsRepository` implementing `SettingsRepository`
-- [ ] Create React context provider (`DataAccessProvider`) that wires Convex implementations (deferred -- using Convex hooks directly)
+- [x] ~~Implement Convex repository in `libs/data-access/src/convex/`~~ (Obsolete -- replaced by Spring Data JPA repositories in services/api)
+- [x] ~~Create React context provider (`DataAccessProvider`)~~ (Obsolete -- replaced by Spring Data JPA repositories in services/api)
 - [x] Wire provider into `apps/web` root layout
 - [x] Write Vitest tests for Convex server functions (using Convex test utilities)
 - [ ] Verify auth flow end-to-end: sign in with GitHub, session persists, sign out works (deferred)
 
 ### Validation Gate
 
-A signed-in user can hit every Convex query and mutation through the repository interfaces. Auth flow works end-to-end with GitHub OAuth. Schema validates and Convex dashboard shows all tables. Rate limiting triggers on rapid repeated mutations.
+A signed-in user can hit every Spring Boot endpoint through the repository interfaces. Auth flow works end-to-end with GitHub OAuth. Schema validates and PostgreSQL tables are correctly created via Flyway migrations. Rate limiting triggers on rapid repeated mutations.
 
-**Completed:** 2026-02-20 (schema, auth, server functions); 2026-02-21 (admin.syncPacks, rate limiting, server function tests added in backfill). Repository classes deferred -- app uses Convex hooks directly via DataAccessProvider. Auth E2E deferred (needs OAuth test credentials).
+**Completed:** 2026-02-20 (schema, auth, server functions); 2026-02-21 (admin.syncPacks, rate limiting, server function tests added in backfill). Repository classes deferred -- replaced by Spring Data JPA repositories in services/api (Spring Boot migration, 2026-02-28). Auth E2E deferred (needs OAuth test credentials).
 
 ---
 
@@ -352,7 +349,7 @@ The editor renders with a file tree, supports creating/renaming/deleting files a
 
 ### Validation Gate
 
-Browsing the catalog shows pack cards with real data from Convex. Clicking a pack shows its challenge list with status badges. Search returns relevant results. Filters narrow the catalog correctly. Empty states display when appropriate.
+Browsing the catalog shows pack cards with real data from the API. Clicking a pack shows its challenge list with status badges. Search returns relevant results. Filters narrow the catalog correctly. Empty states display when appropriate.
 
 **Completed:** 2026-02-20 (core catalog); 2026-02-22 (tag filter, completion status filter added)
 
@@ -360,7 +357,7 @@ Browsing the catalog shows pack cards with real data from Convex. Clicking a pac
 
 ## Phase 6 -- Drafts + Settings + Time Tracking
 
-**Goal:** localStorage draft persistence, user settings UI with Convex sync, and opt-in timer.
+**Goal:** localStorage draft persistence, user settings UI with server sync, and opt-in timer.
 
 **Depends on:** Phase 3 (settings repository), Phase 4 (editor store)
 
@@ -385,7 +382,7 @@ Browsing the catalog shows pack cards with real data from Convex. Clicking a pac
   - [ ] Time tracking toggle (deferred)
 - [x] Wire settings to `SettingsRepository`:
   - [x] Load settings on app init (localStorage)
-  - [x] Persist changes to Convex on update (debounced sync hook ready)
+  - [x] Persist changes to the server on update (debounced sync hook ready)
   - [x] Optimistic UI updates
 - [x] Implement time tracking:
   - [x] Timer starts on first keystroke in a challenge
@@ -394,11 +391,11 @@ Browsing the catalog shows pack cards with real data from Convex. Clicking a pac
   - [x] Time recorded on attempt submission
   - [x] Timer resets on new challenge
 - [x] Write tests for draft persistence (save, restore, clear lifecycle)
-- [ ] Write tests for settings sync (optimistic update, Convex round-trip) (deferred)
+- [ ] Write tests for settings sync (optimistic update, server round-trip) (deferred)
 
 ### Validation Gate
 
-Drafts persist across page reloads and restore correctly for multi-file challenges. Drafts clear after submission. Settings changes reflect immediately in the UI and persist to Convex. Timer runs continuously from first keystroke and records time on submission.
+Drafts persist across page reloads and restore correctly for multi-file challenges. Drafts clear after submission. Settings changes reflect immediately in the UI and persist to the server. Timer runs continuously from first keystroke and records time on submission.
 
 **Completed:** 2026-02-20 (autocomplete toggle, time tracking toggle, settings sync tests deferred)
 
@@ -492,7 +489,7 @@ A user can: browse the catalog, select a challenge, write code (single or multi-
 - [x] Build seed script (`tools/seed.ts`):
   - [x] Read pack JSON files from `packs/` directory
   - [x] Validate all packs before import
-  - [x] Upsert into Convex via `admin.syncPacks` action
+  - [x] Upsert via Spring Boot `/api/admin/seed` endpoint
   - [x] Idempotent (safe to re-run)
   - [x] CLI interface (`pnpm run seed`)
 - [x] Author Express.js pack (`packs/express-basics/`):
@@ -528,14 +525,14 @@ A user can: browse the catalog, select a challenge, write code (single or multi-
   - [x] Progressive difficulty
   - [x] Hints and reference solutions
 - [x] Validate all three packs through the validation tooling
-- [ ] Seed all packs into Convex development environment (deferred -- needs running Convex instance)
+- [ ] Seed all packs into database (deferred -- needs running Spring Boot instance)
 - [ ] Manual QA: complete at least one challenge from each pack end-to-end (deferred)
 
 ### Validation Gate
 
-All three packs pass schema validation and reference solution verification. Seed script successfully imports all packs into Convex. Every challenge can be completed end-to-end in the application -- write the reference solution, submit, see pass result. ~30 total challenges across three packs.
+All three packs pass schema validation and reference solution verification. Seed script successfully imports all packs into the database. Every challenge can be completed end-to-end in the application -- write the reference solution, submit, see pass result. ~30 total challenges across three packs.
 
-**Completed:** 2026-02-20 -- JSON schema validation deferred (structural checks + reference solution verification used instead); CI pack validation and Convex seeding deferred to Phase 9; manual QA deferred. 30 challenges across 3 packs (Express, React, FastAPI), all verified.
+**Completed:** 2026-02-20 -- JSON schema validation deferred (structural checks + reference solution verification used instead); CI pack validation and database seeding deferred to Phase 9; manual QA deferred. 30 challenges across 3 packs (Express, React, FastAPI), all verified.
 
 ---
 
@@ -570,10 +567,10 @@ All three packs pass schema validation and reference solution verification. Seed
   - [x] Validate packs (`pnpm validate` step)
   - [x] Run Vitest (unit/integration)
   - [x] Run Playwright (E2E)
-  - [ ] Deploy Convex functions (deferred -- needs CONVEX_DEPLOY_KEY secret)
-  - [x] Build and push Docker image (build only, no push -- registry not configured)
+  - [x] Spring Boot build and test in CI
+  - [x] Build and verify Docker Compose stack (build only, no push -- registry not configured)
   - [ ] Deploy to VPS (deferred -- needs VPS)
-  - [ ] Run pack seed after Convex deploy (deferred)
+  - [x] Seed test data via `pnpm seed` after Spring Boot starts
   - [x] All tests must pass before deploy (blocking gate)
 - [ ] Set up Sentry error tracking (deferred -- external service):
   - [ ] Next.js Sentry SDK integration
@@ -593,7 +590,7 @@ All three packs pass schema validation and reference solution verification. Seed
   - [ ] Test every feedback level
   - [ ] Test auth flow (sign in, session persistence, sign out)
   - [ ] Test on Chrome, Firefox, Safari (desktop)
-  - [ ] Verify Convex rate limiting under load
+  - [ ] Verify Bucket4j rate limiting under load
 - [ ] Final cleanup (deferred):
   - [ ] Remove development-only code/routes
   - [ ] Verify environment variable documentation
@@ -601,7 +598,7 @@ All three packs pass schema validation and reference solution verification. Seed
 
 ### Validation Gate
 
-CI/CD pipeline deploys to production automatically on merge to main. All Playwright E2E tests pass. Sentry captures errors. Application loads, authenticates, and serves challenges from the production VPS + Convex Cloud stack. All three launch packs are seeded and playable. Lighthouse performance score is acceptable for a desktop-only application.
+CI/CD pipeline deploys to production automatically on merge to main. All Playwright E2E tests pass. Sentry captures errors. Application loads, authenticates, and serves challenges from the production VPS + Spring Boot + PostgreSQL stack. All three launch packs are seeded and playable. Lighthouse performance score is acceptable for a desktop-only application.
 
 **Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Deferred: Cloudflare, Sentry, structured logging, performance audit, production QA, final cleanup (all require external services or production environment).
 
@@ -614,7 +611,7 @@ CI/CD pipeline deploys to production automatically on merge to main. All Playwri
 | 0     | Monorepo Foundation + CI        | --             | Small       |
 | 1     | Design System + Shared Types    | --             | Small-Med   |
 | 2     | Verification Engine             | A (parallel)   | Large       |
-| 3     | Auth + Convex + Data Access     | A (parallel)   | Medium      |
+| 3     | Auth + Schema + Data Access     | A (parallel)   | Medium      |
 | 4     | Editor                          | A (parallel)   | Medium-Large|
 | 5     | Catalog (Browse)                | B (parallel)   | Small-Med   |
 | 6     | Drafts + Settings + Time        | B (parallel)   | Small-Med   |
@@ -638,7 +635,7 @@ The verification engine (Phase 2) is on the critical path and carries the most t
 
 4. **S-expression query complexity** -- Complex Tree-sitter queries (ordering, negation, nesting depth) are powerful but hard to debug. Build a query playground/test harness during Phase 2 to support pack authoring in Phase 8.
 
-5. **Convex Auth GitHub OAuth** -- Convex Auth is relatively new. Test the full auth lifecycle (sign in, session refresh, sign out, expired session) thoroughly in Phase 3. Have a contingency plan if the API changes.
+5. **Spring Security OAuth2** -- Spring Security OAuth2 Client + Spring Session JDBC handles the full auth lifecycle (sign in, session refresh, sign out, expired session). Migration from Convex Auth completed 2026-02-28.
 
 6. **Challenge authoring bottleneck** -- Phase 8 requires writing ~30 challenges with correct assertions. The verification engine (Phase 2) and its test harness must be solid and well-documented before starting content authoring, or pack creation will be slow and error-prone.
 

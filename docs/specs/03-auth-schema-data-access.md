@@ -7,7 +7,7 @@
 
 ## Overview
 
-Establishes the authentication system, Convex backend schema, and data access layer that connect the frontend to persistent storage. Authentication uses GitHub OAuth via NextAuth.js, with Convex user records created on first sign-in. The data access layer follows a repository pattern -- interfaces in `@nthtime/data-access` are implemented by adapters that call Convex through REST endpoints authenticated with a service token. The frontend uses TanStack React Query (not the Convex React client) for all data fetching.
+Establishes the authentication system, Spring Boot backend, and data access layer that connect the frontend to persistent storage. Authentication uses GitHub OAuth via Spring Security OAuth2 Client + Spring Session JDBC, with PostgreSQL user records created on first sign-in. The data access layer follows a repository pattern -- interfaces in `@nthtime/data-access` are implemented by thin Next.js proxy routes that forward requests to Spring Boot with session cookies. The frontend uses TanStack React Query for all data fetching.
 
 ## Dependencies
 
@@ -19,41 +19,39 @@ Establishes the authentication system, Convex backend schema, and data access la
 ### GitHub Sign-In
 
 1. User clicks sign-in button
-2. NextAuth redirects to GitHub OAuth
-3. User authorizes the application
-4. NextAuth callback fires, calling `findOrCreateUser` on Convex with the service token
-5. Convex returns or creates the user record
-6. NextAuth stores the Convex user ID in the JWT
-7. Subsequent requests include the Convex user ID via `session.convexUserId`
+2. Next.js redirects to Spring Boot OAuth2 authorization endpoint
+3. Spring Boot redirects to GitHub
+4. GitHub callback -> Next.js `/api/auth/callback/github` -> forwarded to Spring Boot
+5. Spring Boot creates/resolves AppUser + AuthAccount, sets JSESSIONID via Spring Session JDBC
+6. Next.js forwards Set-Cookie to browser
 
 ### Data Fetching (Frontend)
 
 1. React component calls a hook (e.g., `usePackList()`)
 2. Hook uses TanStack React Query to fetch from `/api/v1/packs`
-3. REST route handler authenticates via NextAuth session (if auth-gated)
-4. Handler calls Convex via `ConvexHttpClient` with `CONVEX_SERVICE_TOKEN`
-5. Convex validates the service token and executes the query/mutation
-6. Result flows back through the REST response to the React Query cache
+3. Next.js API route proxies to Spring Boot, forwarding JSESSIONID cookie
+4. Spring Boot validates session via Spring Session JDBC, executes query
+5. Result flows back through proxy to React Query cache
 
 ## Acceptance Criteria
 
 ### Authentication
 
-- [ ] **AUTH-01** -- GitHub OAuth sign-in creates or resolves a Convex user record via `findOrCreateUser` mutation.
-- [ ] **AUTH-02** -- The Convex user ID is stored in the NextAuth JWT and accessible as `session.convexUserId`.
+- [ ] **AUTH-01** -- GitHub OAuth sign-in creates or resolves an AppUser + AuthAccount in PostgreSQL via Spring Security OAuth2.
+- [ ] **AUTH-02** -- Session stored in PostgreSQL via Spring Session JDBC; JSESSIONID cookie used for authentication.
 - [ ] **AUTH-03** -- Feature flag `NEXT_PUBLIC_FF_AUTH` controls whether auth UI is rendered (defaults to enabled).
 
-### Convex Schema
+### Database Schema
 
-- [ ] **AUTH-04** -- `packs` table stores name, slug, description, language, framework, version, author, tags, authorUserId, visibility, createdAt, updatedAt with indexes on slug and author.
-- [ ] **AUTH-05** -- `challenges` table stores packId, slug, title, prompt, difficulty, tags, timeEstimateSeconds, hints, assertions, referenceSolution, order with indexes on pack and pack+slug, plus a search index on title.
-- [ ] **AUTH-06** -- `attempts` table stores userId, challengeId, passed, assertionResults, hintsUsed, timeSeconds with indexes on user+challenge, user, and challenge.
-- [ ] **AUTH-07** -- `userSettings` table stores per-user feedback flags, keybindings, darkMode, formatter config, and fileStubs with a by_user index.
+- [ ] **AUTH-04** -- `packs` table (JPA entity `Pack`) with columns: name, slug, description, language, framework, version, author, tags, authorUserId, visibility, createdAt, updatedAt with indexes on slug and author.
+- [ ] **AUTH-05** -- `challenges` table (JPA entity `Challenge`) with JSONB columns for assertions and referenceSolution, plus columns for packId, slug, title, prompt, difficulty, tags, timeEstimateSeconds, hints, order with indexes on pack and pack+slug, plus a tsvector search index on title.
+- [ ] **AUTH-06** -- `attempts` table (JPA entity `Attempt`) with JSONB for assertionResults, plus userId, challengeId, passed, hintsUsed, timeSeconds with indexes on user+challenge, user, and challenge.
+- [ ] **AUTH-07** -- `user_settings` table (JPA entity `UserSettings`) with per-user feedback flags, keybindings, darkMode, formatter config, and fileStubs.
 
-### Service Token Authentication
+### Session-Based Authentication
 
-- [ ] **AUTH-08** -- All Convex calls from Next.js server routes use `ConvexHttpClient` authenticated with `CONVEX_SERVICE_TOKEN`.
-- [ ] **AUTH-09** -- `convex/service.ts` verifies `SERVICE_TOKEN` on every call and rejects requests with invalid tokens.
+- [ ] **AUTH-08** -- All Next.js API routes proxy to Spring Boot via `spring-boot-proxy.ts`, forwarding JSESSIONID cookie.
+- [ ] **AUTH-09** -- Spring Security validates session on every request; unauthenticated requests return 401.
 
 ### Data Access Layer
 
@@ -64,8 +62,8 @@ Establishes the authentication system, Convex backend schema, and data access la
 
 ### Rate Limiting
 
-- [ ] **AUTH-14** -- Convex rate limiter restricts attempt creation to 10/min and settings updates to 20/min per user.
-- [ ] **AUTH-15** -- Author write operations (packs and challenges) are rate-limited to 30/min.
+- [ ] **AUTH-14** -- Bucket4j rate limiter (Spring Boot) restricts attempt creation to 10/min and settings updates to 20/min per user.
+- [ ] **AUTH-15** -- Author write operations rate-limited to 30/min.
 
 ## Technical Context
 
@@ -73,8 +71,12 @@ Establishes the authentication system, Convex backend schema, and data access la
 
 | File | Role |
 |------|------|
-| `apps/web/src/lib/auth.ts` | NextAuth.js config with GitHub provider and Convex user resolution |
-| `apps/web/src/lib/convex-http.ts` | ConvexHttpClient singleton with lazy getApi() pattern |
+| `services/api/src/main/java/.../entity/*.java` | JPA entities (AppUser, AuthAccount, Pack, Challenge, Attempt, UserSettings) |
+| `services/api/src/main/java/.../controller/*.java` | REST controllers (11 controllers mapping to /api/* endpoints) |
+| `services/api/src/main/java/.../config/SecurityConfig.java` | Spring Security OAuth2 + Spring Session JDBC configuration |
+| `services/api/src/main/java/.../config/RateLimitConfig.java` | Bucket4j rate limiter configuration |
+| `services/api/src/main/resources/db/migration/` | Flyway SQL migrations (V1-V3) |
+| `apps/web/src/lib/spring-boot-proxy.ts` | Proxy function forwarding requests to Spring Boot with cookie |
 | `apps/web/src/lib/api-client.ts` | Frontend fetch wrapper for /api/v1/ routes |
 | `apps/web/src/lib/api-helpers.spec.ts` | Test for session helpers and error responses |
 | `libs/data-access/src/index.ts` | Repository interface exports |
@@ -82,40 +84,38 @@ Establishes the authentication system, Convex backend schema, and data access la
 | `libs/data-access/src/lib/interfaces/attempt-repository.ts` | AttemptRepository interface |
 | `libs/data-access/src/lib/interfaces/settings-repository.ts` | SettingsRepository interface |
 | `libs/data-access/src/lib/interfaces/author-repository.ts` | AuthorRepository interface |
-| `convex/schema.ts` | Table definitions and indexes |
-| `convex/service.ts` | Service-token-authenticated queries and mutations |
-| `convex/rateLimits.ts` | Rate limiter configuration |
-| `convex/convex.config.ts` | Rate limiter component wiring |
 
 ### Patterns and Decisions
 
-- **Repository pattern** -- interfaces in `@nthtime/data-access` decouple frontend from Convex specifics. Adapters can be swapped for testing or alternative backends.
-- **TanStack React Query over Convex React** -- chosen for more control over caching, refetching, and optimistic updates. The provider stack is `SessionProvider` + `QueryProvider` with no Convex React provider.
-- **Lazy `getApi()` pattern** -- multiple files lazily `require('../../../../convex/_generated/api')` to avoid TS6059 rootDir errors when TypeScript sees the Convex directory outside the project root.
-- **Service token architecture** -- a shared secret (`CONVEX_SERVICE_TOKEN` / `SERVICE_TOKEN`) authenticates server-to-server calls. User identity is passed as a parameter, not via Convex's built-in auth.
+- **Repository pattern** -- interfaces in `@nthtime/data-access` decouple frontend from backend specifics. Implemented by Spring Data JPA repositories in `services/api`.
+- **TanStack React Query** -- chosen for control over caching, refetching, and optimistic updates. The provider stack is `QueryProvider` only (no Convex React provider, no SessionProvider).
+- **Proxy pattern** -- Next.js `/api/v1/*` routes are thin proxies that forward requests to Spring Boot `/api/*` with JSESSIONID cookie forwarding via `spring-boot-proxy.ts`.
+- **Session architecture** -- JSESSIONID cookie, Spring Session JDBC stores sessions in PostgreSQL. No JWTs or service tokens.
 
-### Convex Functions
+### Spring Boot Endpoints
 
-| Function | Type | Purpose |
-|----------|------|---------|
-| `service.findOrCreateUser` | mutation | Resolve or create user on OAuth sign-in |
-| `service.listPacksAuth` | query | List packs with user-specific pass counts |
-| `service.getChallengesAuth` | query | Get pack challenges with user-specific status |
-| `packs.list` | query | Public pack listing with language/difficulty filters |
-| `packs.getChallenges` | query | Public pack detail with challenge list |
-| `packs.search` | query | Full-text search on challenge titles |
-| `challenges.get` | query | Get single challenge by ID |
-| `challenges.getByPackAndSlug` | query | Get challenge by pack slug + challenge slug |
-| `attempts.create` | mutation | Record a new attempt (rate-limited) |
-| `attempts.list` | query | List attempts for user + challenge |
-| `settings.get` | query | Get user settings with defaults |
-| `settings.update` | mutation | Patch user settings (rate-limited) |
+| Endpoint | Controller | Purpose |
+|----------|-----------|---------|
+| `GET /api/auth/session` | AuthController | Session status |
+| `GET /api/packs` | PackController | List packs with filters |
+| `GET /api/packs/{slug}` | PackController | Pack detail with challenges |
+| `GET /api/search?q=` | SearchController | Full-text search on challenge titles |
+| `GET /api/challenges/{id}` | ChallengeController | Single challenge by ID |
+| `GET /api/packs/{packSlug}/challenges/{challengeSlug}` | ChallengeController | Challenge by pack+slug |
+| `POST /api/attempts` | AttemptController | Create attempt (rate-limited) |
+| `GET /api/challenges/{id}/attempts` | AttemptController | List attempts for user+challenge |
+| `GET /api/settings` | SettingsController | Get user settings |
+| `PATCH /api/settings` | SettingsController | Update user settings (rate-limited) |
+| `POST /api/admin/seed` | AdminController | Seed packs from JSON |
+| `POST /api/admin/sync` | AdminController | Sync packs (seed + delete stale) |
 
 ### API Routes
 
 | Route | Method | Purpose |
 |-------|--------|---------|
-| `/api/auth/[...nextauth]` | GET, POST | NextAuth OAuth flow |
+| `/api/auth/signin` | GET | Initiate OAuth flow via Spring Boot |
+| `/api/auth/signout` | GET | End session |
+| `/api/auth/callback/github` | GET | GitHub OAuth callback forwarded to Spring Boot |
 | `/api/v1/packs` | GET | List packs with filters |
 | `/api/v1/packs/[slug]` | GET | Pack detail with challenges |
 | `/api/v1/packs/[slug]/challenges/[challengeSlug]` | GET | Single challenge by pack+slug |
@@ -135,15 +135,13 @@ Establishes the authentication system, Convex backend schema, and data access la
 | AUTH-08 | `apps/web/src/lib/api-client.spec.ts` | request() returns parsed JSON, sends Content-Type, builds query strings |
 | AUTH-08 | `apps/web/src/lib/api-helpers.spec.ts` | getSessionUserId, requireAuth, error helpers |
 
-### Convex Tests
+### Spring Boot Tests
 
-| Criterion | Test File | Test Description |
-|-----------|-----------|-----------------|
-| AUTH-07 | `convex/__tests__/settings.spec.ts` | get returns defaults, update creates/patches settings |
-| AUTH-14 | `convex/__tests__/settings.spec.ts` | update rejects unauthenticated user |
-| AUTH-04, AUTH-05 | `convex/__tests__/packs.spec.ts` | list returns packs, filters by language/tags |
-| AUTH-06 | `convex/__tests__/attempts.spec.ts` | create stores attempt, list returns user attempts |
-| AUTH-09 | `convex/__tests__/admin.spec.ts` | seedPack rejects invalid admin secret |
+| Criterion | Test Location | Test Description |
+|-----------|--------------|-----------------|
+| AUTH-04 through AUTH-07 | `services/api/src/test/java/...` | JPA entity and repository integration tests (Testcontainers + PostgreSQL) |
+| AUTH-08, AUTH-09 | `services/api/src/test/java/...` | Controller integration tests with Spring Security |
+| AUTH-14, AUTH-15 | `services/api/src/test/java/...` | Rate limiting integration tests |
 
 ## Open Questions
 
