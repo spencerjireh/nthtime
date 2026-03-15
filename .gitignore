@@ -16,13 +16,11 @@ docs/.vitepress/cache/
 .nx/installation
 .nx/workspace-data
 
-# Convex
-.convex/
-
 # Environment
 .env
 .env.*
 !.env.example
+!.env.local.example
 !.env.production.example
 
 # Testing
