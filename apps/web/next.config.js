@@ -1,6 +1,7 @@
 //@ts-check
 const webpack = require('webpack');
 const path = require('path');
+const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -48,4 +49,22 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Optional bundle analyzer (ANALYZE=true nx build @nthtime/web)
+const withBundleAnalyzer = process.env.ANALYZE === 'true'
+  ? require('@next/bundle-analyzer')({ enabled: true })
+  : (config) => config;
+
+module.exports = withSentryConfig(withBundleAnalyzer(nextConfig), {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // Upload wider set of client source files for better stack trace resolution
+  widenClientFileUpload: true,
+
+  // Proxy route to bypass ad-blockers
+  tunnelRoute: '/monitoring',
+
+  // Only log during CI builds
+  silent: !process.env.CI,
+});

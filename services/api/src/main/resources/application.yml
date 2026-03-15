@@ -55,11 +55,16 @@ nthtime:
   admin-secret: ${ADMIN_SECRET}
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
 
+logging:
+  structured:
+    format:
+      console: logstash
+
 management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,prometheus
   endpoint:
     health:
       show-details: when-authorized
