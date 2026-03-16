@@ -113,6 +113,7 @@ describe('type compilation', () => {
       darkMode: true,
       autocomplete: true,
       fileStubs: true,
+      traceMode: false,
       formatter: {
         defaults: {
           enabled: true,

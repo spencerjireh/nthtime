@@ -16,6 +16,7 @@ import { useMonacoDecorations } from '@/hooks/use-monaco-decorations';
 import { FileTree } from './file-tree';
 import { TabBar } from './tab-bar';
 import { useParseDiagnostics } from '@/hooks/use-parse-diagnostics';
+import { useTraceMode } from '@/hooks/use-trace-mode';
 import { formatCode } from '@/lib/formatter';
 
 // Lazy-loaded diff view
@@ -44,6 +45,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
   const openTab = useEditorStore((s) => s.openTab);
   const closeTab = useEditorStore((s) => s.closeTab);
   const reorderTabs = useEditorStore((s) => s.reorderTabs);
+  const traceMode = useStore(getSettingsStore(), (s) => s.settings.traceMode);
   const autocomplete = useStore(getSettingsStore(), (s) => s.settings.autocomplete);
   const keybindings = useStore(getSettingsStore(), (s) => s.settings.keybindings);
   const formatter = useStore(getSettingsStore(), (s) => s.settings.formatter);
@@ -72,6 +74,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
 
   useKeybindingMode(editorInstance, statusBarRef ?? { current: null }, keybindings);
   useParseDiagnostics(editorInstance, monacoInstance, activeFilePath, activeFile?.content);
+  useTraceMode(editorInstance, monacoInstance, activeFilePath, referenceSolutionFiles, traceMode && !isResults);
 
   // Decorations for results mode
   const showGlyphMargin = isResults && feedback.showAssertionDetails;
@@ -118,7 +121,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
     if (isResults) {
       return { ...base, readOnly: true, glyphMargin: showGlyphMargin };
     }
-    return base;
+    return { ...base };
   }, [autocomplete, isResults, showGlyphMargin]);
 
   const handleMount: OnMount = useCallback(
@@ -146,10 +149,13 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
       if (isResults) {
         setActiveFile(path);
       } else {
+        if (!files[path]) {
+          createFile(path, '');
+        }
         openTab(path);
       }
     },
-    [isResults, openTab, setActiveFile],
+    [isResults, openTab, setActiveFile, files, createFile],
   );
 
   const handleDeleteFile = useCallback(
@@ -177,6 +183,12 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
     },
     [isResults, verificationResult],
   );
+
+  // Ghost files: reference solution files that the user hasn't created yet
+  const ghostFilePaths = useMemo(() => {
+    if (!traceMode || !referenceSolutionFiles || isResults) return [];
+    return Object.keys(referenceSolutionFiles).filter((p) => !files[p]);
+  }, [traceMode, referenceSolutionFiles, files, isResults]);
 
   const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
   const language = activeFilePath ? getMonacoLanguage(activeFilePath) : 'plaintext';
@@ -247,6 +259,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
         onRenameFile={isResults ? undefined : renameFile}
         onDeleteFile={isResults ? undefined : handleDeleteFile}
         fileStatus={isResults ? getFileStatus : undefined}
+        ghostFiles={ghostFilePaths}
       />
       <div className="flex min-h-0 flex-1 flex-col">
         <TabBar

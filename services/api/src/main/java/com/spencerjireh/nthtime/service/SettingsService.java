@@ -28,7 +28,8 @@ public class SettingsService {
           "default",
           true,
           DEFAULT_FORMATTER,
-          true);
+          true,
+          false);
 
   private final UserSettingsRepository userSettingsRepository;
   private final AppUserRepository appUserRepository;
@@ -83,6 +84,7 @@ public class SettingsService {
     if (input.darkMode() != null) settings.setDarkMode(input.darkMode());
     if (input.formatter() != null) settings.setFormatter(input.formatter());
     if (input.fileStubs() != null) settings.setFileStubs(input.fileStubs());
+    if (input.traceMode() != null) settings.setTraceMode(input.traceMode());
     settings.setUpdatedAt(Instant.now());
 
     userSettingsRepository.save(settings);
@@ -100,6 +102,7 @@ public class SettingsService {
         s.getKeybindings(),
         s.isDarkMode(),
         s.getFormatter() != null ? s.getFormatter() : DEFAULT_FORMATTER,
-        s.getFileStubs() != null ? s.getFileStubs() : true);
+        s.getFileStubs() != null ? s.getFileStubs() : true,
+        s.getTraceMode() != null ? s.getTraceMode() : false);
   }
 }

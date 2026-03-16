@@ -21,6 +21,7 @@ export interface SettingsActions {
   setFormatter(config: Partial<FormatterConfig>): void;
   setAutocomplete(enabled: boolean): void;
   setFileStubs(enabled: boolean): void;
+  setTraceMode(enabled: boolean): void;
   setPromptCollapsed(collapsed: boolean): void;
   syncFromServer(settings: Partial<UserSettings>): void;
   hydrate(): void;
@@ -44,6 +45,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   darkMode: true,
   autocomplete: true,
   fileStubs: true,
+  traceMode: false,
   promptCollapsed: false,
 };
 
@@ -123,6 +125,10 @@ export function createSettingsStore() {
 
       setFileStubs(enabled) {
         update({ fileStubs: enabled });
+      },
+
+      setTraceMode(enabled) {
+        update({ traceMode: enabled });
       },
 
       setPromptCollapsed(collapsed) {

@@ -58,6 +58,8 @@ export function useSettingsSync() {
         keybindings: settings.keybindings,
         darkMode: settings.darkMode,
         formatter: settings.formatter,
+        traceMode: settings.traceMode,
+        fileStubs: settings.fileStubs,
       }).catch(() => {
         console.warn('Failed to sync settings to server');
       });

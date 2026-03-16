@@ -119,3 +119,9 @@
   margin-top: 6px;
   margin-left: 4px;
 }
+
+/* Monaco trace mode ghost text */
+.ghost-text {
+  opacity: 0.4;
+  font-style: italic;
+}

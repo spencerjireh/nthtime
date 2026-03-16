@@ -53,6 +53,9 @@ public class UserSettings {
   @Column(name = "file_stubs")
   private Boolean fileStubs = true;
 
+  @Column(name = "trace_mode")
+  private Boolean traceMode = false;
+
   @Column(name = "updated_at", nullable = false)
   private Instant updatedAt = Instant.now();
 
@@ -144,6 +147,14 @@ public class UserSettings {
 
   public void setFileStubs(Boolean fileStubs) {
     this.fileStubs = fileStubs;
+  }
+
+  public Boolean getTraceMode() {
+    return traceMode;
+  }
+
+  public void setTraceMode(Boolean traceMode) {
+    this.traceMode = traceMode;
   }
 
   public Instant getUpdatedAt() {

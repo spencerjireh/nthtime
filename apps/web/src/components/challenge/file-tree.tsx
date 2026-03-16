@@ -71,6 +71,7 @@ interface FileTreeProps {
   onRenameFile?: (oldPath: string, newPath: string) => void;
   onDeleteFile?: (path: string) => void;
   fileStatus?: (path: string) => 'pass' | 'fail' | null;
+  ghostFiles?: string[];
 }
 
 export function FileTree({
@@ -81,12 +82,23 @@ export function FileTree({
   onRenameFile,
   onDeleteFile,
   fileStatus,
+  ghostFiles,
 }: FileTreeProps) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [creating, setCreating] = useState<string | null>(null); // parent folder path or '' for root
   const [renaming, setRenaming] = useState<string | null>(null); // full file path being renamed
 
-  const tree = useMemo(() => buildTree(files), [files]);
+  const allFiles = useMemo(() => {
+    if (!ghostFiles || ghostFiles.length === 0) return files;
+    return [...files, ...ghostFiles];
+  }, [files, ghostFiles]);
+
+  const ghostSet = useMemo(
+    () => new Set(ghostFiles ?? []),
+    [ghostFiles],
+  );
+
+  const tree = useMemo(() => buildTree(allFiles), [allFiles]);
 
   const toggleFolder = useCallback((folderPath: string) => {
     setExpandedFolders((prev) => {
@@ -176,6 +188,7 @@ export function FileTree({
             onStartRename={setRenaming}
             showCrud={!!onCreateFile}
             fileStatus={fileStatus}
+            ghostSet={ghostSet}
           />
         ))}
         {creating === '' && (
@@ -207,6 +220,7 @@ function TreeNodeRow({
   onStartRename,
   showCrud,
   fileStatus,
+  ghostSet,
 }: {
   node: TreeNode;
   depth: number;
@@ -223,6 +237,7 @@ function TreeNodeRow({
   onStartRename: (path: string) => void;
   showCrud: boolean;
   fileStatus?: (path: string) => 'pass' | 'fail' | null;
+  ghostSet?: Set<string>;
 }) {
   const paddingLeft = depth * 12 + 8;
 
@@ -289,6 +304,7 @@ function TreeNodeRow({
                 onStartRename={onStartRename}
                 showCrud={showCrud}
                 fileStatus={fileStatus}
+                ghostSet={ghostSet}
               />
             ))}
             {creating === node.path && (
@@ -306,6 +322,8 @@ function TreeNodeRow({
   }
 
   // File node
+  const isGhost = ghostSet?.has(node.path) ?? false;
+
   if (renaming === node.path) {
     return (
       <InlineInput
@@ -321,9 +339,11 @@ function TreeNodeRow({
     <div
       className={cn(
         'group flex w-full items-center gap-1.5 py-1.5 text-left text-xs transition-colors',
-        node.path === activeFile
-          ? 'bg-accent text-accent-foreground'
-          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+        isGhost
+          ? 'italic opacity-50 text-muted-foreground hover:bg-muted hover:text-foreground'
+          : node.path === activeFile
+            ? 'bg-accent text-accent-foreground'
+            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
       )}
       style={{ paddingLeft }}
     >
@@ -337,7 +357,7 @@ function TreeNodeRow({
         <span className="truncate">{node.name}</span>
         <FileIndicatorDot path={node.path} fileStatus={fileStatus} />
       </button>
-      {showCrud && (
+      {showCrud && !isGhost && (
         <span className="mr-1 flex shrink-0 gap-0.5 opacity-0 group-hover:opacity-100">
           <button
             onClick={() => onStartRename(node.path)}
@@ -358,7 +378,7 @@ function TreeNodeRow({
     </div>
   );
 
-  if (showCrud) {
+  if (showCrud && !isGhost) {
     return (
       <ContextMenu>
         <ContextMenuTrigger asChild>

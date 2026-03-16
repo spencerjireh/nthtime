@@ -151,6 +151,25 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             </p>
           </section>
 
+          {/* Trace Mode */}
+          <section className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="trace-mode"
+                checked={settings.traceMode}
+                onCheckedChange={(checked) =>
+                  store.getState().setTraceMode(checked === true)
+                }
+              />
+              <label htmlFor="trace-mode" className="text-sm text-foreground">
+                Trace mode
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Show ghost text guiding you through the reference solution as you type.
+            </p>
+          </section>
+
           {/* Formatter */}
           <section className="space-y-3">
             <h3 className="text-sm font-medium text-foreground">Formatter</h3>

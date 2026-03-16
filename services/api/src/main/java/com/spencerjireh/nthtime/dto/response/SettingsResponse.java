@@ -5,7 +5,8 @@ public record SettingsResponse(
     String keybindings,
     boolean darkMode,
     Object formatter,
-    boolean fileStubs) {
+    boolean fileStubs,
+    boolean traceMode) {
   public record FeedbackConfig(
       boolean showPassFail,
       boolean showHints,

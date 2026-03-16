@@ -45,4 +45,5 @@ export interface UserSettings {
   readonly autocomplete: boolean;
   readonly promptCollapsed: boolean;
   readonly fileStubs: boolean;
+  readonly traceMode: boolean;
 }
