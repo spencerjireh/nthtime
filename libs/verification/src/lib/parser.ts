@@ -17,6 +17,7 @@ export async function parseFile(
 
   const parser = await createParser(grammarName, wasmBasePath);
   const tree = parser.parse(file.content);
+  parser.delete();
 
   return {
     path: file.path,

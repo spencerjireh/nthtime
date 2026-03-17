@@ -17,6 +17,12 @@ export function CatalogSearch({ value, onChange }: CatalogSearchProps) {
     setLocal(value);
   }, [value]);
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const next = e.target.value;

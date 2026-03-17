@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import type { OnChange, OnMount, EditorProps } from '@monaco-editor/react';
+import type { BeforeMount, OnChange, OnMount, EditorProps } from '@monaco-editor/react';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.default), {
   ssr: false,
@@ -17,7 +17,10 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.
 // lives at module scope so it outlives any individual component mount/unmount cycle.
 // The match checks name, message, and string coercion to be robust against Monaco's
 // minified CDN bundle where property assignments may differ from source.
-if (typeof window !== 'undefined') {
+// The symbol guard prevents duplicate registration on hot reloads.
+const _MONACO_REJECTION_GUARD = '__monacoRejectionGuard';
+if (typeof window !== 'undefined' && !(window as Record<string, unknown>)[_MONACO_REJECTION_GUARD]) {
+  (window as Record<string, unknown>)[_MONACO_REJECTION_GUARD] = true;
   window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
     const r = e.reason;
     if (r?.name === 'Canceled' || r?.message === 'Canceled') {
@@ -35,6 +38,20 @@ interface MonacoWrapperProps {
   options?: EditorProps['options'];
 }
 
+const beforeMount: BeforeMount = (monaco) => {
+  // Suppress Monaco's built-in TS/JS diagnostics — Tree-sitter (useParseDiagnostics)
+  // handles parse error markers. Monaco's service has no React types, so it produces
+  // spurious JSX/import errors on valid reference-solution code.
+  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+    noSyntaxValidation: true,
+  });
+  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+    noSyntaxValidation: true,
+  });
+};
+
 export function MonacoWrapper({
   value,
   language,
@@ -45,6 +62,7 @@ export function MonacoWrapper({
 }: MonacoWrapperProps) {
   return (
     <MonacoEditor
+      beforeMount={beforeMount}
       value={value}
       language={language}
       theme={theme}
