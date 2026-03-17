@@ -1,8 +1,30 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { TabBar } from './tab-bar';
 
 const TABS = ['src/app.js', 'src/utils/helpers.ts', 'package.json'];
+
+function mockResizeObserver(onConstruct?: (cb: ResizeObserverCallback) => void) {
+  globalThis.ResizeObserver = class {
+    constructor(cb: ResizeObserverCallback) {
+      onConstruct?.(cb);
+    }
+    observe() { /* noop */ }
+    unobserve() { /* noop */ }
+    disconnect() { /* noop */ }
+  } as unknown as typeof ResizeObserver;
+}
+
+// jsdom lacks ResizeObserver and scrollIntoView
+beforeAll(() => {
+  mockResizeObserver();
+  Element.prototype.scrollIntoView = vi.fn();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  mockResizeObserver();
+});
 
 describe('TabBar', () => {
   it('renders filenames from tab paths', () => {
@@ -108,5 +130,62 @@ describe('TabBar', () => {
 
     // The drop target should now have the border-l-primary class
     expect(tabElements[1].className).toContain('border-l-primary');
+  });
+
+  it('scroll arrows are hidden when all tabs fit', () => {
+    render(<TabBar tabs={TABS} activeTab={TABS[0]} onSelect={vi.fn()} />);
+    expect(screen.queryByLabelText('Scroll tabs left')).toBeNull();
+    expect(screen.queryByLabelText('Scroll tabs right')).toBeNull();
+  });
+
+  it('data-tab-path attribute is set on each tab', () => {
+    const { container } = render(
+      <TabBar tabs={TABS} activeTab={TABS[0]} onSelect={vi.fn()} />,
+    );
+    expect(container.querySelector('[data-tab-path="src/app.js"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-tab-path="src/utils/helpers.ts"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-tab-path="package.json"]')).toBeInTheDocument();
+  });
+
+  it('scroll arrows appear when overflow is detected', () => {
+    let resizeCallback: ResizeObserverCallback | undefined;
+    mockResizeObserver((cb) => { resizeCallback = cb; });
+
+    render(<TabBar tabs={TABS} activeTab={TABS[0]} onSelect={vi.fn()} />);
+
+    // Simulate overflow: scrollWidth > clientWidth, scrolled partway
+    const scrollContainer = screen.getByTitle(/Switch tabs/);
+    Object.defineProperty(scrollContainer, 'scrollWidth', { value: 600, configurable: true });
+    Object.defineProperty(scrollContainer, 'clientWidth', { value: 300, configurable: true });
+    Object.defineProperty(scrollContainer, 'scrollLeft', { value: 50, configurable: true });
+
+    act(() => {
+      resizeCallback?.([], {} as ResizeObserver);
+    });
+
+    expect(screen.getByLabelText('Scroll tabs left')).toBeInTheDocument();
+    expect(screen.getByLabelText('Scroll tabs right')).toBeInTheDocument();
+  });
+
+  it('clicking scroll right calls scrollBy', () => {
+    let resizeCallback: ResizeObserverCallback | undefined;
+    mockResizeObserver((cb) => { resizeCallback = cb; });
+
+    render(<TabBar tabs={TABS} activeTab={TABS[0]} onSelect={vi.fn()} />);
+
+    const scrollContainer = screen.getByTitle(/Switch tabs/);
+    Object.defineProperty(scrollContainer, 'scrollWidth', { value: 600, configurable: true });
+    Object.defineProperty(scrollContainer, 'clientWidth', { value: 300, configurable: true });
+    Object.defineProperty(scrollContainer, 'scrollLeft', { value: 0, configurable: true });
+
+    const scrollBySpy = vi.fn();
+    scrollContainer.scrollBy = scrollBySpy;
+
+    act(() => {
+      resizeCallback?.([], {} as ResizeObserver);
+    });
+
+    fireEvent.click(screen.getByLabelText('Scroll tabs right'));
+    expect(scrollBySpy).toHaveBeenCalledWith({ left: 200, behavior: 'smooth' });
   });
 });
