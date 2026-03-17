@@ -62,7 +62,7 @@ export function TabBar({
         ref={scrollRef}
         className="flex flex-1 overflow-x-auto"
         style={{ scrollbarWidth: 'thin' }}
-        title="Switch tabs: Cmd+Shift+[ / ]"
+        title="Switch tabs: Cmd+Shift+[ / ] · Ctrl+Tab / Ctrl+Shift+Tab · Ctrl+1–9 · Ctrl+W to close"
       >
         {tabs.map((path, index) => (
           <div

@@ -60,8 +60,9 @@ describe('FileTree', () => {
 
   it('renders file type icons', () => {
     render(<FileTree {...defaultProps} />);
-    // JS files should have JS icon
-    expect(screen.getAllByText('JS')).toHaveLength(2); // app.js, server.js
+    // Each file's select button (identified by filename text) should contain an icon SVG
+    expect(screen.getByText('app.js').closest('button')?.querySelector('svg')).toBeInTheDocument();
+    expect(screen.getByText('server.js').closest('button')?.querySelector('svg')).toBeInTheDocument();
   });
 
   it('does not show create button when onCreateFile is not provided', () => {

@@ -34,6 +34,7 @@ export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: Docka
   const tabOrder = useEditorStore((s) => s.tabOrder);
   const activeFilePath = useEditorStore((s) => s.activeFilePath);
   const setActiveFile = useEditorStore((s) => s.setActiveFile);
+  const closeTab = useEditorStore((s) => s.closeTab);
   const store = getSettingsStore();
   const promptCollapsed = useStore(store, (s) => s.settings.promptCollapsed);
   const keybindings = useStore(store, (s) => s.settings.keybindings);
@@ -59,9 +60,10 @@ export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: Docka
     mountedRef.current = true;
     if (promptCollapsed) {
       // Small delay to let the panel mount before collapsing
-      requestAnimationFrame(() => {
+      const raf = requestAnimationFrame(() => {
         promptPanelRef.current?.collapse();
       });
+      return () => cancelAnimationFrame(raf);
     }
   }, []);
 
@@ -130,11 +132,40 @@ export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: Docka
         if (idx < tabOrder.length - 1) setActiveFile(tabOrder[idx + 1]);
         return;
       }
+
+      // Ctrl+Tab / Ctrl+Shift+Tab: cycle tabs (wrapping)
+      if (e.ctrlKey && e.key === 'Tab') {
+        e.preventDefault();
+        if (tabOrder.length < 2) return;
+        const idx = tabOrder.indexOf(activeFilePath ?? '');
+        const next = e.shiftKey
+          ? idx <= 0 ? tabOrder.length - 1 : idx - 1
+          : idx >= tabOrder.length - 1 ? 0 : idx + 1;
+        setActiveFile(tabOrder[next]);
+        return;
+      }
+
+      // Ctrl+1–9: jump to tab by position
+      if (e.ctrlKey && !e.shiftKey && !e.metaKey && e.key >= '1' && e.key <= '9') {
+        const target = parseInt(e.key) - 1;
+        if (target < tabOrder.length) {
+          e.preventDefault();
+          setActiveFile(tabOrder[target]);
+        }
+        return;
+      }
+
+      // Ctrl+W: close active tab
+      if (e.ctrlKey && !e.shiftKey && e.key === 'w') {
+        e.preventDefault();
+        if (activeFilePath) closeTab(activeFilePath);
+        return;
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onRun, togglePrompt, tabOrder, activeFilePath, setActiveFile]);
+  }, [onRun, togglePrompt, tabOrder, activeFilePath, setActiveFile, closeTab]);
 
   return (
     <div className="relative flex h-full w-full flex-col">

@@ -1,7 +1,19 @@
 'use client';
 
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
-import { Pencil, Trash2, FilePlus } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  File,
+  FileCode,
+  FileJson,
+  FilePlus,
+  Folder,
+  FolderOpen,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   ContextMenu,
@@ -10,20 +22,23 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 
-const FILE_ICONS: Record<string, string> = {
-  '.js': 'JS',
-  '.jsx': 'JX',
-  '.ts': 'TS',
-  '.tsx': 'TX',
-  '.py': 'PY',
-  '.html': 'HT',
-  '.css': 'CS',
-  '.json': 'JN',
+type FileIconConfig = { icon: LucideIcon; className: string };
+
+const FILE_ICON_MAP: Record<string, FileIconConfig> = {
+  '.js': { icon: FileCode, className: 'text-yellow-500/70' },
+  '.jsx': { icon: FileCode, className: 'text-yellow-500/70' },
+  '.ts': { icon: FileCode, className: 'text-blue-400/70' },
+  '.tsx': { icon: FileCode, className: 'text-blue-400/70' },
+  '.py': { icon: FileCode, className: 'text-green-500/70' },
+  '.html': { icon: FileCode, className: 'text-orange-500/70' },
+  '.css': { icon: FileCode, className: 'text-purple-400/70' },
+  '.json': { icon: FileJson, className: 'text-muted-foreground' },
 };
 
-function getFileIcon(path: string): string {
+function FileIcon({ path }: { path: string }) {
   const ext = path.slice(path.lastIndexOf('.'));
-  return FILE_ICONS[ext] ?? '--';
+  const config = FILE_ICON_MAP[ext] ?? { icon: File, className: 'text-muted-foreground' };
+  return <config.icon className={cn('h-3.5 w-3.5 shrink-0', config.className)} />;
 }
 
 interface TreeNode {
@@ -93,10 +108,7 @@ export function FileTree({
     return [...files, ...ghostFiles];
   }, [files, ghostFiles]);
 
-  const ghostSet = useMemo(
-    () => new Set(ghostFiles ?? []),
-    [ghostFiles],
-  );
+  const ghostSet = useMemo(() => new Set(ghostFiles ?? []), [ghostFiles]);
 
   const tree = useMemo(() => buildTree(allFiles), [allFiles]);
 
@@ -253,7 +265,16 @@ function TreeNodeRow({
           onClick={() => onToggleFolder(node.path)}
           className="flex flex-1 items-center gap-1 overflow-hidden"
         >
-          <span className="shrink-0 text-[10px]">{isExpanded ? '\u25BE' : '\u25B8'}</span>
+          {isExpanded ? (
+            <ChevronDown className="h-3 w-3 shrink-0" />
+          ) : (
+            <ChevronRight className="h-3 w-3 shrink-0" />
+          )}
+          {isExpanded ? (
+            <FolderOpen className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          ) : (
+            <Folder className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          )}
           <span className="truncate font-medium">{node.name}</span>
         </button>
         {showCrud && (
@@ -272,9 +293,7 @@ function TreeNodeRow({
       <>
         {showCrud ? (
           <ContextMenu>
-            <ContextMenuTrigger asChild>
-              {folderRow}
-            </ContextMenuTrigger>
+            <ContextMenuTrigger asChild>{folderRow}</ContextMenuTrigger>
             <ContextMenuContent>
               <ContextMenuItem onClick={() => onStartCreate(node.path)}>
                 <FilePlus className="mr-2 h-3.5 w-3.5" /> New File
@@ -342,8 +361,8 @@ function TreeNodeRow({
         isGhost
           ? 'italic opacity-50 text-muted-foreground hover:bg-muted hover:text-foreground'
           : node.path === activeFile
-            ? 'bg-accent text-accent-foreground'
-            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+          ? 'bg-accent text-accent-foreground'
+          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
       )}
       style={{ paddingLeft }}
     >
@@ -351,9 +370,7 @@ function TreeNodeRow({
         onClick={() => onSelect(node.path)}
         className="flex flex-1 items-center gap-1.5 overflow-hidden"
       >
-        <span className="inline-flex h-4 w-5 shrink-0 items-center justify-center rounded text-[10px] font-bold text-muted-foreground">
-          {getFileIcon(node.path)}
-        </span>
+        <FileIcon path={node.path} />
         <span className="truncate">{node.name}</span>
         <FileIndicatorDot path={node.path} fileStatus={fileStatus} />
       </button>
@@ -381,9 +398,7 @@ function TreeNodeRow({
   if (showCrud && !isGhost) {
     return (
       <ContextMenu>
-        <ContextMenuTrigger asChild>
-          {fileRow}
-        </ContextMenuTrigger>
+        <ContextMenuTrigger asChild>{fileRow}</ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem onClick={() => onStartRename(node.path)}>
             <Pencil className="mr-2 h-3.5 w-3.5" /> Rename
@@ -410,13 +425,9 @@ function FileIndicatorDot({
   fileStatus?: (path: string) => 'pass' | 'fail' | null;
 }) {
   const status = fileStatus?.(path) ?? null;
-  const color = status === 'pass' ? 'bg-pass'
-    : status === 'fail' ? 'bg-fail'
-    : null;
+  const color = status === 'pass' ? 'bg-pass' : status === 'fail' ? 'bg-fail' : null;
   if (!color) return null;
-  return (
-    <span className={cn('ml-auto inline-block h-1.5 w-1.5 shrink-0 rounded-full', color)} />
-  );
+  return <span className={cn('ml-auto inline-block h-1.5 w-1.5 shrink-0 rounded-full', color)} />;
 }
 
 function InlineInput({
