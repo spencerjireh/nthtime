@@ -1,0 +1,73 @@
+{
+  "title": "Request Pipeline",
+  "prompt": "Build an Express app with middleware factories for validation, query parsing, and response formatting.\n\n**Requirements in `middleware/validate-body.js`:**\n1. Export a function `validateBody(fields)` that takes an array of required field names\n2. It returns a middleware function that checks each field exists on `req.body`\n3. If any field is missing, respond with `res.status(400).json({ error: 'Missing field: <name>' })`\n4. Otherwise call `next()`\n\n**Requirements in `middleware/parse-query.js`:**\n1. Export a function `parseQuery` middleware that reads `req.query.page` and `req.query.limit`\n2. Set `req.pagination = { page: Number(page) || 1, limit: Number(limit) || 10 }`\n3. Call `next()`\n\n**Requirements in `middleware/format-response.js`:**\n1. Export a function `formatResponse` middleware that wraps `res.json`\n2. Override `res.json` so that calling it wraps the data in `{ success: true, data: <original> }`\n3. Call `next()`\n\n**Requirements in `app.js`:**\n1. Import `express` and all three middleware modules\n2. Enable JSON parsing, register `formatResponse` and `parseQuery` globally\n3. Add GET `/api/items` that uses `req.pagination` to slice an items array\n4. Add POST `/api/items` with `validateBody(['name', 'price'])` as route-level middleware\n5. Export the app as the default export\n\n**Requirements in `server.js`:**\n1. Import `app` and start listening on port 3000",
+  "difficulty": "advanced",
+  "tags": ["middleware", "factory", "pipeline", "advanced"],
+  "timeEstimateSeconds": 960,
+  "files": [
+    {
+      "path": "middleware/validate-body.js",
+      "content": "export function validateBody(fields) {\n  return (req, res, next) => {\n    for (const field of fields) {\n      if (!req.body || req.body[field] === undefined) {\n        return res.status(400).json({ error: `Missing field: ${field}` });\n      }\n    }\n    next();\n  };\n}\n"
+    },
+    {
+      "path": "middleware/parse-query.js",
+      "content": "export function parseQuery(req, res, next) {\n  const { page, limit } = req.query;\n  req.pagination = {\n    page: Number(page) || 1,\n    limit: Number(limit) || 10,\n  };\n  next();\n}\n"
+    },
+    {
+      "path": "middleware/format-response.js",
+      "content": "export function formatResponse(req, res, next) {\n  const originalJson = res.json.bind(res);\n  res.json = (data) => {\n    return originalJson({ success: true, data });\n  };\n  next();\n}\n"
+    },
+    {
+      "path": "app.js",
+      "content": "import express from 'express';\nimport { validateBody } from './middleware/validate-body.js';\nimport { parseQuery } from './middleware/parse-query.js';\nimport { formatResponse } from './middleware/format-response.js';\n\nconst app = express();\n\napp.use(express.json());\napp.use(formatResponse);\napp.use(parseQuery);\n\nconst items = [\n  { id: 1, name: 'Widget', price: 9.99 },\n  { id: 2, name: 'Gadget', price: 14.99 },\n  { id: 3, name: 'Gizmo', price: 4.99 },\n  { id: 4, name: 'Thingamajig', price: 19.99 },\n  { id: 5, name: 'Doohickey', price: 7.99 },\n];\n\napp.get('/api/items', (req, res) => {\n  const { page, limit } = req.pagination;\n  const start = (page - 1) * limit;\n  const paged = items.slice(start, start + limit);\n  res.json(paged);\n});\n\napp.post('/api/items', validateBody(['name', 'price']), (req, res) => {\n  const item = { id: items.length + 1, ...req.body };\n  items.push(item);\n  res.status(201).json(item);\n});\n\nexport default app;\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "hints": [
+    "A middleware factory is a function that returns a middleware function: function validateBody(fields) { return (req, res, next) => { ... } }",
+    "Augment the request object by adding properties: req.pagination = { ... }",
+    "Override res.json by saving the original and replacing it: const original = res.json.bind(res); res.json = (data) => original({ wrapped: data })",
+    "Use Array.slice() with pagination values to page through data"
+  ],
+  "assertions": {
+    "perFile": {
+      "middleware/validate-body.js": [
+        { "type": "functionDeclaration", "name": "validateBody", "description": "Define the validateBody middleware factory" },
+        { "type": "sexpression", "pattern": "(arrow_function)", "description": "Return an inner middleware function", "hint": "The factory returns a (req, res, next) arrow function" },
+        { "type": "methodCall", "object": "res", "method": "status", "description": "Set 400 status for missing fields" },
+        { "type": "exportDeclaration", "name": "validateBody", "isDefault": false, "description": "Export validateBody as a named export" }
+      ],
+      "middleware/parse-query.js": [
+        { "type": "functionDeclaration", "name": "parseQuery", "params": ["req", "res", "next"], "description": "Define the parseQuery middleware" },
+        { "type": "sexpression", "pattern": "(member_expression object: (identifier) @obj property: (property_identifier) @prop (#eq? @obj \"req\") (#eq? @prop \"query\"))", "description": "Access req.query to read query parameters", "hint": "Read page and limit from req.query" },
+        { "type": "methodCall", "method": "next", "description": "Call next() to continue the chain" },
+        { "type": "exportDeclaration", "name": "parseQuery", "isDefault": false, "description": "Export parseQuery as a named export" }
+      ],
+      "middleware/format-response.js": [
+        { "type": "functionDeclaration", "name": "formatResponse", "params": ["req", "res", "next"], "description": "Define the formatResponse middleware" },
+        { "type": "methodCall", "method": "next", "description": "Call next() to continue the chain" },
+        { "type": "exportDeclaration", "name": "formatResponse", "isDefault": false, "description": "Export formatResponse as a named export" }
+      ],
+      "app.js": [
+        { "type": "importDeclaration", "source": "express", "description": "Import express" },
+        { "type": "importDeclaration", "source": "./middleware/validate-body.js", "specifiers": ["validateBody"], "description": "Import the validateBody factory" },
+        { "type": "importDeclaration", "source": "./middleware/parse-query.js", "specifiers": ["parseQuery"], "description": "Import the parseQuery middleware" },
+        { "type": "importDeclaration", "source": "./middleware/format-response.js", "specifiers": ["formatResponse"], "description": "Import the formatResponse middleware" },
+        { "type": "methodCall", "object": "app", "method": "use", "description": "Register global middleware" },
+        { "type": "methodCall", "object": "app", "method": "get", "description": "Define GET route for paginated items" },
+        { "type": "methodCall", "object": "app", "method": "post", "description": "Define POST route with body validation" },
+        { "type": "exportDeclaration", "name": "app", "isDefault": true, "description": "Export the app as default" }
+      ]
+    },
+    "crossFile": [
+      { "type": "importDeclaration", "source": "./app.js", "description": "Import the app module" },
+      { "type": "methodCall", "object": "app", "method": "listen", "description": "Start the server" },
+      { "type": "functionDeclaration", "name": "validateBody", "description": "ValidateBody factory exists across files" },
+      { "type": "functionDeclaration", "name": "parseQuery", "description": "ParseQuery middleware exists across files" },
+      { "type": "functionDeclaration", "name": "formatResponse", "description": "FormatResponse middleware exists across files" }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "title": "Async Error Handling",
+  "prompt": "Build an Express app with custom error classes and centralized error handling.\n\n**Requirements in `errors.js`:**\n1. Define a class `AppError` that extends `Error` with a `statusCode` property\n2. Define a class `NotFoundError` that extends `AppError` with `statusCode` set to `404`\n3. Export both classes as named exports\n\n**Requirements in `middleware/error-handler.js`:**\n1. Export a function `errorHandler` with four parameters `(err, req, res, next)`\n2. If `err` is an instance of `AppError`, respond with `err.statusCode` and `{ error: err.message }`\n3. Otherwise respond with `500` and `{ error: 'Internal Server Error' }`\n\n**Requirements in `app.js`:**\n1. Import `express`, `NotFoundError`, and `errorHandler`\n2. Add a GET route at `/api/items/:id` that throws `new NotFoundError('Item not found')` (wrap in try/catch, forward with `next(err)`)\n3. Add a GET route at `/api/status` that returns `{ status: 'ok' }`\n4. Register `errorHandler` as the last middleware\n5. Export the app as the default export\n\n**Requirements in `server.js`:**\n1. Import `app` and start listening on port 3000",
+  "difficulty": "intermediate",
+  "tags": ["errors", "async", "middleware", "classes"],
+  "timeEstimateSeconds": 780,
+  "files": [
+    {
+      "path": "errors.js",
+      "content": "export class AppError extends Error {\n  constructor(message, statusCode) {\n    super(message);\n    this.statusCode = statusCode;\n  }\n}\n\nexport class NotFoundError extends AppError {\n  constructor(message) {\n    super(message, 404);\n  }\n}\n"
+    },
+    {
+      "path": "middleware/error-handler.js",
+      "content": "import { AppError } from '../errors.js';\n\nexport function errorHandler(err, req, res, next) {\n  if (err instanceof AppError) {\n    res.status(err.statusCode).json({ error: err.message });\n  } else {\n    res.status(500).json({ error: 'Internal Server Error' });\n  }\n}\n"
+    },
+    {
+      "path": "app.js",
+      "content": "import express from 'express';\nimport { NotFoundError } from './errors.js';\nimport { errorHandler } from './middleware/error-handler.js';\n\nconst app = express();\n\napp.get('/api/items/:id', async (req, res, next) => {\n  try {\n    throw new NotFoundError('Item not found');\n  } catch (err) {\n    next(err);\n  }\n});\n\napp.get('/api/status', (req, res) => {\n  res.json({ status: 'ok' });\n});\n\napp.use(errorHandler);\n\nexport default app;\n"
+    },
+    {
+      "path": "server.js",
+      "content": "import app from './app.js';\n\nconst PORT = 3000;\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n"
+    }
+  ],
+  "hints": [
+    "Custom errors extend Error: class AppError extends Error { constructor(message, statusCode) { super(message); this.statusCode = statusCode; } }",
+    "Use try/catch in async handlers and forward errors with next(err)",
+    "Error handling middleware MUST have exactly 4 parameters: (err, req, res, next)",
+    "Register the error handler after all routes with app.use(errorHandler)"
+  ],
+  "assertions": {
+    "perFile": {
+      "errors.js": [
+        { "type": "sexpression", "pattern": "(class_declaration name: (identifier) @name (#eq? @name \"AppError\"))", "description": "Define the AppError class extending Error", "hint": "Create a class AppError that extends Error with a statusCode property" },
+        { "type": "sexpression", "pattern": "(class_declaration name: (identifier) @name (#eq? @name \"NotFoundError\"))", "description": "Define the NotFoundError class extending AppError" },
+        { "type": "sexpression", "pattern": "(call_expression function: (super))", "description": "Call super() in constructor", "hint": "Call super(message) in the Error subclass constructor" },
+        { "type": "exportDeclaration", "name": "AppError", "isDefault": false, "description": "Export AppError as a named export" },
+        { "type": "exportDeclaration", "name": "NotFoundError", "isDefault": false, "description": "Export NotFoundError as a named export" }
+      ],
+      "middleware/error-handler.js": [
+        { "type": "importDeclaration", "source": "../errors.js", "description": "Import error classes" },
+        { "type": "functionDeclaration", "name": "errorHandler", "params": ["err", "req", "res", "next"], "description": "Define 4-param error handling middleware" },
+        { "type": "methodCall", "object": "res", "method": "status", "description": "Set HTTP status code on error response" },
+        { "type": "exportDeclaration", "name": "errorHandler", "isDefault": false, "description": "Export errorHandler as a named export" }
+      ],
+      "app.js": [
+        { "type": "importDeclaration", "source": "express", "description": "Import the express module" },
+        { "type": "importDeclaration", "source": "./errors.js", "specifiers": ["NotFoundError"], "description": "Import the NotFoundError class" },
+        { "type": "importDeclaration", "source": "./middleware/error-handler.js", "specifiers": ["errorHandler"], "description": "Import the error handler middleware" },
+        { "type": "methodCall", "object": "app", "method": "get", "description": "Define GET route handlers" },
+        { "type": "methodCall", "object": "app", "method": "use", "description": "Register the error handler middleware" },
+        { "type": "sexpression", "pattern": "(try_statement)", "description": "Use try/catch for async error handling", "hint": "Wrap async operations in try/catch and forward errors with next(err)" },
+        { "type": "exportDeclaration", "name": "app", "isDefault": true, "description": "Export the app as default" }
+      ]
+    },
+    "crossFile": [
+      { "type": "importDeclaration", "source": "./app.js", "description": "Import the app module" },
+      { "type": "methodCall", "object": "app", "method": "listen", "description": "Start the server" },
+      { "type": "exportDeclaration", "name": "AppError", "isDefault": false, "description": "AppError class is exported across files" },
+      { "type": "functionDeclaration", "name": "errorHandler", "description": "Error handler middleware exists across files" }
+    ]
+  }
+}

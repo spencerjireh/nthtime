@@ -63,6 +63,9 @@
         }
       ]
     },
-    "crossFile": []
+    "crossFile": [
+      { "type": "importDeclaration", "source": "./app.js", "description": "Import the app module" },
+      { "type": "methodCall", "object": "app", "method": "listen", "description": "Start the server" }
+    ]
   }
 }

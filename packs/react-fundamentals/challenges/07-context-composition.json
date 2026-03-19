@@ -1,0 +1,72 @@
+{
+  "title": "Context and Composition",
+  "prompt": "Build a theme system using React Context, a Provider component, and a consumer.\n\n**Requirements in `ThemeContext.tsx`:**\n1. Create a `ThemeContext` using `createContext` with type `{ theme: string; toggleTheme: () => void }`\n2. Export a `useTheme` custom hook that calls `useContext(ThemeContext)` and returns the context value\n3. Export `ThemeContext` as a named export\n\n**Requirements in `ThemeProvider.tsx`:**\n1. Import `ThemeContext` from `./ThemeContext`\n2. Use `useState` to manage a `theme` state (default: `'light'`)\n3. Define a `toggleTheme` function that switches between `'light'` and `'dark'`\n4. Render `<ThemeContext.Provider value={{ theme, toggleTheme }}>` wrapping `children`\n5. Export `ThemeProvider` as a named export\n\n**Requirements in `ThemeToggle.tsx`:**\n1. Import `useTheme` from `./ThemeContext`\n2. Call `useTheme()` to get `theme` and `toggleTheme`\n3. Render a `<button>` that calls `toggleTheme` on click, displaying the current theme\n4. Export `ThemeToggle` as a named export\n\n**Requirements in `App.tsx`:**\n1. Import `ThemeProvider` and `ThemeToggle`\n2. Render `<ThemeProvider>` wrapping `<ThemeToggle />`\n3. Export `App` as a named export",
+  "difficulty": "intermediate",
+  "tags": ["context", "provider", "hooks", "composition"],
+  "timeEstimateSeconds": 720,
+  "files": [
+    {
+      "path": "ThemeContext.tsx",
+      "content": "import { createContext, useContext } from 'react';\n\ninterface ThemeContextType {\n  theme: string;\n  toggleTheme: () => void;\n}\n\nexport const ThemeContext = createContext<ThemeContextType>({\n  theme: 'light',\n  toggleTheme: () => {},\n});\n\nexport function useTheme() {\n  return useContext(ThemeContext);\n}\n"
+    },
+    {
+      "path": "ThemeProvider.tsx",
+      "content": "import { useState } from 'react';\nimport { ThemeContext } from './ThemeContext';\n\nexport function ThemeProvider({ children }: { children: React.ReactNode }) {\n  const [theme, setTheme] = useState('light');\n\n  function toggleTheme() {\n    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));\n  }\n\n  return (\n    <ThemeContext.Provider value={{ theme, toggleTheme }}>\n      {children}\n    </ThemeContext.Provider>\n  );\n}\n"
+    },
+    {
+      "path": "ThemeToggle.tsx",
+      "content": "import { useTheme } from './ThemeContext';\n\nexport function ThemeToggle() {\n  const { theme, toggleTheme } = useTheme();\n\n  return (\n    <button onClick={toggleTheme}>\n      Current theme: {theme}\n    </button>\n  );\n}\n"
+    },
+    {
+      "path": "App.tsx",
+      "content": "import { ThemeProvider } from './ThemeProvider';\nimport { ThemeToggle } from './ThemeToggle';\n\nexport function App() {\n  return (\n    <ThemeProvider>\n      <ThemeToggle />\n    </ThemeProvider>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "createContext takes a default value: createContext({ theme: 'light', toggleTheme: () => {} })",
+    "A custom hook is just a function that calls useContext: function useTheme() { return useContext(ThemeContext); }",
+    "The Provider wraps children: <ThemeContext.Provider value={...}>{children}</ThemeContext.Provider>",
+    "Toggle between values with a ternary: prev === 'light' ? 'dark' : 'light'"
+  ],
+  "assertions": {
+    "perFile": {
+      "ThemeContext.tsx": [
+        { "type": "importDeclaration", "source": "react", "specifiers": ["createContext", "useContext"], "description": "Import createContext and useContext from react" },
+        { "type": "variableDeclaration", "name": "ThemeContext", "kind": "const", "description": "Create the ThemeContext with createContext" },
+        { "type": "functionDeclaration", "name": "useTheme", "description": "Define the useTheme custom hook" },
+        { "type": "methodCall", "method": "useContext", "description": "Call useContext to consume the theme context" },
+        { "type": "exportDeclaration", "name": "ThemeContext", "isDefault": false, "description": "Export ThemeContext as a named export" },
+        { "type": "exportDeclaration", "name": "useTheme", "isDefault": false, "description": "Export useTheme as a named export" }
+      ],
+      "ThemeProvider.tsx": [
+        { "type": "importDeclaration", "source": "react", "specifiers": ["useState"], "description": "Import useState from react" },
+        { "type": "importDeclaration", "source": "./ThemeContext", "specifiers": ["ThemeContext"], "description": "Import ThemeContext" },
+        { "type": "functionDeclaration", "name": "ThemeProvider", "description": "Define the ThemeProvider component" },
+        { "type": "methodCall", "method": "useState", "description": "Initialize theme state with useState" },
+        { "type": "jsxElement", "name": "ThemeContext.Provider", "description": "Render the ThemeContext.Provider wrapper" },
+        { "type": "exportDeclaration", "name": "ThemeProvider", "isDefault": false, "description": "Export ThemeProvider as a named export" }
+      ],
+      "ThemeToggle.tsx": [
+        { "type": "importDeclaration", "source": "./ThemeContext", "specifiers": ["useTheme"], "description": "Import useTheme hook" },
+        { "type": "functionDeclaration", "name": "ThemeToggle", "description": "Define the ThemeToggle component" },
+        { "type": "methodCall", "method": "useTheme", "description": "Call useTheme to access theme context" },
+        { "type": "jsxElement", "name": "button", "props": ["onClick"], "description": "Render a button with onClick handler" },
+        { "type": "exportDeclaration", "name": "ThemeToggle", "isDefault": false, "description": "Export ThemeToggle as a named export" }
+      ],
+      "App.tsx": [
+        { "type": "importDeclaration", "source": "./ThemeProvider", "specifiers": ["ThemeProvider"], "description": "Import ThemeProvider" },
+        { "type": "importDeclaration", "source": "./ThemeToggle", "specifiers": ["ThemeToggle"], "description": "Import ThemeToggle" },
+        { "type": "functionDeclaration", "name": "App", "description": "Define the App component" },
+        { "type": "jsxElement", "name": "ThemeProvider", "description": "Render ThemeProvider as wrapper" },
+        { "type": "jsxElement", "name": "ThemeToggle", "description": "Render ThemeToggle inside the provider" },
+        { "type": "exportDeclaration", "name": "App", "isDefault": false, "description": "Export App as a named export" }
+      ]
+    },
+    "crossFile": [
+      { "type": "exportDeclaration", "name": "ThemeContext", "isDefault": false, "description": "ThemeContext is exported somewhere" },
+      { "type": "exportDeclaration", "name": "useTheme", "isDefault": false, "description": "useTheme hook is exported somewhere" },
+      { "type": "jsxElement", "name": "ThemeToggle", "description": "ThemeToggle is rendered somewhere" },
+      { "type": "methodCall", "method": "useContext", "description": "useContext is called somewhere across files" }
+    ]
+  }
+}

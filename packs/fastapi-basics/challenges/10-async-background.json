@@ -1,0 +1,70 @@
+{
+  "title": "Async and Background Tasks",
+  "prompt": "Build a FastAPI app with async endpoints, background tasks, and streaming responses.\n\n**Requirements in `models.py`:**\n1. Define a `Notification` model (BaseModel) with `email: str` and `message: str`\n2. Define a `TaskResult` model (BaseModel) with `status: str` and `message: str`\n\n**Requirements in `deps.py`:**\n1. Define an `async def get_async_db()` dependency that returns a dict simulating a database\n\n**Requirements in `tasks.py`:**\n1. Define a function `send_notification(email: str, message: str)` that simulates sending an email (just appends to a `notifications` list)\n2. Export the `notifications` list so tests can verify it\n\n**Requirements in `streaming.py`:**\n1. Define an `async def number_generator(n: int)` async generator that yields numbers 0 to n-1 as strings with newlines\n\n**Requirements in `main.py`:**\n1. Import `FastAPI`, `BackgroundTasks`, and `StreamingResponse`\n2. Add an async GET endpoint at `/items` that uses `get_async_db` with `Depends`\n3. Add a POST endpoint at `/notify` that accepts `Notification` and uses `BackgroundTasks` to queue `send_notification`\n4. Add a GET endpoint at `/stream/{count}` that returns a `StreamingResponse` using `number_generator`\n5. Add an async GET endpoint at `/compute` that uses `await` (simulate with a return value)",
+  "difficulty": "advanced",
+  "tags": ["async", "background-tasks", "streaming", "advanced"],
+  "timeEstimateSeconds": 900,
+  "files": [
+    {
+      "path": "models.py",
+      "content": "from pydantic import BaseModel\n\n\nclass Notification(BaseModel):\n    email: str\n    message: str\n\n\nclass TaskResult(BaseModel):\n    status: str\n    message: str\n"
+    },
+    {
+      "path": "deps.py",
+      "content": "db = {\"items\": [{\"id\": 1, \"name\": \"Widget\"}, {\"id\": 2, \"name\": \"Gadget\"}]}\n\n\nasync def get_async_db():\n    return db\n"
+    },
+    {
+      "path": "tasks.py",
+      "content": "notifications: list[dict] = []\n\n\ndef send_notification(email: str, message: str):\n    notifications.append({\"email\": email, \"message\": message})\n"
+    },
+    {
+      "path": "streaming.py",
+      "content": "async def number_generator(n: int):\n    for i in range(n):\n        yield f\"{i}\\n\"\n"
+    },
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI, BackgroundTasks, Depends\nfrom fastapi.responses import StreamingResponse\nfrom models import Notification, TaskResult\nfrom deps import get_async_db\nfrom tasks import send_notification\nfrom streaming import number_generator\n\napp = FastAPI()\n\n\n@app.get(\"/items\")\nasync def list_items(db: dict = Depends(get_async_db)):\n    return db[\"items\"]\n\n\n@app.post(\"/notify\", response_model=TaskResult)\ndef create_notification(\n    notification: Notification, background_tasks: BackgroundTasks\n):\n    background_tasks.add_task(\n        send_notification, notification.email, notification.message\n    )\n    return TaskResult(status=\"queued\", message=f\"Notification queued for {notification.email}\")\n\n\n@app.get(\"/stream/{count}\")\ndef stream_numbers(count: int):\n    return StreamingResponse(number_generator(count), media_type=\"text/plain\")\n\n\n@app.get(\"/compute\")\nasync def compute():\n    result = await async_compute()\n    return {\"result\": result}\n\n\nasync def async_compute():\n    return 42\n"
+    }
+  ],
+  "hints": [
+    "Background tasks are added with background_tasks.add_task(function, *args)",
+    "StreamingResponse wraps an async generator: StreamingResponse(generator(), media_type='text/plain')",
+    "Async dependencies use async def and are awaited automatically by FastAPI",
+    "Use await in async endpoints to call other async functions"
+  ],
+  "assertions": {
+    "perFile": {
+      "models.py": [
+        { "type": "pythonImport", "module": "pydantic", "names": ["BaseModel"], "description": "Import BaseModel from pydantic" },
+        { "type": "pythonClassDef", "name": "Notification", "bases": ["BaseModel"], "description": "Define Notification model" },
+        { "type": "pythonClassDef", "name": "TaskResult", "bases": ["BaseModel"], "description": "Define TaskResult model" }
+      ],
+      "deps.py": [
+        { "type": "pythonFunctionDef", "name": "get_async_db", "description": "Define async database dependency" }
+      ],
+      "tasks.py": [
+        { "type": "pythonFunctionDef", "name": "send_notification", "description": "Define the send_notification background task function" }
+      ],
+      "streaming.py": [
+        { "type": "pythonFunctionDef", "name": "number_generator", "description": "Define the async number generator" },
+        { "type": "sexpression", "pattern": "(yield)", "description": "Yield values from the async generator" }
+      ],
+      "main.py": [
+        { "type": "pythonImport", "module": "fastapi", "names": ["FastAPI", "BackgroundTasks", "Depends"], "description": "Import FastAPI, BackgroundTasks, and Depends" },
+        { "type": "pythonImport", "module": "fastapi.responses", "names": ["StreamingResponse"], "description": "Import StreamingResponse" },
+        { "type": "pythonImport", "module": "tasks", "names": ["send_notification"], "description": "Import send_notification task" },
+        { "type": "pythonImport", "module": "streaming", "names": ["number_generator"], "description": "Import number_generator" },
+        { "type": "pythonFunctionDef", "name": "list_items", "decorator": "app.get", "description": "Define async GET /items endpoint" },
+        { "type": "pythonFunctionDef", "name": "create_notification", "decorator": "app.post", "description": "Define POST /notify endpoint" },
+        { "type": "pythonFunctionDef", "name": "stream_numbers", "decorator": "app.get", "description": "Define GET /stream/{count} endpoint" },
+        { "type": "pythonFunctionDef", "name": "compute", "decorator": "app.get", "description": "Define async GET /compute endpoint" },
+        { "type": "sexpression", "pattern": "(await)", "description": "Use await in async endpoint", "hint": "Use await to call async functions" }
+      ]
+    },
+    "crossFile": [
+      { "type": "pythonFunctionDef", "name": "send_notification", "description": "send_notification function exists across files" },
+      { "type": "pythonFunctionDef", "name": "number_generator", "description": "number_generator function exists across files" },
+      { "type": "pythonImport", "module": "fastapi", "names": ["BackgroundTasks"], "description": "BackgroundTasks is imported across files" }
+    ]
+  }
+}

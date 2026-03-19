@@ -1,0 +1,54 @@
+{
+  "title": "Middleware and Lifespan",
+  "prompt": "Build a FastAPI app with custom middleware and lifespan events.\n\n**Requirements in `middleware.py`:**\n1. Import `time` and define an `async` function `timing_middleware(request, call_next)` (ASGI-style)\n2. Record the start time, call `response = await call_next(request)`, compute duration\n3. Add an `X-Process-Time` header to the response with the duration\n4. Return the response\n\n**Requirements in `lifespan.py`:**\n1. Import `asynccontextmanager` from `contextlib`\n2. Define an async function `lifespan(app)` decorated with `@asynccontextmanager`\n3. Print `'Starting up'` before `yield` and `'Shutting down'` after `yield`\n\n**Requirements in `main.py`:**\n1. Import `FastAPI` and `CORSMiddleware`\n2. Import `timing_middleware` and `lifespan`\n3. Create `app = FastAPI(lifespan=lifespan)`\n4. Add `CORSMiddleware` with `allow_origins=[\"*\"]`\n5. Register the timing middleware with `@app.middleware(\"http\")`\n6. Add a GET endpoint at `/` returning `{\"message\": \"Hello World\"}`\n7. Add a GET endpoint at `/health` returning `{\"status\": \"ok\"}`",
+  "difficulty": "intermediate",
+  "tags": ["middleware", "lifespan", "cors", "async"],
+  "timeEstimateSeconds": 720,
+  "files": [
+    {
+      "path": "middleware.py",
+      "content": "import time\n\n\nasync def timing_middleware(request, call_next):\n    start = time.time()\n    response = await call_next(request)\n    duration = time.time() - start\n    response.headers[\"X-Process-Time\"] = str(duration)\n    return response\n"
+    },
+    {
+      "path": "lifespan.py",
+      "content": "from contextlib import asynccontextmanager\n\n\n@asynccontextmanager\nasync def lifespan(app):\n    print(\"Starting up\")\n    yield\n    print(\"Shutting down\")\n"
+    },
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI\nfrom fastapi.middleware.cors import CORSMiddleware\nfrom middleware import timing_middleware\nfrom lifespan import lifespan\n\napp = FastAPI(lifespan=lifespan)\n\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=[\"*\"],\n    allow_methods=[\"*\"],\n    allow_headers=[\"*\"],\n)\n\n\n@app.middleware(\"http\")\nasync def add_timing(request, call_next):\n    return await timing_middleware(request, call_next)\n\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Hello World\"}\n\n\n@app.get(\"/health\")\ndef health_check():\n    return {\"status\": \"ok\"}\n"
+    }
+  ],
+  "hints": [
+    "ASGI middleware receives (request, call_next) and must await call_next(request)",
+    "Use @asynccontextmanager to define a lifespan: code before yield runs on startup, after on shutdown",
+    "CORSMiddleware is added via app.add_middleware(CORSMiddleware, allow_origins=[...])",
+    "Custom middleware is registered with @app.middleware('http')"
+  ],
+  "assertions": {
+    "perFile": {
+      "middleware.py": [
+        { "type": "pythonImport", "module": "time", "description": "Import the time module" },
+        { "type": "pythonFunctionDef", "name": "timing_middleware", "description": "Define the timing middleware function" },
+        { "type": "sexpression", "pattern": "(await)", "description": "Await call_next(request)", "hint": "Use await call_next(request) to process the request through the pipeline" }
+      ],
+      "lifespan.py": [
+        { "type": "pythonImport", "module": "contextlib", "names": ["asynccontextmanager"], "description": "Import asynccontextmanager" },
+        { "type": "pythonFunctionDef", "name": "lifespan", "description": "Define the lifespan context manager" },
+        { "type": "sexpression", "pattern": "(decorated_definition)", "description": "Use the @asynccontextmanager decorator" },
+        { "type": "sexpression", "pattern": "(yield)", "description": "Yield in the lifespan to separate startup from shutdown" }
+      ],
+      "main.py": [
+        { "type": "pythonImport", "module": "fastapi", "names": ["FastAPI"], "description": "Import FastAPI" },
+        { "type": "pythonImport", "module": "fastapi.middleware.cors", "names": ["CORSMiddleware"], "description": "Import CORSMiddleware" },
+        { "type": "pythonImport", "module": "middleware", "names": ["timing_middleware"], "description": "Import timing middleware" },
+        { "type": "pythonImport", "module": "lifespan", "names": ["lifespan"], "description": "Import lifespan context manager" },
+        { "type": "pythonFunctionDef", "name": "read_root", "decorator": "app.get", "description": "Define GET / endpoint" },
+        { "type": "pythonFunctionDef", "name": "health_check", "decorator": "app.get", "description": "Define GET /health endpoint" }
+      ]
+    },
+    "crossFile": [
+      { "type": "pythonFunctionDef", "name": "timing_middleware", "description": "Timing middleware exists across files" },
+      { "type": "pythonFunctionDef", "name": "lifespan", "description": "Lifespan function exists across files" }
+    ]
+  }
+}

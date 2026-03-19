@@ -1,0 +1,79 @@
+{
+  "title": "Complex State with useReducer",
+  "prompt": "Build a shopping cart using useReducer with typed actions, a reducer, utility functions, and a display component.\n\n**Requirements in `types.ts`:**\n1. Export a `CartItem` interface with `id: number`, `name: string`, `price: number`, `quantity: number`\n2. Export a `CartAction` discriminated union type:\n   - `{ type: 'add'; item: { id: number; name: string; price: number } }`\n   - `{ type: 'remove'; id: number }`\n   - `{ type: 'updateQuantity'; id: number; quantity: number }`\n   - `{ type: 'clear' }`\n\n**Requirements in `cartReducer.ts`:**\n1. Import `CartItem` and `CartAction` from `./types`\n2. Export a function `cartReducer(state: CartItem[], action: CartAction): CartItem[]`\n3. Handle all four action types with a switch statement\n4. `add`: push with quantity 1 (or increment if exists), `remove`: filter out, `updateQuantity`: map and update, `clear`: return `[]`\n\n**Requirements in `cartUtils.ts`:**\n1. Import `CartItem` from `./types`\n2. Export `getCartTotal(items: CartItem[]): number` that sums `price * quantity`\n3. Export `getItemCount(items: CartItem[]): number` that sums all quantities\n\n**Requirements in `CartDisplay.tsx`:**\n1. Accept props `items: CartItem[]` and `onRemove: (id: number) => void`\n2. Render a `<ul>` listing each item's name, quantity, and a remove button\n3. Export `CartDisplay` as a named export\n\n**Requirements in `App.tsx`:**\n1. Use `useReducer` with `cartReducer` and empty array initial state\n2. Display `getCartTotal` and `getItemCount` results\n3. Render `<CartDisplay>` with items and a remove dispatch\n4. Include a button to add a sample item\n5. Export `App` as a named export",
+  "difficulty": "advanced",
+  "tags": ["useReducer", "state", "types", "discriminated-union"],
+  "timeEstimateSeconds": 1200,
+  "files": [
+    {
+      "path": "types.ts",
+      "content": "export interface CartItem {\n  id: number;\n  name: string;\n  price: number;\n  quantity: number;\n}\n\nexport type CartAction =\n  | { type: 'add'; item: { id: number; name: string; price: number } }\n  | { type: 'remove'; id: number }\n  | { type: 'updateQuantity'; id: number; quantity: number }\n  | { type: 'clear' };\n"
+    },
+    {
+      "path": "cartReducer.ts",
+      "content": "import { CartItem, CartAction } from './types';\n\nexport function cartReducer(state: CartItem[], action: CartAction): CartItem[] {\n  switch (action.type) {\n    case 'add': {\n      const existing = state.find(item => item.id === action.item.id);\n      if (existing) {\n        return state.map(item =>\n          item.id === action.item.id\n            ? { ...item, quantity: item.quantity + 1 }\n            : item\n        );\n      }\n      return [...state, { ...action.item, quantity: 1 }];\n    }\n    case 'remove':\n      return state.filter(item => item.id !== action.id);\n    case 'updateQuantity':\n      return state.map(item =>\n        item.id === action.id\n          ? { ...item, quantity: action.quantity }\n          : item\n      );\n    case 'clear':\n      return [];\n    default:\n      return state;\n  }\n}\n"
+    },
+    {
+      "path": "cartUtils.ts",
+      "content": "import { CartItem } from './types';\n\nexport function getCartTotal(items: CartItem[]): number {\n  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);\n}\n\nexport function getItemCount(items: CartItem[]): number {\n  return items.reduce((sum, item) => sum + item.quantity, 0);\n}\n"
+    },
+    {
+      "path": "CartDisplay.tsx",
+      "content": "import { CartItem } from './types';\n\ninterface CartDisplayProps {\n  items: CartItem[];\n  onRemove: (id: number) => void;\n}\n\nexport function CartDisplay({ items, onRemove }: CartDisplayProps) {\n  return (\n    <ul>\n      {items.map(item => (\n        <li key={item.id}>\n          {item.name} x{item.quantity}\n          <button onClick={() => onRemove(item.id)}>Remove</button>\n        </li>\n      ))}\n    </ul>\n  );\n}\n"
+    },
+    {
+      "path": "App.tsx",
+      "content": "import { useReducer } from 'react';\nimport { cartReducer } from './cartReducer';\nimport { getCartTotal, getItemCount } from './cartUtils';\nimport { CartDisplay } from './CartDisplay';\n\nexport function App() {\n  const [items, dispatch] = useReducer(cartReducer, []);\n\n  return (\n    <div>\n      <p>Items: {getItemCount(items)}</p>\n      <p>Total: ${getCartTotal(items).toFixed(2)}</p>\n      <button onClick={() => dispatch({ type: 'add', item: { id: 1, name: 'Widget', price: 9.99 } })}>\n        Add Widget\n      </button>\n      <button onClick={() => dispatch({ type: 'clear' })}>Clear</button>\n      <CartDisplay items={items} onRemove={(id) => dispatch({ type: 'remove', id })} />\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "A discriminated union uses a shared 'type' field: { type: 'add'; item: ... } | { type: 'remove'; id: number }",
+    "useReducer returns [state, dispatch]: const [items, dispatch] = useReducer(cartReducer, [])",
+    "Use Array.reduce() to sum values: items.reduce((sum, item) => sum + item.price * item.quantity, 0)",
+    "Switch on action.type in the reducer to handle each action"
+  ],
+  "assertions": {
+    "perFile": {
+      "types.ts": [
+        { "type": "exportDeclaration", "name": "CartItem", "isDefault": false, "description": "Export the CartItem interface" },
+        { "type": "exportDeclaration", "name": "CartAction", "isDefault": false, "description": "Export the CartAction union type" }
+      ],
+      "cartReducer.ts": [
+        { "type": "importDeclaration", "source": "./types", "specifiers": ["CartItem", "CartAction"], "description": "Import types" },
+        { "type": "functionDeclaration", "name": "cartReducer", "description": "Define the cart reducer function" },
+        { "type": "sexpression", "pattern": "(switch_statement)", "description": "Use a switch statement to handle action types", "hint": "Switch on action.type to handle add, remove, updateQuantity, and clear" },
+        { "type": "exportDeclaration", "name": "cartReducer", "isDefault": false, "description": "Export cartReducer as a named export" }
+      ],
+      "cartUtils.ts": [
+        { "type": "importDeclaration", "source": "./types", "specifiers": ["CartItem"], "description": "Import CartItem type" },
+        { "type": "functionDeclaration", "name": "getCartTotal", "description": "Define the getCartTotal utility function" },
+        { "type": "functionDeclaration", "name": "getItemCount", "description": "Define the getItemCount utility function" },
+        { "type": "exportDeclaration", "name": "getCartTotal", "isDefault": false, "description": "Export getCartTotal" },
+        { "type": "exportDeclaration", "name": "getItemCount", "isDefault": false, "description": "Export getItemCount" }
+      ],
+      "CartDisplay.tsx": [
+        { "type": "importDeclaration", "source": "./types", "description": "Import types" },
+        { "type": "functionDeclaration", "name": "CartDisplay", "description": "Define the CartDisplay component" },
+        { "type": "jsxElement", "name": "button", "props": ["onClick"], "description": "Render a remove button for each item" },
+        { "type": "exportDeclaration", "name": "CartDisplay", "isDefault": false, "description": "Export CartDisplay as a named export" }
+      ],
+      "App.tsx": [
+        { "type": "importDeclaration", "source": "react", "specifiers": ["useReducer"], "description": "Import useReducer from react" },
+        { "type": "importDeclaration", "source": "./cartReducer", "specifiers": ["cartReducer"], "description": "Import the cart reducer" },
+        { "type": "importDeclaration", "source": "./cartUtils", "specifiers": ["getCartTotal", "getItemCount"], "description": "Import cart utility functions" },
+        { "type": "importDeclaration", "source": "./CartDisplay", "specifiers": ["CartDisplay"], "description": "Import CartDisplay component" },
+        { "type": "functionDeclaration", "name": "App", "description": "Define the App component" },
+        { "type": "methodCall", "method": "useReducer", "description": "Initialize cart state with useReducer" },
+        { "type": "jsxElement", "name": "CartDisplay", "props": ["items", "onRemove"], "description": "Render CartDisplay with items and onRemove props" },
+        { "type": "exportDeclaration", "name": "App", "isDefault": false, "description": "Export App as a named export" }
+      ]
+    },
+    "crossFile": [
+      { "type": "functionDeclaration", "name": "cartReducer", "description": "Cart reducer exists across files" },
+      { "type": "functionDeclaration", "name": "getCartTotal", "description": "getCartTotal utility exists across files" },
+      { "type": "functionDeclaration", "name": "getItemCount", "description": "getItemCount utility exists across files" },
+      { "type": "methodCall", "method": "useReducer", "description": "useReducer is called somewhere across files" },
+      { "type": "jsxElement", "name": "CartDisplay", "props": ["items", "onRemove"], "description": "CartDisplay is rendered with correct props" }
+    ]
+  }
+}

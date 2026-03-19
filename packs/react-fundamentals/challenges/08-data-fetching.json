@@ -1,0 +1,69 @@
+{
+  "title": "Data Fetching with Hooks",
+  "prompt": "Build a reusable data-fetching hook and two components that consume it.\n\n**Requirements in `useFetch.ts`:**\n1. Export a function `useFetch<T>(url: string)` that returns `{ data: T | null; loading: boolean; error: string | null }`\n2. Use `useState` for data, loading (default `true`), and error states\n3. Use `useEffect` to fetch from the URL with `fetch()`, parse JSON, and update state\n4. Create an `AbortController` inside the effect and call `controller.abort()` in the cleanup\n\n**Requirements in `UserProfile.tsx`:**\n1. Import and call `useFetch` with `'/api/user'`\n2. Show `'Loading...'` while loading, the error if present, or the user's name\n3. Export `UserProfile` as a named export\n\n**Requirements in `PostList.tsx`:**\n1. Import and call `useFetch` with `'/api/posts'`\n2. Show `'Loading...'` while loading, the error if present, or a `<ul>` of post titles\n3. Export `PostList` as a named export\n\n**Requirements in `App.tsx`:**\n1. Render both `<UserProfile />` and `<PostList />`\n2. Export `App` as a named export",
+  "difficulty": "intermediate",
+  "tags": ["hooks", "fetch", "useEffect", "abort", "custom-hooks"],
+  "timeEstimateSeconds": 900,
+  "files": [
+    {
+      "path": "useFetch.ts",
+      "content": "import { useState, useEffect } from 'react';\n\nexport function useFetch<T>(url: string): { data: T | null; loading: boolean; error: string | null } {\n  const [data, setData] = useState<T | null>(null);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState<string | null>(null);\n\n  useEffect(() => {\n    const controller = new AbortController();\n\n    fetch(url, { signal: controller.signal })\n      .then(res => {\n        if (!res.ok) throw new Error(`HTTP ${res.status}`);\n        return res.json();\n      })\n      .then(json => {\n        setData(json);\n        setLoading(false);\n      })\n      .catch(err => {\n        if (err.name !== 'AbortError') {\n          setError(err.message);\n          setLoading(false);\n        }\n      });\n\n    return () => controller.abort();\n  }, [url]);\n\n  return { data, loading, error };\n}\n"
+    },
+    {
+      "path": "UserProfile.tsx",
+      "content": "import { useFetch } from './useFetch';\n\ninterface User {\n  name: string;\n  email: string;\n}\n\nexport function UserProfile() {\n  const { data, loading, error } = useFetch<User>('/api/user');\n\n  if (loading) return <p>Loading...</p>;\n  if (error) return <p>Error: {error}</p>;\n  return <p>User: {data?.name}</p>;\n}\n"
+    },
+    {
+      "path": "PostList.tsx",
+      "content": "import { useFetch } from './useFetch';\n\ninterface Post {\n  id: number;\n  title: string;\n}\n\nexport function PostList() {\n  const { data, loading, error } = useFetch<Post[]>('/api/posts');\n\n  if (loading) return <p>Loading...</p>;\n  if (error) return <p>Error: {error}</p>;\n  return (\n    <ul>\n      {data?.map(post => (\n        <li key={post.id}>{post.title}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    },
+    {
+      "path": "App.tsx",
+      "content": "import { UserProfile } from './UserProfile';\nimport { PostList } from './PostList';\n\nexport function App() {\n  return (\n    <div>\n      <UserProfile />\n      <PostList />\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Create the AbortController before the fetch call: const controller = new AbortController()",
+    "Pass the signal to fetch: fetch(url, { signal: controller.signal })",
+    "Return a cleanup function that aborts: return () => controller.abort()",
+    "Check for AbortError to avoid setting state after unmount: if (err.name !== 'AbortError')"
+  ],
+  "assertions": {
+    "perFile": {
+      "useFetch.ts": [
+        { "type": "importDeclaration", "source": "react", "specifiers": ["useState", "useEffect"], "description": "Import useState and useEffect from react" },
+        { "type": "functionDeclaration", "name": "useFetch", "description": "Define the useFetch custom hook" },
+        { "type": "methodCall", "method": "useState", "description": "Initialize state for data, loading, and error" },
+        { "type": "methodCall", "method": "useEffect", "description": "Set up the fetch effect with cleanup" },
+        { "type": "methodCall", "method": "fetch", "description": "Fetch data from the URL" },
+        { "type": "sexpression", "pattern": "(new_expression constructor: (identifier) @name (#eq? @name \"AbortController\"))", "description": "Create an AbortController for cleanup", "hint": "Create an AbortController to cancel the fetch on unmount" },
+        { "type": "exportDeclaration", "name": "useFetch", "isDefault": false, "description": "Export useFetch as a named export" }
+      ],
+      "UserProfile.tsx": [
+        { "type": "importDeclaration", "source": "./useFetch", "specifiers": ["useFetch"], "description": "Import the useFetch hook" },
+        { "type": "functionDeclaration", "name": "UserProfile", "description": "Define the UserProfile component" },
+        { "type": "methodCall", "method": "useFetch", "description": "Call useFetch to load user data" },
+        { "type": "exportDeclaration", "name": "UserProfile", "isDefault": false, "description": "Export UserProfile as a named export" }
+      ],
+      "PostList.tsx": [
+        { "type": "importDeclaration", "source": "./useFetch", "specifiers": ["useFetch"], "description": "Import the useFetch hook" },
+        { "type": "functionDeclaration", "name": "PostList", "description": "Define the PostList component" },
+        { "type": "methodCall", "method": "useFetch", "description": "Call useFetch to load posts data" },
+        { "type": "exportDeclaration", "name": "PostList", "isDefault": false, "description": "Export PostList as a named export" }
+      ],
+      "App.tsx": [
+        { "type": "importDeclaration", "source": "./UserProfile", "specifiers": ["UserProfile"], "description": "Import UserProfile" },
+        { "type": "importDeclaration", "source": "./PostList", "specifiers": ["PostList"], "description": "Import PostList" },
+        { "type": "functionDeclaration", "name": "App", "description": "Define the App component" },
+        { "type": "jsxElement", "name": "UserProfile", "description": "Render the UserProfile component" },
+        { "type": "jsxElement", "name": "PostList", "description": "Render the PostList component" },
+        { "type": "exportDeclaration", "name": "App", "isDefault": false, "description": "Export App as a named export" }
+      ]
+    },
+    "crossFile": [
+      { "type": "methodCall", "method": "useFetch", "description": "useFetch hook is consumed across files" },
+      { "type": "jsxElement", "name": "UserProfile", "description": "UserProfile is rendered somewhere" },
+      { "type": "jsxElement", "name": "PostList", "description": "PostList is rendered somewhere" }
+    ]
+  }
+}

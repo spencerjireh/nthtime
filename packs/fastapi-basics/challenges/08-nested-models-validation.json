@@ -1,0 +1,54 @@
+{
+  "title": "Nested Models and Validation",
+  "prompt": "Build a FastAPI app with nested Pydantic models and field validators.\n\n**Requirements in `schemas.py`:**\n1. Define a `Address` model extending `BaseModel` with `street: str`, `city: str`, `zip_code: str`\n2. Add a `@field_validator('zip_code')` that checks the zip is exactly 5 digits, raising `ValueError` if not\n3. Define a `UserCreate` model with `name: str`, `email: str`, `age: int`, `address: Address`\n4. Add a `@field_validator('age')` that checks age is between 0 and 150\n5. Add a `@field_validator('email')` that checks the string contains `'@'`\n\n**Requirements in `responses.py`:**\n1. Define a `UserResponse` model with `id: int`, `name: str`, `email: str`, `city: str`\n\n**Requirements in `main.py`:**\n1. Import `FastAPI`, `UserCreate`, and `UserResponse`\n2. Define a `users` list and a `next_id` counter\n3. Add a POST endpoint at `/users` that accepts `UserCreate`, creates a user, and returns `UserResponse`\n4. Add a GET endpoint at `/users` that returns all users as `list[UserResponse]`",
+  "difficulty": "intermediate",
+  "tags": ["pydantic", "validation", "models", "nested"],
+  "timeEstimateSeconds": 720,
+  "files": [
+    {
+      "path": "schemas.py",
+      "content": "from pydantic import BaseModel, field_validator\n\n\nclass Address(BaseModel):\n    street: str\n    city: str\n    zip_code: str\n\n    @field_validator(\"zip_code\")\n    @classmethod\n    def validate_zip(cls, v: str) -> str:\n        if not v.isdigit() or len(v) != 5:\n            raise ValueError(\"zip_code must be exactly 5 digits\")\n        return v\n\n\nclass UserCreate(BaseModel):\n    name: str\n    email: str\n    age: int\n    address: Address\n\n    @field_validator(\"age\")\n    @classmethod\n    def validate_age(cls, v: int) -> int:\n        if v < 0 or v > 150:\n            raise ValueError(\"age must be between 0 and 150\")\n        return v\n\n    @field_validator(\"email\")\n    @classmethod\n    def validate_email(cls, v: str) -> str:\n        if \"@\" not in v:\n            raise ValueError(\"email must contain @\")\n        return v\n"
+    },
+    {
+      "path": "responses.py",
+      "content": "from pydantic import BaseModel\n\n\nclass UserResponse(BaseModel):\n    id: int\n    name: str\n    email: str\n    city: str\n"
+    },
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI\nfrom schemas import UserCreate\nfrom responses import UserResponse\n\napp = FastAPI()\n\nusers: list[dict] = []\nnext_id = 1\n\n\n@app.post(\"/users\", response_model=UserResponse)\ndef create_user(user: UserCreate):\n    global next_id\n    user_dict = {\n        \"id\": next_id,\n        \"name\": user.name,\n        \"email\": user.email,\n        \"city\": user.address.city,\n    }\n    users.append(user_dict)\n    next_id += 1\n    return user_dict\n\n\n@app.get(\"/users\", response_model=list[UserResponse])\ndef list_users():\n    return users\n"
+    }
+  ],
+  "hints": [
+    "Nested models: Address is used as a field type inside UserCreate",
+    "Field validators use @field_validator('field_name') with @classmethod",
+    "Raise ValueError inside validators to trigger a 422 validation error",
+    "The response model flattens nested data: city comes from address.city"
+  ],
+  "assertions": {
+    "perFile": {
+      "schemas.py": [
+        { "type": "pythonImport", "module": "pydantic", "names": ["BaseModel", "field_validator"], "description": "Import BaseModel and field_validator from pydantic" },
+        { "type": "pythonClassDef", "name": "Address", "bases": ["BaseModel"], "description": "Define Address model extending BaseModel" },
+        { "type": "pythonClassDef", "name": "UserCreate", "bases": ["BaseModel"], "description": "Define UserCreate model extending BaseModel" },
+        { "type": "sexpression", "pattern": "(decorated_definition)", "description": "Use decorators for field validators" },
+        { "type": "sexpression", "pattern": "(raise_statement)", "description": "Raise ValueError for invalid data", "hint": "Raise ValueError in validators when data is invalid" }
+      ],
+      "responses.py": [
+        { "type": "pythonImport", "module": "pydantic", "names": ["BaseModel"], "description": "Import BaseModel from pydantic" },
+        { "type": "pythonClassDef", "name": "UserResponse", "bases": ["BaseModel"], "description": "Define UserResponse model extending BaseModel" }
+      ],
+      "main.py": [
+        { "type": "pythonImport", "module": "fastapi", "names": ["FastAPI"], "description": "Import FastAPI" },
+        { "type": "pythonImport", "module": "schemas", "names": ["UserCreate"], "description": "Import UserCreate from schemas" },
+        { "type": "pythonImport", "module": "responses", "names": ["UserResponse"], "description": "Import UserResponse from responses" },
+        { "type": "pythonFunctionDef", "name": "create_user", "decorator": "app.post", "description": "Define POST /users endpoint" },
+        { "type": "pythonFunctionDef", "name": "list_users", "decorator": "app.get", "description": "Define GET /users endpoint" }
+      ]
+    },
+    "crossFile": [
+      { "type": "pythonClassDef", "name": "Address", "bases": ["BaseModel"], "description": "Address model exists across files" },
+      { "type": "pythonClassDef", "name": "UserCreate", "bases": ["BaseModel"], "description": "UserCreate model exists across files" },
+      { "type": "pythonImport", "module": "pydantic", "names": ["BaseModel"], "description": "BaseModel is imported across files" }
+    ]
+  }
+}

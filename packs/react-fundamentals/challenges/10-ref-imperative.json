@@ -1,0 +1,94 @@
+{
+  "title": "Ref and Imperative Handle",
+  "prompt": "Build components using useRef, forwardRef, and useImperativeHandle for imperative DOM control.\n\n**Requirements in `types.ts`:**\n1. Export a `CustomInputHandle` interface with methods: `focus(): void`, `clear(): void`, `selectAll(): void`\n\n**Requirements in `CustomInput.tsx`:**\n1. Use `forwardRef` to create a `CustomInput` component\n2. Use `useImperativeHandle` to expose `focus`, `clear`, and `selectAll` methods\n3. Render an `<input>` controlled by internal `useState`\n4. Export `CustomInput` as a named `const` (not a function declaration)\n\n**Requirements in `SearchBar.tsx`:**\n1. Create a ref with `useRef<CustomInputHandle>(null)`\n2. Render `<CustomInput ref={ref} />` and buttons to call `ref.current?.focus()` and `ref.current?.clear()`\n3. Export `SearchBar` as a named export\n\n**Requirements in `MeasuredBox.tsx`:**\n1. Use `useRef<HTMLDivElement>(null)` and `useEffect` to measure the DOM element\n2. Store width/height in state and display them\n3. Export `MeasuredBox` as a named export\n\n**Requirements in `FocusGroup.tsx`:**\n1. Use `useRef<(HTMLInputElement | null)[]>([])` to manage refs for multiple inputs\n2. Use callback refs to populate the array: `ref={el => (refs.current[i] = el)}`\n3. Add a button that focuses the next input in sequence\n4. Export `FocusGroup` as a named export\n\n**Requirements in `App.tsx`:**\n1. Render `SearchBar`, `MeasuredBox`, and `FocusGroup`\n2. Export `App` as a named export",
+  "difficulty": "advanced",
+  "tags": ["ref", "forwardRef", "useImperativeHandle", "useRef", "dom"],
+  "timeEstimateSeconds": 1200,
+  "files": [
+    {
+      "path": "types.ts",
+      "content": "export interface CustomInputHandle {\n  focus(): void;\n  clear(): void;\n  selectAll(): void;\n}\n"
+    },
+    {
+      "path": "CustomInput.tsx",
+      "content": "import { forwardRef, useImperativeHandle, useRef, useState } from 'react';\nimport { CustomInputHandle } from './types';\n\nexport const CustomInput = forwardRef<CustomInputHandle, object>((props, ref) => {\n  const inputRef = useRef<HTMLInputElement>(null);\n  const [value, setValue] = useState('');\n\n  useImperativeHandle(ref, () => ({\n    focus: () => inputRef.current?.focus(),\n    clear: () => setValue(''),\n    selectAll: () => {\n      inputRef.current?.focus();\n      inputRef.current?.select();\n    },\n  }));\n\n  return (\n    <input\n      ref={inputRef}\n      value={value}\n      onChange={e => setValue(e.target.value)}\n      placeholder=\"Custom input\"\n    />\n  );\n});\n\nCustomInput.displayName = 'CustomInput';\n"
+    },
+    {
+      "path": "SearchBar.tsx",
+      "content": "import { useRef } from 'react';\nimport { CustomInputHandle } from './types';\nimport { CustomInput } from './CustomInput';\n\nexport function SearchBar() {\n  const ref = useRef<CustomInputHandle>(null);\n\n  return (\n    <div>\n      <CustomInput ref={ref} />\n      <button onClick={() => ref.current?.focus()}>Focus</button>\n      <button onClick={() => ref.current?.clear()}>Clear</button>\n      <button onClick={() => ref.current?.selectAll()}>Select All</button>\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "MeasuredBox.tsx",
+      "content": "import { useRef, useState, useEffect } from 'react';\n\nexport function MeasuredBox() {\n  const ref = useRef<HTMLDivElement>(null);\n  const [size, setSize] = useState({ width: 0, height: 0 });\n\n  useEffect(() => {\n    if (ref.current) {\n      const { width, height } = ref.current.getBoundingClientRect();\n      setSize({ width: Math.round(width), height: Math.round(height) });\n    }\n  }, []);\n\n  return (\n    <div>\n      <div ref={ref} style={{ padding: 20, border: '1px solid black' }}>\n        Measure me\n      </div>\n      <p>Width: {size.width}, Height: {size.height}</p>\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "FocusGroup.tsx",
+      "content": "import { useRef, useState } from 'react';\n\nexport function FocusGroup() {\n  const refs = useRef<(HTMLInputElement | null)[]>([]);\n  const [current, setCurrent] = useState(0);\n  const count = 3;\n\n  function focusNext() {\n    const next = (current + 1) % count;\n    refs.current[next]?.focus();\n    setCurrent(next);\n  }\n\n  return (\n    <div>\n      {Array.from({ length: count }, (_, i) => (\n        <input\n          key={i}\n          ref={el => (refs.current[i] = el)}\n          placeholder={`Input ${i + 1}`}\n        />\n      ))}\n      <button onClick={focusNext}>Focus Next</button>\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "App.tsx",
+      "content": "import { SearchBar } from './SearchBar';\nimport { MeasuredBox } from './MeasuredBox';\nimport { FocusGroup } from './FocusGroup';\n\nexport function App() {\n  return (\n    <div>\n      <SearchBar />\n      <MeasuredBox />\n      <FocusGroup />\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "forwardRef wraps a component: export const CustomInput = forwardRef<Handle, Props>((props, ref) => { ... })",
+    "useImperativeHandle exposes methods: useImperativeHandle(ref, () => ({ focus: () => ... }))",
+    "Callback refs populate an array: ref={el => (refs.current[i] = el)}",
+    "getBoundingClientRect() returns { width, height, top, left, ... } for DOM measurement"
+  ],
+  "assertions": {
+    "perFile": {
+      "types.ts": [
+        { "type": "exportDeclaration", "name": "CustomInputHandle", "isDefault": false, "description": "Export the CustomInputHandle interface" }
+      ],
+      "CustomInput.tsx": [
+        { "type": "importDeclaration", "source": "react", "specifiers": ["forwardRef", "useImperativeHandle"], "description": "Import forwardRef and useImperativeHandle" },
+        { "type": "importDeclaration", "source": "./types", "specifiers": ["CustomInputHandle"], "description": "Import the CustomInputHandle type" },
+        { "type": "variableDeclaration", "name": "CustomInput", "kind": "const", "description": "Define CustomInput as a const with forwardRef" },
+        { "type": "methodCall", "method": "forwardRef", "description": "Wrap component with forwardRef" },
+        { "type": "methodCall", "method": "useImperativeHandle", "description": "Expose imperative methods via ref" },
+        { "type": "methodCall", "method": "useRef", "description": "Create internal ref for the input element" },
+        { "type": "exportDeclaration", "name": "CustomInput", "isDefault": false, "description": "Export CustomInput as a named export" }
+      ],
+      "SearchBar.tsx": [
+        { "type": "importDeclaration", "source": "react", "specifiers": ["useRef"], "description": "Import useRef" },
+        { "type": "importDeclaration", "source": "./CustomInput", "specifiers": ["CustomInput"], "description": "Import CustomInput" },
+        { "type": "functionDeclaration", "name": "SearchBar", "description": "Define the SearchBar component" },
+        { "type": "methodCall", "method": "useRef", "description": "Create ref for CustomInput handle" },
+        { "type": "jsxElement", "name": "CustomInput", "props": ["ref"], "description": "Render CustomInput with ref prop" },
+        { "type": "exportDeclaration", "name": "SearchBar", "isDefault": false, "description": "Export SearchBar as a named export" }
+      ],
+      "MeasuredBox.tsx": [
+        { "type": "importDeclaration", "source": "react", "specifiers": ["useRef", "useState", "useEffect"], "description": "Import hooks from react" },
+        { "type": "functionDeclaration", "name": "MeasuredBox", "description": "Define the MeasuredBox component" },
+        { "type": "methodCall", "method": "useRef", "description": "Create ref for DOM measurement" },
+        { "type": "methodCall", "method": "useEffect", "description": "Measure element after mount" },
+        { "type": "exportDeclaration", "name": "MeasuredBox", "isDefault": false, "description": "Export MeasuredBox as a named export" }
+      ],
+      "FocusGroup.tsx": [
+        { "type": "importDeclaration", "source": "react", "specifiers": ["useRef"], "description": "Import useRef" },
+        { "type": "functionDeclaration", "name": "FocusGroup", "description": "Define the FocusGroup component" },
+        { "type": "methodCall", "method": "useRef", "description": "Create ref array for multiple inputs" },
+        { "type": "sexpression", "pattern": "(arrow_function)", "description": "Use callback ref to populate the ref array", "hint": "Callback refs: ref={el => (refs.current[i] = el)}" },
+        { "type": "exportDeclaration", "name": "FocusGroup", "isDefault": false, "description": "Export FocusGroup as a named export" }
+      ],
+      "App.tsx": [
+        { "type": "importDeclaration", "source": "./SearchBar", "specifiers": ["SearchBar"], "description": "Import SearchBar" },
+        { "type": "importDeclaration", "source": "./MeasuredBox", "specifiers": ["MeasuredBox"], "description": "Import MeasuredBox" },
+        { "type": "importDeclaration", "source": "./FocusGroup", "specifiers": ["FocusGroup"], "description": "Import FocusGroup" },
+        { "type": "functionDeclaration", "name": "App", "description": "Define the App component" },
+        { "type": "jsxElement", "name": "SearchBar", "description": "Render SearchBar" },
+        { "type": "jsxElement", "name": "MeasuredBox", "description": "Render MeasuredBox" },
+        { "type": "jsxElement", "name": "FocusGroup", "description": "Render FocusGroup" },
+        { "type": "exportDeclaration", "name": "App", "isDefault": false, "description": "Export App as a named export" }
+      ]
+    },
+    "crossFile": [
+      { "type": "methodCall", "method": "forwardRef", "description": "forwardRef is used somewhere across files" },
+      { "type": "methodCall", "method": "useImperativeHandle", "description": "useImperativeHandle is used somewhere across files" },
+      { "type": "jsxElement", "name": "CustomInput", "props": ["ref"], "description": "CustomInput is rendered with ref prop" },
+      { "type": "jsxElement", "name": "SearchBar", "description": "SearchBar is rendered somewhere" },
+      { "type": "jsxElement", "name": "MeasuredBox", "description": "MeasuredBox is rendered somewhere" }
+    ]
+  }
+}

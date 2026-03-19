@@ -1,0 +1,74 @@
+{
+  "title": "Multi-Router API",
+  "prompt": "Build a FastAPI app with two routers, shared models, and a dependency.\n\n**Requirements in `models.py`:**\n1. Define `Item` model (BaseModel) with `name: str`, `price: float`\n2. Define `User` model (BaseModel) with `name: str`, `email: str`\n\n**Requirements in `deps.py`:**\n1. Define a function `get_db()` that returns a dict with `items` (list) and `users` (list) keys\n2. This simulates a shared in-memory database\n\n**Requirements in `routers/items.py`:**\n1. Import `APIRouter` and create `router = APIRouter()`\n2. Import `Depends` and `get_db`\n3. Add GET `/` to return all items from the db\n4. Add POST `/` to create an item (accept `Item` model, append to db)\n5. Add DELETE `/{item_id}` to remove an item by index (return 404 if out of range)\n\n**Requirements in `routers/users.py`:**\n1. Import `APIRouter` and create `router = APIRouter()`\n2. Import `Depends` and `get_db`\n3. Add GET `/` to return all users from the db\n4. Add POST `/` to create a user (accept `User` model, append to db)\n\n**Requirements in `main.py`:**\n1. Import `FastAPI` and both routers\n2. Include items router with prefix `/items` and users router with prefix `/users`\n3. Add a GET endpoint at `/` returning `{\"message\": \"Multi-Router API\"}`",
+  "difficulty": "advanced",
+  "tags": ["router", "depends", "multi-module", "organization"],
+  "timeEstimateSeconds": 900,
+  "files": [
+    {
+      "path": "models.py",
+      "content": "from pydantic import BaseModel\n\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\n\nclass User(BaseModel):\n    name: str\n    email: str\n"
+    },
+    {
+      "path": "deps.py",
+      "content": "db = {\"items\": [], \"users\": []}\n\n\ndef get_db():\n    return db\n"
+    },
+    {
+      "path": "routers/items.py",
+      "content": "from fastapi import APIRouter, Depends, HTTPException\nfrom models import Item\nfrom deps import get_db\n\nrouter = APIRouter()\n\n\n@router.get(\"/\")\ndef list_items(db: dict = Depends(get_db)):\n    return db[\"items\"]\n\n\n@router.post(\"/\")\ndef create_item(item: Item, db: dict = Depends(get_db)):\n    item_dict = {\"id\": len(db[\"items\"]) + 1, **item.model_dump()}\n    db[\"items\"].append(item_dict)\n    return item_dict\n\n\n@router.delete(\"/{item_id}\")\ndef delete_item(item_id: int, db: dict = Depends(get_db)):\n    items = db[\"items\"]\n    for i, item in enumerate(items):\n        if item[\"id\"] == item_id:\n            items.pop(i)\n            return {\"deleted\": True}\n    raise HTTPException(status_code=404, detail=\"Item not found\")\n"
+    },
+    {
+      "path": "routers/users.py",
+      "content": "from fastapi import APIRouter, Depends\nfrom models import User\nfrom deps import get_db\n\nrouter = APIRouter()\n\n\n@router.get(\"/\")\ndef list_users(db: dict = Depends(get_db)):\n    return db[\"users\"]\n\n\n@router.post(\"/\")\ndef create_user(user: User, db: dict = Depends(get_db)):\n    user_dict = {\"id\": len(db[\"users\"]) + 1, **user.model_dump()}\n    db[\"users\"].append(user_dict)\n    return user_dict\n"
+    },
+    {
+      "path": "main.py",
+      "content": "from fastapi import FastAPI\nfrom routers.items import router as items_router\nfrom routers.users import router as users_router\n\napp = FastAPI()\n\napp.include_router(items_router, prefix=\"/items\")\napp.include_router(users_router, prefix=\"/users\")\n\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Multi-Router API\"}\n"
+    }
+  ],
+  "hints": [
+    "APIRouter groups related endpoints: router = APIRouter()",
+    "Include routers with a prefix: app.include_router(router, prefix='/items')",
+    "Use Depends for dependency injection: def endpoint(db: dict = Depends(get_db))",
+    "Raise HTTPException for errors: raise HTTPException(status_code=404, detail='Not found')"
+  ],
+  "assertions": {
+    "perFile": {
+      "models.py": [
+        { "type": "pythonImport", "module": "pydantic", "names": ["BaseModel"], "description": "Import BaseModel from pydantic" },
+        { "type": "pythonClassDef", "name": "Item", "bases": ["BaseModel"], "description": "Define Item model" },
+        { "type": "pythonClassDef", "name": "User", "bases": ["BaseModel"], "description": "Define User model" }
+      ],
+      "deps.py": [
+        { "type": "pythonFunctionDef", "name": "get_db", "description": "Define the get_db dependency function" }
+      ],
+      "routers/items.py": [
+        { "type": "pythonImport", "module": "fastapi", "names": ["APIRouter", "Depends"], "description": "Import APIRouter and Depends" },
+        { "type": "pythonImport", "module": "models", "names": ["Item"], "description": "Import Item model" },
+        { "type": "pythonImport", "module": "deps", "names": ["get_db"], "description": "Import get_db dependency" },
+        { "type": "pythonFunctionDef", "name": "list_items", "decorator": "router.get", "description": "Define GET / for items" },
+        { "type": "pythonFunctionDef", "name": "create_item", "decorator": "router.post", "description": "Define POST / for items" },
+        { "type": "pythonFunctionDef", "name": "delete_item", "decorator": "router.delete", "description": "Define DELETE /{item_id}" }
+      ],
+      "routers/users.py": [
+        { "type": "pythonImport", "module": "fastapi", "names": ["APIRouter", "Depends"], "description": "Import APIRouter and Depends" },
+        { "type": "pythonImport", "module": "models", "names": ["User"], "description": "Import User model" },
+        { "type": "pythonImport", "module": "deps", "names": ["get_db"], "description": "Import get_db dependency" },
+        { "type": "pythonFunctionDef", "name": "list_users", "decorator": "router.get", "description": "Define GET / for users" },
+        { "type": "pythonFunctionDef", "name": "create_user", "decorator": "router.post", "description": "Define POST / for users" }
+      ],
+      "main.py": [
+        { "type": "pythonImport", "module": "fastapi", "names": ["FastAPI"], "description": "Import FastAPI" },
+        { "type": "pythonImport", "module": "routers.items", "description": "Import items router" },
+        { "type": "pythonImport", "module": "routers.users", "description": "Import users router" },
+        { "type": "pythonFunctionDef", "name": "read_root", "decorator": "app.get", "description": "Define root endpoint" }
+      ]
+    },
+    "crossFile": [
+      { "type": "pythonFunctionDef", "name": "get_db", "description": "get_db dependency exists across files" },
+      { "type": "pythonClassDef", "name": "Item", "bases": ["BaseModel"], "description": "Item model exists across files" },
+      { "type": "pythonClassDef", "name": "User", "bases": ["BaseModel"], "description": "User model exists across files" },
+      { "type": "pythonImport", "module": "fastapi", "names": ["APIRouter"], "description": "APIRouter is imported across files" }
+    ]
+  }
+}
