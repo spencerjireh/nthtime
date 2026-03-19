@@ -20,11 +20,12 @@ import { getSettingsStore } from '@/lib/settings-store';
 interface DockableLayoutProps {
   onRun: () => void;
   onRetry: () => void;
+  onReset: () => void;
   packSlug?: string;
   challengeIds?: string[];
 }
 
-export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: DockableLayoutProps) {
+export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds }: DockableLayoutProps) {
   const [resetKey, setResetKey] = useState(0);
   const promptPanelRef = usePanelRef();
   const mountedRef = useRef(false);
@@ -44,15 +45,15 @@ export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: Docka
     id: LAYOUT_GROUP_ID,
   });
 
-  const handleReset = useCallback(() => {
+  const handleLayoutReset = useCallback(() => {
     clearPanelStorage();
     setResetKey((k) => k + 1);
   }, []);
 
   useEffect(() => {
-    window.addEventListener(RESET_LAYOUT_EVENT, handleReset);
-    return () => window.removeEventListener(RESET_LAYOUT_EVENT, handleReset);
-  }, [handleReset]);
+    window.addEventListener(RESET_LAYOUT_EVENT, handleLayoutReset);
+    return () => window.removeEventListener(RESET_LAYOUT_EVENT, handleLayoutReset);
+  }, [handleLayoutReset]);
 
   // Sync prompt panel collapsed state on mount
   useEffect(() => {
@@ -204,6 +205,7 @@ export function DockableLayout({ onRun, onRetry, packSlug, challengeIds }: Docka
       </div>
       <StatusBar
         onRun={onRun}
+        onReset={onReset}
         isPromptCollapsed={promptCollapsed}
         onPromptToggle={togglePrompt}
         statusBarRef={statusBarRef}

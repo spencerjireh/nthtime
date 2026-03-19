@@ -155,11 +155,19 @@ function ChallengeViewEditor({
     store.getState().retry();
   }, [store]);
 
+  const handleReset = useCallback(() => {
+    const state = store.getState();
+    state.clearDraft();
+    const { fileStubs } = getSettingsStore().getState().settings;
+    state.initFromChallenge(challengeData, challengeId, fileStubs);
+  }, [challengeData, challengeId, store]);
+
   return (
     <EditorStoreContext value={store}>
       <DockableLayout
         onRun={handleRun}
         onRetry={handleRetry}
+        onReset={handleReset}
         packSlug={packSlug}
         challengeIds={challengeIds}
       />
