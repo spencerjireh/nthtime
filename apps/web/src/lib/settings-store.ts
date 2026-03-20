@@ -78,8 +78,10 @@ function loadFromLocalStorage(): UserSettings | null {
     if (!raw) return null;
     const parsed = migrateFromFeedbackLevel(JSON.parse(raw));
     // Migrate removed onPaste trigger
-    if ((parsed as any).formatter?.defaults?.trigger === 'onPaste') {
-      (parsed as any).formatter.defaults.trigger = 'manual';
+    const formatter = parsed.formatter as Record<string, unknown> | undefined;
+    const defaults = formatter?.defaults as Record<string, unknown> | undefined;
+    if (defaults?.trigger === 'onPaste') {
+      defaults.trigger = 'manual';
     }
     return parsed as unknown as UserSettings;
   } catch {
