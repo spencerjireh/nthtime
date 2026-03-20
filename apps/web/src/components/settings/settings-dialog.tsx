@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useState } from 'react';
 import { useStore } from 'zustand';
+import type { StoreApi } from 'zustand/vanilla';
 import {
   Dialog,
   DialogContent,
@@ -16,213 +17,52 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
 import { getSettingsStore } from '@/lib/settings-store';
-import { isFeatureEnabled } from '@/lib/feature-flags';
-import { RESET_LAYOUT_EVENT, clearPanelStorage } from '@/components/challenge/default-layout';
 import { useIsMobile } from '@/hooks/use-mobile';
-import type { FeedbackConfig, EditorKeybindings } from '@nthtime/shared';
+import { Code2, MessageSquare, SlidersHorizontal } from 'lucide-react';
+import { EditorSettings } from './editor-settings';
+import { FeedbackSettings } from './feedback-settings';
+import { FormattingSettings } from './formatting-settings';
+import type { SettingsStore } from '@/lib/settings-store';
+import type { UserSettings } from '@nthtime/shared';
+import type { LucideIcon } from 'lucide-react';
+
+export interface SettingsPanelProps {
+  store: StoreApi<SettingsStore>;
+  settings: UserSettings;
+}
 
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const ALL_FEEDBACK_FLAGS: { key: keyof FeedbackConfig; label: string }[] = [
-  { key: 'showPassFail', label: 'Show pass/fail per assertion' },
-  { key: 'showHints', label: 'Show hints' },
-  { key: 'showAssertionDetails', label: 'Show assertion details and line numbers' },
-  { key: 'showDiff', label: 'Show diff (your code vs reference solution)' },
-  { key: 'showSolution', label: 'Show reference solution' },
+type SettingsCategory = 'editor' | 'feedback' | 'formatting';
+
+const CATEGORIES: { id: SettingsCategory; label: string; icon: LucideIcon }[] = [
+  { id: 'editor', label: 'Editor', icon: Code2 },
+  { id: 'feedback', label: 'Feedback', icon: MessageSquare },
+  { id: 'formatting', label: 'Formatting & Layout', icon: SlidersHorizontal },
 ];
 
-const FEEDBACK_FLAGS = isFeatureEnabled('solutionView')
-  ? ALL_FEEDBACK_FLAGS
-  : ALL_FEEDBACK_FLAGS.filter((f) => f.key !== 'showSolution');
+function CategoryContent({ category, ...props }: SettingsPanelProps & { category: SettingsCategory }) {
+  switch (category) {
+    case 'editor':
+      return <EditorSettings {...props} />;
+    case 'feedback':
+      return <FeedbackSettings {...props} />;
+    case 'formatting':
+      return <FormattingSettings {...props} />;
+  }
+}
 
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const store = getSettingsStore();
   const settings = useStore(store, (s) => s.settings);
   const isMobile = useIsMobile();
+  const [category, setCategory] = useState<SettingsCategory>('editor');
 
-  const updateFormatterDefault = useCallback(
-    (key: string, value: unknown) => {
-      store.getState().setFormatter({
-        defaults: { ...store.getState().settings.formatter.defaults, [key]: value },
-      });
-    },
-    [store],
-  );
-
-  const content = (
-    <div className="space-y-5 sm:space-y-6">
-      {/* Feedback */}
-      <section className="space-y-2">
-        <h3 className="text-sm font-medium text-foreground">Feedback</h3>
-        <div className="space-y-2">
-          {FEEDBACK_FLAGS.map(({ key, label }) => (
-            <div key={key} className="flex items-center gap-2">
-              <Checkbox
-                id={`feedback-${key}`}
-                checked={settings.feedback[key]}
-                onCheckedChange={(checked) =>
-                  store.getState().setFeedback({ [key]: checked === true })
-                }
-              />
-              <label htmlFor={`feedback-${key}`} className="text-sm text-foreground">
-                {label}
-              </label>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Editor Keybindings */}
-      <section className="space-y-2">
-        <h3 className="text-sm font-medium text-foreground">Keybindings</h3>
-        <Select
-          value={settings.keybindings}
-          onValueChange={(v) => store.getState().setKeybindings(v as EditorKeybindings)}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="default">Default</SelectItem>
-            <SelectItem value="vim">Vim</SelectItem>
-            <SelectItem value="emacs">Emacs</SelectItem>
-          </SelectContent>
-        </Select>
-      </section>
-
-      {/* Autocomplete */}
-      <section className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="autocomplete"
-            checked={settings.autocomplete}
-            onCheckedChange={(checked) => store.getState().setAutocomplete(checked === true)}
-          />
-          <label htmlFor="autocomplete" className="text-sm text-foreground">
-            Autocomplete (IntelliSense)
-          </label>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Show code suggestions as you type. Disable for a distraction-free editor.
-        </p>
-      </section>
-
-      {/* File Stubs */}
-      <section className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="file-stubs"
-            checked={settings.fileStubs}
-            onCheckedChange={(checked) => store.getState().setFileStubs(checked === true)}
-          />
-          <label htmlFor="file-stubs" className="text-sm text-foreground">
-            Start with file stubs
-          </label>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Create empty files at the expected paths when starting a challenge. Disable to start with
-          a completely blank editor.
-        </p>
-      </section>
-
-      {/* Trace Mode */}
-      <section className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="trace-mode"
-            checked={settings.traceMode}
-            onCheckedChange={(checked) => store.getState().setTraceMode(checked === true)}
-          />
-          <label htmlFor="trace-mode" className="text-sm text-foreground">
-            Trace mode
-          </label>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Show ghost text guiding you through the reference solution as you type.
-        </p>
-      </section>
-
-      {/* Formatter */}
-      <section className="space-y-3">
-        <h3 className="text-sm font-medium text-foreground">Formatter</h3>
-        <div className="flex items-center gap-4">
-          <div className="flex-1">
-            <label className="text-xs text-muted-foreground">Tab size</label>
-            <Select
-              value={String(settings.formatter.defaults.tabSize)}
-              onValueChange={(v) => updateFormatterDefault('tabSize', Number(v))}
-            >
-              <SelectTrigger className="mt-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="4">4</SelectItem>
-                <SelectItem value="8">8</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2 pt-4">
-            <Checkbox
-              id="use-tabs"
-              checked={settings.formatter.defaults.useTabs}
-              onCheckedChange={(checked) => updateFormatterDefault('useTabs', checked === true)}
-            />
-            <label htmlFor="use-tabs" className="text-sm text-muted-foreground">
-              Use tabs
-            </label>
-          </div>
-        </div>
-        <div>
-          <label className="text-xs text-muted-foreground">Trigger</label>
-          <Select
-            value={settings.formatter.defaults.trigger}
-            onValueChange={(v) => updateFormatterDefault('trigger', v)}
-          >
-            <SelectTrigger className="mt-1">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="manual">Manual</SelectItem>
-              <SelectItem value="onSave">On save</SelectItem>
-              <SelectItem value="onSubmit">On submit</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </section>
-
-      {/* Layout */}
-      <section className="space-y-2">
-        <h3 className="text-sm font-medium text-foreground">Layout</h3>
-        <p className="text-xs text-muted-foreground">
-          Reset the challenge panel layout to its default arrangement.
-        </p>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            clearPanelStorage();
-            window.dispatchEvent(new CustomEvent(RESET_LAYOUT_EVENT));
-          }}
-        >
-          Reset panel layout
-        </Button>
-      </section>
-    </div>
-  );
+  const panelProps: SettingsPanelProps = { store, settings };
 
   if (isMobile) {
     return (
@@ -234,7 +74,13 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               Configure feedback, editor behavior, and appearance.
             </SheetDescription>
           </SheetHeader>
-          <div className="-mx-2 flex-1 overflow-y-auto px-2 pb-6">{content}</div>
+          <div className="-mx-2 flex-1 overflow-y-auto px-2 pb-6">
+            <div className="space-y-8">
+              <EditorSettings {...panelProps} />
+              <FeedbackSettings {...panelProps} />
+              <FormattingSettings {...panelProps} />
+            </div>
+          </div>
         </SheetContent>
       </Sheet>
     );
@@ -242,14 +88,36 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
-          <DialogDescription>
-            Configure feedback, editor behavior, and appearance.
-          </DialogDescription>
-        </DialogHeader>
-        {content}
+      <DialogContent className="max-w-[80vw] sm:max-w-3xl p-0 gap-0">
+        <div className="flex h-[60vh] max-h-[600px]">
+          <nav className="flex w-48 shrink-0 flex-col border-r bg-muted/30">
+            <DialogHeader className="p-4 pb-2">
+              <DialogTitle className="text-base">Settings</DialogTitle>
+              <DialogDescription className="text-xs">
+                Configure feedback, editor behavior, and appearance.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-1 p-2">
+              {CATEGORIES.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setCategory(id)}
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
+                    category === id
+                      ? 'bg-accent text-accent-foreground'
+                      : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </nav>
+          <div className="flex-1 overflow-y-auto p-6">
+            <CategoryContent category={category} {...panelProps} />
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
