@@ -17,46 +17,51 @@ export function extractParseErrors(tree: Parser.Tree): ParseDiagnostic[] {
 
   const diagnostics: ParseDiagnostic[] = [];
   const cursor = tree.walk();
-  let reachedRoot = false;
 
-  while (!reachedRoot) {
-    const node = cursor.currentNode;
+  try {
+    let reachedRoot = false;
 
-    if (node.type === 'ERROR' || node.type === 'MISSING') {
-      diagnostics.push({
-        message:
-          node.type === 'MISSING'
-            ? `Missing ${node.text || 'token'}`
-            : 'Syntax error',
-        startLine: node.startPosition.row + 1,
-        startColumn: node.startPosition.column + 1,
-        endLine: node.endPosition.row + 1,
-        endColumn: node.endPosition.column + 1,
-      });
+    while (!reachedRoot) {
+      const node = cursor.currentNode;
 
-      // Don't descend into error nodes -- the parent error is sufficient
-      if (!cursor.gotoNextSibling()) {
-        while (true) {
-          if (!cursor.gotoParent()) {
-            reachedRoot = true;
-            break;
+      if (node.type === 'ERROR' || node.type === 'MISSING') {
+        diagnostics.push({
+          message:
+            node.type === 'MISSING'
+              ? `Missing ${node.text || 'token'}`
+              : 'Syntax error',
+          startLine: node.startPosition.row + 1,
+          startColumn: node.startPosition.column + 1,
+          endLine: node.endPosition.row + 1,
+          endColumn: node.endPosition.column + 1,
+        });
+
+        // Don't descend into error nodes -- the parent error is sufficient
+        if (!cursor.gotoNextSibling()) {
+          while (true) {
+            if (!cursor.gotoParent()) {
+              reachedRoot = true;
+              break;
+            }
+            if (cursor.gotoNextSibling()) break;
           }
-          if (cursor.gotoNextSibling()) break;
         }
+        continue;
       }
-      continue;
-    }
 
-    if (cursor.gotoFirstChild()) continue;
-    if (cursor.gotoNextSibling()) continue;
+      if (cursor.gotoFirstChild()) continue;
+      if (cursor.gotoNextSibling()) continue;
 
-    while (true) {
-      if (!cursor.gotoParent()) {
-        reachedRoot = true;
-        break;
+      while (true) {
+        if (!cursor.gotoParent()) {
+          reachedRoot = true;
+          break;
+        }
+        if (cursor.gotoNextSibling()) break;
       }
-      if (cursor.gotoNextSibling()) break;
     }
+  } finally {
+    cursor.delete();
   }
 
   return diagnostics;

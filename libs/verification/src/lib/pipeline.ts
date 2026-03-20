@@ -21,65 +21,71 @@ export async function verify(
   // 1. Parse all files
   const parsedFiles = await parseFiles(files, options?.wasmBasePath);
 
-  // 2. Evaluate per-file assertions
-  const fileResults: FileVerificationResult[] = [];
+  try {
+    // 2. Evaluate per-file assertions
+    const fileResults: FileVerificationResult[] = [];
 
-  for (const [filePath, fileAssertions] of Object.entries(assertions.perFile)) {
-    const parsed = parsedFiles.find((pf) => pf.path === filePath);
+    for (const [filePath, fileAssertions] of Object.entries(assertions.perFile)) {
+      const parsed = parsedFiles.find((pf) => pf.path === filePath);
 
-    if (!parsed) {
-      // File not found or unparseable -- all assertions fail
-      const results: AssertionResult[] = fileAssertions.map((assertion) => ({
-        assertion,
-        passed: false,
-        message: `File '${filePath}' could not be parsed or was not found`,
-        location: { file: filePath, line: 0, column: 0 },
-      }));
+      if (!parsed) {
+        // File not found or unparseable -- all assertions fail
+        const results: AssertionResult[] = fileAssertions.map((assertion) => ({
+          assertion,
+          passed: false,
+          message: `File '${filePath}' could not be parsed or was not found`,
+          location: { file: filePath, line: 0, column: 0 },
+        }));
+
+        fileResults.push({
+          file: filePath,
+          results,
+          passed: false,
+        });
+        continue;
+      }
+
+      const results: AssertionResult[] = fileAssertions.map((assertion) =>
+        evaluateAssertion(
+          parsed.tree,
+          parsed.content,
+          assertion,
+          parsed.path,
+          parsed.tree.getLanguage(),
+        ),
+      );
 
       fileResults.push({
         file: filePath,
         results,
-        passed: false,
+        passed: results.every((r) => r.passed),
       });
-      continue;
     }
 
-    const results: AssertionResult[] = fileAssertions.map((assertion) =>
-      evaluateAssertion(
-        parsed.tree,
-        parsed.content,
-        assertion,
-        parsed.path,
-        parsed.tree.getLanguage(),
-      ),
+    // 3. Evaluate cross-file assertions
+    const crossFileResults = evaluateCrossFileAssertions(
+      assertions.crossFile,
+      parsedFiles,
     );
 
-    fileResults.push({
-      file: filePath,
-      results,
-      passed: results.every((r) => r.passed),
-    });
+    // 4. Aggregate
+    const allResults = [
+      ...fileResults.flatMap((fr) => fr.results),
+      ...crossFileResults,
+    ];
+    const totalAssertions = allResults.length;
+    const passedAssertions = allResults.filter((r) => r.passed).length;
+
+    return {
+      passed: totalAssertions > 0 && passedAssertions === totalAssertions,
+      fileResults,
+      crossFileResults,
+      totalAssertions,
+      passedAssertions,
+    };
+  } finally {
+    for (const pf of parsedFiles) {
+      pf.tree.delete();
+    }
   }
-
-  // 3. Evaluate cross-file assertions
-  const crossFileResults = evaluateCrossFileAssertions(
-    assertions.crossFile,
-    parsedFiles,
-  );
-
-  // 4. Aggregate
-  const allResults = [
-    ...fileResults.flatMap((fr) => fr.results),
-    ...crossFileResults,
-  ];
-  const totalAssertions = allResults.length;
-  const passedAssertions = allResults.filter((r) => r.passed).length;
-
-  return {
-    passed: totalAssertions > 0 && passedAssertions === totalAssertions,
-    fileResults,
-    crossFileResults,
-    totalAssertions,
-    passedAssertions,
-  };
 }

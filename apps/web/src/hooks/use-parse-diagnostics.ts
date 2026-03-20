@@ -50,6 +50,7 @@ export function useParseDiagnostics(
         }
 
         const diagnostics = extractParseErrors(parsed.tree);
+        parsed.tree.delete();
         const markers = diagnostics.map((d) => ({
           severity: monaco.MarkerSeverity.Error,
           message: d.message,
