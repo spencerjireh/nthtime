@@ -19,8 +19,8 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.
 // minified CDN bundle where property assignments may differ from source.
 // The symbol guard prevents duplicate registration on hot reloads.
 const _MONACO_REJECTION_GUARD = '__monacoRejectionGuard';
-if (typeof window !== 'undefined' && !(window as Record<string, unknown>)[_MONACO_REJECTION_GUARD]) {
-  (window as Record<string, unknown>)[_MONACO_REJECTION_GUARD] = true;
+if (typeof window !== 'undefined' && !(window as unknown as Record<string, unknown>)[_MONACO_REJECTION_GUARD]) {
+  (window as unknown as Record<string, unknown>)[_MONACO_REJECTION_GUARD] = true;
   window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
     const r = e.reason;
     if (r?.name === 'Canceled' || r?.message === 'Canceled') {

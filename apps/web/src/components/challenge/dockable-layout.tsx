@@ -57,7 +57,7 @@ export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds
 
   // Sync prompt panel collapsed state on mount
   useEffect(() => {
-    if (mountedRef.current) return;
+    if (mountedRef.current) return undefined;
     mountedRef.current = true;
     if (promptCollapsed) {
       // Small delay to let the panel mount before collapsing
@@ -66,6 +66,7 @@ export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds
       });
       return () => cancelAnimationFrame(raf);
     }
+    return undefined;
   }, []);
 
   const togglePrompt = useCallback(() => {
