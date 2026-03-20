@@ -29,7 +29,7 @@ export function offsetToPosition(
 /**
  * Trace mode: pre-fills the editor with the reference solution and overlays a ghost
  * decoration (grey, italic) from the cursor position to the end of the file.
- * The editor behaves normally -- no key interception or cursor locking.
+ * Typing overwrites ghost characters in-place rather than inserting before them.
  */
 export function useTraceMode(
   editor: EditorInstance | null,
@@ -43,6 +43,8 @@ export function useTraceMode(
     EditorInstance['createDecorationsCollection']
   > | null>(null);
   const cursorDisposableRef = useRef<{ dispose(): void } | null>(null);
+  const contentDisposableRef = useRef<{ dispose(): void } | null>(null);
+  const isOurEditRef = useRef(false);
 
   // Sync reference content from props
   useEffect(() => {
@@ -57,6 +59,8 @@ export function useTraceMode(
     function dispose() {
       cursorDisposableRef.current?.dispose();
       cursorDisposableRef.current = null;
+      contentDisposableRef.current?.dispose();
+      contentDisposableRef.current = null;
       decorationCollectionRef.current?.set([]);
     }
 
@@ -114,6 +118,44 @@ export function useTraceMode(
     cursorDisposableRef.current?.dispose();
     cursorDisposableRef.current = editor.onDidChangeCursorPosition((e) => {
       updateGhost(e.position.lineNumber, e.position.column);
+    });
+
+    // Overwrite behavior: after each insertion, delete the same number of
+    // following characters so typed text replaces ghost content in-place.
+    contentDisposableRef.current?.dispose();
+    contentDisposableRef.current = editor.onDidChangeModelContent((e) => {
+      if (isOurEditRef.current) return;
+
+      const m = editor.getModel();
+      if (!m) return;
+
+      for (const change of e.changes) {
+        const netInserted = change.text.length - change.rangeLength;
+        if (netInserted <= 0) continue;
+
+        const endOffset = change.rangeOffset + change.text.length;
+        const totalLength = m.getValue().length;
+        const charsToDelete = Math.min(netInserted, totalLength - endOffset);
+
+        if (charsToDelete <= 0) continue;
+
+        const deleteStart = m.getPositionAt(endOffset);
+        const deleteEnd = m.getPositionAt(endOffset + charsToDelete);
+
+        isOurEditRef.current = true;
+        editor.executeEdits('trace-overwrite', [
+          {
+            range: new monaco!.Range(
+              deleteStart.lineNumber,
+              deleteStart.column,
+              deleteEnd.lineNumber,
+              deleteEnd.column,
+            ),
+            text: '',
+          },
+        ]);
+        isOurEditRef.current = false;
+      }
     });
 
     return dispose;
