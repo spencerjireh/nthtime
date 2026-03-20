@@ -122,8 +122,9 @@
 
 /* Monaco trace mode ghost text */
 .ghost-text {
-  opacity: 0.4;
+  color: #6b7280 !important;
   font-style: italic;
+  opacity: 1;
 }
 
 /* Hide scrollbar while keeping scroll functionality */
