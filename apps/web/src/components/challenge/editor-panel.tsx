@@ -18,6 +18,7 @@ import { TabBar } from './tab-bar';
 import { useParseDiagnostics } from '@/hooks/use-parse-diagnostics';
 import { useTraceMode } from '@/hooks/use-trace-mode';
 import { formatCode } from '@/lib/formatter';
+import { LogoSpinner } from '@/components/ui/logo-spinner';
 
 // Lazy-loaded diff view
 const DiffViewLazy = dynamic(
@@ -25,8 +26,8 @@ const DiffViewLazy = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full items-center justify-center bg-background text-muted-foreground">
-        Loading diff view...
+      <div className="flex h-full items-center justify-center bg-background">
+        <LogoSpinner label="Loading diff view..." />
       </div>
     ),
   },
@@ -75,6 +76,18 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
   useKeybindingMode(editorInstance, statusBarRef ?? { current: null }, keybindings);
   useParseDiagnostics(editorInstance, monacoInstance, activeFilePath, activeFile?.content);
   useTraceMode(editorInstance, monacoInstance, activeFilePath, referenceSolutionFiles, traceMode && !isResults);
+
+  // Restore editor focus when returning to editing mode (e.g., after Retry).
+  // Without this, clicking UI buttons (Run, Retry) leaves focus on the button,
+  // and vim/emacs key handlers (registered via Monaco's onKeyDown) never fire.
+  useEffect(() => {
+    if (!isResults && editorInstance) {
+      const raf = requestAnimationFrame(() => {
+        editorInstance.focus();
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isResults, editorInstance]);
 
   // Decorations for results mode
   const showGlyphMargin = isResults && feedback.showAssertionDetails;
