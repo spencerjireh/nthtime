@@ -87,6 +87,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
       });
       return () => cancelAnimationFrame(raf);
     }
+    return undefined;
   }, [isResults, editorInstance]);
 
   // Decorations for results mode
