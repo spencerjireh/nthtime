@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { ChallengeList } from './challenge-list';
 import { useChallenges } from '@/hooks/use-packs';
 import { ArrowLeft } from 'lucide-react';
@@ -16,8 +17,8 @@ export function PackPage({ slug }: PackPageProps) {
 
   if (isLoading) {
     return (
-      <div className="mx-auto flex max-w-screen-2xl items-center justify-center px-9 py-16 text-muted-foreground">
-        Loading...
+      <div className="mx-auto flex max-w-screen-2xl items-center justify-center px-9 py-16">
+        <LogoSpinner size="lg" />
       </div>
     );
   }

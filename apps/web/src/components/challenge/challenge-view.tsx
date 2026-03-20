@@ -9,6 +9,7 @@ import { ChallengeDetailView } from './challenge-detail-view';
 import { runVerification } from '@/lib/run-verification';
 import { formatAllFiles } from '@/lib/formatter';
 import { getSettingsStore } from '@/lib/settings-store';
+import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { useChallenge } from '@/hooks/use-challenge';
 import { useCreateAttempt } from '@/hooks/use-attempts';
 import { useChallenges } from '@/hooks/use-packs';
@@ -39,7 +40,7 @@ export function ChallengeView({
   if (isLoading && !challengeData) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-muted-foreground text-sm">Loading challenge...</div>
+        <LogoSpinner label="Loading challenge..." />
       </div>
     );
   }

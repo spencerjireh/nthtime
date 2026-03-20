@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { PackForm, type PackFormData } from './pack-form';
 import { ChallengeOrderList } from './challenge-order-list';
 import { useAuthorPack, useAuthorPackForExport, useUpdatePack, useDeletePack } from '@/hooks/use-author';
@@ -24,8 +25,8 @@ export function PackEditor({ slug }: PackEditorProps) {
 
   if (isLoading) {
     return (
-      <div className="mx-auto flex max-w-screen-2xl items-center justify-center px-9 py-16 text-muted-foreground">
-        Loading...
+      <div className="mx-auto flex max-w-screen-2xl items-center justify-center px-9 py-16">
+        <LogoSpinner size="lg" />
       </div>
     );
   }

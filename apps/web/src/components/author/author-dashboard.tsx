@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { useMyPacks } from '@/hooks/use-author';
 import { importPackFromZip } from '@/lib/author/import-pack';
 import { Plus, Upload } from 'lucide-react';
@@ -72,8 +73,8 @@ export function AuthorDashboard() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-16 text-muted-foreground">
-          Loading...
+        <div className="flex items-center justify-center py-16">
+          <LogoSpinner size="lg" />
         </div>
       ) : packs.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-16 text-center">

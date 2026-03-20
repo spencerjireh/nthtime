@@ -10,6 +10,7 @@ import {
 } from 'react-resizable-panels';
 import { useTheme } from 'next-themes';
 import { Badge } from '@/components/ui/badge';
+import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { MonacoWrapper } from './monaco-wrapper';
 import { useChallenge } from '@/hooks/use-challenge';
 import { getSettingsStore } from '@/lib/settings-store';
@@ -34,7 +35,7 @@ export function SolutionView({ challengeId, packSlug }: SolutionViewProps) {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-muted-foreground text-sm">Loading...</div>
+        <LogoSpinner />
       </div>
     );
   }
