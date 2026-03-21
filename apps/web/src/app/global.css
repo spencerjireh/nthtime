@@ -120,13 +120,53 @@
   margin-left: 4px;
 }
 
-/* Monaco trace mode ghost text */
-.ghost-text {
+/* Trace mode: dual-editor stack */
+.trace-editor-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.trace-ghost-editor-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+.trace-active-editor-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Make both editors transparent so the stack background shows through.
+   Monaco has many internal layers that render backgrounds; all must be
+   overridden for the ghost text to show through the active editor. */
+.trace-ghost-editor-container .monaco-editor,
+.trace-ghost-editor-container .monaco-editor .overflow-guard,
+.trace-ghost-editor-container .monaco-editor .margin,
+.trace-active-editor-container .monaco-editor,
+.trace-active-editor-container .monaco-editor .overflow-guard,
+.trace-active-editor-container .monaco-editor .margin,
+.trace-active-editor-container .monaco-editor .monaco-editor-background,
+.trace-active-editor-container .monaco-editor .inputarea.ime-input,
+.trace-active-editor-container .monaco-editor .view-overlays .current-line,
+.trace-active-editor-container .monaco-editor .margin-view-overlays .current-line-margin {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Hide ghost editor line numbers (takes up same space but invisible) */
+.trace-ghost-editor-container .monaco-editor .line-numbers {
+  color: transparent !important;
+}
+
+/* Ghost text base styling */
+.ghost-text-base {
   color: #6b7280 !important;
   font-style: italic;
-  opacity: 1;
-  pointer-events: none;
 }
+
 
 /* Hide scrollbar while keeping scroll functionality */
 .scrollbar-none {

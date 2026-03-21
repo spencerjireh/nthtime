@@ -7,61 +7,65 @@ type EditorInstance = Parameters<OnMount>[0];
 type MonacoInstance = Parameters<OnMount>[1];
 
 /**
- * Convert a character offset in a string to a Monaco-style {lineNumber, column} position.
+ * Normalize an array of lines to have exactly `targetLineCount` entries.
+ * Excess lines are merged into the last valid line; missing lines are padded.
  */
-export function offsetToPosition(
-  content: string,
-  offset: number,
-): { lineNumber: number; column: number } {
-  let line = 1;
-  let col = 1;
-  for (let i = 0; i < offset && i < content.length; i++) {
-    if (content[i] === '\n') {
-      line++;
-      col = 1;
-    } else {
-      col++;
-    }
+export function normalizeLines(lines: string[], targetLineCount: number): string[] {
+  if (lines.length === targetLineCount) return lines;
+  if (lines.length > targetLineCount) return lines.slice(0, targetLineCount);
+
+  const result = [...lines];
+  while (result.length < targetLineCount) {
+    result.push('');
   }
-  return { lineNumber: line, column: col };
+  return result;
 }
 
 /**
- * Trace mode: pre-fills the editor with the reference solution and overlays a ghost
- * decoration (grey, italic) from the cursor position to the end of the file.
- * Typing overwrites ghost characters in-place rather than inserting before them.
+ * Trace mode: dual-editor approach. A read-only ghost editor (back layer)
+ * shows the full reference solution in grey/italic. The active editor (front
+ * layer) has a transparent background so ghost text shows through. As the user
+ * types, their bright text naturally covers the ghost text at the same column
+ * position. No decoration hiding needed -- the ghost stays 100% static.
+ *
+ * The active editor is pre-padded with empty lines matching the reference
+ * line count to guarantee vertical alignment.
  */
 export function useTraceMode(
-  editor: EditorInstance | null,
-  monaco: MonacoInstance | null,
+  activeEditor: EditorInstance | null,
+  ghostEditor: EditorInstance | null,
+  ghostMonaco: MonacoInstance | null,
   activeFilePath: string | null,
   referenceSolutionFiles: Record<string, { content: string }> | null,
   enabled: boolean,
 ): void {
   const referenceRef = useRef<string | null>(null);
-  const decorationCollectionRef = useRef<ReturnType<
-    EditorInstance['createDecorationsCollection']
-  > | null>(null);
-  const cursorDisposableRef = useRef<{ dispose(): void } | null>(null);
+  const refLineCountRef = useRef(0);
+  const ghostBaseDecRef = useRef<ReturnType<EditorInstance['createDecorationsCollection']> | null>(
+    null,
+  );
   const contentDisposableRef = useRef<{ dispose(): void } | null>(null);
-  const isOurEditRef = useRef(false);
+  const scrollDisposableRef = useRef<{ dispose(): void } | null>(null);
+  const isCorrectingRef = useRef(false);
 
   // Sync reference content from props
   useEffect(() => {
-    referenceRef.current =
+    const content =
       (activeFilePath && referenceSolutionFiles?.[activeFilePath]?.content) ?? null;
+    referenceRef.current = content;
+    refLineCountRef.current = content ? content.split('\n').length : 0;
   }, [activeFilePath, referenceSolutionFiles]);
 
-  // Main effect: manage ghost decoration overlay
+  // Main effect: manage ghost styling, scroll sync, line-count enforcement
   useEffect(() => {
-    if (!editor || !monaco) return;
+    if (!activeEditor || !ghostEditor || !ghostMonaco) return;
 
     function dispose() {
-      cursorDisposableRef.current?.dispose();
-      cursorDisposableRef.current = null;
       contentDisposableRef.current?.dispose();
       contentDisposableRef.current = null;
-      decorationCollectionRef.current?.set([]);
+      scrollDisposableRef.current?.dispose();
+      scrollDisposableRef.current = null;
+      ghostBaseDecRef.current?.set([]);
     }
 
     if (!enabled) {
@@ -70,94 +74,82 @@ export function useTraceMode(
     }
 
     const refContent = referenceRef.current;
-    if (!refContent || !activeFilePath) {
+    const refLineCount = refLineCountRef.current;
+    if (!refContent || !activeFilePath || refLineCount === 0) {
       dispose();
       return;
     }
 
-    const model = editor.getModel();
-    if (!model) return;
+    const activeModel = activeEditor.getModel();
+    const ghostModel = ghostEditor.getModel();
+    if (!activeModel || !ghostModel) return;
 
-    // Initialize decoration collection once
-    if (!decorationCollectionRef.current) {
-      decorationCollectionRef.current = editor.createDecorationsCollection([]);
+    // Initialize ghost decoration collection
+    if (!ghostBaseDecRef.current) {
+      ghostBaseDecRef.current = ghostEditor.createDecorationsCollection([]);
     }
 
-    // Pre-fill editor with the full reference solution
-    if (model.getValue() !== refContent) {
-      model.setValue(refContent);
+    // Set ghost editor content (uncontrolled -- no value prop)
+    if (ghostModel.getValue() !== refContent) {
+      ghostModel.setValue(refContent);
     }
 
-    function updateGhost(lineNumber: number, column: number) {
-      if (!decorationCollectionRef.current || !model) return;
+    // Apply base ghost styling (grey/italic) to entire ghost editor content
+    const ghostLastLine = ghostModel.getLineCount();
+    const ghostLastCol = ghostModel.getLineMaxColumn(ghostLastLine);
+    ghostBaseDecRef.current.set([
+      {
+        range: new ghostMonaco.Range(1, 1, ghostLastLine, ghostLastCol),
+        options: { inlineClassName: 'ghost-text-base' },
+      },
+    ]);
 
-      const lastLine = model.getLineCount();
-      const lastCol = model.getLineMaxColumn(lastLine);
+    // Pre-pad active editor with empty lines if line count doesn't match
+    if (activeModel.getLineCount() !== refLineCount) {
+      const padding = '\n'.repeat(refLineCount - 1);
+      isCorrectingRef.current = true;
+      activeModel.setValue(padding);
+      isCorrectingRef.current = false;
+      activeEditor.setPosition({ lineNumber: 1, column: 1 });
+    }
 
-      // If cursor is at or past end of content, clear decorations
-      if (lineNumber > lastLine || (lineNumber === lastLine && column >= lastCol)) {
-        decorationCollectionRef.current.set([]);
-        return;
+    // Enforce line count on content changes
+    contentDisposableRef.current?.dispose();
+    contentDisposableRef.current = activeEditor.onDidChangeModelContent(() => {
+      if (isCorrectingRef.current) return;
+
+      const currentLineCount = activeModel.getLineCount();
+      if (currentLineCount !== refLineCount) {
+        const lines: string[] = [];
+        for (let i = 1; i <= currentLineCount; i++) {
+          lines.push(activeModel.getLineContent(i));
+        }
+        const normalized = normalizeLines(lines, refLineCount);
+        const pos = activeEditor.getPosition();
+
+        isCorrectingRef.current = true;
+        activeEditor.executeEdits('trace-normalize', [
+          { range: activeModel.getFullModelRange(), text: normalized.join('\n') },
+        ]);
+        isCorrectingRef.current = false;
+
+        if (pos) {
+          const clampedLine = Math.min(pos.lineNumber, refLineCount);
+          const clampedCol = Math.min(pos.column, activeModel.getLineMaxColumn(clampedLine));
+          activeEditor.setPosition({ lineNumber: clampedLine, column: clampedCol });
+        }
       }
-
-      decorationCollectionRef.current.set([
-        {
-          range: new monaco!.Range(lineNumber, column, lastLine, lastCol),
-          options: { inlineClassName: 'ghost-text' },
-        },
-      ]);
-    }
-
-    // Apply initial ghost from cursor position
-    const pos = editor.getPosition();
-    if (pos) {
-      updateGhost(pos.lineNumber, pos.column);
-    }
-
-    // Update ghost on every cursor movement
-    cursorDisposableRef.current?.dispose();
-    cursorDisposableRef.current = editor.onDidChangeCursorPosition((e) => {
-      updateGhost(e.position.lineNumber, e.position.column);
     });
 
-    // Overwrite behavior: after each insertion, delete the same number of
-    // following characters so typed text replaces ghost content in-place.
-    contentDisposableRef.current?.dispose();
-    contentDisposableRef.current = editor.onDidChangeModelContent((e) => {
-      if (isOurEditRef.current) return;
-
-      const m = editor.getModel();
-      if (!m) return;
-
-      for (const change of e.changes) {
-        const netInserted = change.text.length - change.rangeLength;
-        if (netInserted <= 0) continue;
-
-        const endOffset = change.rangeOffset + change.text.length;
-        const totalLength = m.getValue().length;
-        const charsToDelete = Math.min(netInserted, totalLength - endOffset);
-
-        if (charsToDelete <= 0) continue;
-
-        const deleteStart = m.getPositionAt(endOffset);
-        const deleteEnd = m.getPositionAt(endOffset + charsToDelete);
-
-        isOurEditRef.current = true;
-        editor.executeEdits('trace-overwrite', [
-          {
-            range: new monaco!.Range(
-              deleteStart.lineNumber,
-              deleteStart.column,
-              deleteEnd.lineNumber,
-              deleteEnd.column,
-            ),
-            text: '',
-          },
-        ]);
-        isOurEditRef.current = false;
-      }
+    // Scroll sync: active -> ghost
+    scrollDisposableRef.current?.dispose();
+    scrollDisposableRef.current = activeEditor.onDidScrollChange((e) => {
+      ghostEditor.setScrollPosition({
+        scrollTop: e.scrollTop,
+        scrollLeft: e.scrollLeft,
+      });
     });
 
     return dispose;
-  }, [editor, monaco, enabled, activeFilePath]);
+  }, [activeEditor, ghostEditor, ghostMonaco, enabled, activeFilePath]);
 }

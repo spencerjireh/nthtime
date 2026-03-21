@@ -30,7 +30,8 @@ if (typeof window !== 'undefined' && !(window as unknown as Record<string, unkno
 }
 
 interface MonacoWrapperProps {
-  value: string;
+  value?: string;
+  path?: string;
   language: string;
   theme: string;
   onChange?: OnChange;
@@ -54,6 +55,7 @@ const beforeMount: BeforeMount = (monaco) => {
 
 export function MonacoWrapper({
   value,
+  path,
   language,
   theme,
   onChange,
@@ -64,6 +66,7 @@ export function MonacoWrapper({
     <MonacoEditor
       beforeMount={beforeMount}
       value={value}
+      path={path}
       language={language}
       theme={theme}
       onChange={onChange}

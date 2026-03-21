@@ -72,10 +72,19 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
 
   const [editorInstance, setEditorInstance] = useState<Parameters<OnMount>[0] | null>(null);
   const [monacoInstance, setMonacoInstance] = useState<Parameters<OnMount>[1] | null>(null);
+  const [ghostEditorInstance, setGhostEditorInstance] = useState<Parameters<OnMount>[0] | null>(null);
+  const [ghostMonacoInstance, setGhostMonacoInstance] = useState<Parameters<OnMount>[1] | null>(null);
+
+  const isTraceModeActive = traceMode && !isResults;
 
   useKeybindingMode(editorInstance, statusBarRef ?? { current: null }, keybindings);
   useParseDiagnostics(editorInstance, monacoInstance, activeFilePath, activeFile?.content);
-  useTraceMode(editorInstance, monacoInstance, activeFilePath, referenceSolutionFiles, traceMode && !isResults);
+  useTraceMode(
+    editorInstance,
+    ghostEditorInstance, ghostMonacoInstance,
+    activeFilePath, referenceSolutionFiles,
+    isTraceModeActive,
+  );
 
   // Restore editor focus when returning to editing mode (e.g., after Retry).
   // Without this, clicking UI buttons (Run, Retry) leaves focus on the button,
@@ -148,6 +157,15 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
     },
     [isResults, handleResultsMount],
   );
+
+  const handleGhostMount: OnMount = useCallback((ed, mon) => {
+    setGhostEditorInstance(ed);
+    setGhostMonacoInstance(mon);
+    ed.onDidDispose(() => {
+      setGhostEditorInstance(null);
+      setGhostMonacoInstance(null);
+    });
+  }, []);
 
   const handleChange = useCallback(
     (value: string | undefined) => {
@@ -248,6 +266,56 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
           content={referenceSolutionFiles[activeFilePath]?.content ?? ''}
           language={language}
         />
+      );
+    }
+
+    // Trace mode: dual-editor stack (ghost behind, active in front)
+    if (isTraceModeActive && referenceSolutionFiles && activeFilePath) {
+      const bgColor = monacoTheme === 'vs-dark' ? '#1e1e1e' : '#fffffe';
+      return (
+        <div className="trace-editor-stack" style={{ backgroundColor: bgColor }}>
+          <div className="trace-ghost-editor-container">
+            <MonacoWrapper
+              path={`ghost:${activeFilePath}`}
+              language={language}
+              theme={monacoTheme}
+              onMount={handleGhostMount}
+              options={{
+                readOnly: true,
+                lineNumbers: 'on',
+                folding: false,
+                glyphMargin: false,
+                lineDecorationsWidth: 10,
+                lineNumbersMinChars: 5,
+                scrollbar: { vertical: 'hidden', horizontal: 'hidden' },
+                overviewRulerLanes: 0,
+                renderLineHighlight: 'none',
+                matchBrackets: 'never',
+                occurrencesHighlight: 'off',
+                selectionHighlight: false,
+                cursorStyle: 'line',
+                cursorBlinking: 'solid',
+                hideCursorInOverviewRuler: true,
+              }}
+            />
+          </div>
+          <div className="trace-active-editor-container">
+            <MonacoWrapper
+              path={`trace:${activeFilePath}`}
+              language={language}
+              theme={monacoTheme}
+              onChange={handleChange}
+              onMount={handleMount}
+              options={{
+                ...monacoOptions,
+                glyphMargin: false,
+                lineDecorationsWidth: 10,
+                lineNumbersMinChars: 5,
+                folding: false,
+              }}
+            />
+          </div>
+        </div>
       );
     }
 
