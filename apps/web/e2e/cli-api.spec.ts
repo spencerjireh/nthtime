@@ -6,19 +6,19 @@ test.describe('CLI API endpoints', () => {
     expect(res.ok()).toBe(true);
     const body = await res.json();
     expect(body).toHaveProperty('slug', 'express-basics');
-    expect(body).toHaveProperty('title');
+    expect(body).toHaveProperty('name');
     expect(body).toHaveProperty('challenges');
     expect(Array.isArray(body.challenges)).toBe(true);
     expect(body.challenges.length).toBeGreaterThan(0);
   });
 
-  test('GET /api/cli/challenge/express-basics/hello-world-server returns challenge', async ({
+  test('GET /api/cli/challenge/express-basics/hello-world returns challenge', async ({
     request,
   }) => {
-    const res = await request.get('/api/cli/challenge/express-basics/hello-world-server');
+    const res = await request.get('/api/cli/challenge/express-basics/hello-world');
     expect(res.ok()).toBe(true);
     const body = await res.json();
-    expect(body).toHaveProperty('slug', 'hello-world-server');
+    expect(body).toHaveProperty('slug', 'hello-world');
     expect(body).toHaveProperty('title');
     expect(body).toHaveProperty('assertions');
     expect(Array.isArray(body.assertions)).toBe(true);

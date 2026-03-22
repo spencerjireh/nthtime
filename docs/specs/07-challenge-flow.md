@@ -113,10 +113,10 @@ The challenge flow is the core user journey: writing code, submitting it for ver
 
 ### Spring Boot Endpoints
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `POST /api/attempts` | POST | Store attempt with rate limiting |
-| `GET /api/challenges/{id}/attempts` | GET | List attempts for user + challenge |
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /api/attempts` | Store attempt with rate limiting |
+| `GET /api/challenges/{id}/attempts` | List attempts for user + challenge |
 
 ## Test Coverage
 

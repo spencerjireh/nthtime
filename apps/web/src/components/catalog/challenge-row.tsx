@@ -8,8 +8,15 @@ interface ChallengeRowProps {
   title: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   tags: readonly string[];
+  timeEstimateSeconds: number;
   status: 'not-attempted' | 'failed' | 'passed';
   packSlug?: string;
+}
+
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -24,6 +31,7 @@ export function ChallengeRow({
   title,
   difficulty,
   tags,
+  timeEstimateSeconds,
   status,
   packSlug,
 }: ChallengeRowProps) {
@@ -54,6 +62,7 @@ export function ChallengeRow({
       </div>
 
       <div className="pointer-events-none relative z-10 ml-auto flex shrink-0 items-center gap-2">
+        <span className="text-xs text-muted-foreground">{formatTime(timeEstimateSeconds)}</span>
         <Badge variant={difficulty}>{difficulty}</Badge>
         <Badge
           variant={

@@ -148,5 +148,3 @@ Spring Boot tests use Testcontainers -- no local PostgreSQL instance required. E
 ```bash
 cd services/api && ./gradlew test
 ```
-
-Testcontainers starts an ephemeral PostgreSQL container, runs Flyway migrations, and executes tests against it.

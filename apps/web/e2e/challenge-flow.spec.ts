@@ -12,8 +12,8 @@ test.describe('Challenge drill loop', () => {
     await page.goto(`/challenge/${challengeId}`);
     // Prompt panel
     await expect(page.getByText('Create a basic Express.js server')).toBeVisible();
-    // Editor panel -- file tab visible
-    await expect(page.getByRole('button', { name: 'app.js', exact: true })).toBeVisible();
+    // Editor panel -- file tab visible (use first() since both FileTree and TabBar render a button)
+    await expect(page.getByRole('button', { name: 'app.js', exact: true }).first()).toBeVisible();
     // Toolbar
     await expect(page.getByRole('button', { name: 'Run' })).toBeVisible();
   });

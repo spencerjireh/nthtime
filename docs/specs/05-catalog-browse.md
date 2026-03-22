@@ -80,11 +80,11 @@ The catalog is the entry point for users browsing available challenge packs. The
 
 ### Spring Boot Endpoints
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `GET /api/packs` | GET | List packs with language/difficulty/tags filters |
-| `GET /api/packs/{slug}` | GET | Get pack detail with challenge list |
-| `GET /api/search?q=` | GET | Full-text search on challenge titles |
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/packs` | List packs with language/difficulty/tags filters |
+| `GET /api/packs/{slug}` | Get pack detail with challenge list |
+| `GET /api/search?q=` | Full-text search on challenge titles |
 
 ### API Routes
 

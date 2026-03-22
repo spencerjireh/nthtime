@@ -83,10 +83,10 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 
 ### Spring Boot Endpoints
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `POST /api/admin/seed` | POST | Upsert packs and their challenges |
-| `POST /api/admin/sync` | POST | Upsert all packs, delete stale ones |
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /api/admin/seed` | Upsert packs and their challenges |
+| `POST /api/admin/sync` | Upsert all packs, delete stale ones |
 
 ## Test Coverage
 

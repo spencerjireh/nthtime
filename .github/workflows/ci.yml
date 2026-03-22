@@ -18,13 +18,13 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_DB: nthtime_test
+          POSTGRES_DB: nthtime
           POSTGRES_USER: nthtime
           POSTGRES_PASSWORD: test_password
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U nthtime"
+          --health-cmd "pg_isready -U nthtime -d nthtime"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -100,7 +100,7 @@ jobs:
         env:
           DB_HOST: localhost
           DB_PORT: 5432
-          DB_NAME: nthtime_test
+          DB_NAME: nthtime
           DB_USER: nthtime
           DB_PASSWORD: test_password
           GITHUB_CLIENT_ID: fake
@@ -119,7 +119,7 @@ jobs:
         env:
           DB_HOST: localhost
           DB_PORT: 5432
-          DB_NAME: nthtime_test
+          DB_NAME: nthtime
           DB_USER: nthtime
           DB_PASSWORD: test_password
           GITHUB_CLIENT_ID: fake
@@ -129,7 +129,7 @@ jobs:
 
       - name: Wait for Spring Boot
         run: |
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if curl -s http://localhost:8080/api/health > /dev/null 2>&1; then
               echo "Spring Boot is ready"
               exit 0
@@ -137,7 +137,7 @@ jobs:
             echo "Waiting for Spring Boot... ($i)"
             sleep 2
           done
-          echo "Spring Boot failed to start within 60s"
+          echo "Spring Boot failed to start within 120s"
           exit 1
 
       - name: Seed test data

@@ -41,8 +41,8 @@ Grouped by concern. Each criterion has a stable, unique ID.
 
 ### Spring Boot Endpoints
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
+| Endpoint | Purpose |
+|----------|---------|
 
 ### API Routes
 
