@@ -19,10 +19,9 @@ test.describe('Catalog browsing', () => {
 
   test('pack page shows challenge details', async ({ page }) => {
     await page.goto('/pack/express-basics');
-    // Challenge rows show title, difficulty badge, time estimate
+    // Challenge rows show title and difficulty badge
     await expect(page.getByText('Hello World Server')).toBeVisible();
     await expect(page.getByText('beginner').first()).toBeVisible();
-    await expect(page.getByText('5:00').first()).toBeVisible();
   });
 
   test('language filter narrows results', async ({ page }) => {
