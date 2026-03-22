@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
 import { SettingsTrigger } from './settings/settings-trigger';
 import { ConditionalUserMenu } from './auth/conditional-user-menu';
-import { ConditionalFooter } from './conditional-footer';
 import { ConditionalAuthorLink } from './author/conditional-author-link';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -37,7 +36,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="w-full flex-1">{children}</main>
-      <ConditionalFooter />
     </div>
   );
 }
