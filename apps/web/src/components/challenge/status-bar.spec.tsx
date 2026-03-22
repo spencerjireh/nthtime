@@ -6,9 +6,10 @@ import type { EditorStore } from '@nthtime/editor';
 import { buildEditorStore } from '../../test-utils';
 import { EditorStoreContext } from './editor-store-context';
 
-const { mockFormatterTrigger, mockFormatAllFiles } = vi.hoisted(() => ({
+const { mockFormatterTrigger, mockFormatAllFiles, mockTraceMode } = vi.hoisted(() => ({
   mockFormatterTrigger: { value: 'manual' as string },
   mockFormatAllFiles: vi.fn().mockResolvedValue(new Map()),
+  mockTraceMode: { value: false },
 }));
 
 vi.mock('@/lib/settings-store', () => ({
@@ -24,6 +25,9 @@ vi.mock('@/lib/settings-store', () => ({
             tabSize: 2,
             useTabs: false,
           },
+        },
+        get traceMode() {
+          return mockTraceMode.value;
         },
       },
     })),
@@ -43,6 +47,7 @@ function renderStatusBar(
 ) {
   const store = buildEditorStore(overrides);
   const onRun = vi.fn();
+  const onReset = vi.fn();
   const onPromptToggle = vi.fn();
   const statusBarRef = createRef<HTMLDivElement>();
 
@@ -50,6 +55,7 @@ function renderStatusBar(
     <EditorStoreContext.Provider value={store}>
       <StatusBar
         onRun={onRun}
+        onReset={onReset}
         isPromptCollapsed={props?.isPromptCollapsed ?? false}
         onPromptToggle={onPromptToggle}
         statusBarRef={statusBarRef}
@@ -58,13 +64,14 @@ function renderStatusBar(
     </EditorStoreContext.Provider>,
   );
 
-  return { ...result, store, onRun, onPromptToggle, statusBarRef };
+  return { ...result, store, onRun, onReset, onPromptToggle, statusBarRef };
 }
 
 describe('StatusBar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFormatterTrigger.value = 'manual';
+    mockTraceMode.value = false;
   });
 
   it('renders Run button', () => {
@@ -132,5 +139,18 @@ describe('StatusBar', () => {
   it('hides keybinding status span when keybindings is default', () => {
     const { container } = renderStatusBar(undefined, { keybindings: 'default' });
     expect(container.querySelector('.font-mono')).not.toBeInTheDocument();
+  });
+
+  it('shows Trace badge when trace mode is active', () => {
+    mockTraceMode.value = true;
+    renderStatusBar();
+    expect(screen.getByTitle('Toggle trace mode (Cmd+Shift+G)')).toBeInTheDocument();
+    expect(screen.getByText('Trace')).toBeInTheDocument();
+  });
+
+  it('hides Trace badge when trace mode is inactive', () => {
+    mockTraceMode.value = false;
+    renderStatusBar();
+    expect(screen.queryByText('Trace')).not.toBeInTheDocument();
   });
 });

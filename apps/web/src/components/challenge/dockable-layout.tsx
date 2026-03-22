@@ -119,6 +119,14 @@ export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds
         return;
       }
 
+      // Cmd+Shift+G: toggle trace mode
+      if (mod && e.shiftKey && (e.key === 'g' || e.key === 'G')) {
+        e.preventDefault();
+        const s = store.getState();
+        s.setTraceMode(!s.settings.traceMode);
+        return;
+      }
+
       // Cmd+Shift+[ : previous tab
       if (mod && e.shiftKey && e.key === '[') {
         e.preventDefault();

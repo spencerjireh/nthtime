@@ -271,9 +271,8 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
 
     // Trace mode: dual-editor stack (ghost behind, active in front)
     if (isTraceModeActive && referenceSolutionFiles && activeFilePath) {
-      const bgColor = monacoTheme === 'vs-dark' ? '#1e1e1e' : '#fffffe';
       return (
-        <div className="trace-editor-stack" style={{ backgroundColor: bgColor }}>
+        <div className="trace-editor-stack">
           <div className="trace-ghost-editor-container">
             <MonacoWrapper
               path={`ghost:${activeFilePath}`}

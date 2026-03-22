@@ -43,6 +43,7 @@ export function StatusBar({
   const setFileContent = useEditorStore((s) => s.setFileContent);
   const viewMode = useEditorStore((s) => s.viewMode);
   const formatter = useStore(getSettingsStore(), (s) => s.settings.formatter);
+  const traceMode = useStore(getSettingsStore(), (s) => s.settings.traceMode);
   const [resetOpen, setResetOpen] = useState(false);
 
   const handleFormat = useCallback(async () => {
@@ -76,6 +77,15 @@ export function StatusBar({
           ref={statusBarRef}
           className="mr-2 font-mono"
         />
+      )}
+
+      {traceMode && (
+        <span
+          className="mr-2 rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide"
+          title="Toggle trace mode (Cmd+Shift+G)"
+        >
+          Trace
+        </span>
       )}
 
       {language && (

@@ -78,7 +78,8 @@ export function EditorSettings({ store, settings }: SettingsPanelProps) {
           </label>
         </div>
         <p className="text-xs text-muted-foreground">
-          Show ghost text guiding you through the reference solution as you type.
+          Display the full reference solution as ghost text behind your editor. Type freely -- no
+          line restrictions. Toggle with Cmd+Shift+G.
         </p>
       </section>
     </div>
