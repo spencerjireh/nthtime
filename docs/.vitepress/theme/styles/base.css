@@ -7,7 +7,7 @@
 }
 
 html {
-  font-family: var(--nt-font-mono);
+  font-family: var(--nt-font-sans);
   font-size: 16px;
   line-height: 1.7;
   color: var(--nt-fg);
@@ -41,22 +41,28 @@ h1, h2, h3, h4 {
 
 h1 {
   font-size: 2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   letter-spacing: -0.04em;
+}
+
+h1 + p {
+  color: var(--nt-fg-secondary);
+  font-size: 1.02rem;
+  line-height: 1.75;
 }
 
 h2 {
   font-size: 1.5rem;
-  margin-top: 2.5rem;
+  margin-top: 3rem;
   margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--nt-border);
+  border-bottom: 1px solid var(--nt-border-subtle);
   letter-spacing: -0.03em;
 }
 
 h3 {
   font-size: 1.2rem;
-  margin-top: 2rem;
+  margin-top: 2.25rem;
   margin-bottom: 0.5rem;
   letter-spacing: -0.02em;
 }
@@ -79,7 +85,7 @@ p {
   padding: 0.15em 0.45em;
   border-radius: 4px;
   background: var(--nt-code-bg);
-  color: var(--nt-code-fg);
+  color: var(--nt-accent);
   border: 1px solid var(--nt-code-border);
   font-weight: 400;
 }
@@ -87,7 +93,7 @@ p {
 /* -- Code blocks -------------------------------------- */
 div[class*='language-'] {
   position: relative;
-  margin: 1.25rem 0;
+  margin: 1.5rem 0;
   border-radius: 8px;
   background: var(--nt-code-bg);
   border: 1px solid var(--nt-code-border);
@@ -127,12 +133,15 @@ div[class*='language-'] > span.lang {
   font-weight: 400;
   color: var(--nt-fg-muted);
   text-transform: uppercase;
-  letter-spacing: -0.02em;
-  opacity: 0.6;
+  letter-spacing: 0.04em;
+  opacity: 1;
+  background: var(--nt-bg-soft);
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
 }
 
 pre {
-  padding: 1.25rem;
+  padding: 1.5rem 1.25rem 1.25rem;
   overflow-x: auto;
   line-height: 1.65;
 }
@@ -181,25 +190,27 @@ table {
   width: 100%;
   margin: 1.25rem 0;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid var(--nt-border);
+  border: 1px solid var(--nt-border-subtle);
 }
 
 th, td {
   padding: 0.6rem 1rem;
-  border-bottom: 1px solid var(--nt-border);
+  border-bottom: 1px solid var(--nt-border-subtle);
   text-align: left;
 }
 
 th {
-  background: var(--nt-bg-alt);
+  background: var(--nt-bg-soft);
+  font-family: var(--nt-font-mono);
   font-weight: 400;
   font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
-  color: var(--nt-fg-muted);
+  letter-spacing: 0.04em;
+  color: var(--nt-fg-secondary);
+  white-space: nowrap;
 }
 
 td {
@@ -212,11 +223,19 @@ tr:last-child td {
 }
 
 tr:nth-child(even) {
-  background: hsl(0 0% 0% / 0.02);
+  background: hsl(0 0% 0% / 0.025);
 }
 
 .dark tr:nth-child(even) {
-  background: hsl(0 0% 100% / 0.02);
+  background: hsl(0 0% 100% / 0.025);
+}
+
+tr:hover td {
+  background: var(--nt-bg-alt);
+}
+
+.dark tr:hover td {
+  background: var(--nt-bg-soft);
 }
 
 /* -- Custom containers -------------------------------- */
@@ -228,11 +247,24 @@ tr:nth-child(even) {
 }
 
 .custom-block-title {
+  font-family: var(--nt-font-mono);
   font-weight: 400;
   margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.04em;
+}
+
+.custom-block.tip .custom-block-title {
+  color: var(--nt-tip);
+}
+
+.custom-block.warning .custom-block-title {
+  color: var(--nt-warning);
+}
+
+.custom-block.danger .custom-block-title {
+  color: var(--nt-danger);
 }
 
 .custom-block.tip {

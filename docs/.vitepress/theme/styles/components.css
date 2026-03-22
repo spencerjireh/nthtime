@@ -132,7 +132,12 @@
 }
 
 .nt-sidebar-group {
-  margin-bottom: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.nt-sidebar-group + .nt-sidebar-group {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--nt-border-subtle);
 }
 
 .nt-sidebar-title {
@@ -140,10 +145,27 @@
   font-size: 0.7rem;
   font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.04em;
   color: var(--nt-fg-muted);
   margin-bottom: 0.6rem;
   padding-left: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 0.5rem;
+}
+
+.nt-sidebar-title .nt-chevron {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  transition: transform 0.2s var(--nt-ease);
+}
+
+.nt-sidebar-title .nt-chevron.collapsed {
+  transform: rotate(-90deg);
 }
 
 .nt-sidebar-items {
@@ -156,20 +178,29 @@
   display: block;
   padding: 0.4rem 0.75rem;
   margin-bottom: 1px;
+  font-family: var(--nt-font-mono);
   font-size: 0.875rem;
   color: var(--nt-fg-secondary);
   border-left: 2px solid transparent;
-  transition: color 0.2s var(--nt-ease), border-color 0.2s var(--nt-ease);
+  transition: color 0.2s var(--nt-ease), border-color 0.2s var(--nt-ease), background 0.2s var(--nt-ease);
 }
 
 .nt-sidebar-link:hover {
   color: var(--nt-fg);
+  background: var(--nt-bg-alt);
+  border-radius: 0 4px 4px 0;
 }
 
 .nt-sidebar-link.active {
   color: var(--nt-accent);
   border-left-color: var(--nt-accent);
   font-weight: 400;
+  background: hsl(24 85% 55% / 0.06);
+  border-radius: 0 4px 4px 0;
+}
+
+.dark .nt-sidebar-link.active {
+  background: hsl(24 85% 55% / 0.08);
 }
 
 /* -- Main content ------------------------------------- */
@@ -194,7 +225,7 @@
 /* -- Home / Hero -------------------------------------- */
 .nt-hero {
   text-align: center;
-  padding: 5rem 1.5rem 3.5rem;
+  padding: 6rem 1.5rem 4rem;
   max-width: 760px;
   margin: 0 auto;
 }
@@ -220,8 +251,8 @@
 }
 
 .nt-hero-tagline {
-  font-family: var(--nt-font-mono);
-  font-size: 0.875rem;
+  font-family: var(--nt-font-sans);
+  font-size: 0.95rem;
   color: var(--nt-fg-muted);
   margin-bottom: 2.5rem;
   max-width: 560px;
@@ -240,25 +271,26 @@
 .nt-hero-btn {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 1.25rem;
+  padding: 0.65rem 1.5rem;
   font-family: var(--nt-font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
-  border-radius: 4px;
-  transition: background 0.2s var(--nt-ease), border-color 0.2s var(--nt-ease), color 0.2s var(--nt-ease);
+  letter-spacing: 0.04em;
+  border-radius: 6px;
+  transition: background 0.2s var(--nt-ease), border-color 0.2s var(--nt-ease), color 0.2s var(--nt-ease), transform 0.15s var(--nt-ease);
 }
 
 .nt-hero-btn.primary {
-  background: var(--nt-fg);
-  color: var(--nt-bg);
+  background: var(--nt-accent);
+  color: #ffffff;
   border: 1px solid transparent;
 }
 
 .nt-hero-btn.primary:hover {
-  background: var(--nt-fg-secondary);
-  color: var(--nt-bg);
+  background: var(--nt-accent-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .nt-hero-btn.secondary {
@@ -275,7 +307,7 @@
 /* -- Feature cards ------------------------------------ */
 .nt-features {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.25rem;
   max-width: 960px;
   margin: 0 auto;
@@ -283,15 +315,16 @@
 }
 
 .nt-feature {
-  padding: 1.5rem;
-  border: 1px solid var(--nt-border);
+  padding: 1.75rem;
+  border: 1px solid var(--nt-border-subtle);
   border-radius: 8px;
   background: var(--nt-bg);
-  transition: border-color 0.2s var(--nt-ease);
+  transition: border-color 0.2s var(--nt-ease), background 0.2s var(--nt-ease);
 }
 
 .nt-feature:hover {
   border-color: var(--nt-accent);
+  background: var(--nt-bg-alt);
 }
 
 .nt-feature-icon {

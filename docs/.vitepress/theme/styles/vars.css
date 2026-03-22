@@ -36,7 +36,7 @@
   /* Layout */
   --nt-sidebar-width: 272px;
   --nt-header-height: 64px;
-  --nt-content-max-width: 768px;
+  --nt-content-max-width: 880px;
 
   /* Transitions */
   --nt-ease: cubic-bezier(0.4, 0, 0.2, 1);

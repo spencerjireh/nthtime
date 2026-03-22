@@ -1,11 +1,26 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useData, useRoute, withBase, Content } from 'vitepress';
 
 const { site, page, frontmatter, isDark } = useData();
 const route = useRoute();
 
 const sidebarOpen = ref(false);
+const collapsedGroups = ref(new Set());
+
+function toggleGroup(text) {
+  const next = new Set(collapsedGroups.value);
+  if (next.has(text)) {
+    next.delete(text);
+  } else {
+    next.add(text);
+  }
+  collapsedGroups.value = next;
+}
+
+function isGroupCollapsed(text) {
+  return collapsedGroups.value.has(text);
+}
 
 // Close sidebar on route change
 watch(() => route.path, () => {
@@ -31,6 +46,20 @@ const sidebarGroups = computed(() => {
   }
   return [];
 });
+
+// Initialize collapsed state from config's `collapsed` property
+function initCollapsedGroups() {
+  const groups = sidebarGroups.value;
+  const initial = new Set();
+  for (const g of groups) {
+    if (g.collapsed) {
+      initial.add(g.text);
+    }
+  }
+  collapsedGroups.value = initial;
+}
+
+watch(sidebarGroups, initCollapsedGroups, { immediate: true });
 
 const navLinks = computed(() => site.value.themeConfig?.nav || []);
 const footer = computed(() => site.value.themeConfig?.footer);
@@ -122,8 +151,20 @@ function withBasePath(path) {
   <!-- Sidebar: v-show avoids SSG hydration mismatch (v-if tears down SSR'd sidebar) -->
   <aside v-show="hasSidebar" class="nt-sidebar" :class="{ open: sidebarOpen }">
     <div v-for="group in sidebarGroups" :key="group.text" class="nt-sidebar-group">
-      <div class="nt-sidebar-title">{{ group.text }}</div>
-      <ul class="nt-sidebar-items">
+      <div class="nt-sidebar-title" @click="toggleGroup(group.text)">
+        <span>{{ group.text }}</span>
+        <svg
+          class="nt-chevron"
+          :class="{ collapsed: isGroupCollapsed(group.text) }"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
+      <ul v-show="!isGroupCollapsed(group.text)" class="nt-sidebar-items">
         <li v-for="item in group.items" :key="item.link">
           <a
             :href="withBasePath(item.link)"

@@ -72,6 +72,7 @@ export default defineConfig({
       '/specs/': [
         {
           text: 'Feature Specs',
+          collapsed: true,
           items: [
             { text: 'Overview', link: '/specs/' },
             { text: '00 - Monorepo Foundation', link: '/specs/00-monorepo-foundation' },
@@ -92,11 +93,16 @@ export default defineConfig({
       ],
       '/operations/': [
         {
-          text: 'Operations',
+          text: 'Infrastructure',
           items: [
             { text: 'Spring Boot Backend', link: '/operations/spring-boot-backend' },
             { text: 'Docker & CI', link: '/operations/docker-ci' },
             { text: 'Coolify Runbook', link: '/operations/coolify-runbook' },
+          ],
+        },
+        {
+          text: 'Development',
+          items: [
             { text: 'Design System', link: '/operations/design-system' },
             { text: 'Contributing', link: '/operations/contributing' },
           ],
