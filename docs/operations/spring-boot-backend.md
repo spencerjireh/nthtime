@@ -1,6 +1,6 @@
 # Spring Boot Backend
 
-The nthtime backend runs on Spring Boot 3.4 with Java 21 and PostgreSQL 16. The backend code lives in `services/api/` and handles pack/challenge storage, user attempts, settings persistence, and GitHub OAuth authentication.
+The nthtime backend runs on Spring Boot 3.5 with Java 25 and PostgreSQL 16. The backend code lives in `services/api/` and handles pack/challenge storage, user attempts, settings persistence, and GitHub OAuth authentication.
 
 All browser traffic reaches Spring Boot through Next.js API route proxies -- the browser never communicates directly with Spring Boot.
 
@@ -141,7 +141,9 @@ Flyway runs migrations automatically on startup.
 
 ## Testing
 
-Spring Boot tests use Testcontainers with PostgreSQL for integration testing:
+:::tip Testcontainers
+Spring Boot tests use Testcontainers -- no local PostgreSQL instance required. Each test run spins up an ephemeral container, applies Flyway migrations, and tears it down automatically.
+:::
 
 ```bash
 cd services/api && ./gradlew test

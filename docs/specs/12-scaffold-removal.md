@@ -13,7 +13,7 @@ This refactoring phase removed the scaffold/starter template feature and replace
 
 - [EDIT-02] (EditorStore initFromChallenge with fileStubs parameter)
 - [DSST-07] (UserSettings with fileStubs field)
-- [AUTH-07] (userSettings Convex table with fileStubs column)
+- [AUTH-07] (Spring Boot UserSettings JPA entity with fileStubs column)
 - [CLI-07], [CLI-08] (CLI scaffolding respects fileStubs)
 
 ## User Flows
@@ -41,12 +41,12 @@ This refactoring phase removed the scaffold/starter template feature and replace
 - [ ] **SCAF-01** -- `UserSettings.fileStubs` is a boolean field that defaults to true.
 - [ ] **SCAF-02** -- When fileStubs is true, `initFromChallenge()` creates empty files at expected paths from the challenge data.
 - [ ] **SCAF-03** -- When fileStubs is false, `initFromChallenge()` creates no files (blank canvas).
-- [ ] **SCAF-04** -- The fileStubs setting persists in both localStorage and Convex userSettings.
+- [ ] **SCAF-04** -- The fileStubs setting persists in both localStorage and Spring Boot user_settings table.
 
 ### Scaffold Removal
 
 - [ ] **SCAF-05** -- Challenge JSON no longer contains a `scaffold` or `starterTemplate` field. The `files` field is the reference solution.
-- [ ] **SCAF-06** -- The Convex `challenges` table uses `referenceSolution` for reference solutions with no scaffold-related columns.
+- [ ] **SCAF-06** -- The Spring Boot Challenge JPA entity uses `referenceSolution` for reference solutions with no scaffold-related columns.
 - [ ] **SCAF-07** -- The author challenge editor has no "Scaffold" tab -- only Metadata, Solution, Assertions, and Validate.
 
 ### CLI Compatibility
@@ -61,7 +61,7 @@ This refactoring phase removed the scaffold/starter template feature and replace
 |------|------|
 | `libs/shared/src/lib/types/settings.ts` | UserSettings with fileStubs boolean |
 | `libs/editor/src/lib/editor-store.ts` | initFromChallenge with fileStubs parameter |
-| `convex/schema.ts` | challenges table with referenceSolution (no scaffold) |
+| `services/api/src/main/java/.../entity/Challenge.java` | Challenge entity with referenceSolution (no scaffold) |
 | `apps/web/src/components/author/challenge-editor.tsx` | 4-tab editor (no Scaffold tab) |
 | `apps/cli/src/scaffold.ts` | initChallengeFiles with fileStubs parameter |
 

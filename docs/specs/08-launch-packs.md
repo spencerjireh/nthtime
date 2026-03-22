@@ -7,12 +7,12 @@
 
 ## Overview
 
-Launch packs are the initial set of curated challenge packs that ship with the platform. Three packs cover JavaScript (Express), React (TSX), and Python (FastAPI) with 10 challenges each, totaling 30 challenges. Each pack is defined as JSON files in `packs/` and seeded to Convex via `tools/seed.ts`. A validation tool (`tools/validate-packs.ts`) ensures all reference solutions pass their assertions before deployment. Behavioral tests verify that reference solutions work at runtime (not just structurally).
+Launch packs are the initial set of curated challenge packs that ship with the platform. Three packs cover JavaScript (Express), React (TSX), and Python (FastAPI) with 10 challenges each, totaling 30 challenges. Each pack is defined as JSON files in `packs/` and seeded to Spring Boot via `tools/seed.ts`. A validation tool (`tools/validate-packs.ts`) ensures all reference solutions pass their assertions before deployment. Behavioral tests verify that reference solutions work at runtime (not just structurally).
 
 ## Dependencies
 
 - [VRFY-01] through [VRFY-19] (verification engine for validating assertions)
-- [AUTH-04], [AUTH-05] (Convex schema for storing packs/challenges)
+- [AUTH-04], [AUTH-05] (Spring Boot JPA entities for storing packs/challenges)
 - [DSST-01], [DSST-02], [DSST-03] (Pack, Challenge, Assertion types)
 
 ## User Flows
@@ -26,8 +26,8 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 
 ### Pack Seeding (Deployment)
 
-1. Admin sets `CONVEX_URL` (or `NEXT_PUBLIC_CONVEX_URL` in `.env.local`) and `ADMIN_SECRET`
-2. Admin runs `pnpm seed` to upsert packs and challenges to Convex
+1. Admin sets `SPRING_BOOT_URL` and `ADMIN_SECRET`
+2. Admin runs `pnpm seed` to upsert packs and challenges to Spring Boot
 3. With `--sync` flag, stale packs not in the local set are deleted
 
 ## Acceptance Criteria
@@ -51,8 +51,8 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 
 ### Seeding
 
-- [ ] **PACK-09** -- `pnpm seed` upserts all packs and challenges to Convex, matching by slug. Existing packs are updated, new packs are created.
-- [ ] **PACK-10** -- `pnpm seed -- --sync` deletes Convex packs whose slugs are not in the local pack set.
+- [ ] **PACK-09** -- `pnpm seed` upserts all packs and challenges to Spring Boot via POST /api/admin/seed, matching by slug. Existing packs are updated, new packs are created.
+- [ ] **PACK-10** -- `pnpm seed -- --sync` deletes Spring Boot packs whose slugs are not in the local pack set via POST /api/admin/sync.
 
 ## Technical Context
 
@@ -67,7 +67,7 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 | `packs/react-fundamentals/challenges/*.json` | 10 React challenge definitions |
 | `packs/fastapi-basics/challenges/*.json` | 10 FastAPI challenge definitions |
 | `tools/validate-packs.ts` | Structural validation via verification engine |
-| `tools/seed.ts` | Convex seeding via admin.seedPack / admin.syncPacks |
+| `tools/seed.ts` | Spring Boot seeding via POST /api/admin/seed and POST /api/admin/sync |
 | `packs/vitest.config.mts` | Behavioral test config (root resolves via __dirname) |
 | `packs/test-helpers.ts` | writeChallengeToTmp, importModule helpers |
 | `packs/python-test-helpers.ts` | uv-based Python test execution |
@@ -76,17 +76,17 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 ### Patterns and Decisions
 
 - **JSON-based challenge definitions** -- challenges are static JSON, not code. The reference solution is stored as `files` (FileEntry array) in the JSON.
-- **Pack files map to referenceSolution** -- the `files` field in pack JSON maps directly to `referenceSolution` in Convex. No naming transformation.
+- **Pack files map to referenceSolution** -- the `files` field in pack JSON maps directly to `referenceSolution` in Spring Boot. No naming transformation.
 - **tools/ use direct imports** -- `tools/` scripts import from relative paths, not workspace packages, since the repo root is not a workspace dep consumer.
 - **`fileURLToPath(import.meta.url)`** -- used for `__dirname` in tools/ scripts because `import.meta.dirname` is undefined in `npx tsx`.
 - **uv for Python** -- all Python operations use `uv` (not pip/python). Behavioral tests create a shared venv and run pytest via `uv run`.
 
-### Convex Functions
+### Spring Boot Endpoints
 
-| Function | Type | Purpose |
-|----------|------|---------|
-| `admin.seedPack` | mutation | Upsert a single pack and its challenges |
-| `admin.syncPacks` | mutation | Upsert all packs, delete stale ones |
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `POST /api/admin/seed` | POST | Upsert packs and their challenges |
+| `POST /api/admin/sync` | POST | Upsert all packs, delete stale ones |
 
 ## Test Coverage
 
@@ -126,13 +126,13 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 |-----------|-----------|-----------------|
 | PACK-02, PACK-07 | `packs/fastapi-basics/__tests__/*.py` | 10 FastAPI endpoint tests via pytest |
 
-### Convex Tests
+### Spring Boot Tests
 
-| Criterion | Test File | Test Description |
-|-----------|-----------|-----------------|
-| PACK-09 | `convex/__tests__/admin.spec.ts` | seedPack creates a pack and challenges |
-| PACK-09 | `convex/__tests__/admin.spec.ts` | seedPack upserts on duplicate slug |
-| PACK-10 | `convex/__tests__/admin.spec.ts` | syncPacks creates and cleans up stale |
+| Criterion | Test Location | Test Description |
+|-----------|--------------|-----------------|
+| PACK-09 | `services/api/src/test/java/...` | AdminController integration test: seed creates a pack and challenges |
+| PACK-09 | `services/api/src/test/java/...` | AdminController integration test: seed upserts on duplicate slug |
+| PACK-10 | `services/api/src/test/java/...` | AdminController integration test: sync creates and cleans up stale |
 
 ## Open Questions
 

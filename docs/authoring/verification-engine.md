@@ -399,6 +399,10 @@ Key S-expression syntax patterns:
 
 ## Python Gotchas
 
+:::warning Python Tree-sitter Pitfall
+Decorators live on the parent `decorated_definition` node, not on `function_definition`. Searching for decorators on the function node will find nothing -- always check the parent.
+:::
+
 ### Decorators on `decorated_definition`
 
 In Python's Tree-sitter grammar, when a function has decorators, the decorator nodes live on the **parent** `decorated_definition` node, not on the `function_definition` itself. The `pythonFunctionDef` evaluator accounts for this:
@@ -425,6 +429,10 @@ For `@app.get("/items")`, the tree structure is:
 Searching for decorators on the `function_definition` node would find nothing.
 
 ## JSX Gotchas
+
+:::warning JSX Tree-sitter Pitfall
+JSX attribute names are `property_identifier` nodes, not accessible via `childForFieldName('name')`. Use `descendantsOfType('property_identifier')` as the primary lookup.
+:::
 
 ### Attribute names as `property_identifier`
 

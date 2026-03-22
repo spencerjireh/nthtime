@@ -7,7 +7,7 @@
 
 ## Overview
 
-The challenge flow is the core user journey: writing code, submitting it for verification, viewing results, and iterating. When the user submits, the verification engine runs client-side via Tree-sitter WASM, producing a VerificationResult. The results view shows a pass/fail banner, assertion details gated by feedback level settings, and optional diff comparison against the reference solution. Users can retry (restoring their submitted code) or navigate to the next challenge. Attempts are persisted to Convex for tracking progress.
+The challenge flow is the core user journey: writing code, submitting it for verification, viewing results, and iterating. When the user submits, the verification engine runs client-side via Tree-sitter WASM, producing a VerificationResult. The results view shows a pass/fail banner, assertion details gated by feedback level settings, and optional diff comparison against the reference solution. Users can retry (restoring their submitted code) or navigate to the next challenge. Attempts are persisted to Spring Boot for tracking progress.
 
 ## Dependencies
 
@@ -32,7 +32,7 @@ The challenge flow is the core user journey: writing code, submitting it for ver
    - Assertion details with source locations (showAssertionDetails)
    - Diff view comparing submitted vs reference solution (showDiff)
    - Reference solution view (showSolution)
-7. Attempt is persisted to Convex with pass/fail status and assertion results
+7. Attempt is persisted to Spring Boot with pass/fail status and assertion results
 
 ### Retry
 
@@ -79,7 +79,7 @@ The challenge flow is the core user journey: writing code, submitting it for ver
 
 ### Attempt Persistence
 
-- [ ] **CHAL-17** -- Submitting a challenge creates an attempt record in Convex with challengeId, passed, assertionResults, and hintsUsed.
+- [ ] **CHAL-17** -- Submitting a challenge creates an attempt record via the REST API with challengeId, passed, assertionResults, and hintsUsed.
 - [ ] **CHAL-18** -- Attempt records accurately reflect whether the submission passed or failed.
 
 ## Technical Context
@@ -111,12 +111,12 @@ The challenge flow is the core user journey: writing code, submitting it for ver
 | `/api/v1/attempts` | POST | Create attempt record |
 | `/api/v1/challenges/[id]/attempts` | GET | List user attempts for challenge |
 
-### Convex Functions
+### Spring Boot Endpoints
 
-| Function | Type | Purpose |
-|----------|------|---------|
-| `attempts.create` | mutation | Store attempt with rate limiting |
-| `attempts.list` | query | List attempts for user + challenge |
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `POST /api/attempts` | POST | Store attempt with rate limiting |
+| `GET /api/challenges/{id}/attempts` | GET | List attempts for user + challenge |
 
 ## Test Coverage
 
@@ -144,12 +144,12 @@ The challenge flow is the core user journey: writing code, submitting it for ver
 | CHAL-17 | `apps/web/e2e/attempt-persistence.spec.ts` | submit challenge and verify attempt persists |
 | CHAL-18 | `apps/web/e2e/attempt-persistence.spec.ts` | attempt records correct pass/fail status |
 
-### Convex Tests
+### Spring Boot Tests
 
-| Criterion | Test File | Test Description |
-|-----------|-----------|-----------------|
-| CHAL-17 | `convex/__tests__/attempts.spec.ts` | create stores an attempt for authenticated user |
-| CHAL-18 | `convex/__tests__/attempts.spec.ts` | list returns attempts for authenticated user |
+| Criterion | Test Location | Test Description |
+|-----------|--------------|-----------------|
+| CHAL-17 | `services/api/src/test/java/...` | AttemptController integration test: create stores an attempt for authenticated user |
+| CHAL-18 | `services/api/src/test/java/...` | AttemptController integration test: list returns attempts for authenticated user |
 
 ## Open Questions
 

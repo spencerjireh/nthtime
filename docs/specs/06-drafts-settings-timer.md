@@ -7,13 +7,13 @@
 
 ## Overview
 
-This phase adds persistence and personalization to the editor experience. Draft storage automatically saves in-progress work to localStorage so users can navigate away and return without losing code. The settings system provides a dialog for configuring feedback levels, keybindings (default/vim/emacs), autocomplete, and formatter preferences, with local persistence and optional Convex sync for authenticated users. The timer tracks elapsed time from first keystroke, displayed in the status bar.
+This phase adds persistence and personalization to the editor experience. Draft storage automatically saves in-progress work to localStorage so users can navigate away and return without losing code. The settings system provides a dialog for configuring feedback levels, keybindings (default/vim/emacs), autocomplete, and formatter preferences, with local persistence and optional server sync for authenticated users. The timer tracks elapsed time from first keystroke, displayed in the status bar.
 
 ## Dependencies
 
 - [EDIT-01] (EditorStore)
 - [EDIT-07] (setFileContent for triggering draft saves)
-- [AUTH-07] (userSettings Convex table)
+- [AUTH-07] (Spring Boot UserSettings JPA entity)
 - [AUTH-12] (SettingsRepository interface)
 - [DSST-07] (UserSettings type, FeedbackConfig, EditorKeybindings)
 
@@ -34,7 +34,7 @@ This phase adds persistence and personalization to the editor experience. Draft 
 3. User selects keybinding mode (default, vim, or emacs)
 4. User configures formatter preferences (tab size, use tabs, trigger)
 5. Settings persist to localStorage immediately
-6. If authenticated, settings sync to Convex with debounced writes
+6. If authenticated, settings sync to the server with debounced writes
 
 ### Timer
 
@@ -60,7 +60,7 @@ This phase adds persistence and personalization to the editor experience. Draft 
 - [ ] **DRFT-07** -- Settings persist to localStorage and are restored on page load.
 - [ ] **DRFT-08** -- Settings store starts with DEFAULT_FEEDBACK defaults when no saved settings exist.
 - [ ] **DRFT-09** -- `setFeedback()` merges partial feedback updates (does not overwrite unset flags).
-- [ ] **DRFT-10** -- When authenticated, `useSettingsSync` fetches settings from Convex and merges them with local state. Saves are debounced at 1000ms.
+- [ ] **DRFT-10** -- When authenticated, `useSettingsSync` fetches settings from the server and merges them with local state. Saves are debounced at 1000ms.
 - [ ] **DRFT-11** -- Legacy `feedbackLevel` from localStorage is migrated to the new FeedbackConfig format on first load.
 
 ### Timer
@@ -77,23 +77,23 @@ This phase adds persistence and personalization to the editor experience. Draft 
 | `libs/editor/src/lib/draft-storage.ts` | saveDraft, loadDraft, clearDraft, clearAllDrafts |
 | `libs/editor/src/lib/editor-store.ts` | Draft integration in initFromChallenge, saveDraft, loadDraft actions |
 | `apps/web/src/lib/settings-store.ts` | Singleton Zustand vanilla store for user settings |
-| `apps/web/src/hooks/use-settings-query.ts` | useSettingsSync hook for Convex sync |
+| `apps/web/src/hooks/use-settings-query.ts` | useSettingsSync hook for server sync |
 | `apps/web/src/components/challenge/challenge-view.tsx` | Debounced draft save subscription (500ms) |
 | `apps/web/src/components/challenge/status-bar.tsx` | Timer display and run state |
 
 ### Patterns and Decisions
 
-- **localStorage for drafts** -- chosen for simplicity and offline support. Drafts are per-challenge, keyed by Convex challenge ID. No server sync for drafts.
-- **Singleton settings store** -- a single Zustand vanilla store instance manages all settings. It hydrates from localStorage on creation and syncs to Convex when authenticated.
-- **Debounced persistence** -- draft saves are debounced at 500ms (triggered by file content changes); settings saves to Convex are debounced at 1000ms.
+- **localStorage for drafts** -- chosen for simplicity and offline support. Drafts are per-challenge, keyed by challenge ID. No server sync for drafts.
+- **Singleton settings store** -- a single Zustand vanilla store instance manages all settings. It hydrates from localStorage on creation and syncs to the server when authenticated.
+- **Debounced persistence** -- draft saves are debounced at 500ms (triggered by file content changes); settings saves to the server are debounced at 1000ms.
 - **Migration path** -- the old `feedbackLevel` (integer 0-4) in localStorage is automatically migrated to the new `FeedbackConfig` (individual boolean flags) on first load.
 
 ### API Routes
 
 | Route | Method | Purpose |
 |-------|--------|---------|
-| `/api/v1/settings` | GET | Read user settings from Convex |
-| `/api/v1/settings` | PATCH | Update user settings in Convex |
+| `/api/v1/settings` | GET | Read user settings from the server |
+| `/api/v1/settings` | PATCH | Update user settings on the server |
 
 ## Test Coverage
 
@@ -121,12 +121,12 @@ This phase adds persistence and personalization to the editor experience. Draft 
 | DRFT-05, DRFT-06 | `apps/web/e2e/settings.spec.ts` | can open settings dialog and toggle feedback checkboxes |
 | DRFT-07 | `apps/web/e2e/settings.spec.ts` | keybindings selection persists |
 
-### Convex Tests
+### Spring Boot Tests
 
-| Criterion | Test File | Test Description |
-|-----------|-----------|-----------------|
-| DRFT-08 | `convex/__tests__/settings.spec.ts` | get returns defaults for new user |
-| DRFT-10 | `convex/__tests__/settings.spec.ts` | update creates/patches settings |
+| Criterion | Test Location | Test Description |
+|-----------|--------------|-----------------|
+| DRFT-08 | `services/api/src/test/java/...` | SettingsController integration test: get returns defaults for new user |
+| DRFT-10 | `services/api/src/test/java/...` | SettingsController integration test: update creates/patches settings |
 
 ## Open Questions
 

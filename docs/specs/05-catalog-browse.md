@@ -7,11 +7,11 @@
 
 ## Overview
 
-The catalog is the entry point for users browsing available challenge packs. The home page displays a grid of pack cards with search and filter capabilities. Users can filter by programming language and difficulty level, with filter state persisted in URL search params for shareability. Clicking a pack navigates to its detail page showing the challenge list with status badges. The catalog fetches data from Convex via the REST data access layer.
+The catalog is the entry point for users browsing available challenge packs. The home page displays a grid of pack cards with search and filter capabilities. Users can filter by programming language and difficulty level, with filter state persisted in URL search params for shareability. Clicking a pack navigates to its detail page showing the challenge list with status badges. The catalog fetches data from Spring Boot via the REST data access layer.
 
 ## Dependencies
 
-- [AUTH-04], [AUTH-05] (Convex schema for packs and challenges)
+- [AUTH-04], [AUTH-05] (Spring Boot JPA entities for packs and challenges)
 - [AUTH-10] (PackRepository interface)
 - [DSST-01] (Pack type)
 - [DSST-06] (Difficulty enum)
@@ -78,13 +78,13 @@ The catalog is the entry point for users browsing available challenge packs. The
 - **URL-driven filter state** -- filters are stored in search params rather than component state, making filtered views shareable and bookmarkable.
 - **Pack slug as query param** -- the `?pack=` param threads pack context through challenge navigation (catalog -> pack -> challenge -> results), enabling "Back to pack" navigation without re-fetching.
 
-### Convex Functions
+### Spring Boot Endpoints
 
-| Function | Type | Purpose |
-|----------|------|---------|
-| `packs.list` | query | List packs with language/difficulty/tags filters |
-| `packs.getChallenges` | query | Get pack detail with challenge list |
-| `packs.search` | query | Full-text search on challenge titles |
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `GET /api/packs` | GET | List packs with language/difficulty/tags filters |
+| `GET /api/packs/{slug}` | GET | Get pack detail with challenge list |
+| `GET /api/search?q=` | GET | Full-text search on challenge titles |
 
 ### API Routes
 
@@ -106,13 +106,13 @@ The catalog is the entry point for users browsing available challenge packs. The
 | CTLG-04 | `apps/web/e2e/catalog.spec.ts` | language filter narrows results |
 | CTLG-05, CTLG-06 | `apps/web/e2e/catalog.spec.ts` | difficulty filter badges update URL |
 
-### Convex Tests
+### Spring Boot Tests
 
-| Criterion | Test File | Test Description |
-|-----------|-----------|-----------------|
-| CTLG-01 | `convex/__tests__/packs.spec.ts` | list returns all packs with availableTags |
-| CTLG-04 | `convex/__tests__/packs.spec.ts` | list filters by language |
-| CTLG-08 | `convex/__tests__/packs.spec.ts` | getChallenges returns pack and challenges |
+| Criterion | Test Location | Test Description |
+|-----------|--------------|-----------------|
+| CTLG-01 | `services/api/src/test/java/...` | PackController integration test: list returns all packs |
+| CTLG-04 | `services/api/src/test/java/...` | PackController integration test: list filters by language |
+| CTLG-08 | `services/api/src/test/java/...` | PackController integration test: get pack by slug returns challenges |
 
 ## Open Questions
 

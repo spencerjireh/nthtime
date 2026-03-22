@@ -32,7 +32,7 @@ The app will be available at `http://localhost:3000`. For full-stack development
 
 ## Spring Boot backend
 
-The backend uses Spring Boot 3.4 with PostgreSQL 16. The easiest way to run it locally is with Docker Compose:
+The backend uses Spring Boot 3.5 with PostgreSQL 16. The easiest way to run it locally is with Docker Compose:
 
 ```bash
 docker compose up
@@ -114,6 +114,10 @@ npx vitest run libs/verification/src/lib/verification.spec.ts
 
 ## Docker quick start
 
+:::tip Quick Start
+Docker Compose is the fastest way to get the full stack running. It starts PostgreSQL 16 (internal), Spring Boot API (internal), and Next.js (port 3000) -- no manual database or backend setup required.
+:::
+
 1. Copy the example environment file:
 
    ```bash
@@ -129,4 +133,4 @@ npx vitest run libs/verification/src/lib/verification.spec.ts
    docker compose up
    ```
 
-Docker Compose runs 3 containers: PostgreSQL 16 (internal), Spring Boot API (internal), and Next.js (port 3000). The Next.js container has a built-in healthcheck at `GET /api/health`.
+The Next.js container has a built-in healthcheck at `GET /api/health`.

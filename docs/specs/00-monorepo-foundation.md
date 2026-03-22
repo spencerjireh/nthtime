@@ -27,7 +27,7 @@ None -- this is the foundation layer.
 
 1. Push to `main` or open a PR targeting `main`
 2. CI validates packs, runs lint (affected), typecheck (all), test (affected), build (affected)
-3. E2E and Docker steps run when `NEXT_PUBLIC_CONVEX_URL` is configured
+3. E2E and Docker steps run when `SPRING_BOOT_URL` is configured
 
 ## Acceptance Criteria
 

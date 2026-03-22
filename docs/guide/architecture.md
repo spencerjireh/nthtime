@@ -13,7 +13,7 @@ nthtime/
     data-access/      Repository interfaces: PackRepository, AttemptRepository, SettingsRepository
     verification/     Tree-sitter WASM verification engine (12 evaluators + pipeline)
     editor/           Zustand vanilla store (EditorStore), language mapping, time formatting, drafts
-  services/api/       Spring Boot 3.4 backend (Java 21, PostgreSQL 16)
+  services/api/       Spring Boot 3.5 backend (Java 25, PostgreSQL 16)
   packs/              Challenge pack JSON files (pack.json + challenges/*.json per pack)
   tools/              CLI scripts: validate-packs.ts, seed.ts
   docs/               VitePress documentation site
@@ -21,9 +21,13 @@ nthtime/
 
 ### Key boundaries
 
+:::tip Boundary Rule
+`apps/web` is the only deployable frontend. Libraries export pure logic and types -- no React imports except where noted. Spring Boot has its own Gradle build and is not managed by Nx.
+:::
+
 - **`apps/web`** is the only deployable application. It consumes all four libraries.
 - **`libs/`** packages are framework-agnostic (no React imports except where noted). They export pure logic and types.
-- **`services/api/`** is the Spring Boot backend (Java 21, Gradle Kotlin DSL). It has its own build system and is not managed by Nx.
+- **`services/api/`** is the Spring Boot backend (Java 25, Gradle Kotlin DSL). It has its own build system and is not managed by Nx.
 - **`packs/`** contains challenge content as JSON. Validated by `tools/validate-packs.ts` and seeded to Spring Boot by `tools/seed.ts`.
 - **`tools/`** scripts use direct relative imports (not workspace packages) and `fileURLToPath(import.meta.url)` for `__dirname` because `import.meta.dirname` is undefined under `npx tsx`.
 

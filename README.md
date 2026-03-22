@@ -13,9 +13,9 @@
 
 ---
 
-Write Express middleware, React hooks, FastAPI routes, and multi-file applications from a blank canvas. Get instant structural feedback powered by Tree-sitter AST analysis -- no code execution, no test runners. Just parse, verify, repeat.
+Write real implementations from a blank canvas -- route handlers, hooks, middleware, models, and more. Get instant structural feedback powered by Tree-sitter AST analysis -- no code execution, no test runners. Just parse, verify, repeat.
 
-**For developers who** know the concepts but reach for docs every time they write a middleware chain or a custom hook. Maintain fluency across stacks, lock in new patterns, internalize idioms fast.
+**For developers who** know the concepts but reach for docs every time. Maintain fluency across stacks, lock in new patterns, internalize idioms fast.
 
 ## Features
 
@@ -39,22 +39,16 @@ For full-stack development, start Spring Boot and PostgreSQL with `docker compos
 
 ## Challenge packs
 
-30 challenges across 3 launch packs:
+A growing library of packs across frameworks and languages. Current packs include Express, React, and FastAPI -- with more on the way.
 
-| Pack | Lang | Covers |
-|------|------|--------|
-| **Express Basics** | JS | Route handlers, middleware, error handling, req/res patterns |
-| **React Fundamentals** | TSX | Components, props, hooks, JSX patterns, state |
-| **FastAPI Basics** | Python | Decorators, Pydantic models, DI, response handling |
-
-Packs are portable JSON -- [author your own](docs/deep-dives/pack-authoring.md) with a reference solution, scaffold, and structural assertions.
+Packs are portable JSON -- [author your own](docs/deep-dives/pack-authoring.md) with a reference solution and structural assertions.
 
 ## Tech stack
 
 | | |
 |---|---|
 | **Frontend** | Next.js 16, React 19, Tailwind v3, shadcn/ui |
-| **Backend** | Spring Boot 3.4 + PostgreSQL 16 |
+| **Backend** | Spring Boot 3.5 + PostgreSQL 16 |
 | **Verification** | Tree-sitter WASM (client-side) |
 | **Editor** | Monaco |
 | **State** | Zustand 5 (vanilla stores) |
@@ -70,7 +64,7 @@ libs/
   data-access/     Repository interfaces
   verification/    Tree-sitter verification engine (12 evaluators)
   editor/          Zustand store, language mapping, draft storage
-services/api/      Spring Boot backend (Java 21, PostgreSQL 16)
+services/api/      Spring Boot backend (Java 25, PostgreSQL 16)
 packs/             Challenge pack JSON (git-versioned)
 tools/             CLI: validate-packs, seed
 ```

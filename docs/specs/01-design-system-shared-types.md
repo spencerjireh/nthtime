@@ -7,7 +7,7 @@
 
 ## Overview
 
-Defines the core type system shared across all packages and establishes the design system used by the web frontend. The `@nthtime/shared` library exports pure types for packs, challenges, assertions (as a discriminated union), verification results, attempts, and user settings. These types form the contract between the verification engine, editor store, data access layer, and Convex backend.
+Defines the core type system shared across all packages and establishes the design system used by the web frontend. The `@nthtime/shared` library exports pure types for packs, challenges, assertions (as a discriminated union), verification results, attempts, and user settings. These types form the contract between the verification engine, editor store, data access layer, and Spring Boot backend.
 
 ## Dependencies
 

@@ -88,7 +88,7 @@ Establishes the authentication system, Spring Boot backend, and data access laye
 ### Patterns and Decisions
 
 - **Repository pattern** -- interfaces in `@nthtime/data-access` decouple frontend from backend specifics. Implemented by Spring Data JPA repositories in `services/api`.
-- **TanStack React Query** -- chosen for control over caching, refetching, and optimistic updates. The provider stack is `QueryProvider` only (no Convex React provider, no SessionProvider).
+- **TanStack React Query** -- chosen for control over caching, refetching, and optimistic updates. The provider stack is `QueryProvider` only (no SessionProvider).
 - **Proxy pattern** -- Next.js `/api/v1/*` routes are thin proxies that forward requests to Spring Boot `/api/*` with JSESSIONID cookie forwarding via `spring-boot-proxy.ts`.
 - **Session architecture** -- JSESSIONID cookie, Spring Session JDBC stores sessions in PostgreSQL. No JWTs or service tokens.
 

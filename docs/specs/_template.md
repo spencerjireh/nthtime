@@ -39,10 +39,10 @@ Grouped by concern. Each criterion has a stable, unique ID.
 
 - Key architectural choices and rationale
 
-### Convex Functions
+### Spring Boot Endpoints
 
-| Function | Type | Purpose |
-|----------|------|---------|
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
 
 ### API Routes
 
@@ -61,7 +61,7 @@ Grouped by concern. Each criterion has a stable, unique ID.
 | Criterion | Test File | Test Description |
 |-----------|-----------|-----------------|
 
-### Convex Tests
+### Spring Boot Tests
 
 | Criterion | Test File | Test Description |
 |-----------|-----------|-----------------|

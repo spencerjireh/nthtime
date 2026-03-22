@@ -4,7 +4,7 @@ layout: home
 hero:
   name: nthtime
   text: Drill code patterns until they're muscle memory
-  tagline: Write Express middleware, React hooks, and FastAPI routes from a blank canvas. Get instant structural feedback. Repeat until you stop reaching for the docs.
+  tagline: Write real implementations from a blank canvas. Get instant structural feedback. Repeat until you stop reaching for the docs.
   actions:
     - theme: primary
       text: Get Started
@@ -24,6 +24,6 @@ features:
     details: Challenges are portable JSON files with reference solutions, scaffold templates, and structural assertions. Validate locally, seed to the backend, and ship. No code changes needed.
   - title: Full editor experience
     details: Monaco editor with syntax highlighting, Vim/Emacs keybindings, and autocomplete (off by default -- this is a drill). Keyboard-driven workflow with Cmd+Enter to submit.
-  - title: Three launch packs, 30 challenges
-    details: Express.js routing and middleware, React component patterns and hooks, FastAPI routes and Pydantic models. Beginner through advanced difficulty, each with hints and progressive feedback.
+  - title: Growing challenge library
+    details: Challenges across frameworks and languages, from beginner through advanced, each with hints and progressive feedback.
 ---

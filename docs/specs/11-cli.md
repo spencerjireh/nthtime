@@ -13,7 +13,7 @@ The nthtime CLI provides a terminal-based workflow for solving challenges withou
 
 - [VRFY-01] through [VRFY-08] (verification engine with WASM grammar loading)
 - [DSST-02], [DSST-03], [DSST-04] (Challenge, Assertion, AssertionSet types)
-- [AUTH-04], [AUTH-05] (Convex backend serving challenge data)
+- [AUTH-04], [AUTH-05] (Spring Boot backend serving challenge data)
 
 ## User Flows
 
