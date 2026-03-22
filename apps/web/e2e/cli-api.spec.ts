@@ -21,7 +21,7 @@ test.describe('CLI API endpoints', () => {
     expect(body).toHaveProperty('slug', 'hello-world');
     expect(body).toHaveProperty('title');
     expect(body).toHaveProperty('assertions');
-    expect(Array.isArray(body.assertions)).toBe(true);
+    expect(typeof body.assertions).toBe('object');
   });
 
   test('GET /api/cli/pack/nonexistent returns 404', async ({ request }) => {

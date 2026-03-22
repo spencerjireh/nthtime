@@ -7,6 +7,9 @@ test.describe('Settings', () => {
     // Open settings via the gear button in the header
     await page.getByRole('button', { name: 'Settings' }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Navigate to Feedback panel (dialog defaults to Editor)
+    await page.getByRole('button', { name: 'Feedback' }).click();
     await expect(page.getByRole('heading', { name: 'Feedback' })).toBeVisible();
 
     // Toggle "Show diff" checkbox (default off -> on)

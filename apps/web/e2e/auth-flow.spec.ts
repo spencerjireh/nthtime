@@ -16,7 +16,7 @@ test.describe('Auth flow (smoke)', () => {
   test('sign-in navigates toward GitHub OAuth', async ({ page }) => {
     await page.goto('/');
     const [popup] = await Promise.all([
-      page.waitForEvent('popup').catch(() => null),
+      page.waitForEvent('popup', { timeout: 5000 }).catch(() => null),
       page.getByRole('button', { name: /sign in/i }).click(),
     ]);
 

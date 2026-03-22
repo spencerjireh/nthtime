@@ -18,6 +18,7 @@ async function setFeedbackFlags(
   flags: Record<string, boolean>,
 ) {
   await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: 'Feedback' }).click();
   for (const [label, shouldBeChecked] of Object.entries(flags)) {
     const checkbox = page.getByRole('checkbox', { name: new RegExp(label) });
     const isChecked = await checkbox.isChecked();

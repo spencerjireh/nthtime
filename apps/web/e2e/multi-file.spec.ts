@@ -20,8 +20,8 @@ test.describe('Multi-file challenges', () => {
     await input.fill('helpers.js');
     await input.press('Enter');
 
-    // Verify the new file appears in the file tree
-    await expect(page.getByRole('button', { name: 'helpers.js', exact: true })).toBeVisible();
+    // Verify the new file appears (both FileTree and TabBar render a button)
+    await expect(page.getByRole('button', { name: 'helpers.js', exact: true }).first()).toBeVisible();
   });
 
   test('switch between files using file tree', async ({ page }) => {
@@ -52,6 +52,6 @@ test.describe('Multi-file challenges', () => {
 
     // Results view should show file tabs for each file
     // Button accessible name includes icon text (e.g. "JS app.js"), so use regex
-    await expect(page.getByRole('button', { name: /app\.js/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /app\.js/ }).first()).toBeVisible();
   });
 });
