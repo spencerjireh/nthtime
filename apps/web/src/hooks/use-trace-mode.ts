@@ -44,6 +44,7 @@ export function useTraceMode(
       scrollDisposableRef.current?.dispose();
       scrollDisposableRef.current = null;
       ghostBaseDecRef.current?.set([]);
+      ghostBaseDecRef.current = null;
     }
 
     if (!enabled) {
