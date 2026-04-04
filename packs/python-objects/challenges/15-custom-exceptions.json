@@ -1,0 +1,54 @@
+{
+  "title": "Custom Exceptions",
+  "prompt": "Write custom exception classes and a validation function in `solution.py`:\n\n**Requirements:**\n1. `ValidationError(Exception)` with `__init__(self, field, message)` -- stores both as attributes and calls `super().__init__()` with a formatted string.\n2. `InsufficientFundsError(ValueError)` with `__init__(self, amount, balance)` -- stores both as attributes.\n3. `validate_user(data)` that raises `ValidationError` if the `\"name\"` key is missing or empty, raises `ValidationError` if `\"age\"` is not an `int` or is negative. Returns `True` if valid.\n\n**Examples:**\n```python\ntry:\n    raise ValidationError(\"name\", \"is required\")\nexcept ValidationError as e:\n    print(e.field)    # \"name\"\n    print(e.message)  # \"is required\"\n\ntry:\n    raise InsufficientFundsError(100, 50)\nexcept InsufficientFundsError as e:\n    print(e.amount)   # 100\n    print(e.balance)  # 50\n\nvalidate_user({\"name\": \"Alice\", \"age\": 30})  # True\nvalidate_user({})                              # raises ValidationError\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "exceptions",
+    "custom",
+    "validation"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class ValidationError(Exception):\n    def __init__(self, field, message):\n        self.field = field\n        self.message = message\n        super().__init__(f\"{field}: {message}\")\n\n\nclass InsufficientFundsError(ValueError):\n    def __init__(self, amount, balance):\n        self.amount = amount\n        self.balance = balance\n        super().__init__(f\"Cannot withdraw {amount}, balance is {balance}\")\n\n\ndef validate_user(data):\n    if \"name\" not in data or not data[\"name\"]:\n        raise ValidationError(\"name\", \"Name is required\")\n    if \"age\" not in data or not isinstance(data[\"age\"], int):\n        raise ValidationError(\"age\", \"Age must be an integer\")\n    if data[\"age\"] < 0:\n        raise ValidationError(\"age\", \"Age cannot be negative\")\n    return True\n"
+    }
+  ],
+  "hints": [
+    "Custom exceptions inherit from Exception or its subclasses",
+    "Call super().__init__(message) to set the exception message",
+    "Store extra context as attributes: self.field, self.amount",
+    "Raise with: raise ValidationError('name', 'is required')"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "ValidationError",
+          "bases": ["Exception"],
+          "description": "Define a ValidationError class inheriting from Exception"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "InsufficientFundsError",
+          "bases": ["ValueError"],
+          "description": "Define an InsufficientFundsError class inheriting from ValueError"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "validate_user",
+          "params": ["data"],
+          "description": "Define a validate_user function that accepts data"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(raise_statement)",
+          "description": "Raise exceptions for invalid input",
+          "hint": "Use raise ValidationError(field, message) for validation failures"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

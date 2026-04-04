@@ -1,0 +1,59 @@
+{
+  "title": "Bitwise Basics",
+  "prompt": "Write four bitwise utility functions in `solution.py`:\n\n**Requirements:**\n1. `set_bit(n, pos)` -- sets the bit at position `pos` (0-indexed from the right) and returns the new value\n2. `clear_bit(n, pos)` -- clears the bit at position `pos` and returns the new value\n3. `toggle_bit(n, pos)` -- toggles the bit at position `pos` and returns the new value\n4. `check_bit(n, pos)` -- returns `True` if the bit at position `pos` is set, `False` otherwise\n\n**Examples:**\n```python\nset_bit(0, 3)       # 8  (binary 1000)\nclear_bit(15, 1)    # 13 (binary 1101)\ntoggle_bit(5, 1)    # 7  (binary 111)\ncheck_bit(5, 2)     # True\ncheck_bit(5, 1)     # False\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "bitwise",
+    "operators",
+    "basics"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def set_bit(n, pos):\n    return n | (1 << pos)\n\n\ndef clear_bit(n, pos):\n    return n & ~(1 << pos)\n\n\ndef toggle_bit(n, pos):\n    return n ^ (1 << pos)\n\n\ndef check_bit(n, pos):\n    return bool(n & (1 << pos))\n"
+    }
+  ],
+  "hints": [
+    "1 << pos creates a mask with only the bit at position pos set",
+    "OR (|) sets bits, AND (&) tests bits, XOR (^) toggles",
+    "~mask inverts all bits (used with AND to clear a specific bit)",
+    "bool() converts truthy/falsy to True/False"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "set_bit",
+          "params": ["n", "pos"],
+          "description": "Define set_bit that accepts n and pos"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "clear_bit",
+          "params": ["n", "pos"],
+          "description": "Define clear_bit that accepts n and pos"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "toggle_bit",
+          "params": ["n", "pos"],
+          "description": "Define toggle_bit that accepts n and pos"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "check_bit",
+          "params": ["n", "pos"],
+          "description": "Define check_bit that accepts n and pos"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(binary_operator)",
+          "description": "Use bitwise operators to manipulate bits"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

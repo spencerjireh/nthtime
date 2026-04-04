@@ -1,0 +1,74 @@
+{
+  "title": "Abstract Base Classes",
+  "prompt": "Write an abstract base class and two concrete implementations in `solution.py`:\n\n**Requirements:**\n1. `Serializer(ABC)` with abstract methods `serialize(self, data) -> str` and `deserialize(self, text) -> object`.\n2. `JsonSerializer(Serializer)` implementing both methods using the `json` module.\n3. `CsvSerializer(Serializer)` implementing both methods for list-of-dicts data. `serialize` produces a CSV string with a header row followed by data rows (comma-separated). `deserialize` parses that format back into a list of dicts.\n\n**Examples:**\n```python\njs = JsonSerializer()\njs.serialize({\"a\": 1})          # '{\"a\": 1}'\njs.deserialize('{\"a\": 1}')      # {\"a\": 1}\n\ncs = CsvSerializer()\ncs.serialize([{\"name\": \"Alice\", \"age\": \"30\"}])\n# 'name,age\\nAlice,30'\ncs.deserialize('name,age\\nAlice,30')\n# [{'name': 'Alice', 'age': '30'}]\n\nSerializer()  # raises TypeError (abstract)\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "abc",
+    "abstract",
+    "inheritance",
+    "serialization"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import json\nfrom abc import ABC, abstractmethod\n\n\nclass Serializer(ABC):\n    @abstractmethod\n    def serialize(self, data):\n        pass\n\n    @abstractmethod\n    def deserialize(self, text):\n        pass\n\n\nclass JsonSerializer(Serializer):\n    def serialize(self, data):\n        return json.dumps(data)\n\n    def deserialize(self, text):\n        return json.loads(text)\n\n\nclass CsvSerializer(Serializer):\n    def serialize(self, data):\n        if not data:\n            return \"\"\n        headers = list(data[0].keys())\n        lines = [\",\".join(headers)]\n        for row in data:\n            lines.append(\",\".join(str(row[h]) for h in headers))\n        return \"\\n\".join(lines)\n\n    def deserialize(self, text):\n        if not text:\n            return []\n        lines = text.strip().split(\"\\n\")\n        headers = lines[0].split(\",\")\n        return [\n            dict(zip(headers, line.split(\",\")))\n            for line in lines[1:]\n        ]\n"
+    }
+  ],
+  "hints": [
+    "ABC marks a class as abstract -- it cannot be instantiated",
+    "@abstractmethod forces subclasses to implement the method",
+    "json.dumps(data) serializes to JSON string",
+    "Split CSV by newlines, then split each line by commas"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "abc",
+          "names": ["ABC", "abstractmethod"],
+          "description": "Import ABC and abstractmethod from abc module"
+        },
+        {
+          "type": "pythonImport",
+          "module": "json",
+          "description": "Import json module for JsonSerializer"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Serializer",
+          "bases": ["ABC"],
+          "description": "Define Serializer as an abstract base class"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "JsonSerializer",
+          "bases": ["Serializer"],
+          "description": "Define JsonSerializer inheriting from Serializer"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "CsvSerializer",
+          "bases": ["Serializer"],
+          "description": "Define CsvSerializer inheriting from Serializer"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "serialize",
+          "params": ["self", "data"],
+          "decorator": "abstractmethod",
+          "description": "Define abstract serialize method"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "deserialize",
+          "params": ["self", "text"],
+          "decorator": "abstractmethod",
+          "description": "Define abstract deserialize method"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

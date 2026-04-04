@@ -1,0 +1,54 @@
+{
+  "title": "Match Statement",
+  "prompt": "Write two functions using Python's `match`/`case` statement:\n\n**Requirements:**\n1. `http_status(code)` -- match on integer status codes: 200 returns `\"OK\"`, 301 returns `\"Moved Permanently\"`, 404 returns `\"Not Found\"`, 500 returns `\"Internal Server Error\"`, anything else returns `\"Unknown\"`\n2. `describe_sequence(seq)` -- match on list structure: empty list returns `\"empty\"`, single-element `[x]` returns `\"single: {x}\"`, two-element `[x, y]` returns `\"pair: {x}, {y}\"`, anything else returns `\"many: {len(seq)} items\"`",
+  "difficulty": "intermediate",
+  "tags": [
+    "match",
+    "pattern-matching",
+    "conditionals"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def http_status(code):\n    match code:\n        case 200:\n            return \"OK\"\n        case 301:\n            return \"Moved Permanently\"\n        case 404:\n            return \"Not Found\"\n        case 500:\n            return \"Internal Server Error\"\n        case _:\n            return \"Unknown\"\n\n\ndef describe_sequence(seq):\n    match seq:\n        case []:\n            return \"empty\"\n        case [x]:\n            return f\"single: {x}\"\n        case [x, y]:\n            return f\"pair: {x}, {y}\"\n        case _:\n            return f\"many: {len(seq)} items\"\n"
+    }
+  ],
+  "hints": [
+    "match/case is Python's structural pattern matching (3.10+)",
+    "Use _ as the wildcard/default case",
+    "Sequence patterns: case [x] matches a single-element list",
+    "Variables in patterns bind to matched values"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "http_status",
+          "params": ["code"],
+          "description": "Define an http_status function that accepts a code parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "describe_sequence",
+          "params": ["seq"],
+          "description": "Define a describe_sequence function that accepts a seq parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(match_statement)",
+          "description": "Use a match statement for structural pattern matching",
+          "hint": "Use match/case syntax: match value: case pattern: ..."
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(case_clause)",
+          "description": "Define case clauses within the match statement",
+          "hint": "Each case clause handles a different pattern"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

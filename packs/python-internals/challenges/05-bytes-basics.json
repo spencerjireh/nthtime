@@ -1,0 +1,59 @@
+{
+  "title": "Bytes Basics",
+  "prompt": "Write four functions for working with bytes in `solution.py`:\n\n**Requirements:**\n1. `string_to_bytes(text, encoding=\"utf-8\")` -- encodes a string to bytes using the given encoding\n2. `bytes_to_string(data, encoding=\"utf-8\")` -- decodes bytes to a string using the given encoding\n3. `xor_bytes(a, b)` -- XORs two equal-length bytes objects element-wise, returns bytes\n4. `byte_frequency(data)` -- returns a dict mapping each byte value (int 0-255) to its count\n\n**Examples:**\n```python\nstring_to_bytes(\"hello\")           # b'hello'\nbytes_to_string(b'hello')          # 'hello'\nxor_bytes(b'\\x01\\x02', b'\\x03\\x04')  # b'\\x02\\x06'\nbyte_frequency(b'aab')             # {97: 2, 98: 1}\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "bytes",
+    "encoding",
+    "xor"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def string_to_bytes(text, encoding=\"utf-8\"):\n    return text.encode(encoding)\n\n\ndef bytes_to_string(data, encoding=\"utf-8\"):\n    return data.decode(encoding)\n\n\ndef xor_bytes(a, b):\n    return bytes(x ^ y for x, y in zip(a, b))\n\n\ndef byte_frequency(data):\n    freq = {}\n    for byte in data:\n        freq[byte] = freq.get(byte, 0) + 1\n    return freq\n"
+    }
+  ],
+  "hints": [
+    "str.encode(encoding) converts a string to bytes",
+    "bytes.decode(encoding) converts bytes back to a string",
+    "Iterating over bytes yields integers (0-255)",
+    "XOR is reversible: a ^ b ^ b == a"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "string_to_bytes",
+          "params": ["text", "encoding"],
+          "description": "Define string_to_bytes with text and encoding parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "bytes_to_string",
+          "params": ["data", "encoding"],
+          "description": "Define bytes_to_string with data and encoding parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "xor_bytes",
+          "params": ["a", "b"],
+          "description": "Define xor_bytes that XORs two bytes objects"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "byte_frequency",
+          "params": ["data"],
+          "description": "Define byte_frequency that counts byte occurrences"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement)",
+          "description": "Functions should return values"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

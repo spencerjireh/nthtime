@@ -1,0 +1,77 @@
+{
+  "title": "Arithmetic Dunders",
+  "prompt": "Write a `Vector` class in `solution.py` for 2D vector arithmetic:\n\n**Requirements:**\n1. `__init__(self, x, y)` -- stores x and y components\n2. `__add__(self, other)` -- vector addition, returns a new Vector\n3. `__sub__(self, other)` -- vector subtraction, returns a new Vector\n4. `__mul__(self, scalar)` -- scalar multiplication, returns a new Vector\n5. `__neg__(self)` -- negation (unary minus), returns a new Vector\n6. `__abs__(self)` -- returns the Euclidean magnitude (use `math.sqrt`)\n7. `__eq__(self, other)` -- component-wise equality\n8. `__repr__(self)` -- returns `\"Vector(3, 4)\"`\n\n**Examples:**\n```python\nv1 = Vector(1, 2)\nv2 = Vector(3, 4)\nv1 + v2          # Vector(4, 6)\nv2 - v1          # Vector(2, 2)\nv1 * 3           # Vector(3, 6)\n-v1              # Vector(-1, -2)\nabs(Vector(3, 4)) # 5.0\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "classes",
+    "operators",
+    "dunder",
+    "math"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import math\n\n\nclass Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\n    def __sub__(self, other):\n        return Vector(self.x - other.x, self.y - other.y)\n\n    def __mul__(self, scalar):\n        return Vector(self.x * scalar, self.y * scalar)\n\n    def __neg__(self):\n        return Vector(-self.x, -self.y)\n\n    def __abs__(self):\n        return math.sqrt(self.x ** 2 + self.y ** 2)\n\n    def __eq__(self, other):\n        if not isinstance(other, Vector):\n            return NotImplemented\n        return self.x == other.x and self.y == other.y\n\n    def __repr__(self):\n        return f\"Vector({self.x}, {self.y})\"\n"
+    }
+  ],
+  "hints": [
+    "__add__ is called by the + operator",
+    "__mul__ handles v * 3 (scalar on the right)",
+    "__neg__ is called by the - unary operator: -v",
+    "Return a new Vector from operations -- don't modify self"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "math",
+          "description": "Import math for sqrt"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Vector",
+          "description": "Define a Vector class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__add__",
+          "params": ["self", "other"],
+          "description": "Define __add__ for vector addition"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__sub__",
+          "params": ["self", "other"],
+          "description": "Define __sub__ for vector subtraction"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__mul__",
+          "params": ["self", "scalar"],
+          "description": "Define __mul__ for scalar multiplication"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__neg__",
+          "params": ["self"],
+          "description": "Define __neg__ for unary negation"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__abs__",
+          "params": ["self"],
+          "description": "Define __abs__ for Euclidean magnitude"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__eq__",
+          "params": ["self", "other"],
+          "description": "Define __eq__ for component-wise equality"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

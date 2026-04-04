@@ -1,0 +1,53 @@
+{
+  "title": "Number Crunching",
+  "prompt": "Write three functions for common numeric operations:\n\n**Requirements:**\n1. `circle_area(radius)` -- returns the area of a circle using `math.pi`\n2. `clamp(value, low, high)` -- returns value constrained between low and high\n3. `is_even(n)` -- returns `True` if n is divisible by 2",
+  "difficulty": "beginner",
+  "tags": [
+    "math",
+    "numbers",
+    "arithmetic"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import math\n\n\ndef circle_area(radius):\n    return math.pi * radius ** 2\n\n\ndef clamp(value, low, high):\n    return max(low, min(value, high))\n\n\ndef is_even(n):\n    return n % 2 == 0\n"
+    }
+  ],
+  "hints": [
+    "Import math for pi: import math",
+    "math.pi gives 3.14159...",
+    "max(low, min(value, high)) is a common clamp pattern",
+    "The modulo operator % gives the remainder: n % 2"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "math",
+          "description": "Import the math module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "circle_area",
+          "params": ["radius"],
+          "description": "Define a circle_area function that accepts a radius parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "clamp",
+          "params": ["value", "low", "high"],
+          "description": "Define a clamp function that accepts value, low, and high parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_even",
+          "params": ["n"],
+          "description": "Define an is_even function that accepts an n parameter"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

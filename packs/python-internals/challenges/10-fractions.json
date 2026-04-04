@@ -1,0 +1,60 @@
+{
+  "title": "Fractions",
+  "prompt": "Write four fraction utility functions in `solution.py`:\n\n**Requirements:**\n1. `add_fractions(a, b)` -- adds two fraction tuples `(num, den)` and returns the simplified result as `(num, den)`\n2. `simplify(num, den)` -- returns the simplified fraction as a tuple `(num, den)`\n3. `to_mixed(num, den)` -- converts an improper fraction to mixed number form `(whole, numerator, denominator)`\n4. `harmonic_sum(n)` -- returns the sum `1/1 + 1/2 + ... + 1/n` as a `Fraction` object\n\n**Examples:**\n```python\nadd_fractions((1, 2), (1, 3))  # (5, 6)\nsimplify(4, 8)                 # (1, 2)\nto_mixed(7, 3)                 # (2, 1, 3)\nharmonic_sum(1)                # Fraction(1, 1)\nharmonic_sum(4)                # Fraction(25, 12)\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "fractions",
+    "rational",
+    "math"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from fractions import Fraction\n\n\ndef add_fractions(a, b):\n    result = Fraction(a[0], a[1]) + Fraction(b[0], b[1])\n    return (result.numerator, result.denominator)\n\n\ndef simplify(num, den):\n    f = Fraction(num, den)\n    return (f.numerator, f.denominator)\n\n\ndef to_mixed(num, den):\n    whole = num // den\n    remainder = num % den\n    f = Fraction(remainder, den)\n    return (whole, f.numerator, f.denominator)\n\n\ndef harmonic_sum(n):\n    total = Fraction(0)\n    for i in range(1, n + 1):\n        total += Fraction(1, i)\n    return total\n"
+    }
+  ],
+  "hints": [
+    "Fraction(num, den) creates an exact rational number",
+    "Fractions auto-simplify: Fraction(4, 8) == Fraction(1, 2)",
+    "Access parts with .numerator and .denominator",
+    "Fractions support +, -, *, / with exact results"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "fractions",
+          "names": ["Fraction"],
+          "description": "Import Fraction from fractions module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "add_fractions",
+          "params": ["a", "b"],
+          "description": "Define add_fractions that adds two fraction tuples"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "simplify",
+          "params": ["num", "den"],
+          "description": "Define simplify that returns a simplified fraction tuple"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "to_mixed",
+          "params": ["num", "den"],
+          "description": "Define to_mixed that converts improper fraction to mixed number"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "harmonic_sum",
+          "params": ["n"],
+          "description": "Define harmonic_sum that returns harmonic series sum as Fraction"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

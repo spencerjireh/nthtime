@@ -1,0 +1,54 @@
+{
+  "title": "Lambda Expressions",
+  "prompt": "Write three functions in `solution.py`:\n\n**Requirements:**\n1. `sort_by_last(strings)` -- returns strings sorted by their last character using `sorted()` with a lambda key\n2. `apply_operations(value, operations)` -- applies a list of functions (lambdas) in sequence to a value and returns the final result\n3. `make_adder(n)` -- returns a lambda that adds n to its argument\n\n**Examples:**\n```python\nsort_by_last([\"hello\", \"world\", \"abc\"])  # [\"abc\", \"world\", \"hello\"]\n\nops = [lambda x: x + 1, lambda x: x * 2]\napply_operations(3, ops)  # (3 + 1) * 2 = 8\n\nadd5 = make_adder(5)\nadd5(3)  # 8\nadd5(0)  # 5\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "lambda",
+    "sorting",
+    "higher-order"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def sort_by_last(strings):\n    return sorted(strings, key=lambda s: s[-1])\n\n\ndef apply_operations(value, operations):\n    result = value\n    for op in operations:\n        result = op(result)\n    return result\n\n\ndef make_adder(n):\n    return lambda x: x + n\n"
+    }
+  ],
+  "hints": [
+    "lambda x: expr creates an anonymous function",
+    "sorted(items, key=lambda x: ...) sorts by the key function",
+    "Lambdas are limited to a single expression",
+    "Functions are first-class: store them in lists, pass as arguments"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "sort_by_last",
+          "params": ["strings"],
+          "description": "Define a sort_by_last function that accepts a strings parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "apply_operations",
+          "params": ["value", "operations"],
+          "description": "Define an apply_operations function with value and operations parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "make_adder",
+          "params": ["n"],
+          "description": "Define a make_adder function that accepts an n parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(lambda)",
+          "description": "Use lambda expressions for anonymous functions",
+          "hint": "lambda x: x + n creates a function without def"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

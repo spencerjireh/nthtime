@@ -1,0 +1,68 @@
+{
+  "title": "Comprehension Mastery",
+  "prompt": "Write three functions in `solution.py`:\n\n**Requirements:**\n1. `invert_index(docs)` -- docs is a dict like `{\"doc1\": [\"word1\", \"word2\"], ...}`, returns an inverted index: `{\"word1\": [\"doc1\"], \"word2\": [\"doc1\"], ...}`\n2. `sparse_to_dense(sparse, rows, cols, default=0)` -- converts a sparse dict `{(r, c): val, ...}` into a 2D list of size rows x cols, filling missing entries with default\n3. `group_anagrams(words)` -- groups words that are anagrams of each other into lists, returns a list of groups\n\n**Examples:**\n```python\ninvert_index({\"d1\": [\"a\", \"b\"], \"d2\": [\"b\", \"c\"]})\n# {\"a\": [\"d1\"], \"b\": [\"d1\", \"d2\"], \"c\": [\"d2\"]}\n\nsparse_to_dense({(0, 1): 5, (1, 0): 3}, 2, 2)\n# [[0, 5], [3, 0]]\n\ngroup_anagrams([\"cat\", \"tac\", \"dog\", \"god\"])\n# [[\"cat\", \"tac\"], [\"dog\", \"god\"]]\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "comprehensions",
+    "advanced",
+    "indexing"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def invert_index(docs):\n    index = {}\n    for doc_id, words in docs.items():\n        for word in words:\n            if word not in index:\n                index[word] = []\n            index[word].append(doc_id)\n    return index\n\n\ndef sparse_to_dense(sparse, rows, cols, default=0):\n    return [\n        [sparse.get((r, c), default) for c in range(cols)]\n        for r in range(rows)\n    ]\n\n\ndef group_anagrams(words):\n    groups = {}\n    for word in words:\n        key = \"\".join(sorted(word.lower()))\n        if key not in groups:\n            groups[key] = []\n        groups[key].append(word)\n    return list(groups.values())\n"
+    }
+  ],
+  "hints": [
+    "An inverted index maps values back to their keys",
+    "dict.get((r, c), default) handles missing sparse entries",
+    "Sorted characters form an anagram key: sorted('cat') == sorted('tac')",
+    "Build groups with a dict, then return list(groups.values())"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "invert_index",
+          "params": [
+            "docs"
+          ],
+          "description": "Define an invert_index function that accepts a docs parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "sparse_to_dense",
+          "params": [
+            "sparse",
+            "rows",
+            "cols",
+            "default"
+          ],
+          "description": "Define a sparse_to_dense function with sparse, rows, and cols parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "group_anagrams",
+          "params": [
+            "words"
+          ],
+          "description": "Define a group_anagrams function that accepts a words parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(list_comprehension)",
+          "description": "Use list comprehensions for concise data transformation",
+          "hint": "List comprehensions: [expr for x in iterable] or nested [expr for r in rows for c in cols]"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use for loops to iterate and build data structures"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

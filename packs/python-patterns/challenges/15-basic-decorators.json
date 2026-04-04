@@ -1,0 +1,71 @@
+{
+  "title": "Basic Decorators",
+  "prompt": "Write two decorators in `solution.py` using `functools.wraps`:\n\n**Requirements:**\n1. `timer(fn)` -- prints the execution time of the wrapped function and returns its result. Use `time.time()` to measure elapsed time. Print format: `\"{fn.__name__} took {elapsed:.4f}s\"`.\n2. `call_counter(fn)` -- adds a `.call_count` attribute to the wrapper that tracks how many times the function is called. Initialize `.call_count` to 0.\n\nBoth decorators must use `@functools.wraps(fn)` to preserve the original function's metadata.\n\n**Examples:**\n```python\n@timer\ndef slow():\n    time.sleep(0.1)\n    return 42\n\nresult = slow()  # prints \"slow took 0.1001s\", returns 42\n\n@call_counter\ndef greet(name):\n    return f\"Hello, {name}\"\n\ngreet(\"Alice\")\ngreet(\"Bob\")\ngreet.call_count  # 2\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "decorators",
+    "functools",
+    "wraps"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import functools\nimport time\n\n\ndef timer(fn):\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = fn(*args, **kwargs)\n        elapsed = time.time() - start\n        print(f\"{fn.__name__} took {elapsed:.4f}s\")\n        return result\n    return wrapper\n\n\ndef call_counter(fn):\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        wrapper.call_count += 1\n        return fn(*args, **kwargs)\n    wrapper.call_count = 0\n    return wrapper\n"
+    }
+  ],
+  "hints": [
+    "@functools.wraps(fn) preserves the original function's name and docstring",
+    "time.time() returns current time in seconds as a float",
+    "You can set attributes on functions: wrapper.call_count = 0",
+    "The wrapper function should accept *args, **kwargs for flexibility"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "functools",
+          "names": [
+            "wraps"
+          ],
+          "description": "Import wraps from functools"
+        },
+        {
+          "type": "pythonImport",
+          "module": "time",
+          "description": "Import the time module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "timer",
+          "params": [
+            "fn"
+          ],
+          "description": "Define a timer decorator that accepts a function"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "call_counter",
+          "params": [
+            "fn"
+          ],
+          "description": "Define a call_counter decorator that accepts a function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use @functools.wraps decorator on wrapper functions",
+          "hint": "Decorate the inner wrapper with @functools.wraps(fn)"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(function_definition body: (block (decorated_definition)))",
+          "description": "Define a nested wrapper function inside the decorator",
+          "hint": "The decorator should contain an inner wrapper function"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

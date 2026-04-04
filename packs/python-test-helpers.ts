@@ -96,32 +96,60 @@ export function runPythonTest(
 // When run directly (npx tsx packs/python-test-helpers.ts), run all Python tests
 if (process.argv[1]?.endsWith('python-test-helpers.ts')) {
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const packsDir = join(__dirname, 'fastapi-basics', 'challenges');
-  const testFiles = readdirSync(packsDir)
-    .filter((f: string) => f.endsWith('.test.py'))
-    .sort();
 
-  if (testFiles.length === 0) {
+  // Auto-discover all pack directories containing .test.py files
+  const packDirs = readdirSync(__dirname, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => ({ name: d.name, challenges: join(__dirname, d.name, 'challenges') }))
+    .filter(({ challenges }) => existsSync(challenges));
+
+  interface TestEntry {
+    pack: string;
+    testFile: string;
+    challengePath: string;
+    testContent: string;
+  }
+
+  const allTests: TestEntry[] = [];
+
+  for (const { name, challenges } of packDirs) {
+    const testFiles = readdirSync(challenges)
+      .filter((f: string) => f.endsWith('.test.py'))
+      .sort();
+    for (const testFile of testFiles) {
+      const challengeFile = testFile.replace('.test.py', '.json');
+      allTests.push({
+        pack: name,
+        testFile,
+        challengePath: join(challenges, challengeFile),
+        testContent: readFileSync(join(challenges, testFile), 'utf-8'),
+      });
+    }
+  }
+
+  if (allTests.length === 0) {
     console.log('No .test.py files found.');
     process.exit(0);
   }
 
-  console.log(`Running ${testFiles.length} Python behavioral test(s)...\n`);
+  console.log(`Running ${allTests.length} Python behavioral test(s)...\n`);
 
   let passed = 0;
   let failed = 0;
+  let currentPack = '';
 
-  for (const testFile of testFiles) {
-    const challengeFile = testFile.replace('.test.py', '.json');
-    const challengePath = join(packsDir, challengeFile);
-    const testContent = readFileSync(join(packsDir, testFile), 'utf-8');
+  for (const { pack, testFile, challengePath, testContent } of allTests) {
+    if (pack !== currentPack) {
+      currentPack = pack;
+      console.log(`  ${pack}/`);
+    }
 
     const result = runPythonTest(challengePath, testContent);
     if (result.passed) {
-      console.log(`  PASS  ${testFile}`);
+      console.log(`    PASS  ${testFile}`);
       passed++;
     } else {
-      console.log(`  FAIL  ${testFile}`);
+      console.log(`    FAIL  ${testFile}`);
       console.log(result.output);
       failed++;
     }

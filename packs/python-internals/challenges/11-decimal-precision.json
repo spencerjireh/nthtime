@@ -1,0 +1,76 @@
+{
+  "title": "Decimal Precision",
+  "prompt": "Write four functions in `solution.py` that demonstrate precise decimal arithmetic:\n\n**Requirements:**\n1. `precise_divide(a, b, places=10)` -- divides `a` by `b` using `Decimal` with the given number of decimal places of precision\n2. `money_add(amounts)` -- takes a list of money amount strings (like `\"10.25\"`) and returns their sum as a string using `Decimal`\n3. `round_half_even(value, places)` -- rounds a number using banker's rounding (`ROUND_HALF_EVEN`) and returns a float\n4. `compare_float_decimal(a, b)` -- returns a dict with keys `\"float_sum\"` (float result of `a + b`), `\"decimal_sum\"` (string of `Decimal(str(a)) + Decimal(str(b))`), and `\"equal\"` (bool comparing them)\n\n**Examples:**\n```python\nprecise_divide(1, 3, 5)              # Decimal('0.33333')\nmoney_add([\"10.25\", \"5.75\"])          # \"16.00\"\nround_half_even(2.5, 0)              # 2.0 (rounds to even)\nround_half_even(3.5, 0)              # 4.0 (rounds to even)\ncompare_float_decimal(0.1, 0.2)      # {\"float_sum\": 0.30000...04, \"decimal_sum\": \"0.3\", \"equal\": False}\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "decimal",
+    "precision",
+    "money",
+    "rounding"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from decimal import Decimal, ROUND_HALF_EVEN, localcontext\n\n\ndef precise_divide(a, b, places=10):\n    with localcontext() as ctx:\n        ctx.prec = places + 5\n        result = Decimal(str(a)) / Decimal(str(b))\n        return round(result, places)\n\n\ndef money_add(amounts):\n    total = sum(Decimal(a) for a in amounts)\n    return str(total)\n\n\ndef round_half_even(value, places):\n    d = Decimal(str(value))\n    quantize_str = \"0.\" + \"0\" * places\n    return float(d.quantize(Decimal(quantize_str), rounding=ROUND_HALF_EVEN))\n\n\ndef compare_float_decimal(a, b):\n    float_sum = a + b\n    decimal_sum = Decimal(str(a)) + Decimal(str(b))\n    return {\n        \"float_sum\": float_sum,\n        \"decimal_sum\": str(decimal_sum),\n        \"equal\": Decimal(str(float_sum)) == decimal_sum,\n    }\n"
+    }
+  ],
+  "hints": [
+    "Always create Decimal from strings: Decimal('0.1'), not Decimal(0.1)",
+    "localcontext() lets you set precision for a block",
+    "ROUND_HALF_EVEN rounds 0.5 to the nearest even number",
+    "Float 0.1 + 0.2 != 0.3, but Decimal('0.1') + Decimal('0.2') == Decimal('0.3')"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "decimal",
+          "names": [
+            "Decimal",
+            "ROUND_HALF_EVEN"
+          ],
+          "description": "Import Decimal and ROUND_HALF_EVEN from decimal module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "precise_divide",
+          "params": [
+            "a",
+            "b",
+            "places"
+          ],
+          "description": "Define precise_divide for high-precision division"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "money_add",
+          "params": [
+            "amounts"
+          ],
+          "description": "Define money_add that sums money strings using Decimal"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "round_half_even",
+          "params": [
+            "value",
+            "places"
+          ],
+          "description": "Define round_half_even for banker's rounding"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "compare_float_decimal",
+          "params": [
+            "a",
+            "b"
+          ],
+          "description": "Define compare_float_decimal showing float vs Decimal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

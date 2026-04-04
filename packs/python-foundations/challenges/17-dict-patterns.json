@@ -1,0 +1,60 @@
+{
+  "title": "Dict Patterns",
+  "prompt": "Write three functions that demonstrate advanced dictionary patterns:\n\n**Requirements:**\n1. `deep_get(d, path, default=None)` -- accesses a nested dict via dot-separated path `\"a.b.c\"`, returns default if any key is missing\n2. `group_by(items, key_fn)` -- groups a list by a key function, returning `{key: [items...]}`\n3. `diff_dicts(a, b)` -- returns `{\"added\": {...}, \"removed\": {...}, \"changed\": {...}}` comparing two dicts\n\n**Examples:**\n```python\ndeep_get({\"a\": {\"b\": 1}}, \"a.b\")          # 1\ndeep_get({\"a\": 1}, \"a.b.c\", \"missing\")    # \"missing\"\ngroup_by([\"hi\", \"hey\", \"bye\"], len)        # {2: [\"hi\"], 3: [\"hey\", \"bye\"]}\ndiff_dicts({\"a\": 1}, {\"a\": 2, \"b\": 3})     # {\"added\": {\"b\": 3}, \"removed\": {}, \"changed\": {\"a\": 2}}\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "dicts",
+    "nested",
+    "patterns"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def deep_get(d, path, default=None):\n    keys = path.split(\".\")\n    current = d\n    for key in keys:\n        if not isinstance(current, dict) or key not in current:\n            return default\n        current = current[key]\n    return current\n\n\ndef group_by(items, key_fn):\n    groups = {}\n    for item in items:\n        key = key_fn(item)\n        if key not in groups:\n            groups[key] = []\n        groups[key].append(item)\n    return groups\n\n\ndef diff_dicts(a, b):\n    added = {k: b[k] for k in b if k not in a}\n    removed = {k: a[k] for k in a if k not in b}\n    changed = {k: b[k] for k in a if k in b and a[k] != b[k]}\n    return {\"added\": added, \"removed\": removed, \"changed\": changed}\n"
+    }
+  ],
+  "hints": [
+    "Split the path: 'a.b.c'.split('.') gives ['a', 'b', 'c']",
+    "Walk through nested dicts one key at a time",
+    "isinstance(x, dict) checks if x is a dictionary",
+    "Dict comprehension with filter: {k: v for k, v in ... if condition}"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "deep_get",
+          "params": ["d", "path", "default"],
+          "description": "Define a deep_get function that accepts d, path, and default parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "group_by",
+          "params": ["items", "key_fn"],
+          "description": "Define a group_by function that accepts items and key_fn parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "diff_dicts",
+          "params": ["a", "b"],
+          "description": "Define a diff_dicts function that accepts a and b parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use for loops for iteration",
+          "hint": "Iterate through keys or items with a for loop"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(dictionary_comprehension)",
+          "description": "Use dict comprehensions for building result dictionaries",
+          "hint": "Dict comprehension with filter: {k: v for k, v in ... if condition}"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

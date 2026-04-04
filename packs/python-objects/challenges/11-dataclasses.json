@@ -1,0 +1,68 @@
+{
+  "title": "Dataclasses",
+  "prompt": "Write two dataclasses and a function in `solution.py`:\n\n**Requirements:**\n1. `@dataclass` class `Point` with `x: float` and `y: float`.\n2. `@dataclass` class `Employee` with `name: str`, `department: str`, `salary: float`. Add a `__post_init__` method that raises `ValueError` if salary is negative.\n3. `distance(p1: Point, p2: Point) -> float` function computing Euclidean distance between two points.\n\n**Examples:**\n```python\np1 = Point(0, 0)\np2 = Point(3, 4)\ndistance(p1, p2)       # 5.0\n\nPoint(1, 2) == Point(1, 2)  # True (value equality)\n\ne = Employee(\"Alice\", \"Eng\", 90000)\nEmployee(\"Bob\", \"Eng\", -1)  # raises ValueError\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "dataclasses",
+    "post-init",
+    "validation"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import math\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass Point:\n    x: float\n    y: float\n\n\n@dataclass\nclass Employee:\n    name: str\n    department: str\n    salary: float\n\n    def __post_init__(self):\n        if self.salary < 0:\n            raise ValueError(\"Salary cannot be negative\")\n\n\ndef distance(p1, p2):\n    return math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)\n"
+    }
+  ],
+  "hints": [
+    "@dataclass auto-generates __init__, __repr__, __eq__",
+    "Type annotations (x: float) define the fields",
+    "__post_init__ runs after the auto-generated __init__",
+    "Dataclass instances compare by value (Point(1,2) == Point(1,2))"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "dataclasses",
+          "names": ["dataclass"],
+          "description": "Import dataclass from dataclasses"
+        },
+        {
+          "type": "pythonImport",
+          "module": "math",
+          "description": "Import the math module"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Point",
+          "description": "Define a Point dataclass"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Employee",
+          "description": "Define an Employee dataclass"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__post_init__",
+          "params": ["self"],
+          "description": "Define __post_init__ for salary validation"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "distance",
+          "params": ["p1", "p2"],
+          "description": "Define a distance function that accepts two points"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use the @dataclass decorator"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

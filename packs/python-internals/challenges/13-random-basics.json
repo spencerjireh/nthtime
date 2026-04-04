@@ -1,0 +1,68 @@
+{
+  "title": "Random Basics",
+  "prompt": "Write four randomness utility functions in `solution.py`:\n\n**Requirements:**\n1. `roll_dice(n, sides=6)` -- returns a list of `n` random integers from 1 to `sides` (inclusive)\n2. `shuffle_deck()` -- returns a shuffled list of 52 card tuples `(rank, suit)`. Ranks are `2..10, \"J\", \"Q\", \"K\", \"A\"`. Suits are `\"Hearts\", \"Diamonds\", \"Clubs\", \"Spades\"`\n3. `weighted_choice(items, weights)` -- returns one item from `items` using weighted random selection\n4. `random_sample(items, k)` -- returns `k` unique random items from `items` (without replacement)\n\n**Examples:**\n```python\nimport random\nrandom.seed(42)\nroll_dice(3)              # [6, 1, 1] (seed-dependent)\nshuffle_deck()            # list of 52 (rank, suit) tuples in random order\nweighted_choice([\"a\", \"b\"], [90, 10])  # \"a\" (most likely)\nrandom_sample([1, 2, 3, 4, 5], 3)     # 3 unique items\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "random",
+    "dice",
+    "cards",
+    "sampling"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import random\n\n\ndef roll_dice(n, sides=6):\n    return [random.randint(1, sides) for _ in range(n)]\n\n\ndef shuffle_deck():\n    ranks = list(range(2, 11)) + [\"J\", \"Q\", \"K\", \"A\"]\n    suits = [\"Hearts\", \"Diamonds\", \"Clubs\", \"Spades\"]\n    deck = [(rank, suit) for suit in suits for rank in ranks]\n    random.shuffle(deck)\n    return deck\n\n\ndef weighted_choice(items, weights):\n    return random.choices(items, weights=weights, k=1)[0]\n\n\ndef random_sample(items, k):\n    return random.sample(items, k)\n"
+    }
+  ],
+  "hints": [
+    "random.randint(a, b) includes both endpoints",
+    "random.shuffle() modifies the list in place",
+    "random.choices() supports weights for non-uniform selection",
+    "random.sample() returns k unique items without replacement"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "random",
+          "description": "Import random module for random number generation"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "roll_dice",
+          "params": [
+            "n",
+            "sides"
+          ],
+          "description": "Define roll_dice that returns n random die rolls"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "shuffle_deck",
+          "description": "Define shuffle_deck that returns a shuffled deck of cards"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "weighted_choice",
+          "params": [
+            "items",
+            "weights"
+          ],
+          "description": "Define weighted_choice for weighted random selection"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "random_sample",
+          "params": [
+            "items",
+            "k"
+          ],
+          "description": "Define random_sample that returns k unique random items"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

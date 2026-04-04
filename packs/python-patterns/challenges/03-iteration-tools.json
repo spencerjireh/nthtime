@@ -1,0 +1,59 @@
+{
+  "title": "Iteration Tools",
+  "prompt": "Write three generator functions in `solution.py`:\n\n**Requirements:**\n1. `sliding_window(items, size)` -- yields consecutive windows of given size as lists\n2. `pairwise(items)` -- yields consecutive `(items[i], items[i+1])` pairs\n3. `take_while(predicate, items)` -- yields items while predicate is True, then stops\n\n**Examples:**\n```python\nlist(sliding_window([1, 2, 3, 4], 3))  # [[1, 2, 3], [2, 3, 4]]\nlist(pairwise([1, 2, 3]))              # [(1, 2), (2, 3)]\nlist(take_while(lambda x: x < 4, [1, 2, 3, 5, 1]))  # [1, 2, 3]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "generators",
+    "iteration",
+    "windows"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def sliding_window(items, size):\n    lst = list(items)\n    for i in range(len(lst) - size + 1):\n        yield lst[i:i + size]\n\n\ndef pairwise(items):\n    lst = list(items)\n    for i in range(len(lst) - 1):\n        yield (lst[i], lst[i + 1])\n\n\ndef take_while(predicate, items):\n    for item in items:\n        if not predicate(item):\n            return\n        yield item\n"
+    }
+  ],
+  "hints": [
+    "yield turns a function into a generator",
+    "range(len(lst) - size + 1) gives valid starting indices for windows",
+    "return inside a generator stops iteration (like break)",
+    "list(items) materializes an iterable for indexed access"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "sliding_window",
+          "params": ["items", "size"],
+          "description": "Define a sliding_window function with items and size parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "pairwise",
+          "params": ["items"],
+          "description": "Define a pairwise function that accepts an items parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "take_while",
+          "params": ["predicate", "items"],
+          "description": "Define a take_while function with predicate and items parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Use yield to make these generator functions",
+          "hint": "yield turns a function into a generator that produces values lazily"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use for loops to iterate over items"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

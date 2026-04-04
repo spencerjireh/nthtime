@@ -1,0 +1,52 @@
+{
+  "title": "Boolean Logic",
+  "prompt": "Write two functions in `solution.py`:\n\n**Requirements:**\n1. `can_vote(age, is_citizen)` -- returns `True` only if `age` is 18 or older **and** `is_citizen` is `True`. Use a single boolean expression with `and`\n2. `classify_number(n)` -- returns `\"positive\"` if `n > 0`, `\"negative\"` if `n < 0`, or `\"zero\"` if `n == 0`. Use `if`/`elif`/`else`\n\n**Examples:**\n```python\ncan_vote(21, True)   # True\ncan_vote(16, True)   # False\ncan_vote(21, False)  # False\nclassify_number(5)   # \"positive\"\nclassify_number(-3)  # \"negative\"\nclassify_number(0)   # \"zero\"\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "booleans",
+    "conditionals",
+    "comparisons"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def can_vote(age, is_citizen):\n    return age >= 18 and is_citizen\n\n\ndef classify_number(n):\n    if n > 0:\n        return \"positive\"\n    elif n < 0:\n        return \"negative\"\n    else:\n        return \"zero\"\n"
+    }
+  ],
+  "hints": [
+    "Use `and` to combine conditions: age >= 18 and is_citizen",
+    "Python uses `and`, `or`, `not` instead of &&, ||, !",
+    "if/elif/else handles multi-way branching"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "can_vote",
+          "params": ["age", "is_citizen"],
+          "description": "Define a can_vote function with age and is_citizen parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "classify_number",
+          "params": ["n"],
+          "description": "Define a classify_number function with an n parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(boolean_operator)",
+          "description": "Use a boolean operator (and/or) to combine conditions",
+          "hint": "Combine conditions with `and`: age >= 18 and is_citizen"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(comparison_operator)",
+          "description": "Use comparison operators to check values"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

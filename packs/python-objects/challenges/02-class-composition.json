@@ -1,0 +1,63 @@
+{
+  "title": "Class Composition",
+  "prompt": "Write three classes in `solution.py` that demonstrate object composition:\n\n**Requirements:**\n1. `Address(street, city, zip_code)` -- stores street, city, and zip_code attributes\n2. `Person(name, age, address)` -- stores name, age, and an Address instance; has a `summary(self)` method returning `\"{name}, age {age}, {city}\"`\n3. `Roster(name)` -- stores a name and an internal list of people; has `add_person(self, person)` to add a person, and `find_by_city(self, city)` returning a list of persons whose address matches the given city\n\n**Examples:**\n```python\naddr = Address(\"123 Main St\", \"Springfield\", \"62704\")\nperson = Person(\"Alice\", 30, addr)\nperson.summary()  # \"Alice, age 30, Springfield\"\n\nroster = Roster(\"Team\")\nroster.add_person(person)\nroster.find_by_city(\"Springfield\")  # [person]\nroster.find_by_city(\"Shelbyville\")  # []\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "classes",
+    "composition",
+    "relationships"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class Address:\n    def __init__(self, street, city, zip_code):\n        self.street = street\n        self.city = city\n        self.zip_code = zip_code\n\n\nclass Person:\n    def __init__(self, name, age, address):\n        self.name = name\n        self.age = age\n        self.address = address\n\n    def summary(self):\n        return f\"{self.name}, age {self.age}, {self.address.city}\"\n\n\nclass Roster:\n    def __init__(self, name):\n        self.name = name\n        self.people = []\n\n    def add_person(self, person):\n        self.people.append(person)\n\n    def find_by_city(self, city):\n        return [p for p in self.people if p.address.city == city]\n"
+    }
+  ],
+  "hints": [
+    "Composition: Person has-an Address (stored as attribute)",
+    "Access nested attributes: person.address.city",
+    "List comprehension to filter: [p for p in self.people if ...]",
+    "Each class has its own __init__ to set up its attributes"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "Address",
+          "description": "Define an Address class"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Person",
+          "description": "Define a Person class"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Roster",
+          "description": "Define a Roster class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "summary",
+          "params": ["self"],
+          "description": "Define a summary method on Person"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "add_person",
+          "params": ["self", "person"],
+          "description": "Define an add_person method on Roster"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "find_by_city",
+          "params": ["self", "city"],
+          "description": "Define a find_by_city method on Roster"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

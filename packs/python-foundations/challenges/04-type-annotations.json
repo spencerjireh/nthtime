@@ -1,0 +1,60 @@
+{
+  "title": "Type Annotations",
+  "prompt": "Write three type-annotated functions in `solution.py`:\n\n**Requirements:**\n1. `add(a: int, b: int) -> int` -- returns the sum of `a` and `b`\n2. `repeat(text: str, times: int = 2) -> str` -- returns `text` repeated `times` times. The default for `times` is `2`\n3. `first_or_default(items: list, default: str = \"\") -> str` -- returns the first item in the list, or `default` if the list is empty\n\n**Examples:**\n```python\nadd(2, 3)                        # 5\nrepeat(\"ha\", 3)                  # \"hahaha\"\nrepeat(\"ha\")                     # \"haha\"\nfirst_or_default([\"a\", \"b\"])     # \"a\"\nfirst_or_default([], \"fallback\") # \"fallback\"\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "functions",
+    "type-annotations",
+    "defaults"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def add(a: int, b: int) -> int:\n    return a + b\n\n\ndef repeat(text: str, times: int = 2) -> str:\n    return text * times\n\n\ndef first_or_default(items: list, default: str = \"\") -> str:\n    return items[0] if items else default\n"
+    }
+  ],
+  "hints": [
+    "Annotate parameters: def add(a: int, b: int)",
+    "Annotate return type: def add(...) -> int",
+    "Default params with types: times: int = 2",
+    "Annotations don't enforce types at runtime -- they're documentation"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "add",
+          "params": ["a", "b"],
+          "description": "Define an add function with two parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "repeat",
+          "params": ["text", "times"],
+          "description": "Define a repeat function with text and times parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "first_or_default",
+          "params": ["items", "default"],
+          "description": "Define a first_or_default function with items and default parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(typed_parameter)",
+          "description": "Use type annotations on function parameters",
+          "hint": "Annotate parameters like a: int, b: int"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(function_definition return_type: (type))",
+          "description": "Use return type annotations on functions",
+          "hint": "Add -> int or -> str after the parameter list"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

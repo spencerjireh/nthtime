@@ -1,0 +1,64 @@
+{
+  "title": "Bit Manipulation",
+  "prompt": "Write four bit manipulation functions in `solution.py`:\n\n**Requirements:**\n1. `count_ones(n)` -- counts the number of set bits (population count). Handle negative numbers by masking to 32 bits (`n & 0xFFFFFFFF`)\n2. `is_power_of_two(n)` -- returns `True` if `n` is a positive power of 2\n3. `next_power_of_two(n)` -- returns the smallest power of 2 that is >= `n`. For `n <= 1`, return 1\n4. `swap_nibbles(byte)` -- swaps the high and low 4 bits of a byte (0-255) and returns the result\n\n**Examples:**\n```python\ncount_ones(7)           # 3  (binary 111)\ncount_ones(255)         # 8\ncount_ones(-1)          # 32 (all bits set in 32-bit mask)\nis_power_of_two(4)      # True\nis_power_of_two(6)      # False\nnext_power_of_two(5)    # 8\nnext_power_of_two(8)    # 8\nswap_nibbles(0xAB)      # 0xBA\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "bit-manipulation",
+    "algorithms",
+    "binary"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def count_ones(n):\n    n = n & 0xFFFFFFFF\n    count = 0\n    while n:\n        count += n & 1\n        n >>= 1\n    return count\n\n\ndef is_power_of_two(n):\n    return n > 0 and (n & (n - 1)) == 0\n\n\ndef next_power_of_two(n):\n    if n <= 1:\n        return 1\n    p = 1\n    while p < n:\n        p <<= 1\n    return p\n\n\ndef swap_nibbles(byte):\n    return ((byte & 0x0F) << 4) | ((byte & 0xF0) >> 4)\n"
+    }
+  ],
+  "hints": [
+    "n & (n-1) clears the lowest set bit -- equals 0 only for powers of 2",
+    "Count bits by checking n & 1, then shifting right",
+    "0x0F masks the low nibble, 0xF0 masks the high nibble",
+    "Shift left (<<) and right (>>) to move nibbles into position"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "count_ones",
+          "params": ["n"],
+          "description": "Define count_ones that counts set bits"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_power_of_two",
+          "params": ["n"],
+          "description": "Define is_power_of_two that checks for power of 2"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "next_power_of_two",
+          "params": ["n"],
+          "description": "Define next_power_of_two that finds next power of 2"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "swap_nibbles",
+          "params": ["byte"],
+          "description": "Define swap_nibbles that swaps high and low nibbles"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(binary_operator)",
+          "description": "Use bitwise operators for bit manipulation"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop to iterate over bits"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "title": "Default Parameters",
+  "prompt": "Write two functions in `solution.py`:\n\n**Requirements:**\n1. `power(base, exponent=2)` -- returns `base` raised to `exponent`. The exponent defaults to `2` (squaring)\n2. `build_profile(name, **kwargs)` -- returns a dictionary with a `\"name\"` key set to `name`, plus all additional keyword arguments merged in\n\n**Examples:**\n```python\npower(3)           # 9\npower(2, 10)       # 1024\nbuild_profile(\"Alice\", age=30, role=\"dev\")\n# {\"name\": \"Alice\", \"age\": 30, \"role\": \"dev\"}\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "functions",
+    "default-params",
+    "kwargs"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def power(base, exponent=2):\n    return base ** exponent\n\n\ndef build_profile(name, **kwargs):\n    return {\"name\": name, **kwargs}\n"
+    }
+  ],
+  "hints": [
+    "Default parameters: def power(base, exponent=2)",
+    "**kwargs collects extra keyword arguments into a dict",
+    "Use dictionary unpacking {**kwargs} to merge dicts"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "power",
+          "params": ["base", "exponent"],
+          "description": "Define a power function with base and exponent parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "build_profile",
+          "params": ["name"],
+          "description": "Define a build_profile function that accepts a name and keyword arguments"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(default_parameter)",
+          "description": "Use a default parameter value",
+          "hint": "Set exponent=2 as the default"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(dictionary_splat_pattern)",
+          "description": "Use **kwargs to accept arbitrary keyword arguments"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

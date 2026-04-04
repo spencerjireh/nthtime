@@ -29,6 +29,10 @@ playwright-report/
 test-results/
 .playwright-mcp/
 
+# Python
+__pycache__/
+*.pyc
+
 # IDE
 .idea/
 .vscode/

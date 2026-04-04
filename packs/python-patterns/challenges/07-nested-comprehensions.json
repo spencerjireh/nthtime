@@ -1,0 +1,54 @@
+{
+  "title": "Nested Comprehensions",
+  "prompt": "Write three functions in `solution.py`:\n\n**Requirements:**\n1. `matrix_multiply(a, b)` -- multiplies two matrices (lists of lists) using nested comprehensions\n2. `cartesian_product(a, b)` -- returns all `(x, y)` pairs using a nested comprehension\n3. `filter_matrix(matrix, predicate)` -- returns a new matrix keeping only elements where predicate is True, replacing others with `None`\n\n**Examples:**\n```python\nmatrix_multiply([[1, 2], [3, 4]], [[5, 6], [7, 8]])  # [[19, 22], [43, 50]]\ncartesian_product([1, 2], [\"a\", \"b\"])                 # [(1, \"a\"), (1, \"b\"), (2, \"a\"), (2, \"b\")]\nfilter_matrix([[1, -2], [3, -4]], lambda x: x > 0)    # [[1, None], [3, None]]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "comprehensions",
+    "nested",
+    "matrices"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def matrix_multiply(a, b):\n    rows_a = len(a)\n    cols_b = len(b[0])\n    return [\n        [sum(a[i][k] * b[k][j] for k in range(len(b))) for j in range(cols_b)]\n        for i in range(rows_a)\n    ]\n\n\ndef cartesian_product(a, b):\n    return [(x, y) for x in a for y in b]\n\n\ndef filter_matrix(matrix, predicate):\n    return [\n        [val if predicate(val) else None for val in row]\n        for row in matrix\n    ]\n"
+    }
+  ],
+  "hints": [
+    "Nested comprehension: [[expr for j in ...] for i in ...]",
+    "Matrix multiply: sum(a[i][k] * b[k][j] for k in range(...))",
+    "Cartesian product: [(x, y) for x in a for y in b]",
+    "Conditional expression in comprehension: val if pred(val) else None"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "matrix_multiply",
+          "params": ["a", "b"],
+          "description": "Define a matrix_multiply function with a and b parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "cartesian_product",
+          "params": ["a", "b"],
+          "description": "Define a cartesian_product function with a and b parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "filter_matrix",
+          "params": ["matrix", "predicate"],
+          "description": "Define a filter_matrix function with matrix and predicate parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(list_comprehension)",
+          "description": "Use list comprehensions to build the result structures",
+          "hint": "Nested list comprehension: [[expr for j in cols] for i in rows]"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

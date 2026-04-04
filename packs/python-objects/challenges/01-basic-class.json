@@ -1,0 +1,66 @@
+{
+  "title": "Basic Class",
+  "prompt": "Write a `BankAccount` class in `solution.py`:\n\n**Requirements:**\n1. `__init__(self, owner, balance=0)` -- store the owner name and starting balance\n2. `deposit(self, amount)` -- adds the amount to the balance\n3. `withdraw(self, amount)` -- subtracts the amount from the balance; raises `ValueError` if insufficient funds\n4. `get_balance(self)` -- returns the current balance\n\n**Examples:**\n```python\naccount = BankAccount(\"Alice\", 100)\naccount.deposit(50)\naccount.get_balance()   # 150\naccount.withdraw(30)    # OK\naccount.withdraw(200)   # raises ValueError\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "classes",
+    "init",
+    "methods",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n\n    def deposit(self, amount):\n        self.balance += amount\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            raise ValueError(\"Insufficient funds\")\n        self.balance -= amount\n\n    def get_balance(self):\n        return self.balance\n"
+    }
+  ],
+  "hints": [
+    "self is the first parameter of every instance method",
+    "__init__ is the constructor -- called when creating an instance",
+    "self.balance stores data on the instance",
+    "raise ValueError('message') signals an error condition"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "BankAccount",
+          "description": "Define a BankAccount class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__init__",
+          "params": ["self", "owner", "balance"],
+          "description": "Define __init__ with owner and balance parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "deposit",
+          "params": ["self", "amount"],
+          "description": "Define a deposit method that accepts an amount"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "withdraw",
+          "params": ["self", "amount"],
+          "description": "Define a withdraw method that accepts an amount"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "get_balance",
+          "params": ["self"],
+          "description": "Define a get_balance method"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(raise_statement)",
+          "description": "Raise an exception for insufficient funds",
+          "hint": "Use raise ValueError('Insufficient funds') when amount exceeds balance"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

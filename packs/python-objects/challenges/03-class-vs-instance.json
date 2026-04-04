@@ -1,0 +1,62 @@
+{
+  "title": "Class vs Instance",
+  "prompt": "Write a `Counter` class in `solution.py` that demonstrates class variables, classmethods, and staticmethods:\n\n**Requirements:**\n1. A class variable `instance_count` starting at 0\n2. `__init__(self, name)` -- stores the name, initializes `self.value` to 0, and increments `instance_count`\n3. `increment(self)` -- increments the counter's value by 1 and returns it\n4. `reset_all(cls)` -- a `@classmethod` that resets `instance_count` to 0\n5. `is_valid_name(name)` -- a `@staticmethod` that returns True if name is a non-empty string\n\n**Examples:**\n```python\nc1 = Counter(\"hits\")\nc2 = Counter(\"views\")\nCounter.instance_count      # 2\nc1.increment()              # 1\nCounter.reset_all()\nCounter.instance_count      # 0\nCounter.is_valid_name(\"\")   # False\nCounter.is_valid_name(\"ok\") # True\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "classes",
+    "classmethod",
+    "staticmethod",
+    "class-variables"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class Counter:\n    instance_count = 0\n\n    def __init__(self, name):\n        self.name = name\n        self.value = 0\n        Counter.instance_count += 1\n\n    def increment(self):\n        self.value += 1\n        return self.value\n\n    @classmethod\n    def reset_all(cls):\n        cls.instance_count = 0\n\n    @staticmethod\n    def is_valid_name(name):\n        return isinstance(name, str) and len(name) > 0\n"
+    }
+  ],
+  "hints": [
+    "Class variables are shared: Counter.instance_count",
+    "@classmethod receives cls (the class) as first argument",
+    "@staticmethod is a plain function that lives in the class namespace",
+    "Increment class variable with Counter.instance_count += 1 or cls.instance_count += 1"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "Counter",
+          "description": "Define a Counter class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__init__",
+          "params": ["self", "name"],
+          "description": "Define __init__ that accepts a name"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "increment",
+          "params": ["self"],
+          "description": "Define an increment instance method"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "reset_all",
+          "params": ["cls"],
+          "decorator": "classmethod",
+          "description": "Define reset_all as a classmethod"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_valid_name",
+          "params": ["name"],
+          "decorator": "staticmethod",
+          "description": "Define is_valid_name as a staticmethod"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

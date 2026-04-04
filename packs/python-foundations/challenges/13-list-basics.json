@@ -1,0 +1,54 @@
+{
+  "title": "List Basics",
+  "prompt": "Write three list manipulation functions:\n\n**Requirements:**\n1. `rotate_left(lst, n)` -- returns a new list rotated left by n positions (e.g., `[1,2,3,4]` rotated by 1 gives `[2,3,4,1]`)\n2. `interleave(a, b)` -- interleaves two lists element by element, appending remaining elements from the longer list\n3. `chunk(lst, size)` -- splits a list into sublists of the given size (last chunk may be smaller)\n\n**Examples:**\n```python\nrotate_left([1, 2, 3, 4], 1)    # [2, 3, 4, 1]\ninterleave([1, 2], [\"a\", \"b\"])  # [1, \"a\", 2, \"b\"]\nchunk([1, 2, 3, 4, 5], 2)       # [[1, 2], [3, 4], [5]]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "lists",
+    "slicing",
+    "iteration"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def rotate_left(lst, n):\n    if not lst:\n        return []\n    n = n % len(lst)\n    return lst[n:] + lst[:n]\n\n\ndef interleave(a, b):\n    result = []\n    for i in range(max(len(a), len(b))):\n        if i < len(a):\n            result.append(a[i])\n        if i < len(b):\n            result.append(b[i])\n    return result\n\n\ndef chunk(lst, size):\n    return [lst[i:i + size] for i in range(0, len(lst), size)]\n"
+    }
+  ],
+  "hints": [
+    "Slicing: lst[n:] gives elements from index n onward",
+    "lst[n:] + lst[:n] rotates a list left by n",
+    "range(0, len(lst), size) steps by size for chunking",
+    "Handle edge case: empty list or n=0"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "rotate_left",
+          "params": ["lst", "n"],
+          "description": "Define a rotate_left function that accepts lst and n parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "interleave",
+          "params": ["a", "b"],
+          "description": "Define an interleave function that accepts a and b parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "chunk",
+          "params": ["lst", "size"],
+          "description": "Define a chunk function that accepts lst and size parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(slice)",
+          "description": "Use list slicing for manipulation",
+          "hint": "Use lst[n:] and lst[:n] for slicing operations"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "title": "Enumerate and Zip",
+  "prompt": "Write three functions in `solution.py`:\n\n**Requirements:**\n1. `indexed_items(items)` -- returns a list of strings like `\"0: apple\"` using `enumerate`\n2. `pair_up(keys, values)` -- returns a dict using `zip`\n3. `numbered_lines(text)` -- splits text on newlines and adds 1-based line numbers: `\"1: first line\\n2: second line\"`\n\n**Examples:**\n```python\nindexed_items([\"apple\", \"banana\"])  # [\"0: apple\", \"1: banana\"]\npair_up([\"a\", \"b\"], [1, 2])         # {\"a\": 1, \"b\": 2}\nnumbered_lines(\"hello\\nworld\")      # \"1: hello\\n2: world\"\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "enumerate",
+    "zip",
+    "iteration"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def indexed_items(items):\n    return [f\"{i}: {item}\" for i, item in enumerate(items)]\n\n\ndef pair_up(keys, values):\n    return dict(zip(keys, values))\n\n\ndef numbered_lines(text):\n    lines = text.split(\"\\n\")\n    return \"\\n\".join(f\"{i}: {line}\" for i, line in enumerate(lines, 1))\n"
+    }
+  ],
+  "hints": [
+    "enumerate(items) yields (index, item) pairs",
+    "enumerate(items, 1) starts counting from 1",
+    "dict(zip(keys, values)) creates a dict from parallel lists",
+    "f-strings: f'{i}: {item}' for formatted output"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "indexed_items",
+          "params": ["items"],
+          "description": "Define an indexed_items function that accepts an items parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "pair_up",
+          "params": ["keys", "values"],
+          "description": "Define a pair_up function that accepts keys and values parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "numbered_lines",
+          "params": ["text"],
+          "description": "Define a numbered_lines function that accepts a text parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"enumerate\"))",
+          "description": "Use enumerate to iterate with indices",
+          "hint": "enumerate(items) yields (index, item) pairs"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"zip\"))",
+          "description": "Use zip to pair up keys and values",
+          "hint": "zip(keys, values) yields (key, value) pairs"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

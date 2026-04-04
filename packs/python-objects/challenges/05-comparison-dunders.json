@@ -1,0 +1,65 @@
+{
+  "title": "Comparison Dunders",
+  "prompt": "Write a `Version` class in `solution.py` that supports full comparison using `functools.total_ordering`:\n\n**Requirements:**\n1. `__init__(self, major, minor, patch)` -- stores version components\n2. `__eq__(self, other)` -- returns True if all three components match\n3. `__lt__(self, other)` -- compares major, then minor, then patch\n4. Decorate the class with `@functools.total_ordering` to get `<=`, `>`, `>=` for free\n5. `__repr__(self)` -- returns `\"Version(1, 2, 3)\"`\n\n**Examples:**\n```python\nVersion(1, 2, 3) == Version(1, 2, 3)  # True\nVersion(1, 0, 0) < Version(2, 0, 0)   # True\nVersion(1, 2, 0) < Version(1, 3, 0)   # True\nVersion(2, 0, 0) >= Version(1, 9, 9)  # True\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "classes",
+    "comparison",
+    "total-ordering",
+    "dunder"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import functools\n\n\n@functools.total_ordering\nclass Version:\n    def __init__(self, major, minor, patch):\n        self.major = major\n        self.minor = minor\n        self.patch = patch\n\n    def __eq__(self, other):\n        if not isinstance(other, Version):\n            return NotImplemented\n        return (self.major, self.minor, self.patch) == (other.major, other.minor, other.patch)\n\n    def __lt__(self, other):\n        if not isinstance(other, Version):\n            return NotImplemented\n        return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)\n\n    def __repr__(self):\n        return f\"Version({self.major}, {self.minor}, {self.patch})\"\n"
+    }
+  ],
+  "hints": [
+    "@functools.total_ordering fills in <=, >, >= from __eq__ and __lt__",
+    "Compare tuples: (1,2) < (1,3) compares element by element",
+    "Return NotImplemented (not raise) for unknown types",
+    "isinstance() check prevents comparing Version to non-Version"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "functools",
+          "description": "Import functools for total_ordering"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Version",
+          "description": "Define a Version class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__eq__",
+          "params": ["self", "other"],
+          "description": "Define __eq__ for equality comparison"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__lt__",
+          "params": ["self", "other"],
+          "description": "Define __lt__ for less-than comparison"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__repr__",
+          "params": ["self"],
+          "description": "Define __repr__ for developer-readable output"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use @functools.total_ordering decorator on the class",
+          "hint": "Decorate the class with @functools.total_ordering"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

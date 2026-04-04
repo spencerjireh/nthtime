@@ -1,0 +1,60 @@
+{
+  "title": "Functools Basics",
+  "prompt": "Write the following in `solution.py` using `functools`:\n\n**Requirements:**\n1. `multiply(a, b)` -- returns a * b.\n2. `product(numbers)` -- returns the product of all numbers in a list using `functools.reduce` with `multiply`. Returns 1 for an empty list (use initial value).\n3. `double` -- a module-level variable created with `functools.partial(multiply, 2)` that doubles its argument.\n4. `fibonacci(n)` -- returns the nth Fibonacci number (0-indexed: fib(0)=0, fib(1)=1, fib(2)=1, fib(5)=5). Use `@functools.lru_cache` for memoization.\n\n**Examples:**\n```python\nproduct([2, 3, 4])  # 24\nproduct([])          # 1\ndouble(5)            # 10\ndouble(0)            # 0\nfibonacci(0)         # 0\nfibonacci(10)        # 55\nfibonacci(20)        # 6765\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "functools",
+    "reduce",
+    "partial",
+    "lru-cache"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import functools\n\n\ndef multiply(a, b):\n    return a * b\n\n\ndef product(numbers):\n    return functools.reduce(multiply, numbers, 1)\n\n\ndouble = functools.partial(multiply, 2)\n\n\n@functools.lru_cache\ndef fibonacci(n):\n    if n < 2:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+    }
+  ],
+  "hints": [
+    "functools.reduce(fn, iterable, initial) folds left over the iterable",
+    "functools.partial(fn, arg) pre-fills the first argument",
+    "Initial value 1 for product handles empty lists correctly",
+    "@functools.lru_cache memoizes function results automatically"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "functools",
+          "description": "Import the functools module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "multiply",
+          "params": [
+            "a",
+            "b"
+          ],
+          "description": "Define a multiply function that accepts two parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "fibonacci",
+          "params": [
+            "n"
+          ],
+          "decorator": "functools.lru_cache",
+          "description": "Define a fibonacci function decorated with @functools.lru_cache"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use @functools.lru_cache decorator on fibonacci",
+          "hint": "Decorate fibonacci with @functools.lru_cache"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

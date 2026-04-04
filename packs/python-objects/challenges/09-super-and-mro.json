@@ -1,0 +1,66 @@
+{
+  "title": "Super and MRO",
+  "prompt": "Write three classes and a standalone function in `solution.py` using `super()`:\n\n**Requirements:**\n1. `Animal(name)` with `speak(self)` returning `\"{name} makes a sound\"`.\n2. `Dog(Animal)` adding a `breed` parameter. `speak()` returns `\"{name} barks\"`. Must call `super().__init__` to set the name.\n3. `ServiceDog(Dog)` adding a `task` parameter. `speak()` returns `\"{name} barks softly\"`. Must call `super().__init__` to set name and breed.\n4. `describe(animal)` standalone function returning `\"{type}: {speak result}\"` where type is the class name (e.g. `\"Dog\"`).\n\n**Examples:**\n```python\na = Animal(\"Cat\")\na.speak()              # 'Cat makes a sound'\n\nd = Dog(\"Rex\", \"Lab\")\nd.speak()              # 'Rex barks'\nd.breed                # 'Lab'\n\nsd = ServiceDog(\"Buddy\", \"Golden\", \"guide\")\nsd.speak()             # 'Buddy barks softly'\nsd.task                # 'guide'\n\ndescribe(d)            # 'Dog: Rex barks'\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "inheritance",
+    "super",
+    "mro",
+    "polymorphism"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        return f\"{self.name} makes a sound\"\n\n\nclass Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name)\n        self.breed = breed\n\n    def speak(self):\n        return f\"{self.name} barks\"\n\n\nclass ServiceDog(Dog):\n    def __init__(self, name, breed, task):\n        super().__init__(name, breed)\n        self.task = task\n\n    def speak(self):\n        return f\"{self.name} barks softly\"\n\n\ndef describe(animal):\n    return f\"{type(animal).__name__}: {animal.speak()}\"\n"
+    }
+  ],
+  "hints": [
+    "super().__init__(args) calls the parent's constructor",
+    "Each subclass can override speak() with its own behavior",
+    "type(obj).__name__ gives the class name",
+    "describe() works with any Animal subclass -- that's polymorphism"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "Animal",
+          "description": "Define an Animal base class"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Dog",
+          "bases": ["Animal"],
+          "description": "Define a Dog class that inherits from Animal"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "ServiceDog",
+          "bases": ["Dog"],
+          "description": "Define a ServiceDog class that inherits from Dog"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "describe",
+          "params": ["animal"],
+          "description": "Define a describe function that accepts an animal"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "speak",
+          "params": ["self"],
+          "description": "Define a speak method"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"super\"))",
+          "description": "Use super() to call parent class methods",
+          "hint": "Call super().__init__(...) in each subclass constructor"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

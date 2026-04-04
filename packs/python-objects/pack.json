@@ -1,0 +1,31 @@
+{
+  "name": "Python Objects",
+  "slug": "python-objects",
+  "description": "Classes, dunder methods, inheritance, dataclasses, enums, exceptions, and context managers.",
+  "language": "python",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["python", "oop", "classes", "dunder"],
+  "challenges": [
+    "challenges/01-basic-class.json",
+    "challenges/02-class-composition.json",
+    "challenges/03-class-vs-instance.json",
+    "challenges/04-str-repr.json",
+    "challenges/05-comparison-dunders.json",
+    "challenges/06-arithmetic-dunders.json",
+    "challenges/07-container-dunders.json",
+    "challenges/08-basic-inheritance.json",
+    "challenges/09-super-and-mro.json",
+    "challenges/10-properties.json",
+    "challenges/11-dataclasses.json",
+    "challenges/12-dataclass-features.json",
+    "challenges/13-enums.json",
+    "challenges/14-try-except.json",
+    "challenges/15-custom-exceptions.json",
+    "challenges/16-exception-patterns.json",
+    "challenges/17-context-managers.json",
+    "challenges/18-advanced-context-managers.json",
+    "challenges/19-abstract-base-classes.json",
+    "challenges/20-protocols.json"
+  ]
+}

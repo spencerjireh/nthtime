@@ -1,0 +1,71 @@
+{
+  "title": "Context Managers",
+  "prompt": "Write a class-based and a generator-based context manager in `solution.py`:\n\n**Requirements:**\n1. `Timer` class context manager -- `__init__` sets `self.elapsed = 0.0`. `__enter__` records the start time and returns `self`. `__exit__` calculates and stores the elapsed time in `self.elapsed`.\n2. `temporary_value(obj, attr, value)` function using `@contextmanager` -- temporarily sets an attribute on `obj` to `value`, yields the object, and restores the original value on exit (even if an exception occurs).\n\n**Examples:**\n```python\nimport time\n\nwith Timer() as t:\n    time.sleep(0.1)\nprint(t.elapsed)  # ~0.1\n\nclass Config:\n    debug = False\n\nwith temporary_value(Config, 'debug', True) as cfg:\n    print(cfg.debug)   # True\nprint(Config.debug)    # False\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "context-managers",
+    "with-statement",
+    "cleanup"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import time\nfrom contextlib import contextmanager\n\n\nclass Timer:\n    def __init__(self):\n        self.elapsed = 0.0\n\n    def __enter__(self):\n        self._start = time.time()\n        return self\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        self.elapsed = time.time() - self._start\n        return False\n\n\n@contextmanager\ndef temporary_value(obj, attr, value):\n    old_value = getattr(obj, attr)\n    setattr(obj, attr, value)\n    try:\n        yield obj\n    finally:\n        setattr(obj, attr, old_value)\n"
+    }
+  ],
+  "hints": [
+    "__enter__ returns the object to bind with 'as'",
+    "__exit__ receives exception info (or None if no exception)",
+    "Return False from __exit__ to propagate exceptions",
+    "@contextmanager: code before yield is __enter__, after is __exit__"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "time",
+          "description": "Import time module for measuring elapsed time"
+        },
+        {
+          "type": "pythonImport",
+          "module": "contextlib",
+          "names": ["contextmanager"],
+          "description": "Import contextmanager decorator from contextlib"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Timer",
+          "description": "Define a Timer context manager class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__enter__",
+          "params": ["self"],
+          "description": "Define __enter__ to start timing"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__exit__",
+          "params": ["self", "exc_type", "exc_val", "exc_tb"],
+          "description": "Define __exit__ to calculate elapsed time"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "temporary_value",
+          "params": ["obj", "attr", "value"],
+          "decorator": "contextmanager",
+          "description": "Define a generator-based context manager for temporary attribute values"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Yield inside the context manager generator",
+          "hint": "Use yield to pause the generator and give control to the with block"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

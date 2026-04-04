@@ -1,0 +1,54 @@
+{
+  "title": "Generator Expressions",
+  "prompt": "Write three functions in `solution.py`:\n\n**Requirements:**\n1. `sum_of_squares(n)` -- returns the sum of i^2 for i in range(n) using a generator expression inside `sum()`\n2. `first_match(items, predicate)` -- returns the first item where predicate is True using `next()` with a generator expression, returns None if no match\n3. `all_positive(numbers)` -- returns True if all numbers are > 0 using `all()` with a generator expression\n\n**Examples:**\n```python\nsum_of_squares(4)                          # 0 + 1 + 4 + 9 = 14\nfirst_match([1, 2, 3, 4], lambda x: x > 2) # 3\nfirst_match([1, 2], lambda x: x > 5)       # None\nall_positive([1, 2, 3])                    # True\nall_positive([1, -2, 3])                   # False\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "generators",
+    "expressions",
+    "builtins"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def sum_of_squares(n):\n    return sum(i * i for i in range(n))\n\n\ndef first_match(items, predicate):\n    return next((item for item in items if predicate(item)), None)\n\n\ndef all_positive(numbers):\n    return all(n > 0 for n in numbers)\n"
+    }
+  ],
+  "hints": [
+    "Generator expression: sum(expr for x in iterable)",
+    "next(generator, default) returns first item or default",
+    "all(expr for x in items) checks if all items satisfy condition",
+    "Generator expressions use () not [] -- they are lazy"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "sum_of_squares",
+          "params": ["n"],
+          "description": "Define a sum_of_squares function that accepts an n parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "first_match",
+          "params": ["items", "predicate"],
+          "description": "Define a first_match function with items and predicate parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "all_positive",
+          "params": ["numbers"],
+          "description": "Define an all_positive function that accepts a numbers parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(generator_expression)",
+          "description": "Use generator expressions for lazy evaluation",
+          "hint": "Generator expressions use parentheses: (expr for x in iterable)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

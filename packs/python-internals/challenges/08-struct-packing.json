@@ -1,0 +1,65 @@
+{
+  "title": "Struct Packing",
+  "prompt": "Write four functions for binary struct packing in `solution.py`:\n\n**Requirements:**\n1. `pack_header(version, msg_type, length)` -- packs a 1-byte version, 1-byte message type, and 2-byte length (all unsigned, big-endian) into 4 bytes\n2. `unpack_header(data)` -- unpacks 4 bytes into a `(version, msg_type, length)` tuple\n3. `pack_point(x, y)` -- packs two floats in little-endian byte order\n4. `read_records(data, fmt)` -- a generator that yields tuples by reading consecutive struct-sized chunks from `data`. Skip any trailing bytes that do not fill a complete record\n\n**Examples:**\n```python\npack_header(1, 2, 256)              # b'\\x01\\x02\\x01\\x00'\nunpack_header(b'\\x01\\x02\\x01\\x00')  # (1, 2, 256)\npack_point(1.0, 2.0)                # 8 bytes (little-endian floats)\nlist(read_records(b'\\x01\\x02\\x03\\x04', '>HH'))  # [(258, 772)]\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "struct",
+    "binary",
+    "packing",
+    "generators"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import struct\n\n\ndef pack_header(version, msg_type, length):\n    return struct.pack(\">BBH\", version, msg_type, length)\n\n\ndef unpack_header(data):\n    return struct.unpack(\">BBH\", data)\n\n\ndef pack_point(x, y):\n    return struct.pack(\"<ff\", x, y)\n\n\ndef read_records(data, fmt):\n    size = struct.calcsize(fmt)\n    for offset in range(0, len(data), size):\n        chunk = data[offset:offset + size]\n        if len(chunk) == size:\n            yield struct.unpack(fmt, chunk)\n"
+    }
+  ],
+  "hints": [
+    "struct.pack(fmt, ...) converts Python values to bytes",
+    ">BBH means big-endian, two unsigned bytes, one unsigned short (2 bytes)",
+    "<ff means little-endian, two floats (4 bytes each)",
+    "struct.calcsize(fmt) returns the number of bytes for a given format"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "struct",
+          "description": "Import the struct module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "pack_header",
+          "params": ["version", "msg_type", "length"],
+          "description": "Define pack_header to pack a 4-byte header"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "unpack_header",
+          "params": ["data"],
+          "description": "Define unpack_header to unpack a 4-byte header"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "pack_point",
+          "params": ["x", "y"],
+          "description": "Define pack_point to pack two floats"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "read_records",
+          "params": ["data", "fmt"],
+          "description": "Define read_records generator to yield record tuples"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Use yield to make read_records a generator"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Python Internals",
+  "slug": "python-internals",
+  "description": "Bitwise operations, binary data, numeric types, and low-level Python.",
+  "language": "python",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["python", "bitwise", "binary", "numeric", "low-level"],
+  "challenges": [
+    "challenges/01-bitwise-basics.json",
+    "challenges/02-bitflags.json",
+    "challenges/03-bit-manipulation.json",
+    "challenges/04-number-bases.json",
+    "challenges/05-bytes-basics.json",
+    "challenges/06-bytearray-memoryview.json",
+    "challenges/07-encoding-decoding.json",
+    "challenges/08-struct-packing.json",
+    "challenges/09-complex-numbers.json",
+    "challenges/10-fractions.json",
+    "challenges/11-decimal-precision.json",
+    "challenges/12-numeric-algorithms.json",
+    "challenges/13-random-basics.json",
+    "challenges/14-secrets-module.json",
+    "challenges/15-random-algorithms.json"
+  ]
+}

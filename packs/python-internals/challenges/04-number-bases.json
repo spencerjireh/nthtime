@@ -1,0 +1,55 @@
+{
+  "title": "Number Bases",
+  "prompt": "Write four number base conversion functions in `solution.py`:\n\n**Requirements:**\n1. `to_binary(n)` -- returns the binary string representation without the `'0b'` prefix. Handle negative numbers with a `'-'` prefix\n2. `to_hex(n)` -- returns the lowercase hex string without the `'0x'` prefix. Handle negative numbers with a `'-'` prefix\n3. `from_base(s, base)` -- converts a string `s` in the given `base` (2-36) to an integer\n4. `format_byte(n)` -- returns a zero-padded 2-character uppercase hex string (e.g. `\"FF\"`, `\"0A\"`)\n\n**Examples:**\n```python\nto_binary(5)          # \"101\"\nto_binary(-3)         # \"-11\"\nto_hex(255)           # \"ff\"\nto_hex(-16)           # \"-10\"\nfrom_base(\"1010\", 2)  # 10\nfrom_base(\"ff\", 16)   # 255\nformat_byte(10)       # \"0A\"\nformat_byte(255)      # \"FF\"\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "number-bases",
+    "binary",
+    "hex",
+    "conversion"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def to_binary(n):\n    if n < 0:\n        return \"-\" + bin(-n)[2:]\n    return bin(n)[2:]\n\n\ndef to_hex(n):\n    if n < 0:\n        return \"-\" + hex(-n)[2:]\n    return hex(n)[2:]\n\n\ndef from_base(s, base):\n    return int(s, base)\n\n\ndef format_byte(n):\n    return f\"{n:02X}\"\n"
+    }
+  ],
+  "hints": [
+    "bin(n) returns '0b...' -- slice [2:] to remove the prefix",
+    "hex(n) returns '0x...' -- slice [2:] for just the hex digits",
+    "int(s, base) parses a string in any base from 2 to 36",
+    "f'{n:02X}' formats as uppercase hex with zero padding to 2 chars"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "to_binary",
+          "params": ["n"],
+          "description": "Define to_binary that converts an integer to binary string"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "to_hex",
+          "params": ["n"],
+          "description": "Define to_hex that converts an integer to hex string"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "from_base",
+          "params": ["s", "base"],
+          "description": "Define from_base that parses a string in a given base"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "format_byte",
+          "params": ["n"],
+          "description": "Define format_byte that returns zero-padded uppercase hex"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

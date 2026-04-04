@@ -1,0 +1,61 @@
+{
+  "title": "Enums",
+  "prompt": "Write three enum classes in `solution.py`:\n\n**Requirements:**\n1. `HttpStatus(IntEnum)` with members `OK = 200`, `NOT_FOUND = 404`, `ERROR = 500`.\n2. `Color(Enum)` with members `RED = \"red\"`, `GREEN = \"green\"`, `BLUE = \"blue\"`. Add an `is_primary(self)` method returning `True` for `RED` and `BLUE`.\n3. `Permission(Flag)` with members `READ = 1`, `WRITE = 2`, `EXECUTE = 4`. Permissions can be combined with `|`.\n\n**Examples:**\n```python\nHttpStatus.OK == 200             # True (IntEnum)\nHttpStatus.OK.value              # 200\n\nColor.RED.is_primary()           # True\nColor.GREEN.is_primary()         # False\n\np = Permission.READ | Permission.WRITE\nPermission.READ in p             # True\nPermission.EXECUTE in p          # False\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "enums",
+    "intenum",
+    "flag",
+    "patterns"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from enum import Enum, IntEnum, Flag\n\n\nclass HttpStatus(IntEnum):\n    OK = 200\n    NOT_FOUND = 404\n    ERROR = 500\n\n\nclass Color(Enum):\n    RED = \"red\"\n    GREEN = \"green\"\n    BLUE = \"blue\"\n\n    def is_primary(self):\n        return self in (Color.RED, Color.BLUE)\n\n\nclass Permission(Flag):\n    READ = 1\n    WRITE = 2\n    EXECUTE = 4\n"
+    }
+  ],
+  "hints": [
+    "IntEnum members can be compared to integers: HttpStatus.OK == 200",
+    "Enum members are accessed by name: Color.RED",
+    "Flag members combine with |: Permission.READ | Permission.WRITE",
+    "Add methods to Enum classes like any other class"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "enum",
+          "names": ["Enum", "IntEnum", "Flag"],
+          "description": "Import Enum, IntEnum, and Flag from enum"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "HttpStatus",
+          "bases": ["IntEnum"],
+          "description": "Define HttpStatus as an IntEnum"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Color",
+          "bases": ["Enum"],
+          "description": "Define Color as an Enum"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Permission",
+          "bases": ["Flag"],
+          "description": "Define Permission as a Flag enum"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_primary",
+          "params": ["self"],
+          "description": "Define is_primary method on Color"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

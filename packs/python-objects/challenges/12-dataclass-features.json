@@ -1,0 +1,63 @@
+{
+  "title": "Dataclass Features",
+  "prompt": "Write three dataclasses in `solution.py` demonstrating advanced features:\n\n**Requirements:**\n1. `@dataclass(frozen=True)` class `Config` with `host: str` and `port: int = 8080`. Frozen dataclasses are immutable.\n2. `@dataclass(order=True)` class `Priority` with `level: int` and `name: str`. Ordered dataclasses support comparison operators.\n3. `@dataclass` class `Tasks` with `title: str` and `items: list = field(default_factory=list)`. Add an `add(self, item)` method that appends to `items`.\n\n**Examples:**\n```python\nc = Config(\"localhost\")\nc.port          # 8080\nc.host = \"x\"    # raises FrozenInstanceError\n\nPriority(1, \"low\") < Priority(2, \"high\")  # True\n\nt = Tasks(\"TODO\")\nt.add(\"item 1\")\nt.items         # ['item 1']\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "dataclasses",
+    "frozen",
+    "ordering",
+    "field"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from dataclasses import dataclass, field\n\n\n@dataclass(frozen=True)\nclass Config:\n    host: str\n    port: int = 8080\n\n\n@dataclass(order=True)\nclass Priority:\n    level: int\n    name: str\n\n\n@dataclass\nclass Tasks:\n    title: str\n    items: list = field(default_factory=list)\n\n    def add(self, item):\n        self.items.append(item)\n"
+    }
+  ],
+  "hints": [
+    "frozen=True makes instances immutable (hashable too)",
+    "order=True auto-generates comparison methods from field order",
+    "field(default_factory=list) creates a new list per instance",
+    "Never use mutable defaults: items: list = [] is a bug!"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "dataclasses",
+          "names": ["dataclass", "field"],
+          "description": "Import dataclass and field from dataclasses"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Config",
+          "description": "Define a frozen Config dataclass"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Priority",
+          "description": "Define an ordered Priority dataclass"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Tasks",
+          "description": "Define a Tasks dataclass"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "add",
+          "params": ["self", "item"],
+          "description": "Define an add method on Tasks"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use the @dataclass decorator"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

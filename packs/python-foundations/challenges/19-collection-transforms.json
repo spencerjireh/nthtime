@@ -1,0 +1,60 @@
+{
+  "title": "Collection Transforms",
+  "prompt": "Write three functions for transforming collections:\n\n**Requirements:**\n1. `transpose(matrix)` -- transposes a list of lists (rows become columns)\n2. `frequencies(items)` -- returns a dict mapping each item to its count, sorted by count descending\n3. `partition(predicate, items)` -- splits items into `(truthy_list, falsy_list)` based on predicate function\n\n**Examples:**\n```python\ntranspose([[1, 2], [3, 4]])              # [[1, 3], [2, 4]]\nfrequencies([\"a\", \"b\", \"a\", \"a\", \"b\"])   # {\"a\": 3, \"b\": 2}\npartition(lambda x: x > 0, [1, -2, 3])  # ([1, 3], [-2])\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "collections",
+    "transforms",
+    "higher-order"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def transpose(matrix):\n    if not matrix:\n        return []\n    return [list(row) for row in zip(*matrix)]\n\n\ndef frequencies(items):\n    counts = {}\n    for item in items:\n        counts[item] = counts.get(item, 0) + 1\n    return dict(sorted(counts.items(), key=lambda x: x[1], reverse=True))\n\n\ndef partition(predicate, items):\n    truthy = []\n    falsy = []\n    for item in items:\n        if predicate(item):\n            truthy.append(item)\n        else:\n            falsy.append(item)\n    return (truthy, falsy)\n"
+    }
+  ],
+  "hints": [
+    "zip(*matrix) unpacks rows and zips columns together",
+    "dict.get(key, 0) + 1 is a common counting pattern",
+    "sorted(d.items(), key=lambda x: x[1]) sorts by value",
+    "Partition by appending to one of two lists based on predicate"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "transpose",
+          "params": ["matrix"],
+          "description": "Define a transpose function that accepts a matrix parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "frequencies",
+          "params": ["items"],
+          "description": "Define a frequencies function that accepts an items parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "partition",
+          "params": ["predicate", "items"],
+          "description": "Define a partition function that accepts predicate and items parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement)",
+          "description": "Functions should return values",
+          "hint": "Each function should return its computed result"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use for loops for iteration",
+          "hint": "Iterate over items to count or partition them"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

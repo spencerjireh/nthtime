@@ -1,0 +1,58 @@
+{
+  "title": "Properties",
+  "prompt": "Write a `Temperature` class in `solution.py` using Python properties:\n\n**Requirements:**\n1. `__init__(self, celsius)` stores the temperature internally in Celsius.\n2. `celsius` property with getter and setter.\n3. `fahrenheit` property with getter and setter (converts to/from Celsius using `F = C * 9/5 + 32`).\n4. Setter validation: temperature cannot go below -273.15 (absolute zero). Raise `ValueError` if the value is below this threshold.\n\n**Examples:**\n```python\nt = Temperature(100)\nt.celsius        # 100\nt.fahrenheit     # 212.0\n\nt.fahrenheit = 32\nt.celsius        # 0.0\n\nt.celsius = -300  # raises ValueError\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "properties",
+    "validation",
+    "getter-setter"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class Temperature:\n    def __init__(self, celsius):\n        self.celsius = celsius\n\n    @property\n    def celsius(self):\n        return self._celsius\n\n    @celsius.setter\n    def celsius(self, value):\n        if value < -273.15:\n            raise ValueError(\"Temperature below absolute zero\")\n        self._celsius = value\n\n    @property\n    def fahrenheit(self):\n        return self._celsius * 9 / 5 + 32\n\n    @fahrenheit.setter\n    def fahrenheit(self, value):\n        self.celsius = (value - 32) * 5 / 9\n"
+    }
+  ],
+  "hints": [
+    "@property creates a getter",
+    "@name.setter creates the corresponding setter",
+    "Store the actual value as self._celsius (private by convention)",
+    "The fahrenheit setter converts to Celsius and delegates to self.celsius"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "Temperature",
+          "description": "Define a Temperature class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "celsius",
+          "decorator": "property",
+          "description": "Define a celsius property getter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "fahrenheit",
+          "decorator": "property",
+          "description": "Define a fahrenheit property getter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(raise_statement)",
+          "description": "Raise ValueError for temperatures below absolute zero",
+          "hint": "Use raise ValueError() when the temperature is below -273.15"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use decorators for property definitions"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

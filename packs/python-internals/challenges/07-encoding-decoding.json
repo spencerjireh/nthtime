@@ -1,0 +1,65 @@
+{
+  "title": "Encoding and Decoding",
+  "prompt": "Write four encoding and decoding functions in `solution.py`:\n\n**Requirements:**\n1. `encode_base64(data)` -- encodes a bytes object to a base64 string (not bytes)\n2. `decode_base64(text)` -- decodes a base64 string back to bytes\n3. `rot13(text)` -- applies the ROT13 cipher: shifts each letter by 13 positions (wrapping around), leaving non-alpha characters unchanged\n4. `simple_checksum(data)` -- returns the XOR of all bytes in the data as an integer. Returns 0 for empty data\n\n**Examples:**\n```python\nencode_base64(b\"Hello\")           # \"SGVsbG8=\"\ndecode_base64(\"SGVsbG8=\")          # b'Hello'\nrot13(\"Hello\")                     # \"Uryyb\"\nrot13(rot13(\"Hello\"))              # \"Hello\"\nsimple_checksum(b\"\\x01\\x02\\x03\")  # 0 (1 ^ 2 ^ 3)\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "encoding",
+    "base64",
+    "rot13",
+    "checksum"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import base64\n\n\ndef encode_base64(data):\n    return base64.b64encode(data).decode(\"ascii\")\n\n\ndef decode_base64(text):\n    return base64.b64decode(text)\n\n\ndef rot13(text):\n    result = []\n    for c in text:\n        if \"a\" <= c <= \"z\":\n            result.append(chr((ord(c) - ord(\"a\") + 13) % 26 + ord(\"a\")))\n        elif \"A\" <= c <= \"Z\":\n            result.append(chr((ord(c) - ord(\"A\") + 13) % 26 + ord(\"A\")))\n        else:\n            result.append(c)\n    return \"\".join(result)\n\n\ndef simple_checksum(data):\n    checksum = 0\n    for byte in data:\n        checksum ^= byte\n    return checksum\n"
+    }
+  ],
+  "hints": [
+    "base64.b64encode returns bytes -- use .decode('ascii') to get a string",
+    "ROT13: shift each letter by 13 positions, wrapping around the alphabet",
+    "ord('a') gives the ASCII value, chr(n) converts back to a character",
+    "XOR checksum: fold all bytes with ^ starting from 0"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "base64",
+          "description": "Import the base64 module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "encode_base64",
+          "params": ["data"],
+          "description": "Define encode_base64 that encodes bytes to base64 string"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "decode_base64",
+          "params": ["text"],
+          "description": "Define decode_base64 that decodes base64 string to bytes"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "rot13",
+          "params": ["text"],
+          "description": "Define rot13 that applies the ROT13 cipher"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "simple_checksum",
+          "params": ["data"],
+          "description": "Define simple_checksum that XORs all bytes"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to iterate over characters or bytes"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

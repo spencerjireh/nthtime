@@ -1,0 +1,60 @@
+{
+  "title": "String Parsing",
+  "prompt": "Write three string parsing functions:\n\n**Requirements:**\n1. `parse_csv_line(line)` -- splits a comma-separated line and strips whitespace from each field, returns a list\n2. `extract_domain(email)` -- extracts the domain from an email address (part after `@`)\n3. `parse_key_value(text, sep=\"=\")` -- parses `\"key1=val1,key2=val2\"` into a dict `{\"key1\": \"val1\", \"key2\": \"val2\"}`\n\n**Examples:**\n```python\nparse_csv_line(\"a, b, c\")                # [\"a\", \"b\", \"c\"]\nextract_domain(\"user@example.com\")       # \"example.com\"\nparse_key_value(\"x=1,y=2\")               # {\"x\": \"1\", \"y\": \"2\"}\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "strings",
+    "parsing",
+    "split"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def parse_csv_line(line):\n    return [field.strip() for field in line.split(\",\")]\n\n\ndef extract_domain(email):\n    return email.split(\"@\")[1]\n\n\ndef parse_key_value(text, sep=\"=\"):\n    result = {}\n    for pair in text.split(\",\"):\n        key, value = pair.strip().split(sep, 1)\n        result[key.strip()] = value.strip()\n    return result\n"
+    }
+  ],
+  "hints": [
+    "str.split(',') splits on commas",
+    "str.strip() removes leading/trailing whitespace",
+    "split('@')[1] gets the part after @",
+    "split(sep, 1) splits only on the first occurrence"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "parse_csv_line",
+          "params": ["line"],
+          "description": "Define a parse_csv_line function that accepts a line parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "extract_domain",
+          "params": ["email"],
+          "description": "Define an extract_domain function that accepts an email parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "parse_key_value",
+          "params": ["text", "sep"],
+          "description": "Define a parse_key_value function that accepts text and sep parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(list_comprehension)",
+          "description": "Use a list comprehension for parsing",
+          "hint": "Use [field.strip() for field in line.split(',')] to split and strip"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement)",
+          "description": "Functions should return values",
+          "hint": "Use return to produce output from each function"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "title": "Bitflags",
+  "prompt": "Write a `Permissions` class in `solution.py` that uses integer bitflags to manage permissions:\n\n**Requirements:**\n1. Class constants: `READ = 1`, `WRITE = 2`, `EXECUTE = 4`, `ADMIN = 8`\n2. `__init__(self, flags=0)` -- initializes with the given flags\n3. `grant(self, perm)` -- adds the permission\n4. `revoke(self, perm)` -- removes the permission\n5. `has(self, perm)` -- returns `True` if the permission is set\n6. `to_list(self)` -- returns a list of active permission names (strings) in order: READ, WRITE, EXECUTE, ADMIN\n7. `from_list(cls, perms)` -- a `@classmethod` that creates a `Permissions` instance from a list of permission name strings\n\n**Examples:**\n```python\np = Permissions()\np.grant(Permissions.READ)\np.grant(Permissions.WRITE)\np.has(Permissions.READ)   # True\np.to_list()               # [\"READ\", \"WRITE\"]\np.revoke(Permissions.READ)\np.to_list()               # [\"WRITE\"]\n\nq = Permissions.from_list([\"ADMIN\", \"EXECUTE\"])\nq.has(Permissions.ADMIN)  # True\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "bitflags",
+    "classes",
+    "permissions"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class Permissions:\n    READ = 1\n    WRITE = 2\n    EXECUTE = 4\n    ADMIN = 8\n\n    _NAMES = {1: \"READ\", 2: \"WRITE\", 4: \"EXECUTE\", 8: \"ADMIN\"}\n    _BY_NAME = {\"READ\": 1, \"WRITE\": 2, \"EXECUTE\": 4, \"ADMIN\": 8}\n\n    def __init__(self, flags=0):\n        self.flags = flags\n\n    def grant(self, perm):\n        self.flags |= perm\n\n    def revoke(self, perm):\n        self.flags &= ~perm\n\n    def has(self, perm):\n        return bool(self.flags & perm)\n\n    def to_list(self):\n        return [name for val, name in sorted(self._NAMES.items()) if self.flags & val]\n\n    @classmethod\n    def from_list(cls, perms):\n        flags = 0\n        for name in perms:\n            flags |= cls._BY_NAME[name]\n        return cls(flags)\n"
+    }
+  ],
+  "hints": [
+    "Grant: flags |= perm (OR adds the bit)",
+    "Revoke: flags &= ~perm (AND with inverted mask clears the bit)",
+    "Has: bool(flags & perm) tests if the bit is set",
+    "to_list checks each known flag against current flags"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "Permissions",
+          "description": "Define a Permissions class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "grant",
+          "params": ["self", "perm"],
+          "description": "Define grant method to add a permission"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "revoke",
+          "params": ["self", "perm"],
+          "description": "Define revoke method to remove a permission"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "has",
+          "params": ["self", "perm"],
+          "description": "Define has method to check a permission"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "to_list",
+          "params": ["self"],
+          "description": "Define to_list method returning active permission names"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "from_list",
+          "params": ["cls", "perms"],
+          "decorator": "classmethod",
+          "description": "Define from_list classmethod creating Permissions from names"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(binary_operator)",
+          "description": "Use bitwise operators for flag manipulation"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

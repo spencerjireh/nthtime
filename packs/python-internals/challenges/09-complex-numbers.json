@@ -1,0 +1,75 @@
+{
+  "title": "Complex Numbers",
+  "prompt": "Write four complex number functions in `solution.py`:\n\n**Requirements:**\n1. `magnitude(z)` -- returns the absolute value (magnitude) of a complex number\n2. `rotate(z, angle_degrees)` -- rotates a complex number by the given angle in degrees (convert degrees to radians, then multiply by `e^(i*angle)`)\n3. `roots_of_unity(n)` -- returns a list of the `n`th roots of unity (`e^(2*pi*i*k/n)` for `k` in `0..n-1`)\n4. `mandelbrot_escape(c, max_iter=100)` -- starting from `z=0`, iterates `z = z^2 + c` and returns the iteration count when `|z| > 2`. Returns `max_iter` if it never escapes\n\n**Examples:**\n```python\nmagnitude(3 + 4j)            # 5.0\nrotate(1 + 0j, 90)           # approximately 0 + 1j\nroots_of_unity(4)             # [1, 1j, -1, -1j] (approximately)\nmandelbrot_escape(0)          # 100 (never escapes)\nmandelbrot_escape(2)          # 1 (escapes immediately)\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "complex",
+    "math",
+    "cmath",
+    "mandelbrot"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import cmath\nimport math\n\n\ndef magnitude(z):\n    return abs(z)\n\n\ndef rotate(z, angle_degrees):\n    angle_rad = math.radians(angle_degrees)\n    return z * cmath.exp(1j * angle_rad)\n\n\ndef roots_of_unity(n):\n    return [cmath.exp(2j * cmath.pi * k / n) for k in range(n)]\n\n\ndef mandelbrot_escape(c, max_iter=100):\n    z = 0\n    for i in range(max_iter):\n        z = z * z + c\n        if abs(z) > 2:\n            return i\n    return max_iter\n"
+    }
+  ],
+  "hints": [
+    "abs(z) gives the magnitude of a complex number",
+    "Rotation: multiply by e^(i*angle) using cmath.exp",
+    "Roots of unity: e^(2*pi*i*k/n) for k in 0..n-1",
+    "1j is Python's imaginary unit"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "cmath",
+          "description": "Import cmath for complex math operations"
+        },
+        {
+          "type": "pythonImport",
+          "module": "math",
+          "description": "Import math for radians conversion"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "magnitude",
+          "params": [
+            "z"
+          ],
+          "description": "Define magnitude that returns absolute value of a complex number"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "rotate",
+          "params": [
+            "z",
+            "angle_degrees"
+          ],
+          "description": "Define rotate that rotates a complex number by an angle in degrees"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "roots_of_unity",
+          "params": [
+            "n"
+          ],
+          "description": "Define roots_of_unity that returns the nth roots of unity"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "mandelbrot_escape",
+          "params": [
+            "c",
+            "max_iter"
+          ],
+          "description": "Define mandelbrot_escape that returns escape iteration count"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

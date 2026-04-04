@@ -1,0 +1,52 @@
+{
+  "title": "Hello Function",
+  "prompt": "Write two functions in `solution.py`:\n\n**Requirements:**\n1. `greet(name)` -- takes a string `name` and returns `\"Hello, {name}!\"` using an f-string\n2. `greet_many(names)` -- takes a list of names, calls `greet` for each one, and returns all greetings joined by newlines (`\"\\n\"`)\n\n**Examples:**\n```python\ngreet(\"Alice\")         # \"Hello, Alice!\"\ngreet_many([\"A\", \"B\"]) # \"Hello, A!\\nHello, B!\"\ngreet_many([])          # \"\"\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "functions",
+    "f-strings",
+    "basics"
+  ],
+  "timeEstimateSeconds": 180,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def greet(name):\n    return f\"Hello, {name}!\"\n\n\ndef greet_many(names):\n    return \"\\n\".join(greet(n) for n in names)\n"
+    }
+  ],
+  "hints": [
+    "Use an f-string: f\"Hello, {name}!\"",
+    "str.join() combines a list of strings with a separator",
+    "A generator expression inside join() avoids creating an intermediate list"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "greet",
+          "params": ["name"],
+          "description": "Define a greet function that accepts a name parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "greet_many",
+          "params": ["names"],
+          "description": "Define a greet_many function that accepts a names parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(interpolation)",
+          "description": "Use an f-string to format the greeting",
+          "hint": "Use f\"Hello, {name}!\" to interpolate the name"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement)",
+          "description": "Functions should return values"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

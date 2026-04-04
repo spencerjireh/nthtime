@@ -1,0 +1,60 @@
+{
+  "title": "Generator Pipelines",
+  "prompt": "Build a text processing pipeline using generators in `solution.py`:\n\n**Requirements:**\n1. `read_lines(text)` -- yields non-empty stripped lines from a multiline string\n2. `filter_comments(lines)` -- yields lines that do not start with `#`\n3. `parse_ints(lines)` -- yields `int(line)` for each line\n4. `pipeline(text)` -- chains all three generators and returns the sum\n\n**Examples:**\n```python\ntext = \"# comment\\n  10  \\n20\\n# another\\n30\"\npipeline(text)  # 60\n\nlist(read_lines(\"  hello \\n\\n world \"))  # [\"hello\", \"world\"]\nlist(filter_comments([\"# skip\", \"keep\"]))  # [\"keep\"]\nlist(parse_ints([\"1\", \"2\", \"3\"]))         # [1, 2, 3]\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "generators",
+    "pipelines",
+    "composition"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def read_lines(text):\n    for line in text.split(\"\\n\"):\n        stripped = line.strip()\n        if stripped:\n            yield stripped\n\n\ndef filter_comments(lines):\n    for line in lines:\n        if not line.startswith(\"#\"):\n            yield line\n\n\ndef parse_ints(lines):\n    for line in lines:\n        yield int(line)\n\n\ndef pipeline(text):\n    lines = read_lines(text)\n    filtered = filter_comments(lines)\n    numbers = parse_ints(filtered)\n    return sum(numbers)\n"
+    }
+  ],
+  "hints": [
+    "Each generator yields to the next stage",
+    "Generators are lazy -- data flows one item at a time",
+    "Chain by passing one generator as input to the next",
+    "sum() consumes the final generator and produces the result"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "read_lines",
+          "params": ["text"],
+          "description": "Define a read_lines generator that accepts a text parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "filter_comments",
+          "params": ["lines"],
+          "description": "Define a filter_comments generator that accepts a lines parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "parse_ints",
+          "params": ["lines"],
+          "description": "Define a parse_ints generator that accepts a lines parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "pipeline",
+          "params": ["text"],
+          "description": "Define a pipeline function that chains the generators together"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Use yield to make generator functions for the pipeline stages",
+          "hint": "yield turns a function into a generator that produces values lazily"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

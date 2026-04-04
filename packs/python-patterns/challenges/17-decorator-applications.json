@@ -1,0 +1,71 @@
+{
+  "title": "Decorator Applications",
+  "prompt": "Write three practical decorators in `solution.py`:\n\n**Requirements:**\n1. `cache_result(fn)` -- simple memoization decorator. Caches results based on positional args as a tuple key in a dict. Exposes the cache as `wrapper.cache`.\n2. `require_auth(role)` -- parameterized decorator. Checks that a `user` keyword argument exists and has a `\"role\"` key matching the required role. Raises `PermissionError` with message `f\"Requires role: {role}\"` otherwise.\n3. `deprecated(message)` -- parameterized decorator. Prints a deprecation warning using `warnings.warn(f\"{fn.__name__}: {message}\", DeprecationWarning, stacklevel=2)` the **first** time the function is called. Subsequent calls do not warn again.\n\nAll decorators must use `@functools.wraps(fn)` on their inner wrappers.\n\n**Examples:**\n```python\n@cache_result\ndef fib(n):\n    return n if n < 2 else fib(n - 1) + fib(n - 2)\n\nfib(10)            # 55, cached\nfib.cache[(10,)]   # 55\n\n@require_auth(\"admin\")\ndef delete_user(uid, user=None):\n    return f\"deleted {uid}\"\n\ndelete_user(42, user={\"role\": \"admin\"})  # \"deleted 42\"\ndelete_user(42, user={\"role\": \"viewer\"}) # raises PermissionError\n\n@deprecated(\"Use new_func instead\")\ndef old_func():\n    return 1\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "decorators",
+    "caching",
+    "auth",
+    "deprecation"
+  ],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import functools\nimport warnings\n\n\ndef cache_result(fn):\n    cache = {}\n\n    @functools.wraps(fn)\n    def wrapper(*args):\n        if args not in cache:\n            cache[args] = fn(*args)\n        return cache[args]\n\n    wrapper.cache = cache\n    return wrapper\n\n\ndef require_auth(role):\n    def decorator(fn):\n        @functools.wraps(fn)\n        def wrapper(*args, **kwargs):\n            user = kwargs.get(\"user\")\n            if not user or user.get(\"role\") != role:\n                raise PermissionError(f\"Requires role: {role}\")\n            return fn(*args, **kwargs)\n        return wrapper\n    return decorator\n\n\ndef deprecated(message):\n    def decorator(fn):\n        warned = False\n\n        @functools.wraps(fn)\n        def wrapper(*args, **kwargs):\n            nonlocal warned\n            if not warned:\n                warnings.warn(f\"{fn.__name__}: {message}\", DeprecationWarning, stacklevel=2)\n                warned = True\n            return fn(*args, **kwargs)\n        return wrapper\n    return decorator\n"
+    }
+  ],
+  "hints": [
+    "Use a dict with tuple args as key for memoization",
+    "kwargs.get('user') safely accesses the user keyword argument",
+    "warnings.warn() issues a warning without stopping execution",
+    "nonlocal warned allows the wrapper to modify the outer warned flag"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "functools",
+          "description": "Import the functools module"
+        },
+        {
+          "type": "pythonImport",
+          "module": "warnings",
+          "description": "Import the warnings module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "cache_result",
+          "params": ["fn"],
+          "description": "Define a cache_result decorator that accepts a function"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "require_auth",
+          "params": ["role"],
+          "description": "Define a require_auth decorator factory that accepts a role"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "deprecated",
+          "params": ["message"],
+          "description": "Define a deprecated decorator factory that accepts a message"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use @functools.wraps decorator on wrapper functions",
+          "hint": "Decorate the inner wrapper with @functools.wraps(fn)"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(dictionary)",
+          "description": "Use a dictionary for the memoization cache",
+          "hint": "Initialize an empty dict: cache = {}"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

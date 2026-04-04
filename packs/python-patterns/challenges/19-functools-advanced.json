@@ -1,0 +1,64 @@
+{
+  "title": "Functools Advanced",
+  "prompt": "Write the following in `solution.py` using `functools`:\n\n**Requirements:**\n1. `Temperature` class -- decorated with `@functools.total_ordering`. Implement `__init__(self, celsius)` storing the value, `__eq__` (comparing celsius values, returning `NotImplemented` for non-Temperature), and `__lt__` (same pattern). Also implement `__repr__` returning `f\"Temperature({self.celsius})\"`.\n2. `format_value(value)` -- a function using `@functools.singledispatch` that formats values by type:\n   - `int` -> `\"int: 42\"`\n   - `float` -> `\"float: 3.14\"`\n   - `str` -> `\"str: hello\"`\n   - `list` -> `\"list[3]\"` (showing length)\n   - Default -> `\"unknown\"`\n\nRegister type-specific handlers with `@format_value.register(type)`.\n\n**Examples:**\n```python\nTemperature(20) == Temperature(20)  # True\nTemperature(10) < Temperature(20)   # True\nTemperature(20) >= Temperature(10)  # True (from total_ordering)\n\nformat_value(42)           # \"int: 42\"\nformat_value(3.14)         # \"float: 3.14\"\nformat_value(\"hello\")      # \"str: hello\"\nformat_value([1, 2, 3])    # \"list[3]\"\nformat_value({})           # \"unknown\"\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "functools",
+    "total-ordering",
+    "singledispatch"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import functools\n\n\n@functools.total_ordering\nclass Temperature:\n    def __init__(self, celsius):\n        self.celsius = celsius\n\n    def __eq__(self, other):\n        if not isinstance(other, Temperature):\n            return NotImplemented\n        return self.celsius == other.celsius\n\n    def __lt__(self, other):\n        if not isinstance(other, Temperature):\n            return NotImplemented\n        return self.celsius < other.celsius\n\n    def __repr__(self):\n        return f\"Temperature({self.celsius})\"\n\n\n@functools.singledispatch\ndef format_value(value):\n    return \"unknown\"\n\n\n@format_value.register(int)\ndef _format_int(value):\n    return f\"int: {value}\"\n\n\n@format_value.register(float)\ndef _format_float(value):\n    return f\"float: {value}\"\n\n\n@format_value.register(str)\ndef _format_str(value):\n    return f\"str: {value}\"\n\n\n@format_value.register(list)\ndef _format_list(value):\n    return f\"list[{len(value)}]\"\n"
+    }
+  ],
+  "hints": [
+    "@total_ordering fills in the missing comparison methods from __eq__ and __lt__",
+    "Return NotImplemented (not NotImplementedError) for type mismatches in comparisons",
+    "@singledispatch dispatches on the type of the first argument",
+    "Register handlers with @func.register(type)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "functools",
+          "description": "Import the functools module"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Temperature",
+          "description": "Define a Temperature class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "format_value",
+          "params": ["value"],
+          "description": "Define a format_value function using singledispatch"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__eq__",
+          "params": ["self", "other"],
+          "description": "Implement __eq__ for Temperature comparison"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__lt__",
+          "params": ["self", "other"],
+          "description": "Implement __lt__ for Temperature ordering"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use decorators for total_ordering, singledispatch, and register",
+          "hint": "Decorate Temperature with @functools.total_ordering and format_value with @functools.singledispatch"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "title": "Nested Collections",
+  "prompt": "Write three functions for working with deeply nested collections:\n\n**Requirements:**\n1. `flatten_deep(nested)` -- recursively flattens a nested list to any depth: `[1, [2, [3, [4]]]]` becomes `[1, 2, 3, 4]`\n2. `path_set(d, path, value)` -- sets a value at a dot-separated path in a nested dict, creating intermediate dicts as needed: `path_set({}, \"a.b.c\", 1)` returns `{\"a\": {\"b\": {\"c\": 1}}}`\n3. `collect_leaves(tree)` -- collects all non-dict, non-list leaf values from an arbitrarily nested structure of dicts and lists\n\n**Examples:**\n```python\nflatten_deep([1, [2, [3]]])          # [1, 2, 3]\npath_set({}, \"a.b\", 42)              # {\"a\": {\"b\": 42}}\ncollect_leaves({\"a\": [1, {\"b\": 2}]}) # [1, 2]\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "recursion",
+    "nested",
+    "advanced"
+  ],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def flatten_deep(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten_deep(item))\n        else:\n            result.append(item)\n    return result\n\n\ndef path_set(d, path, value):\n    keys = path.split(\".\")\n    current = d\n    for key in keys[:-1]:\n        if key not in current:\n            current[key] = {}\n        current = current[key]\n    current[keys[-1]] = value\n    return d\n\n\ndef collect_leaves(tree):\n    leaves = []\n    if isinstance(tree, dict):\n        for v in tree.values():\n            leaves.extend(collect_leaves(v))\n    elif isinstance(tree, list):\n        for item in tree:\n            leaves.extend(collect_leaves(item))\n    else:\n        leaves.append(tree)\n    return leaves\n"
+    }
+  ],
+  "hints": [
+    "isinstance(item, list) checks if item is a list",
+    "Recursive calls: result.extend(flatten_deep(item))",
+    "keys[:-1] gives all keys except the last (intermediate path)",
+    "Handle dicts, lists, and leaf values as separate cases"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "flatten_deep",
+          "params": ["nested"],
+          "description": "Define a flatten_deep function that accepts a nested parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "path_set",
+          "params": ["d", "path", "value"],
+          "description": "Define a path_set function that accepts d, path, and value parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "collect_leaves",
+          "params": ["tree"],
+          "description": "Define a collect_leaves function that accepts a tree parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Use if statements for type checking and base cases",
+          "hint": "Check types with isinstance() to handle different collection types"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call)",
+          "description": "Use function calls including recursive calls",
+          "hint": "Call flatten_deep/collect_leaves recursively on nested structures"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

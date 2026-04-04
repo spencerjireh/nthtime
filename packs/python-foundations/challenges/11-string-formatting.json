@@ -1,0 +1,54 @@
+{
+  "title": "String Formatting",
+  "prompt": "Write three functions using f-strings:\n\n**Requirements:**\n1. `format_price(amount, currency=\"USD\")` -- returns `\"USD 12.50\"` (2 decimal places, space-separated)\n2. `build_table_row(columns, widths)` -- returns a pipe-separated row where each column is left-padded to its width, e.g. `\"| Name      | Age |\"`\n3. `pluralize(word, count)` -- returns `\"1 apple\"` or `\"5 apples\"` (adds 's' for count != 1)\n\n**Examples:**\n```python\nformat_price(12.5)                            # \"USD 12.50\"\nbuild_table_row([\"Name\", \"Age\"], [10, 3])     # \"| Name       | Age |\"\npluralize(\"apple\", 5)                         # \"5 apples\"\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "strings",
+    "f-strings",
+    "formatting"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def format_price(amount, currency=\"USD\"):\n    return f\"{currency} {amount:.2f}\"\n\n\ndef build_table_row(columns, widths):\n    cells = [f\"{col:<{w}}\" for col, w in zip(columns, widths)]\n    return \"| \" + \" | \".join(cells) + \" |\"\n\n\ndef pluralize(word, count):\n    suffix = \"\" if count == 1 else \"s\"\n    return f\"{count} {word}{suffix}\"\n"
+    }
+  ],
+  "hints": [
+    "f-string format spec: f'{amount:.2f}' for 2 decimal places",
+    "f-string alignment: f'{text:<10}' left-aligns in 10 chars",
+    "zip() pairs columns with their widths",
+    "Conditional expression: 's' if count != 1 else ''"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "format_price",
+          "params": ["amount", "currency"],
+          "description": "Define a format_price function that accepts amount and currency parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "build_table_row",
+          "params": ["columns", "widths"],
+          "description": "Define a build_table_row function that accepts columns and widths parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "pluralize",
+          "params": ["word", "count"],
+          "description": "Define a pluralize function that accepts word and count parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(interpolation)",
+          "description": "Use f-strings for string formatting",
+          "hint": "Use f-string syntax: f'{variable}' or f'{value:.2f}'"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

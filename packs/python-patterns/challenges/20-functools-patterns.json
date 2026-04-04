@@ -1,0 +1,64 @@
+{
+  "title": "Functools Patterns",
+  "prompt": "Write the following in `solution.py`:\n\n**Requirements:**\n1. `Registry` class -- stores handlers by name.\n   - `__init__` initializes an empty `_handlers` dict.\n   - `register(name)` returns a decorator that registers the decorated function under the given name and returns the original function unchanged.\n   - `dispatch(name, *args, **kwargs)` calls the handler registered for `name` with the given arguments. Raises `KeyError` with message `f\"No handler for '{name}'\"` if not found.\n2. `chain_predicates(*predicates)` -- returns a function that returns `True` only if ALL predicate functions return `True` for the given argument. Use `all()` with a generator.\n3. `once(fn)` -- decorator (using `@functools.wraps`) that calls `fn` only the first time. Subsequent calls return the cached result without calling `fn` again.\n\n**Examples:**\n```python\nreg = Registry()\n\n@reg.register(\"greet\")\ndef greet(name):\n    return f\"Hello, {name}\"\n\nreg.dispatch(\"greet\", \"Alice\")  # \"Hello, Alice\"\n\nis_positive = lambda x: x > 0\nis_even = lambda x: x % 2 == 0\ncheck = chain_predicates(is_positive, is_even)\ncheck(4)   # True\ncheck(-2)  # False\n\n@once\ndef init():\n    print(\"initializing\")\n    return 42\n\ninit()  # prints \"initializing\", returns 42\ninit()  # returns 42, no print\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "functools",
+    "registry",
+    "patterns",
+    "advanced"
+  ],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import functools\n\n\nclass Registry:\n    def __init__(self):\n        self._handlers = {}\n\n    def register(self, name):\n        def decorator(fn):\n            self._handlers[name] = fn\n            return fn\n        return decorator\n\n    def dispatch(self, name, *args, **kwargs):\n        if name not in self._handlers:\n            raise KeyError(f\"No handler for '{name}'\")\n        return self._handlers[name](*args, **kwargs)\n\n\ndef chain_predicates(*predicates):\n    def combined(x):\n        return all(p(x) for p in predicates)\n    return combined\n\n\ndef once(fn):\n    result = None\n    called = False\n\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        nonlocal result, called\n        if not called:\n            result = fn(*args, **kwargs)\n            called = True\n        return result\n\n    return wrapper\n"
+    }
+  ],
+  "hints": [
+    "A registry maps names to handler functions in a dictionary",
+    "register(name) returns a decorator -- it is a decorator factory",
+    "all(p(x) for p in predicates) short-circuits on first False",
+    "once() uses nonlocal to track whether fn has been called"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "functools",
+          "description": "Import the functools module"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Registry",
+          "description": "Define a Registry class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "chain_predicates",
+          "description": "Define a chain_predicates function"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "once",
+          "params": ["fn"],
+          "description": "Define a once decorator that accepts a function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(function_definition (block (function_definition)))",
+          "description": "Define nested functions for closures and decorators",
+          "hint": "chain_predicates, register, and once all require inner functions"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(nonlocal_statement)",
+          "description": "Use nonlocal to modify closure variables in once()",
+          "hint": "nonlocal result, called allows the wrapper to modify outer variables"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

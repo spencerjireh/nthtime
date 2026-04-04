@@ -1,0 +1,54 @@
+{
+  "title": "Set Operations",
+  "prompt": "Write three functions that work with sets:\n\n**Requirements:**\n1. `unique_words(text)` -- returns a set of unique lowercased words from a text string\n2. `common_elements(a, b)` -- returns a sorted list of elements in both sets/lists\n3. `symmetric_diff(a, b)` -- returns a sorted list of elements in either set but not both\n\n**Examples:**\n```python\nunique_words(\"Hello hello World\")    # {\"hello\", \"world\"}\ncommon_elements([1, 2, 3], [2, 3, 4])  # [2, 3]\nsymmetric_diff([1, 2, 3], [2, 3, 4])  # [1, 4]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "sets",
+    "operations",
+    "comprehensions"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def unique_words(text):\n    return {word.lower() for word in text.split()}\n\n\ndef common_elements(a, b):\n    return sorted(set(a) & set(b))\n\n\ndef symmetric_diff(a, b):\n    return sorted(set(a) ^ set(b))\n"
+    }
+  ],
+  "hints": [
+    "Set comprehension: {word.lower() for word in text.split()}",
+    "Set intersection: set_a & set_b",
+    "Set symmetric difference: set_a ^ set_b",
+    "sorted() converts a set to a sorted list"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "unique_words",
+          "params": ["text"],
+          "description": "Define a unique_words function that accepts a text parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "common_elements",
+          "params": ["a", "b"],
+          "description": "Define a common_elements function that accepts a and b parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "symmetric_diff",
+          "params": ["a", "b"],
+          "description": "Define a symmetric_diff function that accepts a and b parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(set_comprehension)",
+          "description": "Use a set comprehension to build the unique words set",
+          "hint": "Set comprehension: {word.lower() for word in text.split()}"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

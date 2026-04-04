@@ -1,0 +1,58 @@
+{
+  "title": "Iteration Patterns",
+  "prompt": "Write three functions in `solution.py`:\n\n**Requirements:**\n1. `batch_process(items, batch_size, processor)` -- calls `processor(batch)` for each chunk of `batch_size` items, returns a list of results\n2. `until_sentinel(iterable, sentinel)` -- a generator that yields items from iterable until the sentinel value is encountered (exclusive)\n3. `round_robin(*iterables)` -- a generator that yields items from each iterable in turn: first from each, then second from each, etc., skipping exhausted iterables\n\n**Examples:**\n```python\nbatch_process([1, 2, 3, 4, 5], 2, sum)  # [3, 7, 5]\nlist(until_sentinel([1, 2, 0, 3], 0))    # [1, 2]\nlist(round_robin([1, 2], [\"a\", \"b\", \"c\"]))  # [1, \"a\", 2, \"b\", \"c\"]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "iteration",
+    "batching",
+    "generators"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def batch_process(items, batch_size, processor):\n    results = []\n    for i in range(0, len(items), batch_size):\n        batch = items[i:i + batch_size]\n        results.append(processor(batch))\n    return results\n\n\ndef until_sentinel(iterable, sentinel):\n    for item in iterable:\n        if item == sentinel:\n            return\n        yield item\n\n\ndef round_robin(*iterables):\n    iters = [iter(it) for it in iterables]\n    while iters:\n        next_iters = []\n        for it in iters:\n            try:\n                yield next(it)\n            except StopIteration:\n                continue\n            else:\n                next_iters.append(it)\n        iters = next_iters\n"
+    }
+  ],
+  "hints": [
+    "range(0, len(items), batch_size) steps through in chunks",
+    "return inside a generator stops yielding",
+    "iter(iterable) creates an iterator, next(it) advances it",
+    "StopIteration signals an exhausted iterator -- catch it with try/except"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "batch_process",
+          "params": ["items", "batch_size", "processor"],
+          "description": "Define a batch_process function with items, batch_size, and processor parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "until_sentinel",
+          "params": ["iterable", "sentinel"],
+          "description": "Define an until_sentinel generator with iterable and sentinel parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "round_robin",
+          "description": "Define a round_robin function that accepts variadic arguments"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Use yield to make generator functions",
+          "hint": "yield produces values lazily without building the full list in memory"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use for loops to iterate over items"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

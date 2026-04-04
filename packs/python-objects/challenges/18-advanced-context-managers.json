@@ -1,0 +1,76 @@
+{
+  "title": "Advanced Context Managers",
+  "prompt": "Write advanced context managers in `solution.py`:\n\n**Requirements:**\n1. `DatabaseConnection` class -- `__init__(self)` sets `self.connected = False`, `self.committed = False`, `self.rolled_back = False`. `__enter__` sets `connected=True` and returns `self`. `__exit__` sets `committed=True` on success (no exception), or `self.rolled_back = True` on exception, then always sets `connected=False`. Does not suppress exceptions.\n2. `suppress(*exception_types)` using `@contextmanager` -- suppresses the listed exception types inside the block, letting all others propagate.\n3. `stack(*managers)` using `@contextmanager` -- enters multiple context managers in sequence, yields a list of the entered values, and exits them in reverse order on cleanup.\n\n**Examples:**\n```python\nwith DatabaseConnection() as db:\n    print(db.connected)    # True\nprint(db.committed)        # True\nprint(db.connected)        # False\n\nwith suppress(ValueError):\n    raise ValueError(\"ignored\")\n# no exception raised\n\nwith stack(DatabaseConnection(), DatabaseConnection()) as [db1, db2]:\n    print(db1.connected, db2.connected)  # True True\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "context-managers",
+    "advanced",
+    "database",
+    "composition"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from contextlib import contextmanager\n\n\nclass DatabaseConnection:\n    def __init__(self):\n        self.connected = False\n        self.committed = False\n        self.rolled_back = False\n\n    def __enter__(self):\n        self.connected = True\n        return self\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        if exc_type is None:\n            self.committed = True\n        else:\n            self.rolled_back = True\n        self.connected = False\n        return False\n\n\n@contextmanager\ndef suppress(*exception_types):\n    try:\n        yield\n    except exception_types:\n        pass\n\n\n@contextmanager\ndef stack(*managers):\n    exits = []\n    try:\n        for mgr in managers:\n            value = mgr.__enter__()\n            exits.append(mgr)\n        yield exits\n    finally:\n        for mgr in reversed(exits):\n            mgr.__exit__(None, None, None)\n"
+    }
+  ],
+  "hints": [
+    "Check exc_type is None for successful exit (no exception)",
+    "Return False from __exit__ to let exceptions propagate",
+    "suppress catches exceptions and silently continues",
+    "stack enters managers in order, exits in reverse (LIFO)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "contextlib",
+          "names": ["contextmanager"],
+          "description": "Import contextmanager from contextlib"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "DatabaseConnection",
+          "description": "Define a DatabaseConnection context manager class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__enter__",
+          "params": ["self"],
+          "description": "Define __enter__ to establish connection"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__exit__",
+          "params": ["self", "exc_type", "exc_val", "exc_tb"],
+          "description": "Define __exit__ to commit or rollback and disconnect"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "suppress",
+          "description": "Define a suppress context manager function"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "stack",
+          "description": "Define a stack context manager function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Yield inside generator-based context managers",
+          "hint": "Use yield to hand control to the with block"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(try_statement)",
+          "description": "Use try/except or try/finally for cleanup",
+          "hint": "Use try/finally in stack to ensure all managers are exited"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "title": "Basic Inheritance",
+  "prompt": "Write three classes in `solution.py` using inheritance:\n\n**Requirements:**\n1. `Shape` base class with `area(self)` that raises `NotImplementedError` and a `__repr__` that returns the class name with parentheses (e.g. `\"Shape()\"`).\n2. `Circle(Shape)` with `__init__(self, radius)` and `area()` returning `math.pi * radius ** 2`. Its `__repr__` returns `\"Circle(<radius>)\"`.\n3. `Rectangle(Shape)` with `__init__(self, width, height)` and `area()` returning `width * height`. Its `__repr__` returns `\"Rectangle(<width>, <height>)\"`.\n\n**Examples:**\n```python\nimport math\n\nc = Circle(5)\nc.area()        # 78.5398...\nrepr(c)         # 'Circle(5)'\n\nr = Rectangle(3, 4)\nr.area()        # 12\nrepr(r)         # 'Rectangle(3, 4)'\n\nShape().area()  # raises NotImplementedError\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "inheritance",
+    "polymorphism",
+    "shapes"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import math\n\n\nclass Shape:\n    def area(self):\n        raise NotImplementedError(\"Subclasses must implement area()\")\n\n    def __repr__(self):\n        return f\"{self.__class__.__name__}()\"\n\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n\n    def area(self):\n        return math.pi * self.radius ** 2\n\n    def __repr__(self):\n        return f\"Circle({self.radius})\"\n\n\nclass Rectangle(Shape):\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n\n    def area(self):\n        return self.width * self.height\n\n    def __repr__(self):\n        return f\"Rectangle({self.width}, {self.height})\"\n"
+    }
+  ],
+  "hints": [
+    "raise NotImplementedError() forces subclasses to override",
+    "Subclass syntax: class Circle(Shape)",
+    "self.__class__.__name__ gives the class name as a string",
+    "Override area() in each subclass with the specific formula"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "math",
+          "description": "Import the math module for pi"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Shape",
+          "description": "Define a Shape base class"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Circle",
+          "bases": ["Shape"],
+          "description": "Define a Circle class that inherits from Shape"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Rectangle",
+          "bases": ["Shape"],
+          "description": "Define a Rectangle class that inherits from Shape"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "area",
+          "params": ["self"],
+          "description": "Define an area method"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(raise_statement)",
+          "description": "Raise NotImplementedError in the base class",
+          "hint": "Use raise NotImplementedError() in Shape.area()"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

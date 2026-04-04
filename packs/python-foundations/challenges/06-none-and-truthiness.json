@@ -1,0 +1,57 @@
+{
+  "title": "None and Truthiness",
+  "prompt": "Write three functions in `solution.py` that deal with `None` and Python's truthiness rules:\n\n**Requirements:**\n1. `safe_len(value)` -- returns `len(value)` if `value` is not `None`, otherwise returns `0`. Use `is None` (not `== None`) for the check\n2. `first_truthy(*args)` -- accepts any number of positional arguments. Returns the first truthy argument, or `None` if all arguments are falsy\n3. `is_empty(value)` -- returns `True` for `None`, empty string `\"\"`, empty list `[]`, or `0`. Returns `False` for anything that is truthy\n\n**Examples:**\n```python\nsafe_len(None)        # 0\nsafe_len(\"hello\")     # 5\nfirst_truthy(0, \"\", [], \"found\") # \"found\"\nfirst_truthy(0, None, False)     # None\nis_empty(None)        # True\nis_empty(0)           # True\nis_empty(\"hello\")     # False\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "none",
+    "truthiness",
+    "conditionals"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def safe_len(value):\n    if value is None:\n        return 0\n    return len(value)\n\n\ndef first_truthy(*args):\n    for arg in args:\n        if arg:\n            return arg\n    return None\n\n\ndef is_empty(value):\n    return value is None or not value\n"
+    }
+  ],
+  "hints": [
+    "Use `is None` (not `== None`) to check for None",
+    "Falsy values in Python: None, False, 0, '', [], {}, set()",
+    "*args collects positional arguments into a tuple"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "safe_len",
+          "params": ["value"],
+          "description": "Define a safe_len function with a value parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "first_truthy",
+          "description": "Define a first_truthy function that accepts variable arguments"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_empty",
+          "params": ["value"],
+          "description": "Define an is_empty function with a value parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(comparison_operator)",
+          "description": "Use `is None` comparison to check for None values",
+          "hint": "Use `value is None` instead of `value == None`"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Use conditional statements to handle different cases"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

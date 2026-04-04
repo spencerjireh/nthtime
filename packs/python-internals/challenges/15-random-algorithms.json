@@ -1,0 +1,74 @@
+{
+  "title": "Random Algorithms",
+  "prompt": "Write three classic randomized algorithm functions in `solution.py`:\n\n**Requirements:**\n1. `reservoir_sample(stream, k)` -- **reservoir sampling**: accept an iterable `stream` of unknown length and return `k` randomly sampled items. Use the classic algorithm: fill the reservoir with the first `k` items, then for each subsequent item at index `i`, replace a random reservoir slot with probability `k/i`\n2. `fisher_yates_shuffle(items)` -- **Fisher-Yates shuffle**: create a copy as a list, then shuffle it in-place by iterating from the last index down to 1, swapping each element with a random earlier element. Return the shuffled list\n3. `lcg(seed, a=1664525, c=1013904223, m=2**32)` -- **linear congruential generator**: an infinite generator that yields pseudo-random numbers using the formula `next = (a * current + c) % m`\n\n**Examples:**\n```python\nimport random\nrandom.seed(42)\nreservoir_sample(range(1000), 5)  # 5 random items from 0..999\nfisher_yates_shuffle([1, 2, 3, 4])  # [3, 1, 4, 2] (seed-dependent)\ngen = lcg(42)\nnext(gen)                          # deterministic from seed\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "algorithms",
+    "reservoir-sampling",
+    "shuffle",
+    "prng"
+  ],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import random\n\n\ndef reservoir_sample(stream, k):\n    reservoir = []\n    for i, item in enumerate(stream):\n        if i < k:\n            reservoir.append(item)\n        else:\n            j = random.randint(0, i)\n            if j < k:\n                reservoir[j] = item\n    return reservoir\n\n\ndef fisher_yates_shuffle(items):\n    lst = list(items)\n    for i in range(len(lst) - 1, 0, -1):\n        j = random.randint(0, i)\n        lst[i], lst[j] = lst[j], lst[i]\n    return lst\n\n\ndef lcg(seed, a=1664525, c=1013904223, m=2**32):\n    value = seed\n    while True:\n        value = (a * value + c) % m\n        yield value\n"
+    }
+  ],
+  "hints": [
+    "Reservoir sampling: first k items go in, then replace with decreasing probability",
+    "Fisher-Yates: iterate backwards, swap each element with a random earlier one",
+    "LCG: next = (a * current + c) % m -- simple but predictable PRNG",
+    "yield makes lcg an infinite generator"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "random",
+          "description": "Import random module for sampling"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "reservoir_sample",
+          "params": [
+            "stream",
+            "k"
+          ],
+          "description": "Define reservoir_sample for sampling from unknown-length streams"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "fisher_yates_shuffle",
+          "params": [
+            "items"
+          ],
+          "description": "Define fisher_yates_shuffle for in-place shuffling"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "lcg",
+          "params": [
+            "seed",
+            "a",
+            "c",
+            "m"
+          ],
+          "description": "Define lcg as a linear congruential generator"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Use yield to make lcg an infinite generator"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use for loops for iteration"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

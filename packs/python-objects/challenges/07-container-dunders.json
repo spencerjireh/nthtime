@@ -1,0 +1,71 @@
+{
+  "title": "Container Dunders",
+  "prompt": "Write a `SortedList` class in `solution.py` that maintains items in sorted order:\n\n**Requirements:**\n1. `__init__(self)` -- initialize with an empty internal list\n2. `add(self, item)` -- insert item while maintaining sorted order (use `bisect.insort`)\n3. `__len__(self)` -- return the number of items\n4. `__getitem__(self, index)` -- support integer indexing and slicing\n5. `__contains__(self, item)` -- efficient membership test (use `bisect.bisect_left`)\n6. `__iter__(self)` -- iterate over items in order\n7. `__repr__(self)` -- returns `\"SortedList([1, 2, 3])\"`\n\n**Examples:**\n```python\nsl = SortedList()\nsl.add(3)\nsl.add(1)\nsl.add(2)\nlen(sl)       # 3\nsl[0]         # 1\nsl[0:2]       # [1, 2]\n2 in sl       # True\nlist(sl)      # [1, 2, 3]\nrepr(sl)      # \"SortedList([1, 2, 3])\"\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "classes",
+    "container",
+    "dunder",
+    "bisect"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import bisect\n\n\nclass SortedList:\n    def __init__(self):\n        self._items = []\n\n    def add(self, item):\n        bisect.insort(self._items, item)\n\n    def __len__(self):\n        return len(self._items)\n\n    def __getitem__(self, index):\n        return self._items[index]\n\n    def __contains__(self, item):\n        i = bisect.bisect_left(self._items, item)\n        return i < len(self._items) and self._items[i] == item\n\n    def __iter__(self):\n        return iter(self._items)\n\n    def __repr__(self):\n        return f\"SortedList({self._items!r})\"\n"
+    }
+  ],
+  "hints": [
+    "bisect.insort() inserts while maintaining sorted order",
+    "__getitem__ enables [] indexing and slicing",
+    "__contains__ enables the 'in' operator",
+    "__iter__ enables for loops and unpacking"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "bisect",
+          "description": "Import bisect for efficient sorted insertion"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "SortedList",
+          "description": "Define a SortedList class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "add",
+          "params": ["self", "item"],
+          "description": "Define an add method to insert items in sorted order"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__len__",
+          "params": ["self"],
+          "description": "Define __len__ for len() support"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__getitem__",
+          "params": ["self", "index"],
+          "description": "Define __getitem__ for indexing and slicing"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__contains__",
+          "params": ["self", "item"],
+          "description": "Define __contains__ for the 'in' operator"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__iter__",
+          "params": ["self"],
+          "description": "Define __iter__ for iteration support"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

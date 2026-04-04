@@ -1,0 +1,77 @@
+{
+  "title": "Protocols",
+  "prompt": "Write structural types using `Protocol` in `solution.py`:\n\n**Requirements:**\n1. `Printable(Protocol)` with a `to_string(self) -> str` method.\n2. `Document(title, body)` class with a `to_string()` method returning `\"{title}: {body}\"`. Does NOT inherit from Printable.\n3. `Report(title, data)` class with a `to_string()` method returning `\"Report: {title} ({len(data)} items)\"`. Does NOT inherit from Printable.\n4. `print_all(items)` function that calls `to_string()` on each item and returns the results joined by newlines.\n5. `Comparable(Protocol)` with a `__lt__(self, other) -> bool` method.\n6. `find_min(items)` function that returns the smallest item using `<` comparisons.\n\n**Examples:**\n```python\nd = Document(\"Readme\", \"Hello world\")\nr = Report(\"Sales\", [1, 2, 3])\nprint_all([d, r])  # \"Readme: Hello world\\nReport: Sales (3 items)\"\n\nfind_min([3, 1, 2])  # 1\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "protocols",
+    "structural-typing",
+    "duck-typing",
+    "advanced"
+  ],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from typing import Protocol\n\n\nclass Printable(Protocol):\n    def to_string(self) -> str: ...\n\n\nclass Comparable(Protocol):\n    def __lt__(self, other) -> bool: ...\n\n\nclass Document:\n    def __init__(self, title, body):\n        self.title = title\n        self.body = body\n\n    def to_string(self):\n        return f\"{self.title}: {self.body}\"\n\n\nclass Report:\n    def __init__(self, title, data):\n        self.title = title\n        self.data = data\n\n    def to_string(self):\n        return f\"Report: {self.title} ({len(self.data)} items)\"\n\n\ndef print_all(items):\n    return \"\\n\".join(item.to_string() for item in items)\n\n\ndef find_min(items):\n    result = items[0]\n    for item in items[1:]:\n        if item < result:\n            result = item\n    return result\n"
+    }
+  ],
+  "hints": [
+    "Protocol defines a structural type -- no inheritance needed",
+    "Document and Report satisfy Printable by having to_string()",
+    "Structural subtyping: if it has the method, it matches",
+    "find_min uses < operator, so it works with any Comparable"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "typing",
+          "names": ["Protocol"],
+          "description": "Import Protocol from typing"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Printable",
+          "bases": ["Protocol"],
+          "description": "Define Printable as a Protocol"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Comparable",
+          "bases": ["Protocol"],
+          "description": "Define Comparable as a Protocol"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Document",
+          "description": "Define Document class (no Protocol inheritance)"
+        },
+        {
+          "type": "pythonClassDef",
+          "name": "Report",
+          "description": "Define Report class (no Protocol inheritance)"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "print_all",
+          "params": ["items"],
+          "description": "Define print_all that calls to_string on each item"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "find_min",
+          "params": ["items"],
+          "description": "Define find_min that finds the smallest comparable item"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "to_string",
+          "params": ["self"],
+          "description": "Define to_string method on classes"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

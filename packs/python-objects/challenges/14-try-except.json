@@ -1,0 +1,58 @@
+{
+  "title": "Try-Except",
+  "prompt": "Write three functions in `solution.py` that demonstrate exception handling:\n\n**Requirements:**\n1. `safe_divide(a, b)` -- returns `a / b`, or `None` if `b` is zero (catch `ZeroDivisionError`).\n2. `parse_int(text, default=0)` -- returns `int(text)`, or `default` if the text is not a valid integer (catch `ValueError`).\n3. `process_items(items, processor)` -- calls `processor(item)` for each item, returns a dict mapping each item to its result. If the processor raises any `Exception`, map the item to `\"error: {message}\"` instead.\n\n**Examples:**\n```python\nsafe_divide(10, 3)     # 3.333...\nsafe_divide(10, 0)     # None\n\nparse_int(\"42\")        # 42\nparse_int(\"abc\")       # 0\nparse_int(\"abc\", -1)   # -1\n\nprocess_items([1, 0], lambda x: 10 // x)\n# {1: 10, 0: 'error: integer division or modulo by zero'}\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "exceptions",
+    "try-except",
+    "error-handling"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return None\n\n\ndef parse_int(text, default=0):\n    try:\n        return int(text)\n    except ValueError:\n        return default\n\n\ndef process_items(items, processor):\n    results = {}\n    for item in items:\n        try:\n            results[item] = processor(item)\n        except Exception as e:\n            results[item] = f\"error: {e}\"\n    return results\n"
+    }
+  ],
+  "hints": [
+    "try/except catches specific exception types",
+    "Catch the narrowest exception: except ZeroDivisionError, not except Exception",
+    "except Exception as e captures the error for inspection",
+    "Return a fallback value instead of crashing"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "safe_divide",
+          "params": ["a", "b"],
+          "description": "Define safe_divide with two parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "parse_int",
+          "params": ["text", "default"],
+          "description": "Define parse_int with text and default parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "process_items",
+          "params": ["items", "processor"],
+          "description": "Define process_items with items and processor parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(try_statement)",
+          "description": "Use try statements for exception handling"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(except_clause)",
+          "description": "Use except clauses to catch exceptions"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

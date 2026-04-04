@@ -1,0 +1,59 @@
+{
+  "title": "Tuple Power",
+  "prompt": "Write three functions that work with tuples:\n\n**Requirements:**\n1. `make_point(x, y)` -- returns a tuple `(x, y)`\n2. `distance(p1, p2)` -- computes Euclidean distance between two points (tuples of `(x, y)`)\n3. `swap(a, b)` -- returns `(b, a)`\n\n**Examples:**\n```python\nmake_point(3, 4)           # (3, 4)\ndistance((0, 0), (3, 4))   # 5.0\nswap(1, 2)                 # (2, 1)\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "tuples",
+    "math",
+    "data-structures"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import math\n\n\ndef make_point(x, y):\n    return (x, y)\n\n\ndef distance(p1, p2):\n    return math.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2)\n\n\ndef swap(a, b):\n    return (b, a)\n"
+    }
+  ],
+  "hints": [
+    "Tuples are created with parentheses: (x, y)",
+    "Access tuple elements by index: point[0], point[1]",
+    "math.sqrt() computes square root",
+    "Euclidean distance: sqrt((x2-x1)^2 + (y2-y1)^2)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "math",
+          "description": "Import the math module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "make_point",
+          "params": ["x", "y"],
+          "description": "Define a make_point function that accepts x and y parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "distance",
+          "params": ["p1", "p2"],
+          "description": "Define a distance function that accepts p1 and p2 parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "swap",
+          "params": ["a", "b"],
+          "description": "Define a swap function that accepts a and b parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement (tuple))",
+          "description": "Return tuples from functions",
+          "hint": "Use parentheses to create a tuple: return (x, y)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

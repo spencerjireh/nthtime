@@ -1,0 +1,53 @@
+{
+  "title": "Generator Functions",
+  "prompt": "Write three generator functions in `solution.py`:\n\n**Requirements:**\n1. `fibonacci()` -- infinite generator yielding the Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, ...\n2. `chunks(iterable, size)` -- generator yielding lists of `size` items from iterable (the last chunk may be smaller)\n3. `flatten_gen(nested)` -- generator that lazily flattens one level of nesting using `yield from`\n\n**Examples:**\n```python\nfib = fibonacci()\n[next(fib) for _ in range(7)]          # [0, 1, 1, 2, 3, 5, 8]\n\nlist(chunks([1, 2, 3, 4, 5], 2))       # [[1, 2], [3, 4], [5]]\nlist(flatten_gen([[1, 2], [3], [4, 5]])) # [1, 2, 3, 4, 5]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "generators",
+    "yield",
+    "infinite"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def fibonacci():\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b\n\n\ndef chunks(iterable, size):\n    chunk = []\n    for item in iterable:\n        chunk.append(item)\n        if len(chunk) == size:\n            yield chunk\n            chunk = []\n    if chunk:\n        yield chunk\n\n\ndef flatten_gen(nested):\n    for sublist in nested:\n        yield from sublist\n"
+    }
+  ],
+  "hints": [
+    "yield pauses the function and produces a value",
+    "while True creates an infinite generator",
+    "yield from delegates to another iterable",
+    "Remember to yield the last partial chunk"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "fibonacci",
+          "description": "Define a fibonacci generator function"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "chunks",
+          "params": ["iterable", "size"],
+          "description": "Define a chunks function with iterable and size parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "flatten_gen",
+          "params": ["nested"],
+          "description": "Define a flatten_gen function that accepts a nested parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Use yield to produce values from generator functions",
+          "hint": "yield pauses the function and produces a value to the caller"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

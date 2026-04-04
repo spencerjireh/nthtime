@@ -1,0 +1,59 @@
+{
+  "title": "Dict Fundamentals",
+  "prompt": "Write three functions for working with dictionaries:\n\n**Requirements:**\n1. `invert_dict(d)` -- swaps keys and values: `{\"a\": 1}` becomes `{1: \"a\"}`\n2. `merge_dicts(*dicts)` -- merges multiple dicts (later dicts override earlier keys)\n3. `count_chars(text)` -- returns a dict mapping each character to its frequency\n\n**Examples:**\n```python\ninvert_dict({\"a\": 1, \"b\": 2})       # {1: \"a\", 2: \"b\"}\nmerge_dicts({\"a\": 1}, {\"b\": 2})      # {\"a\": 1, \"b\": 2}\ncount_chars(\"aab\")                   # {\"a\": 2, \"b\": 1}\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "dicts",
+    "comprehensions",
+    "iteration"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def invert_dict(d):\n    return {v: k for k, v in d.items()}\n\n\ndef merge_dicts(*dicts):\n    result = {}\n    for d in dicts:\n        result.update(d)\n    return result\n\n\ndef count_chars(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n"
+    }
+  ],
+  "hints": [
+    "dict.items() gives (key, value) pairs",
+    "Dict comprehension: {v: k for k, v in d.items()}",
+    "dict.get(key, default) returns default if key missing",
+    "dict.update(other) merges another dict in"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "invert_dict",
+          "params": ["d"],
+          "description": "Define an invert_dict function that accepts a d parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "merge_dicts",
+          "description": "Define a merge_dicts function that accepts variable arguments"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "count_chars",
+          "params": ["text"],
+          "description": "Define a count_chars function that accepts a text parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(dictionary_comprehension)",
+          "description": "Use a dict comprehension to invert the dictionary",
+          "hint": "Dict comprehension: {v: k for k, v in d.items()}"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop for iteration",
+          "hint": "Iterate over characters or dicts with a for loop"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

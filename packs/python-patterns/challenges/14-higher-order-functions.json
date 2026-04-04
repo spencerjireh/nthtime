@@ -1,0 +1,64 @@
+{
+  "title": "Higher-Order Functions",
+  "prompt": "Write four functions in `solution.py`:\n\n**Requirements:**\n1. `my_map(fn, items)` -- reimplements `map()`, returns a list of `fn(item)` for each item\n2. `my_filter(fn, items)` -- reimplements `filter()`, returns a list of items where `fn(item)` is True\n3. `compose(*fns)` -- returns a function that applies fns right-to-left: `compose(f, g)(x)` = `f(g(x))`\n4. `pipe(*fns)` -- returns a function that applies fns left-to-right: `pipe(f, g)(x)` = `g(f(x))`\n\n**Examples:**\n```python\nmy_map(str.upper, [\"a\", \"b\"])         # [\"A\", \"B\"]\nmy_filter(lambda x: x > 0, [-1, 2, -3, 4])  # [2, 4]\n\nadd1 = lambda x: x + 1\ndouble = lambda x: x * 2\n\ncompose(add1, double)(3)  # add1(double(3)) = 7\npipe(add1, double)(3)     # double(add1(3)) = 8\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "higher-order",
+    "composition",
+    "functional"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def my_map(fn, items):\n    return [fn(item) for item in items]\n\n\ndef my_filter(fn, items):\n    return [item for item in items if fn(item)]\n\n\ndef compose(*fns):\n    def composed(x):\n        result = x\n        for fn in reversed(fns):\n            result = fn(result)\n        return result\n    return composed\n\n\ndef pipe(*fns):\n    def piped(x):\n        result = x\n        for fn in fns:\n            result = fn(result)\n        return result\n    return piped\n"
+    }
+  ],
+  "hints": [
+    "Map applies a function to each item",
+    "Filter keeps items where the function returns True",
+    "compose applies functions right-to-left (innermost first)",
+    "pipe applies functions left-to-right (first in, first applied)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "my_map",
+          "params": ["fn", "items"],
+          "description": "Define a my_map function with fn and items parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "my_filter",
+          "params": ["fn", "items"],
+          "description": "Define a my_filter function with fn and items parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "compose",
+          "description": "Define a compose function that accepts variadic arguments"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "pipe",
+          "description": "Define a pipe function that accepts variadic arguments"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(list_comprehension)",
+          "description": "Use list comprehensions for my_map and my_filter",
+          "hint": "[fn(item) for item in items] applies fn to each item"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(function_definition (block (function_definition)))",
+          "description": "Use nested functions for compose and pipe",
+          "hint": "Return an inner function that closes over the fns argument"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

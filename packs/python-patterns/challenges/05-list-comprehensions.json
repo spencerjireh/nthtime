@@ -1,0 +1,54 @@
+{
+  "title": "List Comprehensions",
+  "prompt": "Write three functions in `solution.py`:\n\n**Requirements:**\n1. `squares(n)` -- returns `[0, 1, 4, 9, ...]` for `range(n)` using a list comprehension\n2. `evens(numbers)` -- filters to even numbers using a comprehension with `if`\n3. `flatten_pairs(pairs)` -- flattens `[(1, 2), (3, 4)]` to `[1, 2, 3, 4]` using a nested comprehension\n\n**Examples:**\n```python\nsquares(5)                       # [0, 1, 4, 9, 16]\nevens([1, 2, 3, 4, 5, 6])       # [2, 4, 6]\nflatten_pairs([(1, 2), (3, 4)]) # [1, 2, 3, 4]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "comprehensions",
+    "lists",
+    "filtering"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def squares(n):\n    return [i * i for i in range(n)]\n\n\ndef evens(numbers):\n    return [x for x in numbers if x % 2 == 0]\n\n\ndef flatten_pairs(pairs):\n    return [item for pair in pairs for item in pair]\n"
+    }
+  ],
+  "hints": [
+    "List comprehension: [expr for x in iterable]",
+    "Add a filter: [x for x in items if condition]",
+    "Nested iteration: [item for pair in pairs for item in pair]",
+    "The nested for reads left to right, like nested for loops"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "squares",
+          "params": ["n"],
+          "description": "Define a squares function that accepts an n parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "evens",
+          "params": ["numbers"],
+          "description": "Define an evens function that accepts a numbers parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "flatten_pairs",
+          "params": ["pairs"],
+          "description": "Define a flatten_pairs function that accepts a pairs parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(list_comprehension)",
+          "description": "Use list comprehensions to build the result lists",
+          "hint": "List comprehension syntax: [expression for item in iterable]"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

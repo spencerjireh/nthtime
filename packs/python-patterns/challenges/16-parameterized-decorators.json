@@ -1,0 +1,64 @@
+{
+  "title": "Parameterized Decorators",
+  "prompt": "Write two parameterized decorators in `solution.py`:\n\n**Requirements:**\n1. `retry(max_attempts=3)` -- retries the wrapped function up to `max_attempts` times if it raises an exception. Re-raises the last exception if all attempts fail.\n2. `validate_types(**type_map)` -- checks that named keyword arguments match their expected types at call time. Raises `TypeError` if a keyword argument does not match. E.g. `@validate_types(x=int, y=str)` ensures `x` is an `int` and `y` is a `str`.\n\nBoth decorators must use `@functools.wraps(fn)` on their inner wrappers.\n\n**Examples:**\n```python\n@retry(max_attempts=3)\ndef flaky():\n    import random\n    if random.random() < 0.7:\n        raise ValueError(\"bad luck\")\n    return \"success\"\n\n@validate_types(x=int, y=str)\ndef process(x, y):\n    return f\"{y}: {x}\"\n\nprocess(x=1, y=\"count\")     # \"count: 1\"\nprocess(x=\"bad\", y=\"count\") # raises TypeError\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "decorators",
+    "parameterized",
+    "advanced"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import functools\n\n\ndef retry(max_attempts=3):\n    def decorator(fn):\n        @functools.wraps(fn)\n        def wrapper(*args, **kwargs):\n            last_error = None\n            for attempt in range(max_attempts):\n                try:\n                    return fn(*args, **kwargs)\n                except Exception as e:\n                    last_error = e\n            raise last_error\n        return wrapper\n    return decorator\n\n\ndef validate_types(**type_map):\n    def decorator(fn):\n        @functools.wraps(fn)\n        def wrapper(*args, **kwargs):\n            for param, expected_type in type_map.items():\n                if param in kwargs and not isinstance(kwargs[param], expected_type):\n                    raise TypeError(\n                        f\"Argument '{param}' must be {expected_type.__name__}, \"\n                        f\"got {type(kwargs[param]).__name__}\"\n                    )\n            return fn(*args, **kwargs)\n        return wrapper\n    return decorator\n"
+    }
+  ],
+  "hints": [
+    "A parameterized decorator is a function that returns a decorator",
+    "Three levels of nesting: outer(params) -> decorator(fn) -> wrapper(*args)",
+    "try/except inside a loop implements retry logic",
+    "isinstance(value, expected_type) checks types at runtime"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "functools",
+          "description": "Import the functools module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "retry",
+          "params": ["max_attempts"],
+          "description": "Define a retry function that accepts max_attempts parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "validate_types",
+          "description": "Define a validate_types function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(try_statement)",
+          "description": "Use try/except to catch exceptions in the retry decorator",
+          "hint": "Wrap fn(*args, **kwargs) in a try/except block"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(decorated_definition)",
+          "description": "Use @functools.wraps decorator on wrapper functions",
+          "hint": "Decorate the inner wrapper with @functools.wraps(fn)"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(function_definition (block (function_definition)))",
+          "description": "Define nested functions for the decorator pattern",
+          "hint": "Parameterized decorators require triple nesting: outer -> decorator -> wrapper"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

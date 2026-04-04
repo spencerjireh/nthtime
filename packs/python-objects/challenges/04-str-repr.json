@@ -1,0 +1,66 @@
+{
+  "title": "__str__ and __repr__",
+  "prompt": "Write a `Color` class in `solution.py` that implements string representation dunder methods:\n\n**Requirements:**\n1. `__init__(self, r, g, b)` -- stores the RGB values\n2. `__str__(self)` -- returns `\"rgb(255, 128, 0)\"` format\n3. `__repr__(self)` -- returns `\"Color(255, 128, 0)\"` format\n4. `hex(self)` -- returns `\"#ff8000\"` (lowercase hex, zero-padded to 2 digits)\n\n**Examples:**\n```python\nc = Color(255, 128, 0)\nstr(c)    # \"rgb(255, 128, 0)\"\nrepr(c)   # \"Color(255, 128, 0)\"\nc.hex()   # \"#ff8000\"\n\nblack = Color(0, 0, 0)\nblack.hex()  # \"#000000\"\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "classes",
+    "dunder",
+    "str",
+    "repr"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class Color:\n    def __init__(self, r, g, b):\n        self.r = r\n        self.g = g\n        self.b = b\n\n    def __str__(self):\n        return f\"rgb({self.r}, {self.g}, {self.b})\"\n\n    def __repr__(self):\n        return f\"Color({self.r}, {self.g}, {self.b})\"\n\n    def hex(self):\n        return f\"#{self.r:02x}{self.g:02x}{self.b:02x}\"\n"
+    }
+  ],
+  "hints": [
+    "__str__ is called by str() and print()",
+    "__repr__ is called by repr() and in the REPL",
+    "f'{value:02x}' formats as 2-digit lowercase hex",
+    "Convention: repr() should look like valid Python constructor call"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "Color",
+          "description": "Define a Color class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__init__",
+          "params": ["self", "r", "g", "b"],
+          "description": "Define __init__ with r, g, b parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__str__",
+          "params": ["self"],
+          "description": "Define __str__ for human-readable output"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__repr__",
+          "params": ["self"],
+          "description": "Define __repr__ for developer-readable output"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "hex",
+          "params": ["self"],
+          "description": "Define a hex method for hexadecimal color string"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(interpolation)",
+          "description": "Use f-strings for string formatting",
+          "hint": "Use f-strings like f\"rgb({self.r}, {self.g}, {self.b})\""
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

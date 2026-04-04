@@ -1,0 +1,31 @@
+{
+  "name": "Python Foundations",
+  "slug": "python-foundations",
+  "description": "Core Python from scratch -- functions, data types, conditionals, and collections.",
+  "language": "python",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["python", "fundamentals", "data-types"],
+  "challenges": [
+    "challenges/01-hello-function.json",
+    "challenges/02-default-params.json",
+    "challenges/03-multiple-returns.json",
+    "challenges/04-type-annotations.json",
+    "challenges/05-boolean-logic.json",
+    "challenges/06-none-and-truthiness.json",
+    "challenges/07-guard-clauses.json",
+    "challenges/08-match-statement.json",
+    "challenges/09-number-crunching.json",
+    "challenges/10-string-operations.json",
+    "challenges/11-string-formatting.json",
+    "challenges/12-string-parsing.json",
+    "challenges/13-list-basics.json",
+    "challenges/14-list-algorithms.json",
+    "challenges/15-tuple-power.json",
+    "challenges/16-dict-fundamentals.json",
+    "challenges/17-dict-patterns.json",
+    "challenges/18-set-operations.json",
+    "challenges/19-collection-transforms.json",
+    "challenges/20-nested-collections.json"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "title": "Unpacking",
+  "prompt": "Write three functions in `solution.py`:\n\n**Requirements:**\n1. `head_tail(lst)` -- returns `(first_element, rest_list)` using star unpacking\n2. `swap_pairs(pairs)` -- takes a list of `(a, b)` tuples, returns a list of `(b, a)` tuples\n3. `merge_sorted(*iterables)` -- merge pre-sorted iterables into one sorted list\n\n**Examples:**\n```python\nhead_tail([1, 2, 3, 4])        # (1, [2, 3, 4])\nswap_pairs([(1, 2), (3, 4)])   # [(2, 1), (4, 3)]\nmerge_sorted([1, 3], [2, 4])   # [1, 2, 3, 4]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "unpacking",
+    "tuples",
+    "star-expressions"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def head_tail(lst):\n    first, *rest = lst\n    return (first, rest)\n\n\ndef swap_pairs(pairs):\n    return [(b, a) for a, b in pairs]\n\n\ndef merge_sorted(*iterables):\n    merged = []\n    for it in iterables:\n        merged.extend(it)\n    return sorted(merged)\n"
+    }
+  ],
+  "hints": [
+    "Star unpacking: first, *rest = [1, 2, 3] gives first=1, rest=[2, 3]",
+    "Tuple unpacking in comprehension: (b, a) for a, b in pairs",
+    "*iterables collects multiple arguments into a tuple",
+    "sorted() returns a new sorted list from any iterable"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "head_tail",
+          "params": ["lst"],
+          "description": "Define a head_tail function that accepts a lst parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "swap_pairs",
+          "params": ["pairs"],
+          "description": "Define a swap_pairs function that accepts a pairs parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "merge_sorted",
+          "description": "Define a merge_sorted function that accepts variadic arguments"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(list_splat_pattern)",
+          "description": "Use star unpacking to split a list into head and tail",
+          "hint": "first, *rest = lst assigns the first element and remaining list"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

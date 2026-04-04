@@ -1,0 +1,59 @@
+{
+  "title": "Guard Clauses",
+  "prompt": "Write two functions in `solution.py` that use guard clauses to handle edge cases early:\n\n**Requirements:**\n1. `process_payment(amount, currency=\"USD\")` --\n   - Raises `ValueError` with message `\"Amount cannot be negative\"` if `amount` is negative\n   - Returns the string `\"zero\"` if `amount` is `0`\n   - Otherwise returns a formatted string `\"{currency} {amount:.2f}\"` (two decimal places)\n2. `lookup_user(users, user_id)` --\n   - Returns `None` if `users` is an empty dict\n   - Raises `KeyError` with message `\"User {user_id} not found\"` if `user_id` is not in `users`\n   - Otherwise returns `users[user_id]`\n\n**Examples:**\n```python\nprocess_payment(49.99)             # \"USD 49.99\"\nprocess_payment(0)                 # \"zero\"\nprocess_payment(-5)                # raises ValueError\nprocess_payment(100, \"EUR\")        # \"EUR 100.00\"\nlookup_user({}, \"alice\")           # None\nlookup_user({\"alice\": \"Admin\"}, \"bob\")  # raises KeyError\nlookup_user({\"alice\": \"Admin\"}, \"alice\") # \"Admin\"\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "guard-clauses",
+    "exceptions",
+    "f-strings"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def process_payment(amount, currency=\"USD\"):\n    if amount < 0:\n        raise ValueError(\"Amount cannot be negative\")\n    if amount == 0:\n        return \"zero\"\n    return f\"{currency} {amount:.2f}\"\n\n\ndef lookup_user(users, user_id):\n    if not users:\n        return None\n    if user_id not in users:\n        raise KeyError(f\"User {user_id} not found\")\n    return users[user_id]\n"
+    }
+  ],
+  "hints": [
+    "Guard clauses check error conditions first and exit early",
+    "raise ValueError('message') to signal invalid input",
+    "Use `not users` to check for empty dict",
+    "f-strings support format specs: f'{amount:.2f}' for 2 decimal places"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "process_payment",
+          "params": ["amount", "currency"],
+          "description": "Define a process_payment function with amount and currency parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "lookup_user",
+          "params": ["users", "user_id"],
+          "description": "Define a lookup_user function with users and user_id parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(raise_statement)",
+          "description": "Raise exceptions for invalid inputs",
+          "hint": "Use raise ValueError(...) or raise KeyError(...)"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Use guard clauses to check conditions early"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(interpolation)",
+          "description": "Use f-strings for formatted output",
+          "hint": "Use f\"{currency} {amount:.2f}\" for formatted currency"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

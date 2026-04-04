@@ -1,0 +1,59 @@
+{
+  "title": "Numeric Algorithms",
+  "prompt": "Write three numeric algorithm functions in `solution.py`:\n\n**Requirements:**\n1. `gcd(a, b)` -- compute the GCD using the **binary GCD algorithm** (Stein's algorithm). Use only subtraction and bit shifts (no modulo operator). Handle negative inputs and zero\n2. `fast_pow(base, exp, mod)` -- modular exponentiation using **repeated squaring**. Returns `(base^exp) % mod` efficiently\n3. `integer_sqrt(n)` -- integer square root using **Newton's method**. Returns `floor(sqrt(n))`. Raise `ValueError` for negative inputs\n\n**Examples:**\n```python\ngcd(12, 8)          # 4\ngcd(17, 5)          # 1\ngcd(0, 5)           # 5\nfast_pow(2, 10, 1000)  # 1024\nfast_pow(3, 7, 13)     # 3\ninteger_sqrt(16)     # 4\ninteger_sqrt(17)     # 4\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "algorithms",
+    "gcd",
+    "modular-arithmetic",
+    "sqrt"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def gcd(a, b):\n    a, b = abs(a), abs(b)\n    if a == 0:\n        return b\n    if b == 0:\n        return a\n    shift = 0\n    while (a | b) & 1 == 0:\n        a >>= 1\n        b >>= 1\n        shift += 1\n    while a & 1 == 0:\n        a >>= 1\n    while b != 0:\n        while b & 1 == 0:\n            b >>= 1\n        if a > b:\n            a, b = b, a\n        b -= a\n    return a << shift\n\n\ndef fast_pow(base, exp, mod):\n    result = 1\n    base = base % mod\n    while exp > 0:\n        if exp & 1:\n            result = (result * base) % mod\n        exp >>= 1\n        base = (base * base) % mod\n    return result\n\n\ndef integer_sqrt(n):\n    if n < 0:\n        raise ValueError(\"Square root of negative number\")\n    if n == 0:\n        return 0\n    x = n\n    while True:\n        x1 = (x + n // x) // 2\n        if x1 >= x:\n            return x\n        x = x1\n"
+    }
+  ],
+  "hints": [
+    "Binary GCD: if both even, divide both by 2 and track the shift",
+    "Modular exponentiation: square base and halve exp each iteration",
+    "Newton's method: x = (x + n/x) / 2, using integer division",
+    "Stop Newton's when x1 >= x (convergence)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "gcd",
+          "params": ["a", "b"],
+          "description": "Define gcd using binary GCD algorithm"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "fast_pow",
+          "params": ["base", "exp", "mod"],
+          "description": "Define fast_pow for modular exponentiation"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "integer_sqrt",
+          "params": ["n"],
+          "description": "Define integer_sqrt using Newton's method"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(binary_operator)",
+          "description": "Use bit shift or bitwise operators"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use while loops for iterative algorithms"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

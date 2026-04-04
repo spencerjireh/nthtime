@@ -1,0 +1,58 @@
+{
+  "title": "Closures",
+  "prompt": "Write three factory functions in `solution.py`:\n\n**Requirements:**\n1. `make_counter(start=0)` -- returns a function that returns incrementing values (start, start+1, ...) on each call\n2. `make_accumulator()` -- returns a function that accepts a number and returns the running total\n3. `make_multiplier(factor)` -- returns a function that multiplies its argument by factor\n\n**Examples:**\n```python\nc = make_counter(5)\nc()  # 5\nc()  # 6\nc()  # 7\n\nacc = make_accumulator()\nacc(10)  # 10\nacc(5)   # 15\nacc(3)   # 18\n\ndouble = make_multiplier(2)\ndouble(5)  # 10\ndouble(3)  # 6\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "closures",
+    "nonlocal",
+    "factory"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def make_counter(start=0):\n    count = start - 1\n\n    def counter():\n        nonlocal count\n        count += 1\n        return count\n\n    return counter\n\n\ndef make_accumulator():\n    total = 0\n\n    def accumulate(n):\n        nonlocal total\n        total += n\n        return total\n\n    return accumulate\n\n\ndef make_multiplier(factor):\n    def multiply(x):\n        return x * factor\n\n    return multiply\n"
+    }
+  ],
+  "hints": [
+    "A closure captures variables from its enclosing scope",
+    "nonlocal tells Python to modify the outer variable, not create a new local",
+    "make_multiplier does not need nonlocal because factor is only read",
+    "Each call to the factory creates an independent closure"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "make_counter",
+          "description": "Define a make_counter factory function"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "make_accumulator",
+          "description": "Define a make_accumulator factory function"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "make_multiplier",
+          "params": ["factor"],
+          "description": "Define a make_multiplier function that accepts a factor parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(function_definition (block (function_definition)))",
+          "description": "Use nested function definitions to create closures",
+          "hint": "Define a function inside another function to create a closure"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(nonlocal_statement)",
+          "description": "Use nonlocal to modify variables from the enclosing scope",
+          "hint": "nonlocal count tells Python to modify the outer count variable"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

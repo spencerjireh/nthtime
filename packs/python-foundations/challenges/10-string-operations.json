@@ -1,0 +1,54 @@
+{
+  "title": "String Operations",
+  "prompt": "Write three string manipulation functions:\n\n**Requirements:**\n1. `snake_to_camel(s)` -- converts `\"hello_world\"` to `\"helloWorld\"` (first word lowercase, rest capitalized)\n2. `truncate(text, max_len, suffix=\"...\")` -- truncates text to `max_len` and adds suffix if truncated, returns text unchanged if it fits\n3. `count_vowels(text)` -- returns the count of vowels (a, e, i, o, u, case-insensitive)\n\n**Examples:**\n```python\nsnake_to_camel(\"hello_world\")    # \"helloWorld\"\ntruncate(\"Hello, World!\", 8)     # \"Hello...\"\ncount_vowels(\"Hello\")            # 2\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "strings",
+    "methods",
+    "slicing"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def snake_to_camel(s):\n    parts = s.split(\"_\")\n    return parts[0] + \"\".join(word.capitalize() for word in parts[1:])\n\n\ndef truncate(text, max_len, suffix=\"...\"):\n    if len(text) <= max_len:\n        return text\n    return text[:max_len - len(suffix)] + suffix\n\n\ndef count_vowels(text):\n    return sum(1 for c in text.lower() if c in \"aeiou\")\n"
+    }
+  ],
+  "hints": [
+    "str.split('_') splits on underscores",
+    "str.capitalize() uppercases the first letter",
+    "Slicing: text[:n] gives the first n characters",
+    "Generator expression with sum() counts matches efficiently"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "snake_to_camel",
+          "params": ["s"],
+          "description": "Define a snake_to_camel function that accepts a string parameter"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "truncate",
+          "params": ["text", "max_len", "suffix"],
+          "description": "Define a truncate function that accepts text, max_len, and suffix parameters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "count_vowels",
+          "params": ["text"],
+          "description": "Define a count_vowels function that accepts a text parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(return_statement)",
+          "description": "All functions should return values",
+          "hint": "Use return to produce output from each function"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

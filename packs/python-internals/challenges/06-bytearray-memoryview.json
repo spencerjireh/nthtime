@@ -1,0 +1,58 @@
+{
+  "title": "Bytearray and Memoryview",
+  "prompt": "Write three functions for mutable binary data and zero-copy slicing in `solution.py`:\n\n**Requirements:**\n1. `patch_bytes(data, offset, new_bytes)` -- returns new bytes with `new_bytes` replacing the same number of bytes starting at `offset`. Use `bytearray` for the mutable operation\n2. `view_slice(data, start, end)` -- returns bytes from `data[start:end]` using `memoryview` for zero-copy slicing\n3. `find_pattern(data, pattern)` -- returns a list of all byte offsets where `pattern` occurs in `data`\n\n**Examples:**\n```python\npatch_bytes(b'hello', 1, b'a')       # b'hallo'\nview_slice(b'abcdef', 2, 5)           # b'cde'\nfind_pattern(b'abcabc', b'abc')       # [0, 3]\nfind_pattern(b'aaa', b'aa')           # [0, 1]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "bytearray",
+    "memoryview",
+    "binary-data"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def patch_bytes(data, offset, new_bytes):\n    buf = bytearray(data)\n    buf[offset:offset + len(new_bytes)] = new_bytes\n    return bytes(buf)\n\n\ndef view_slice(data, start, end):\n    mv = memoryview(data)\n    return bytes(mv[start:end])\n\n\ndef find_pattern(data, pattern):\n    offsets = []\n    start = 0\n    while True:\n        pos = data.find(pattern, start)\n        if pos == -1:\n            break\n        offsets.append(pos)\n        start = pos + 1\n    return offsets\n"
+    }
+  ],
+  "hints": [
+    "bytearray(data) creates a mutable copy of bytes",
+    "Slice assignment on bytearray: buf[start:end] = new_bytes",
+    "memoryview(data) gives zero-copy slice access to the underlying buffer",
+    "bytes.find(pattern, start) returns -1 when the pattern is not found"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "patch_bytes",
+          "params": ["data", "offset", "new_bytes"],
+          "description": "Define patch_bytes using bytearray for mutable patching"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "view_slice",
+          "params": ["data", "start", "end"],
+          "description": "Define view_slice using memoryview for zero-copy slicing"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "find_pattern",
+          "params": ["data", "pattern"],
+          "description": "Define find_pattern to locate all occurrences"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"bytearray\"))",
+          "description": "Use bytearray() for mutable byte manipulation"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"memoryview\"))",
+          "description": "Use memoryview() for zero-copy slicing"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
