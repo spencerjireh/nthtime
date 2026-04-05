@@ -1,0 +1,46 @@
+{
+  "title": "Climbing Stairs (Bottom-Up DP)",
+  "prompt": "Solve the climbing stairs problem using bottom-up dynamic programming in `solution.ts`.\n\n**Approach:**\nYou can climb 1 or 2 steps at a time. The number of distinct ways to reach step `n` follows the Fibonacci recurrence: `ways(n) = ways(n-1) + ways(n-2)`. Instead of an array, use two variables (`prev2` and `prev1`) to track the previous two values, iterating from step 3 to `n`.\n\n**Requirements:**\n1. Export `climbStairs(n: number): number` -- takes a positive integer `n` (number of steps) and returns the number of distinct ways to climb to the top\n2. Use a `for` loop iterating from 3 to n (bottom-up)\n3. Use O(1) space with two rolling variables instead of a full DP array\n4. Handle base cases: `n <= 2` returns `n`\n\n**Examples:**\n```typescript\nclimbStairs(2)   // 2  (1+1 or 2)\nclimbStairs(3)   // 3  (1+1+1, 1+2, 2+1)\nclimbStairs(5)   // 8\nclimbStairs(10)  // 89\n```\n\n**Complexity:** O(n) time, O(1) space.",
+  "difficulty": "beginner",
+  "tags": [
+    "dynamic-programming",
+    "fibonacci",
+    "bottom-up"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function climbStairs(n: number): number {\n  if (n <= 2) {\n    return n;\n  }\n  let prev2 = 1;\n  let prev1 = 2;\n  for (let i = 3; i <= n; i++) {\n    const current = prev1 + prev2;\n    prev2 = prev1;\n    prev1 = current;\n  }\n  return prev1;\n}\n"
+    }
+  ],
+  "hints": [
+    "Base cases: there is 1 way to climb 1 step and 2 ways to climb 2 steps",
+    "Each step n has ways(n) = ways(n-1) + ways(n-2), like Fibonacci",
+    "Use a temporary variable to update both prev2 and prev1 each iteration",
+    "After the loop, prev1 holds the answer for step n"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "climbStairs",
+          "description": "Define a climbStairs function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "climbStairs",
+          "isDefault": false,
+          "description": "Export climbStairs as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop for bottom-up iteration"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

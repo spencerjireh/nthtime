@@ -16,6 +16,8 @@ interface PackCardProps {
   language: string;
   framework?: string;
   tags: readonly string[];
+  prerequisites?: readonly string[];
+  allPacks?: readonly { slug: string; name: string }[];
   challengeCount: number;
   passedCount: number;
 }
@@ -27,6 +29,8 @@ export function PackCard({
   language,
   framework,
   tags,
+  prerequisites,
+  allPacks,
   challengeCount,
   passedCount,
 }: PackCardProps) {
@@ -54,6 +58,19 @@ export function PackCard({
             ))}
           </div>
         </CardContent>
+        {prerequisites && prerequisites.length > 0 && (
+          <CardContent className="pt-0">
+            <p className="text-xs text-muted-foreground">
+              Recommended after:{' '}
+              {prerequisites
+                .map((prereqSlug) => {
+                  const pack = allPacks?.find((p) => p.slug === prereqSlug);
+                  return pack?.name ?? prereqSlug;
+                })
+                .join(', ')}
+            </p>
+          </CardContent>
+        )}
         <CardFooter className="flex-col items-start gap-2">
           <div className="text-sm text-muted-foreground">
             {passedCount}/{challengeCount} challenges

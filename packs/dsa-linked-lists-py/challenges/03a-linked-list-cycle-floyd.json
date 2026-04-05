@@ -1,0 +1,48 @@
+{
+  "title": "Linked List Cycle (Floyd's)",
+  "prompt": "Write a `ListNode` class and a `has_cycle` function in `solution.py`:\n\n**Requirements:**\n1. `ListNode` class with `__init__(self, val=0, next=None)` -- stores `val` and `next` attributes\n2. `has_cycle(head)` -- returns `True` if the linked list contains a cycle, `False` otherwise. Use Floyd's tortoise and hare algorithm with O(1) space\n\n**Algorithm (Floyd's cycle detection):**\n- Initialize `slow = head` and `fast = head`\n- While `fast` is not `None` and `fast.next` is not `None`: advance `slow` by one step, advance `fast` by two steps. If `slow is fast`, return `True`\n- Return `False` (no cycle found)\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```python\n# [1] -> [2] -> [3] -> [2] (cycle back to node 2) -> True\n# [1] -> [2] -> [3] -> None -> False\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "cycle-detection",
+    "floyd",
+    "two-pointers"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef has_cycle(head):\n    slow = head\n    fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            return True\n    return False\n"
+    }
+  ],
+  "hints": [
+    "Use two pointers: slow moves one step, fast moves two steps",
+    "If there is a cycle, fast will eventually catch up to slow",
+    "Check fast and fast.next before advancing to avoid NoneType errors",
+    "Compare with 'is' (identity), not '==' (equality)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "has_cycle",
+          "params": ["head"],
+          "description": "Define has_cycle that accepts a head node"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for the tortoise and hare traversal",
+          "hint": "while fast and fast.next: advances both pointers each iteration"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "title": "Itertools Recipes",
+  "prompt": "Write three classic itertools recipe functions in `solution.py`:\n\n**Requirements:**\n1. `batched(iterable, n)` -- yields chunks of `n` items from the iterable as tuples. The last chunk may be shorter. Use `itertools.islice` in a loop over an iterator.\n2. `unique_justseen(iterable)` -- yields unique elements by removing consecutive duplicates. Use `itertools.groupby`.\n3. `roundrobin(*iterables)` -- yields elements in round-robin order from the given iterables. Use `itertools.cycle` and `itertools.islice` over a collection of iterators.\n\n**Examples:**\n```python\nlist(batched([1, 2, 3, 4, 5], 2))     # [(1, 2), (3, 4), (5,)]\nlist(unique_justseen([1, 1, 2, 3, 3])) # [1, 2, 3]\nlist(roundrobin('ABC', 'D', 'EF'))     # ['A', 'D', 'E', 'B', 'F', 'C']\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "itertools",
+    "recipes",
+    "generators"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from itertools import islice, groupby, cycle\n\n\ndef batched(iterable, n):\n    it = iter(iterable)\n    while True:\n        batch = tuple(islice(it, n))\n        if not batch:\n            return\n        yield batch\n\n\ndef unique_justseen(iterable):\n    for key, _ in groupby(iterable):\n        yield key\n\n\ndef roundrobin(*iterables):\n    num_active = len(iterables)\n    nexts = cycle(iter(it) for it in iterables)\n    while num_active:\n        try:\n            for nxt in nexts:\n                result = next(nxt)\n                yield result\n        except StopIteration:\n            num_active -= 1\n            nexts = cycle(islice(nexts, num_active))\n"
+    }
+  ],
+  "hints": [
+    "iter(iterable) creates a stateful iterator -- islice advances it in place",
+    "tuple(islice(it, n)) pulls up to n items; empty tuple means done",
+    "groupby(iterable) groups consecutive equal elements; yielding just the key deduplicates",
+    "For roundrobin, track active iterators and cycle through them, removing exhausted ones"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "names": ["islice", "groupby", "cycle"],
+          "description": "Import islice, groupby, and cycle from itertools"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "batched",
+          "params": ["iterable", "n"],
+          "description": "Define batched that yields fixed-size chunks from an iterable"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "unique_justseen",
+          "params": ["iterable"],
+          "description": "Define unique_justseen that removes consecutive duplicates"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "roundrobin",
+          "params": [],
+          "description": "Define roundrobin that yields elements in round-robin order"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"islice\"))",
+          "description": "Use islice to take slices from iterators",
+          "hint": "islice(iterator, n) pulls up to n items from a stateful iterator"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(yield)",
+          "description": "Use yield to make these generator functions"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "title": "Find All Numbers Disappeared in an Array",
+  "prompt": "Given an array `nums` of `n` integers where `1 <= nums[i] <= n`, return a list of all integers in the range `[1, n]` that do not appear in `nums`.\n\n**Approach:** Index marking with O(1) extra space. Use the array itself as a hash map by negating values at visited indices.\n\n**Requirements:**\n1. Define `find_disappeared_numbers(nums)` in `solution.py`\n2. First pass: for each number, mark the value at index `abs(num) - 1` as negative\n3. Second pass: collect all indices where the value is still positive -- those indices (+1) are the missing numbers\n4. Return the list of missing numbers\n\n**Examples:**\n```python\nfind_disappeared_numbers([4, 3, 2, 7, 8, 2, 3, 1])  # [5, 6]\nfind_disappeared_numbers([1, 1])                      # [2]\nfind_disappeared_numbers([1])                          # []\n```\n\n**Complexity:** O(n) time, O(1) extra space (output list not counted)",
+  "difficulty": "intermediate",
+  "tags": ["arrays", "index-marking", "in-place"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def find_disappeared_numbers(nums):\n    for num in nums:\n        index = abs(num) - 1\n        if nums[index] > 0:\n            nums[index] = -nums[index]\n    result = []\n    for i in range(len(nums)):\n        if nums[i] > 0:\n            result.append(i + 1)\n    return result\n"
+    }
+  ],
+  "hints": [
+    "Since values are in [1, n], each value maps to a valid index (value - 1)",
+    "Use abs(num) because a value might already be negated from an earlier step",
+    "Negate the value at the mapped index to mark it as seen",
+    "After marking, any index with a positive value was never visited"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "find_disappeared_numbers",
+          "params": ["nums"],
+          "description": "Define a find_disappeared_numbers function that accepts nums"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through the array with a for loop"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"abs\"))",
+          "description": "Use abs() to handle already-negated values",
+          "hint": "Use abs(num) - 1 to compute the index for marking"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

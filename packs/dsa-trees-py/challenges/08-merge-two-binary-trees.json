@@ -1,0 +1,43 @@
+{
+  "title": "Merge Two Binary Trees",
+  "prompt": "Write a `TreeNode` class and a `merge_trees` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `merge_trees(root1, root2)`**\nGiven two binary trees, merge them into a new binary tree. The merge rule is: if two nodes overlap, sum their values. If only one node exists at a position, use that node's value.\n\nUse recursion:\n1. If `root1` is `None`, return `root2`\n2. If `root2` is `None`, return `root1`\n3. Create a new `TreeNode` with `root1.val + root2.val`\n4. Recursively merge left children and right children\n5. Return the new node\n\n**Complexity:** O(min(m, n)) time where m and n are the sizes of the two trees, O(min(m, n)) space.\n\n**Examples:**\n```python\n#     1         2           3\n#    / \\       / \\         / \\\n#   3   2     1   3  ->   4   5\n#  /           \\  \\      / \\   \\\n# 5             4  7    5   4   7\nroot1 = TreeNode(1, TreeNode(3, TreeNode(5)), TreeNode(2))\nroot2 = TreeNode(2, TreeNode(1, None, TreeNode(4)), TreeNode(3, None, TreeNode(7)))\nmerge_trees(root1, root2)  # [3, 4, 5, 5, 4, None, 7]\n\nmerge_trees(TreeNode(1), TreeNode(1, TreeNode(2)))  # [2, 2]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "recursion",
+    "dfs",
+    "merge",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef merge_trees(root1, root2):\n    if not root1:\n        return root2\n    if not root2:\n        return root1\n    merged = TreeNode(root1.val + root2.val)\n    merged.left = merge_trees(root1.left, root2.left)\n    merged.right = merge_trees(root1.right, root2.right)\n    return merged\n"
+    }
+  ],
+  "hints": [
+    "If one tree is None at a position, the other tree's subtree fills in",
+    "When both nodes exist, create a new node with the sum of their values",
+    "Recurse on left children of both trees, then right children of both",
+    "Return the newly created node so the parent can link to it"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "merge_trees",
+          "params": ["root1", "root2"],
+          "description": "Define merge_trees that accepts two tree roots"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

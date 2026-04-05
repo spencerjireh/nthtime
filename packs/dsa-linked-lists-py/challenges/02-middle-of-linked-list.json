@@ -1,0 +1,47 @@
+{
+  "title": "Middle of Linked List",
+  "prompt": "Write a `ListNode` class and a `middle_node` function in `solution.py`:\n\n**Requirements:**\n1. `ListNode` class with `__init__(self, val=0, next=None)` -- stores `val` and `next` attributes\n2. `middle_node(head)` -- returns the middle node of a singly linked list. If the list has an even number of nodes, return the second middle node\n\n**Algorithm (slow/fast pointers):**\n- Initialize `slow = head` and `fast = head`\n- While `fast` is not `None` and `fast.next` is not `None`: advance `slow` by one step, advance `fast` by two steps\n- Return `slow`\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```python\n# [1, 2, 3, 4, 5] -> node with val 3\n# [1, 2, 3, 4, 5, 6] -> node with val 4 (second middle)\n# [1] -> node with val 1\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "two-pointers",
+    "slow-fast"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef middle_node(head):\n    slow = head\n    fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n    return slow\n"
+    }
+  ],
+  "hints": [
+    "Use two pointers: slow moves one step, fast moves two steps",
+    "When fast reaches the end, slow is at the middle",
+    "Check both fast and fast.next to avoid NoneType errors",
+    "For even-length lists, slow lands on the second middle node"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "middle_node",
+          "params": ["head"],
+          "description": "Define middle_node that accepts a head node"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for the slow/fast pointer traversal",
+          "hint": "while fast and fast.next: advances both pointers"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

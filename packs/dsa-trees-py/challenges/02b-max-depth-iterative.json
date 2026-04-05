@@ -1,0 +1,55 @@
+{
+  "title": "Max Depth (Iterative)",
+  "prompt": "Write a `TreeNode` class and a `max_depth` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `max_depth(root) -> int`**\nGiven the root of a binary tree, return its maximum depth using **iterative BFS** (level-order traversal).\n\nApproach:\n1. If `root` is `None`, return `0`\n2. Import `deque` from `collections`\n3. Initialize a queue with the root and set `depth = 0`\n4. While the queue is not empty:\n   - Increment `depth`\n   - Process all nodes at the current level (use `len(queue)` to know how many)\n   - For each node, add its non-None children to the queue\n5. Return `depth`\n\n**Complexity:** O(n) time, O(w) space where w is the maximum width of the tree.\n\n**Examples:**\n```python\n#       3\n#      / \\\n#     9  20\n#       /  \\\n#      15   7\nroot = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))\nmax_depth(root)  # 3\n\nmax_depth(TreeNode(1, None, TreeNode(2)))  # 2\nmax_depth(None)  # 0\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "bfs",
+    "iterative",
+    "depth",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef max_depth(root):\n    if not root:\n        return 0\n    queue = deque([root])\n    depth = 0\n    while queue:\n        depth += 1\n        for _ in range(len(queue)):\n            node = queue.popleft()\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n    return depth\n"
+    }
+  ],
+  "hints": [
+    "Use deque from collections for an efficient queue",
+    "Each iteration of the outer while loop processes one level",
+    "Use len(queue) at the start of each level to know how many nodes to process",
+    "Increment depth once per level, not once per node"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "max_depth",
+          "params": ["root"],
+          "description": "Define max_depth that accepts a tree root"
+        },
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["deque"],
+          "description": "Import deque from collections for BFS queue"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for iterative BFS traversal",
+          "hint": "Use 'while queue:' to process nodes level by level"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

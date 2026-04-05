@@ -1,0 +1,41 @@
+{
+  "title": "Binary Search (Iterative)",
+  "prompt": "Implement an iterative binary search in `solution.py`.\n\n**Approach:**\nUse a while loop with two pointers (`left` and `right`). Compute `mid = (left + right) // 2` each iteration. If the middle element equals the target, return its index. If the middle element is less than the target, move `left` to `mid + 1`. Otherwise, move `right` to `mid - 1`. If the loop exits without finding the target, return `-1`.\n\n**Requirements:**\n1. `search(nums, target)` -- takes a sorted list of integers `nums` and an integer `target`, returns the index of `target` in `nums` or `-1` if not found\n2. Use a `while left <= right` loop (no recursion)\n3. Compute `mid` using integer division to avoid overflow\n\n**Examples:**\n```python\nsearch([-1, 0, 3, 5, 9, 12], 9)   # 4\nsearch([-1, 0, 3, 5, 9, 12], 2)   # -1\nsearch([5], 5)                      # 0\nsearch([], 3)                       # -1\n```\n\n**Complexity:** O(log n) time, O(1) space.",
+  "difficulty": "beginner",
+  "tags": [
+    "binary-search",
+    "arrays",
+    "iterative"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def search(nums, target):\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n"
+    }
+  ],
+  "hints": [
+    "Initialize left = 0 and right = len(nums) - 1",
+    "Use (left + right) // 2 to find the midpoint",
+    "When nums[mid] < target, the answer must be to the right: set left = mid + 1",
+    "Return -1 after the loop exits to indicate the target was not found"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "search",
+          "params": ["nums", "target"],
+          "description": "Define a search function that accepts nums and target parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for iterative binary search"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

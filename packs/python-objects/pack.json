@@ -6,6 +6,7 @@
   "version": "1.0.0",
   "author": "nthtime",
   "tags": ["python", "oop", "classes", "dunder"],
+  "prerequisites": ["python-foundations"],
   "challenges": [
     "challenges/01-basic-class.json",
     "challenges/02-class-composition.json",

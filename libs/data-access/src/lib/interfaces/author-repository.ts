@@ -9,6 +9,7 @@ export interface AuthorPackSummary {
   readonly framework?: string;
   readonly version: string;
   readonly tags: readonly string[];
+  readonly prerequisites?: readonly string[];
   readonly visibility: string;
   readonly challengeCount: number;
   readonly createdAt?: number;
@@ -52,6 +53,7 @@ export interface AuthorPackExport {
   readonly framework?: string;
   readonly version: string;
   readonly tags: readonly string[];
+  readonly prerequisites?: readonly string[];
   readonly challenges: readonly {
     readonly title: string;
     readonly prompt: string;
@@ -73,6 +75,7 @@ export interface CreatePackInput {
   readonly framework?: string;
   readonly version: string;
   readonly tags: string[];
+  readonly prerequisites?: string[];
   readonly visibility?: string;
 }
 
@@ -85,6 +88,7 @@ export interface UpdatePackInput {
   readonly framework?: string;
   readonly version?: string;
   readonly tags?: string[];
+  readonly prerequisites?: string[];
   readonly visibility?: string;
 }
 

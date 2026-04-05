@@ -1,0 +1,60 @@
+{
+  "title": "Defaultdict Basics",
+  "prompt": "Write three functions in `solution.py` using `collections.defaultdict`:\n\n**Requirements:**\n1. `group_by_first_letter(words)` -- returns a dict mapping each first letter to a list of words starting with that letter, using `defaultdict(list)`\n2. `index_items(pairs)` -- takes a list of `(key, value)` tuples and returns a dict mapping each key to a list of its values, using `defaultdict(list)`\n3. `adjacency_list(edges)` -- takes a list of `(a, b)` edge tuples and returns an adjacency dict mapping each node to a list of its neighbors (both directions), using `defaultdict(list)`\n\n**Examples:**\n```python\ngroup_by_first_letter(['apple', 'avocado', 'banana', 'cherry'])\n# {'a': ['apple', 'avocado'], 'b': ['banana'], 'c': ['cherry']}\n\nindex_items([('fruit', 'apple'), ('fruit', 'banana'), ('veggie', 'carrot')])\n# {'fruit': ['apple', 'banana'], 'veggie': ['carrot']}\n\nadjacency_list([('a', 'b'), ('b', 'c')])\n# {'a': ['b'], 'b': ['a', 'c'], 'c': ['b']}\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "collections",
+    "defaultdict",
+    "grouping"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import defaultdict\n\n\ndef group_by_first_letter(words):\n    groups = defaultdict(list)\n    for word in words:\n        groups[word[0]].append(word)\n    return dict(groups)\n\n\ndef index_items(pairs):\n    index = defaultdict(list)\n    for key, value in pairs:\n        index[key].append(value)\n    return dict(index)\n\n\ndef adjacency_list(edges):\n    adj = defaultdict(list)\n    for a, b in edges:\n        adj[a].append(b)\n        adj[b].append(a)\n    return dict(adj)\n"
+    }
+  ],
+  "hints": [
+    "defaultdict(list) auto-creates an empty list for missing keys",
+    "No need to check if a key exists before appending -- that is the point of defaultdict",
+    "For undirected edges, add both directions: adj[a].append(b) and adj[b].append(a)",
+    "Convert to a regular dict with dict(defaultdict_instance) before returning"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["defaultdict"],
+          "description": "Import defaultdict from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "group_by_first_letter",
+          "params": ["words"],
+          "description": "Define group_by_first_letter that groups words by their first character"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "index_items",
+          "params": ["pairs"],
+          "description": "Define index_items that builds an index from key-value pairs"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "adjacency_list",
+          "params": ["edges"],
+          "description": "Define adjacency_list that builds a graph adjacency list from edges"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"defaultdict\"))",
+          "description": "Use defaultdict to create dicts with automatic default values",
+          "hint": "defaultdict(list) creates a dict where missing keys auto-initialize to empty lists"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

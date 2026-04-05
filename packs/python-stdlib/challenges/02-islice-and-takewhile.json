@@ -1,0 +1,73 @@
+{
+  "title": "Islice and Takewhile",
+  "prompt": "Write three functions in `solution.py` for slicing and filtering iterators:\n\n**Requirements:**\n1. `first_n(iterable, n)` -- returns a list of the first `n` items from `iterable` using `itertools.islice`\n2. `take_while_positive(numbers)` -- returns a list of numbers from the start of the sequence while they are positive (> 0), using `itertools.takewhile`\n3. `drop_while_small(numbers, threshold)` -- returns a list of remaining numbers after dropping values less than `threshold` from the start, using `itertools.dropwhile`\n\n**Examples:**\n```python\nfirst_n([10, 20, 30, 40, 50], 3)        # [10, 20, 30]\ntake_while_positive([3, 1, 4, -1, 5])   # [3, 1, 4]\ndrop_while_small([1, 2, 5, 3, 8], 4)    # [5, 3, 8]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "itertools",
+    "islice",
+    "takewhile",
+    "dropwhile",
+    "filtering"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import itertools\n\n\ndef first_n(iterable, n):\n    return list(itertools.islice(iterable, n))\n\n\ndef take_while_positive(numbers):\n    return list(itertools.takewhile(lambda x: x > 0, numbers))\n\n\ndef drop_while_small(numbers, threshold):\n    return list(itertools.dropwhile(lambda x: x < threshold, numbers))\n"
+    }
+  ],
+  "hints": [
+    "itertools.islice(iterable, n) yields at most n items from the front",
+    "itertools.takewhile(predicate, iterable) yields items while the predicate is True",
+    "itertools.dropwhile(predicate, iterable) skips items while the predicate is True, then yields the rest",
+    "Wrap the result in list() to materialize the iterator"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "description": "Import the itertools module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "first_n",
+          "params": ["iterable", "n"],
+          "description": "Define first_n that accepts iterable and n"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "take_while_positive",
+          "params": ["numbers"],
+          "description": "Define take_while_positive that accepts numbers"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "drop_while_small",
+          "params": ["numbers", "threshold"],
+          "description": "Define drop_while_small that accepts numbers and threshold"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"islice\")))",
+          "description": "Use itertools.islice to take a slice from an iterator",
+          "hint": "Call itertools.islice(iterable, n) to get the first n items"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"takewhile\")))",
+          "description": "Use itertools.takewhile to take items while a condition holds",
+          "hint": "Call itertools.takewhile(predicate, iterable) with a lambda"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"dropwhile\")))",
+          "description": "Use itertools.dropwhile to skip items while a condition holds",
+          "hint": "Call itertools.dropwhile(predicate, iterable) with a lambda"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

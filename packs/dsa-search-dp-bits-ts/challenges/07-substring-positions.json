@@ -1,0 +1,46 @@
+{
+  "title": "Index Pairs of a String",
+  "prompt": "Find all positions where words appear as substrings in a text string in `solution.ts`.\n\n**Approach:**\nFor each word in the words array, use `text.indexOf(word, start)` in a while loop to find all occurrences. Start from index 0 and advance `start` to `idx + 1` after each match. For each match at index `idx`, record the pair `[idx, idx + word.length - 1]`. After processing all words, sort the result array (first by start index, then by end index).\n\n**Requirements:**\n1. Export `indexPairs(text: string, words: string[]): number[][]` -- takes a string `text` and an array of strings `words`, returns a sorted array of `[i, j]` pairs where `text.slice(i, j + 1)` equals a word in `words`\n2. Use `String.indexOf(word, start)` to locate each occurrence\n3. Find all overlapping occurrences of each word\n4. Return the result sorted by start index, then by end index\n\n**Examples:**\n```typescript\nindexPairs('thestoryofleetcodeandme', ['story', 'fleet', 'leetcode'])\n// [[3, 7], [9, 13], [10, 17]]\nindexPairs('ababa', ['aba', 'ab'])\n// [[0, 1], [0, 2], [2, 3], [2, 4]]\n```\n\n**Complexity:** O(n * m * k) time where n = text.length, m = number of words, k = average word length. O(r) space for the result array.",
+  "difficulty": "intermediate",
+  "tags": [
+    "strings",
+    "brute-force",
+    "sorting"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function indexPairs(text: string, words: string[]): number[][] {\n  const result: number[][] = [];\n  for (const word of words) {\n    let start = 0;\n    while (true) {\n      const idx = text.indexOf(word, start);\n      if (idx === -1) {\n        break;\n      }\n      result.push([idx, idx + word.length - 1]);\n      start = idx + 1;\n    }\n  }\n  result.sort((a, b) => a[0] - b[0] || a[1] - b[1]);\n  return result;\n}\n"
+    }
+  ],
+  "hints": [
+    "text.indexOf(word, start) returns -1 when no more occurrences exist",
+    "After finding a match at idx, set start = idx + 1 to find overlapping matches",
+    "The end index is idx + word.length - 1 (inclusive)",
+    "Sort with a comparator: (a, b) => a[0] - b[0] || a[1] - b[1]"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "indexPairs",
+          "description": "Define an indexPairs function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "indexPairs",
+          "isDefault": false,
+          "description": "Export indexPairs as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_in_statement)",
+          "description": "Use a for...of loop to iterate over words"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

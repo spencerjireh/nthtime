@@ -1,0 +1,48 @@
+{
+  "title": "Contains Duplicate (Sort)",
+  "prompt": "Given an integer array `nums`, return `true` if any value appears at least twice, and `false` if every element is distinct.\n\n**Approach:** Sort the array first, then check adjacent elements for duplicates. This uses O(1) extra space (ignoring the sort) but O(n log n) time.\n\n**Requirements:**\n1. Define and export `containsDuplicate(nums: number[]): boolean` in `solution.ts`\n2. Create a sorted copy using `[...nums].sort((a, b) => a - b)`\n3. Iterate through consecutive pairs; if any two adjacent elements are equal, return `true`\n4. Return `false` if no duplicates found\n\n**Examples:**\n```typescript\ncontainsDuplicate([1, 2, 3, 1])  // true\ncontainsDuplicate([1, 2, 3, 4])  // false\ncontainsDuplicate([])            // false\n```\n\n**Complexity:** O(n log n) time, O(n) extra space (for sorted copy)",
+  "difficulty": "beginner",
+  "tags": ["arrays", "sorting", "duplicates"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function containsDuplicate(nums: number[]): boolean {\n  const sorted = [...nums].sort((a, b) => a - b);\n  for (let i = 1; i < sorted.length; i++) {\n    if (sorted[i] === sorted[i - 1]) {\n      return true;\n    }\n  }\n  return false;\n}\n"
+    }
+  ],
+  "hints": [
+    "Sorting brings duplicates next to each other",
+    "Use [...nums].sort((a, b) => a - b) to get a sorted copy without mutating the original",
+    "After sorting, compare each element with its neighbor",
+    "If sorted[i] === sorted[i - 1], you found a duplicate"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "containsDuplicate",
+          "description": "Define a containsDuplicate function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "containsDuplicate",
+          "isDefault": false,
+          "description": "Export containsDuplicate as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call_expression function: (member_expression property: (property_identifier) @name (#eq? @name \"sort\")))",
+          "description": "Sort the array to bring duplicates adjacent",
+          "hint": "Use .sort((a, b) => a - b) to sort numerically"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through the sorted array with a for loop"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

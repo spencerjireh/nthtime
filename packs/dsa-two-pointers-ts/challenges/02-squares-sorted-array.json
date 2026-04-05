@@ -1,0 +1,46 @@
+{
+  "title": "Squares of a Sorted Array",
+  "prompt": "Write a function in `solution.ts` that returns an array of the squares of each number from a sorted input array, also in sorted order.\n\n**Approach -- Two Pointers from Both Ends:**\nSince the input is sorted (may contain negatives), the largest squares are at the extremes. Use a `left` pointer at index 0 and a `right` pointer at the last index. Compare `Math.abs(nums[left])` and `Math.abs(nums[right])`; place the larger square at the end of the result array and move that pointer inward. Use a `while` loop that continues while `left <= right`.\n\n**Requirements:**\n1. `export function sortedSquares(nums: number[]): number[]` -- takes a sorted array of integers and returns a new array of their squares in non-decreasing order\n2. Use a `while` loop with two pointers converging from both ends\n3. Build the result array from right to left (largest to smallest)\n\n**Examples:**\n```typescript\nsortedSquares([-4, -1, 0, 3, 10]); // [0, 1, 9, 16, 100]\nsortedSquares([-7, -3, 2, 3, 11]); // [4, 9, 9, 49, 121]\nsortedSquares([1]);                 // [1]\n```\n\n**Complexity:**\n- Time: O(n) -- single pass with two pointers\n- Space: O(n) -- result array of the same length",
+  "difficulty": "beginner",
+  "tags": [
+    "two-pointers",
+    "array",
+    "sorting"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function sortedSquares(nums: number[]): number[] {\n  const n = nums.length;\n  const result = new Array<number>(n);\n  let left = 0;\n  let right = n - 1;\n  let pos = n - 1;\n  while (left <= right) {\n    if (Math.abs(nums[left]) > Math.abs(nums[right])) {\n      result[pos] = nums[left] ** 2;\n      left++;\n    } else {\n      result[pos] = nums[right] ** 2;\n      right--;\n    }\n    pos--;\n  }\n  return result;\n}\n"
+    }
+  ],
+  "hints": [
+    "The largest squared value must come from either the leftmost or rightmost element",
+    "Use Math.abs() to compare magnitudes of the two ends",
+    "Fill the result array from the back (index n-1) toward the front",
+    "Move the pointer whose absolute value was larger inward after placing its square"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "sortedSquares",
+          "description": "Define a sortedSquares function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "sortedSquares",
+          "isDefault": false,
+          "description": "Export sortedSquares as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for the two-pointer traversal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Valid Anagram (Map)",
+  "prompt": "Write a function in `solution.ts` that determines whether two strings are anagrams of each other.\n\n**Approach -- Map Frequency Comparison:**\nUse a `Map<string, number>` to build a frequency map of each string. Two strings are anagrams if and only if their frequency maps are equal. Since JavaScript Maps cannot be compared with `===`, iterate over one map and check that every key has the same count in the other.\n\n**Requirements:**\n1. `export function isAnagram(s: string, t: string): boolean` -- takes two strings and returns `true` if `t` is an anagram of `s`, `false` otherwise\n2. Use `new Map<string, number>()` to count character frequencies\n3. Compare the two maps by iterating over entries\n\n**Examples:**\n```typescript\nisAnagram('anagram', 'nagaram'); // true\nisAnagram('rat', 'car');         // false\nisAnagram('', '');               // true\n```\n\n**Complexity:**\n- Time: O(n) where n is the length of the strings\n- Space: O(n) for the Map objects",
+  "difficulty": "beginner",
+  "tags": [
+    "string",
+    "hash-map",
+    "map"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function isAnagram(s: string, t: string): boolean {\n  if (s.length !== t.length) return false;\n  const freqS = new Map<string, number>();\n  const freqT = new Map<string, number>();\n  for (const c of s) {\n    freqS.set(c, (freqS.get(c) ?? 0) + 1);\n  }\n  for (const c of t) {\n    freqT.set(c, (freqT.get(c) ?? 0) + 1);\n  }\n  for (const [key, count] of freqS) {\n    if (freqT.get(key) !== count) return false;\n  }\n  return true;\n}\n"
+    }
+  ],
+  "hints": [
+    "new Map<string, number>() creates an empty frequency map",
+    "Use map.get(c) ?? 0 to safely get a count that defaults to zero",
+    "Build one frequency map for each string, then compare them",
+    "If the strings have different lengths, they cannot be anagrams"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "isAnagram",
+          "description": "Define an isAnagram function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "isAnagram",
+          "isDefault": false,
+          "description": "Export isAnagram as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(new_expression constructor: (identifier) @name (#eq? @name \"Map\"))",
+          "description": "Use a Map to count character frequencies"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "title": "Same Tree",
+  "prompt": "Write a `TreeNode` class and an `isSameTree` function in `solution.ts`:\n\n**TreeNode class:**\n- `constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null)` -- store val, left child, and right child\n\n**Function: `isSameTree(p, q) => boolean`**\nGiven the roots of two binary trees `p` and `q`, return `true` if they are structurally identical and have the same node values, `false` otherwise.\n\nUse recursion. At each step:\n1. If both nodes are `null`, return `true`\n2. If only one is `null`, return `false`\n3. If values differ, return `false`\n4. Recurse on left children AND right children -- both must match\n\n**Complexity:** O(n) time, O(h) space where h is tree height (recursion stack).\n\n**Examples:**\n```typescript\n//     1         1\n//    / \\       / \\\n//   2   3     2   3\nconst p = new TreeNode(1, new TreeNode(2), new TreeNode(3));\nconst q = new TreeNode(1, new TreeNode(2), new TreeNode(3));\nisSameTree(p, q);  // true\n\n//   1       1\n//  /         \\\n// 2           2\nconst p2 = new TreeNode(1, new TreeNode(2));\nconst q2 = new TreeNode(1, null, new TreeNode(2));\nisSameTree(p2, q2);  // false\n\nisSameTree(null, null);  // true\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "recursion",
+    "dfs",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class TreeNode {\n  val: number;\n  left: TreeNode | null;\n  right: TreeNode | null;\n  constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null) {\n    this.val = val;\n    this.left = left;\n    this.right = right;\n  }\n}\n\nexport function isSameTree(p: TreeNode | null, q: TreeNode | null): boolean {\n  if (!p && !q) return true;\n  if (!p || !q) return false;\n  return p.val === q.val && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);\n}\n"
+    }
+  ],
+  "hints": [
+    "Base case: two null nodes are considered the same tree",
+    "If one node is null and the other is not, the trees differ",
+    "Compare values first, then recurse on both left and right subtrees",
+    "Use && to combine all three conditions in one return statement"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TreeNode",
+          "isDefault": false,
+          "description": "Export the TreeNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "isSameTree",
+          "params": ["p", "q"],
+          "description": "Define isSameTree that accepts two tree roots"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "isSameTree",
+          "isDefault": false,
+          "description": "Export the isSameTree function"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

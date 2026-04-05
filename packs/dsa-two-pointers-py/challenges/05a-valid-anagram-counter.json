@@ -1,0 +1,42 @@
+{
+  "title": "Valid Anagram (Counter)",
+  "prompt": "Write a function in `solution.py` that determines whether two strings are anagrams of each other.\n\n**Approach -- Counter Comparison:**\nUse `collections.Counter` to build a frequency map of each string. Two strings are anagrams if and only if their frequency maps are equal. Compare the two Counter objects directly with `==`.\n\n**Requirements:**\n1. `is_anagram(s, t)` -- takes two strings and returns `True` if `t` is an anagram of `s`, `False` otherwise\n2. Import `Counter` from `collections`\n3. Use `Counter` to count character frequencies\n4. Compare the two Counter objects with `==`\n\n**Examples:**\n```python\nis_anagram(\"anagram\", \"nagaram\")  # True\nis_anagram(\"rat\", \"car\")          # False\nis_anagram(\"\", \"\")                # True\n```\n\n**Complexity:**\n- Time: O(n) where n is the length of the strings\n- Space: O(n) for the Counter dictionaries",
+  "difficulty": "beginner",
+  "tags": [
+    "string",
+    "hash-map",
+    "counter"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import Counter\n\n\ndef is_anagram(s, t):\n    return Counter(s) == Counter(t)\n"
+    }
+  ],
+  "hints": [
+    "Counter('abc') produces Counter({'a': 1, 'b': 1, 'c': 1})",
+    "Two Counters are equal if they have the same keys with the same counts",
+    "This is a one-liner once you have the import",
+    "An empty string produces an empty Counter, so two empty strings are anagrams"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_anagram",
+          "params": ["s", "t"],
+          "description": "Define is_anagram that accepts two string parameters"
+        },
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["Counter"],
+          "description": "Import Counter from collections"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

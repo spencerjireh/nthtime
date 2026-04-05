@@ -1,5 +1,5 @@
 import pytest
-from solution import collect_errors, retry_on, null_safe
+from solution import collect_errors, error_boundary, null_safe
 
 
 def test_collect_errors_all_pass():
@@ -39,50 +39,35 @@ def test_collect_errors_all_fail():
     assert isinstance(errors[1], RuntimeError)
 
 
-def test_retry_on_succeeds_first_try():
-    call_count = 0
-
-    @retry_on((ValueError,), max_retries=3)
-    def good():
-        nonlocal call_count
-        call_count += 1
-        return "ok"
-
-    assert good() == "ok"
-    assert call_count == 1
+def test_error_boundary_no_exception():
+    result = error_boundary(lambda: 42, lambda e: -1)
+    assert result == 42
 
 
-def test_retry_on_succeeds_after_retry():
-    call_count = 0
-
-    @retry_on((ValueError,), max_retries=3)
-    def flaky():
-        nonlocal call_count
-        call_count += 1
-        if call_count < 3:
-            raise ValueError("not yet")
-        return "done"
-
-    assert flaky() == "done"
-    assert call_count == 3
+def test_error_boundary_handles_exception():
+    result = error_boundary(
+        lambda: int("abc"),
+        lambda e: f"failed: {e}",
+    )
+    assert "failed:" in result
 
 
-def test_retry_on_exhausts_retries():
-    @retry_on((ValueError,), max_retries=2)
-    def always_fail():
-        raise ValueError("always")
+def test_error_boundary_handler_receives_exception():
+    captured = []
+    error_boundary(
+        lambda: 1 / 0,
+        lambda e: captured.append(e),
+    )
+    assert len(captured) == 1
+    assert isinstance(captured[0], ZeroDivisionError)
 
-    with pytest.raises(ValueError):
-        always_fail()
 
-
-def test_retry_on_does_not_catch_other_exceptions():
-    @retry_on((ValueError,), max_retries=3)
-    def wrong_error():
-        raise TypeError("wrong type")
-
-    with pytest.raises(TypeError):
-        wrong_error()
+def test_error_boundary_returns_handler_result():
+    result = error_boundary(
+        lambda: [][0],
+        lambda e: "default",
+    )
+    assert result == "default"
 
 
 def test_null_safe_catches_attribute_error():

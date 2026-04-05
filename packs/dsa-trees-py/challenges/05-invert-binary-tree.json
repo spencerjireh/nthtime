@@ -1,0 +1,43 @@
+{
+  "title": "Invert Binary Tree",
+  "prompt": "Write a `TreeNode` class and an `invert_tree` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `invert_tree(root)`**\nGiven the root of a binary tree, invert it (mirror it) by swapping the left and right children of every node. Return the root of the inverted tree.\n\nUse recursion:\n1. If `root` is `None`, return `None`\n2. Swap `root.left` and `root.right`\n3. Recursively invert the left subtree\n4. Recursively invert the right subtree\n5. Return `root`\n\n**Complexity:** O(n) time, O(h) space where h is tree height (recursion stack).\n\n**Examples:**\n```python\n#       4              4\n#      / \\            / \\\n#     2   7   ->     7   2\n#    / \\ / \\        / \\ / \\\n#   1  3 6  9      9  6 3  1\nroot = TreeNode(4, TreeNode(2, TreeNode(1), TreeNode(3)), TreeNode(7, TreeNode(6), TreeNode(9)))\ninvert_tree(root)\n# Result: [4, 7, 2, 9, 6, 3, 1]\n\ninvert_tree(TreeNode(2, TreeNode(1), TreeNode(3)))\n# Result: [2, 3, 1]\n\ninvert_tree(None)  # None\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "recursion",
+    "dfs",
+    "invert",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef invert_tree(root):\n    if not root:\n        return None\n    root.left, root.right = root.right, root.left\n    invert_tree(root.left)\n    invert_tree(root.right)\n    return root\n"
+    }
+  ],
+  "hints": [
+    "Base case: if root is None, return None",
+    "Use tuple unpacking to swap: root.left, root.right = root.right, root.left",
+    "After swapping, recurse on both children",
+    "Return root so the caller has a reference to the inverted tree"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "invert_tree",
+          "params": ["root"],
+          "description": "Define invert_tree that accepts a tree root"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

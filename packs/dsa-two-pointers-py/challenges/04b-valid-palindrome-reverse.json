@@ -1,0 +1,36 @@
+{
+  "title": "Valid Palindrome (Reverse)",
+  "prompt": "Write a function in `solution.py` that checks whether a string is a palindrome, considering only alphanumeric characters and ignoring case.\n\n**Approach -- Clean + Reverse Comparison:**\nFilter the string to keep only alphanumeric characters using a generator expression with `str.isalnum()`, convert to lowercase with `str.lower()`, then join into a cleaned string. Compare the cleaned string to its reverse using slice notation `[::-1]`.\n\n**Requirements:**\n1. `is_palindrome(s)` -- takes a string and returns `True` if it is a palindrome considering only alphanumeric characters (case-insensitive), `False` otherwise\n2. Use `str.isalnum()` to filter characters\n3. Use `str.lower()` for case-insensitive comparison\n4. Use string slicing `[::-1]` to reverse and compare\n\n**Examples:**\n```python\nis_palindrome(\"A man, a plan, a canal: Panama\")  # True\nis_palindrome(\"race a car\")                       # False\nis_palindrome(\" \")                                # True\n```\n\n**Complexity:**\n- Time: O(n) -- one pass to filter, one to reverse\n- Space: O(n) -- the cleaned string copy",
+  "difficulty": "beginner",
+  "tags": [
+    "string",
+    "palindrome",
+    "slicing"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def is_palindrome(s):\n    cleaned = ''.join(c.lower() for c in s if c.isalnum())\n    return cleaned == cleaned[::-1]\n"
+    }
+  ],
+  "hints": [
+    "Use a generator expression: (c.lower() for c in s if c.isalnum())",
+    "Join the filtered characters into a single string with ''.join(...)",
+    "Reverse a string with slice notation: cleaned[::-1]",
+    "Compare the cleaned string to its reversed version"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_palindrome",
+          "params": ["s"],
+          "description": "Define is_palindrome that accepts a string parameter"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

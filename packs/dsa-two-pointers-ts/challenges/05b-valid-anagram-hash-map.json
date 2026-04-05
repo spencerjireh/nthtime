@@ -1,0 +1,46 @@
+{
+  "title": "Valid Anagram (Object)",
+  "prompt": "Write a function in `solution.ts` that determines whether two strings are anagrams of each other using a plain object as a frequency map.\n\n**Approach -- Manual Object Counting:**\nBuild a frequency object for each string by iterating over the characters and counting occurrences. Use bracket notation and the nullish coalescing operator (`?? 0`) to handle missing keys. Compare the two objects by checking that every key in the first has the same count in the second and vice versa. Do NOT use `Map`.\n\n**Requirements:**\n1. `export function isAnagram(s: string, t: string): boolean` -- takes two strings and returns `true` if `t` is an anagram of `s`, `false` otherwise\n2. Build frequency objects manually using `Record<string, number>`\n3. Use bracket notation to safely increment counts\n4. Do not use `Map`\n\n**Examples:**\n```typescript\nisAnagram('anagram', 'nagaram'); // true\nisAnagram('rat', 'car');         // false\nisAnagram('', '');               // true\n```\n\n**Complexity:**\n- Time: O(n) where n is the length of the strings\n- Space: O(n) for the frequency objects",
+  "difficulty": "beginner",
+  "tags": [
+    "string",
+    "hash-map",
+    "object"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function isAnagram(s: string, t: string): boolean {\n  if (s.length !== t.length) return false;\n  const freqS: Record<string, number> = {};\n  const freqT: Record<string, number> = {};\n  for (const c of s) {\n    freqS[c] = (freqS[c] ?? 0) + 1;\n  }\n  for (const c of t) {\n    freqT[c] = (freqT[c] ?? 0) + 1;\n  }\n  for (const key of Object.keys(freqS)) {\n    if (freqS[key] !== freqT[key]) return false;\n  }\n  return true;\n}\n"
+    }
+  ],
+  "hints": [
+    "Initialize an empty object: const freq: Record<string, number> = {}",
+    "Use freq[c] = (freq[c] ?? 0) + 1 to increment a count safely",
+    "Build one frequency object for each string, then compare them",
+    "If the strings have different lengths, they cannot be anagrams"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "isAnagram",
+          "description": "Define an isAnagram function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "isAnagram",
+          "isDefault": false,
+          "description": "Export isAnagram as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_in_statement)",
+          "description": "Use a for...of loop to iterate over characters"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

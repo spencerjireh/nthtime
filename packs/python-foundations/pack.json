@@ -6,6 +6,7 @@
   "version": "1.0.0",
   "author": "nthtime",
   "tags": ["python", "fundamentals", "data-types"],
+  "prerequisites": [],
   "challenges": [
     "challenges/01-hello-function.json",
     "challenges/02-default-params.json",

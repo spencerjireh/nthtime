@@ -8,4 +8,5 @@ public record UpdatePackRequest(
     String framework,
     String version,
     String[] tags,
+    String[] prerequisites,
     String visibility) {}

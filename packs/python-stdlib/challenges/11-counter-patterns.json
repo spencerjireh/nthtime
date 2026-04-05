@@ -1,0 +1,61 @@
+{
+  "title": "Counter Patterns",
+  "prompt": "Write three functions in `solution.py` using `collections.Counter`:\n\n**Requirements:**\n1. `is_anagram(a, b)` -- returns `True` if strings `a` and `b` are anagrams (same characters, same counts, ignoring case). Use Counter comparison.\n2. `merge_counts(*counters)` -- takes any number of Counter objects and returns a single Counter with all counts summed together\n3. `top_n_words(texts, n)` -- takes a list of text strings and an integer `n`, returns a list of the `n` most common words (lowercased) across all texts\n\n**Examples:**\n```python\nis_anagram('listen', 'silent')  # True\nis_anagram('hello', 'world')    # False\n\nfrom collections import Counter\nmerge_counts(Counter(a=1, b=2), Counter(a=3, c=1))\n# Counter({'a': 4, 'b': 2, 'c': 1})\n\ntop_n_words(['the cat sat', 'the dog sat on the mat'], 2)\n# ['the', 'sat']\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "collections",
+    "counter",
+    "anagram",
+    "merge"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import Counter\n\n\ndef is_anagram(a, b):\n    return Counter(a.lower()) == Counter(b.lower())\n\n\ndef merge_counts(*counters):\n    total = Counter()\n    for c in counters:\n        total += c\n    return total\n\n\ndef top_n_words(texts, n):\n    total = Counter()\n    for text in texts:\n        total += Counter(text.lower().split())\n    return [word for word, _ in total.most_common(n)]\n"
+    }
+  ],
+  "hints": [
+    "Two Counters are equal when all their counts match",
+    "Counter addition sums counts: Counter(a=1) + Counter(a=2) == Counter(a=3)",
+    "Counter.most_common(n) returns (element, count) pairs sorted by frequency",
+    "Lowercasing both strings before counting makes anagram check case-insensitive"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["Counter"],
+          "description": "Import Counter from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_anagram",
+          "params": ["a", "b"],
+          "description": "Define is_anagram that checks if two strings are anagrams"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "merge_counts",
+          "params": [],
+          "description": "Define merge_counts that merges multiple Counter objects"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "top_n_words",
+          "params": ["texts", "n"],
+          "description": "Define top_n_words that finds the most common words across texts"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"Counter\"))",
+          "description": "Use Counter for counting elements",
+          "hint": "Counter(iterable) creates a frequency map; Counters support == comparison and + addition"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

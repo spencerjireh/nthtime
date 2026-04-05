@@ -1,0 +1,21 @@
+{
+  "name": "DSA: Search, DP & Bit Manipulation (Python)",
+  "slug": "dsa-search-dp-bits-py",
+  "description": "Binary search, dynamic programming, and bitwise operations for coding interviews.",
+  "language": "python",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["python", "dsa", "binary-search", "dynamic-programming", "bit-manipulation", "interview"],
+  "prerequisites": ["python-foundations"],
+  "challenges": [
+    "challenges/01a-binary-search-iterative.json",
+    "challenges/01b-binary-search-recursive.json",
+    "challenges/02-smallest-letter.json",
+    "challenges/03a-climbing-stairs-dp.json",
+    "challenges/03b-climbing-stairs-memo.json",
+    "challenges/04-counting-bits.json",
+    "challenges/05-number-of-1-bits.json",
+    "challenges/06-reverse-bits.json",
+    "challenges/07-substring-positions.json"
+  ]
+}

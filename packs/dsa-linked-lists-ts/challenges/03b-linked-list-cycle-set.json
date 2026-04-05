@@ -1,0 +1,59 @@
+{
+  "title": "Linked List Cycle (Hash Set)",
+  "prompt": "Write a `ListNode` class and a `hasCycle` function in `solution.ts`:\n\n**Requirements:**\n1. `ListNode` class with `val: number` and `next: ListNode | null` properties, and a constructor `constructor(val = 0, next: ListNode | null = null)`\n2. `hasCycle(head)` -- returns `true` if the linked list contains a cycle, `false` otherwise. Use a `Set` to track visited nodes\n\n**Algorithm (hash set approach):**\n- Create a `new Set<ListNode>()` called `visited`\n- Traverse the list with a `curr` pointer starting at `head`\n- While `curr` is not `null`: if `curr` is already in `visited`, return `true`. Otherwise add `curr` to `visited` and advance `curr` to `curr.next`\n- Return `false` (no cycle found)\n\n**Complexity:** O(n) time, O(n) space.\n\n**Examples:**\n```typescript\n// [1] -> [2] -> [3] -> [2] (cycle back to node 2) -> true\n// [1] -> [2] -> [3] -> null -> false\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "cycle-detection",
+    "hash-set"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class ListNode {\n  val: number;\n  next: ListNode | null;\n  constructor(val = 0, next: ListNode | null = null) {\n    this.val = val;\n    this.next = next;\n  }\n}\n\nexport function hasCycle(head: ListNode | null): boolean {\n  const visited = new Set<ListNode>();\n  let curr = head;\n  while (curr) {\n    if (visited.has(curr)) {\n      return true;\n    }\n    visited.add(curr);\n    curr = curr.next;\n  }\n  return false;\n}\n"
+    }
+  ],
+  "hints": [
+    "Create a new Set<ListNode>() to store references to visited nodes",
+    "Check if the current node is already in the set before adding it",
+    "JavaScript Sets use reference identity for objects",
+    "This approach trades O(n) space for simpler logic than Floyd's"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "hasCycle",
+          "params": ["head"],
+          "description": "Define hasCycle that accepts a head node"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ListNode",
+          "isDefault": false,
+          "description": "Export the ListNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "hasCycle",
+          "isDefault": false,
+          "description": "Export the hasCycle function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(new_expression constructor: (identifier) @name (#eq? @name \"Set\"))",
+          "description": "Use a Set to track visited nodes",
+          "hint": "new Set<ListNode>() creates a hash set for O(1) lookups"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

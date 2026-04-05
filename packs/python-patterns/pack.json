@@ -6,6 +6,7 @@
   "version": "1.0.0",
   "author": "nthtime",
   "tags": ["python", "iteration", "functional", "patterns"],
+  "prerequisites": ["python-foundations"],
   "challenges": [
     "challenges/01-enumerate-zip.json",
     "challenges/02-unpacking.json",

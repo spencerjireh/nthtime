@@ -1,0 +1,43 @@
+{
+  "title": "Contains Duplicate (Sort)",
+  "prompt": "Given an integer array `nums`, return `True` if any value appears at least twice, and `False` if every element is distinct.\n\n**Approach:** Sort the array first, then check adjacent elements for duplicates. This uses O(1) extra space (ignoring the sort) but O(n log n) time.\n\n**Requirements:**\n1. Define `contains_duplicate(nums)` in `solution.py`\n2. Sort the array using `sorted()` or `.sort()`\n3. Iterate through consecutive pairs; if any two adjacent elements are equal, return `True`\n4. Return `False` if no duplicates found\n\n**Examples:**\n```python\ncontains_duplicate([1, 2, 3, 1])  # True\ncontains_duplicate([1, 2, 3, 4])  # False\ncontains_duplicate([])            # False\n```\n\n**Complexity:** O(n log n) time, O(1) extra space (or O(n) if using sorted())",
+  "difficulty": "beginner",
+  "tags": ["arrays", "sorting", "duplicates"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def contains_duplicate(nums):\n    nums = sorted(nums)\n    for i in range(1, len(nums)):\n        if nums[i] == nums[i - 1]:\n            return True\n    return False\n"
+    }
+  ],
+  "hints": [
+    "Sorting brings duplicates next to each other",
+    "Use sorted() to get a new sorted list without mutating the original",
+    "After sorting, compare each element with its neighbor",
+    "If nums[i] == nums[i-1], you found a duplicate"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "contains_duplicate",
+          "params": ["nums"],
+          "description": "Define a contains_duplicate function that accepts nums"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"sorted\"))",
+          "description": "Sort the array using sorted() to bring duplicates adjacent",
+          "hint": "Use sorted(nums) to create a sorted copy of the array"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through the sorted array with a for loop"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

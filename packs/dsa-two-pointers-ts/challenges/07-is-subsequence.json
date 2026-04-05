@@ -1,0 +1,46 @@
+{
+  "title": "Is Subsequence",
+  "prompt": "Write a function in `solution.ts` that checks whether one string is a subsequence of another.\n\n**Approach -- Two-Pointer Scan:**\nUse a pointer `i` for string `s` (the subsequence candidate) and iterate through string `t` with a `for` loop. Whenever `t[j]` matches `s[i]`, advance `i`. After the loop, `s` is a subsequence of `t` if and only if `i` has reached `s.length` (all characters of `s` were matched in order).\n\n**Requirements:**\n1. `export function isSubsequence(s: string, t: string): boolean` -- takes two strings and returns `true` if `s` is a subsequence of `t`, `false` otherwise\n2. A subsequence preserves character order but not necessarily contiguity\n3. Use a `for` loop to scan through `t` while tracking position in `s`\n4. An empty string is a subsequence of any string\n\n**Examples:**\n```typescript\nisSubsequence('abc', 'ahbgdc');  // true  (a...b...c found in order)\nisSubsequence('axc', 'ahbgdc');  // false (x not found after a)\nisSubsequence('', 'ahbgdc');     // true  (empty is always a subsequence)\nisSubsequence('abc', '');        // false (non-empty cannot be subseq of empty)\n```\n\n**Complexity:**\n- Time: O(m) where m is the length of t\n- Space: O(1) -- only a pointer variable",
+  "difficulty": "beginner",
+  "tags": [
+    "two-pointers",
+    "string",
+    "greedy"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function isSubsequence(s: string, t: string): boolean {\n  let i = 0;\n  for (let j = 0; j < t.length; j++) {\n    if (i < s.length && t[j] === s[i]) {\n      i++;\n    }\n  }\n  return i === s.length;\n}\n"
+    }
+  ],
+  "hints": [
+    "Keep a pointer i starting at 0 for string s",
+    "Loop through each character in t; when it matches s[i], advance i",
+    "After the loop, check if i reached s.length -- meaning all characters were found",
+    "If s is empty, i starts at 0 and s.length is 0, so it returns true immediately"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "isSubsequence",
+          "description": "Define an isSubsequence function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "isSubsequence",
+          "isDefault": false,
+          "description": "Export isSubsequence as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to scan through the target string"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

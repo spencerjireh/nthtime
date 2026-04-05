@@ -1,0 +1,46 @@
+{
+  "title": "Smallest Letter Greater Than Target",
+  "prompt": "Implement a modified binary search to find the next greatest letter in `solution.ts`.\n\n**Approach:**\nUse binary search with `left` and `right` pointers on a sorted array of characters. At each step, compute `mid = Math.floor((left + right) / 2)`. If `letters[mid] <= target`, move `left` to `mid + 1`. Otherwise, move `right` to `mid`. When the loop ends (`left === right`), `left` points to the smallest letter greater than target. If `left` equals `letters.length`, wrap around and return `letters[0]`.\n\n**Requirements:**\n1. Export `nextGreatestLetter(letters: string[], target: string): string` -- takes a sorted array of lowercase letters and a target character, returns the smallest character strictly greater than target\n2. Use a `while (left < right)` binary search loop\n3. If no letter is greater than target, wrap around to the first letter\n\n**Examples:**\n```typescript\nnextGreatestLetter(['c', 'f', 'j'], 'a')        // 'c'\nnextGreatestLetter(['c', 'f', 'j'], 'c')        // 'f'\nnextGreatestLetter(['c', 'f', 'j'], 'd')        // 'f'\nnextGreatestLetter(['x', 'x', 'y', 'y'], 'z')  // 'x'\n```\n\n**Complexity:** O(log n) time, O(1) space.",
+  "difficulty": "beginner",
+  "tags": [
+    "binary-search",
+    "arrays",
+    "characters"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function nextGreatestLetter(letters: string[], target: string): string {\n  let left = 0;\n  let right = letters.length;\n  while (left < right) {\n    const mid = Math.floor((left + right) / 2);\n    if (letters[mid] <= target) {\n      left = mid + 1;\n    } else {\n      right = mid;\n    }\n  }\n  return letters[left % letters.length];\n}\n"
+    }
+  ],
+  "hints": [
+    "Use left = 0 and right = letters.length (not length - 1) to allow wrapping",
+    "When letters[mid] <= target, the answer is to the right: set left = mid + 1",
+    "When letters[mid] > target, mid itself could be the answer: set right = mid",
+    "Use left % letters.length to wrap around when all letters are <= target"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "nextGreatestLetter",
+          "description": "Define a nextGreatestLetter function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "nextGreatestLetter",
+          "isDefault": false,
+          "description": "Export nextGreatestLetter as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for binary search"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

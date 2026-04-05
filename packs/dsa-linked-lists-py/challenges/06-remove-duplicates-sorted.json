@@ -1,0 +1,48 @@
+{
+  "title": "Remove Duplicates from Sorted List",
+  "prompt": "Write a `ListNode` class and a `delete_duplicates` function in `solution.py`:\n\n**Requirements:**\n1. `ListNode` class with `__init__(self, val=0, next=None)` -- stores `val` and `next` attributes\n2. `delete_duplicates(head)` -- removes all duplicate values from a sorted linked list so that each value appears only once. Return the head of the modified list\n\n**Algorithm (pointer skip):**\n- Start with `curr = head`\n- While `curr` is not `None` and `curr.next` is not `None`: if `curr.val == curr.next.val`, skip the duplicate by setting `curr.next = curr.next.next`. Otherwise advance `curr` to `curr.next`\n- Return `head`\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```python\n# [1, 1, 2] -> [1, 2]\n# [1, 1, 2, 3, 3] -> [1, 2, 3]\n# [] -> []\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "duplicates",
+    "sorted",
+    "iterative"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef delete_duplicates(head):\n    curr = head\n    while curr and curr.next:\n        if curr.val == curr.next.val:\n            curr.next = curr.next.next\n        else:\n            curr = curr.next\n    return head\n"
+    }
+  ],
+  "hints": [
+    "The list is sorted, so duplicates are always adjacent",
+    "Compare curr.val with curr.next.val to detect duplicates",
+    "Skip duplicates by pointing curr.next past the duplicate node",
+    "Only advance curr when no duplicate is found -- there may be multiple consecutive duplicates"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "delete_duplicates",
+          "params": ["head"],
+          "description": "Define delete_duplicates that accepts a head node"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop to traverse and skip duplicate nodes",
+          "hint": "while curr and curr.next: checks pairs of adjacent nodes"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Backspace String Compare",
+  "prompt": "Write a function in `solution.py` that compares two strings after applying backspace operations, using O(1) extra space.\n\n**Approach -- Reverse Traversal with Skip Counter:**\nProcess each string from right to left. Maintain a `skip` counter: when you encounter `'#'`, increment `skip`; when `skip > 0` on a regular character, decrement `skip` and skip that character. The next character that is not skipped is the current \"real\" character. Compare the two strings character by character using this approach. Use a `while` loop to walk both strings simultaneously.\n\n**Requirements:**\n1. `backspace_compare(s, t)` -- takes two strings and returns `True` if they are equal after processing backspaces, `False` otherwise\n2. `'#'` means backspace (delete the previous character)\n3. Use O(1) space -- do not build the final strings; walk backwards with skip counters\n4. Use a `while` loop for the reverse traversal\n\n**Examples:**\n```python\nbackspace_compare(\"ab#c\", \"ad#c\")  # True  (both become \"ac\")\nbackspace_compare(\"ab##\", \"c#d#\")  # True  (both become \"\")\nbackspace_compare(\"a#c\", \"b\")      # False (\"c\" != \"b\")\n```\n\n**Complexity:**\n- Time: O(n + m) where n and m are the lengths of the two strings\n- Space: O(1) -- only pointer and counter variables",
+  "difficulty": "intermediate",
+  "tags": [
+    "two-pointers",
+    "string",
+    "stack"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def backspace_compare(s, t):\n    def next_valid(string, index):\n        skip = 0\n        while index >= 0:\n            if string[index] == '#':\n                skip += 1\n                index -= 1\n            elif skip > 0:\n                skip -= 1\n                index -= 1\n            else:\n                break\n        return index\n\n    i = len(s) - 1\n    j = len(t) - 1\n    while i >= 0 or j >= 0:\n        i = next_valid(s, i)\n        j = next_valid(t, j)\n        if i >= 0 and j >= 0:\n            if s[i] != t[j]:\n                return False\n        elif i >= 0 or j >= 0:\n            return False\n        i -= 1\n        j -= 1\n    return True\n"
+    }
+  ],
+  "hints": [
+    "Walk both strings from the end toward the beginning",
+    "When you see '#', increment a skip counter instead of immediately deleting",
+    "When skip > 0 and you see a regular character, decrement skip and move on",
+    "Compare the two \"surviving\" characters at each step; if one string ends early, they differ"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "backspace_compare",
+          "params": ["s", "t"],
+          "description": "Define backspace_compare that accepts two string parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for reverse traversal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

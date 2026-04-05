@@ -1,0 +1,66 @@
+{
+  "title": "Deque Operations",
+  "prompt": "Write three functions in `solution.py` using `collections.deque`:\n\n**Requirements:**\n1. `sliding_window(iterable, n)` -- yields sliding windows of size `n` as lists. Use `deque(maxlen=n)`. Only yield once the deque is full (has `n` items).\n2. `recent_items(stream, max_size)` -- returns a `deque` containing the last `max_size` items from an iterable. Use `deque(maxlen=max_size)`.\n3. `rotate_list(items, n)` -- rotates a list by `n` positions to the right (positive `n` shifts right). Returns a new list. Use `deque.rotate`.\n\n**Examples:**\n```python\nlist(sliding_window([1, 2, 3, 4, 5], 3))\n# [[1, 2, 3], [2, 3, 4], [3, 4, 5]]\n\nrecent_items(range(100), 3)\n# deque([97, 98, 99], maxlen=3)\n\nrotate_list([1, 2, 3, 4, 5], 2)\n# [4, 5, 1, 2, 3]\n\nrotate_list([1, 2, 3, 4, 5], -1)\n# [2, 3, 4, 5, 1]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "collections",
+    "deque",
+    "sliding-window"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import deque\n\n\ndef sliding_window(iterable, n):\n    window = deque(maxlen=n)\n    for item in iterable:\n        window.append(item)\n        if len(window) == n:\n            yield list(window)\n\n\ndef recent_items(stream, max_size):\n    return deque(stream, maxlen=max_size)\n\n\ndef rotate_list(items, n):\n    d = deque(items)\n    d.rotate(n)\n    return list(d)\n"
+    }
+  ],
+  "hints": [
+    "deque(maxlen=n) automatically discards old items when full",
+    "Yield a copy of the window (list(window)) to avoid mutation issues",
+    "deque(iterable, maxlen=n) keeps only the last n items from the iterable",
+    "deque.rotate(n) rotates right for positive n, left for negative n"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["deque"],
+          "description": "Import deque from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "sliding_window",
+          "params": ["iterable", "n"],
+          "description": "Define sliding_window that yields windows of size n"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "recent_items",
+          "params": ["stream", "max_size"],
+          "description": "Define recent_items that returns the last max_size items"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "rotate_list",
+          "params": ["items", "n"],
+          "description": "Define rotate_list that rotates a list by n positions"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"deque\"))",
+          "description": "Use deque from the collections module",
+          "hint": "Create deque instances with deque(maxlen=n) or deque(iterable, maxlen=n)"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(function_definition name: (identifier) @name (#eq? @name \"sliding_window\") body: (block (for_statement)))",
+          "description": "Use yield in sliding_window to produce window values",
+          "hint": "yield list(window) when the deque is full"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

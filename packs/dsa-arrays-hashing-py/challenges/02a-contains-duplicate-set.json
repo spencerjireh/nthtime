@@ -1,0 +1,43 @@
+{
+  "title": "Contains Duplicate (Set)",
+  "prompt": "Given an integer array `nums`, return `True` if any value appears at least twice, and `False` if every element is distinct.\n\n**Approach:** Use a set for O(1) membership checks.\n\n**Requirements:**\n1. Define `contains_duplicate(nums)` in `solution.py`\n2. Create an empty set to track seen numbers\n3. Iterate through `nums`; if a number is already in the set, return `True`\n4. Otherwise add the number to the set\n5. Return `False` if no duplicates found\n\n**Examples:**\n```python\ncontains_duplicate([1, 2, 3, 1])  # True\ncontains_duplicate([1, 2, 3, 4])  # False\ncontains_duplicate([])            # False\n```\n\n**Complexity:** O(n) time, O(n) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "set", "duplicates"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def contains_duplicate(nums):\n    seen = set()\n    for num in nums:\n        if num in seen:\n            return True\n        seen.add(num)\n    return False\n"
+    }
+  ],
+  "hints": [
+    "A set stores unique values and supports O(1) lookups",
+    "Create an empty set with set()",
+    "Use 'in' to check membership before adding",
+    "If you finish the loop without finding a duplicate, return False"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "contains_duplicate",
+          "params": ["nums"],
+          "description": "Define a contains_duplicate function that accepts nums"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"set\"))",
+          "description": "Use a set for O(1) membership checking",
+          "hint": "Create a set with set() to track seen numbers"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through the array with a for loop"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

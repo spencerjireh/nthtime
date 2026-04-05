@@ -10,6 +10,7 @@ export interface PackSummary {
   readonly version: string;
   readonly author: string;
   readonly tags: readonly string[];
+  readonly prerequisites?: readonly string[];
   readonly challengeCount: number;
   readonly passedCount: number;
 }
@@ -33,6 +34,7 @@ export interface PackDetail {
   readonly language: string;
   readonly framework?: string;
   readonly tags: readonly string[];
+  readonly prerequisites?: readonly string[];
 }
 
 export interface PackListFilters {

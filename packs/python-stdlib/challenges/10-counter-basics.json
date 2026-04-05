@@ -1,0 +1,60 @@
+{
+  "title": "Counter Basics",
+  "prompt": "Write three functions in `solution.py` using `collections.Counter`:\n\n**Requirements:**\n1. `word_frequencies(text)` -- returns a `Counter` of lowercased words from `text.lower().split()`\n2. `most_common_chars(text, n)` -- returns a list of the `n` most common characters (not counts) in `text`, ignoring spaces. Use `Counter.most_common`.\n3. `subtract_inventories(have, used)` -- takes two dicts of item counts, returns a dict of remaining items (only items with count > 0) using Counter subtraction\n\n**Examples:**\n```python\nword_frequencies('the cat and the dog')\n# Counter({'the': 2, 'cat': 1, 'and': 1, 'dog': 1})\n\nmost_common_chars('hello world', 3)  # ['l', 'o', 'h']\n\nsubtract_inventories({'apples': 5, 'bananas': 3}, {'apples': 2, 'bananas': 3})\n# {'apples': 3}\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "collections",
+    "counter",
+    "frequencies"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import Counter\n\n\ndef word_frequencies(text):\n    return Counter(text.lower().split())\n\n\ndef most_common_chars(text, n):\n    counts = Counter(text.replace(' ', ''))\n    return [char for char, _ in counts.most_common(n)]\n\n\ndef subtract_inventories(have, used):\n    remaining = Counter(have) - Counter(used)\n    return dict(remaining)\n"
+    }
+  ],
+  "hints": [
+    "Counter(iterable) counts occurrences of each element",
+    "Counter.most_common(n) returns a list of (element, count) pairs",
+    "Counter subtraction drops zero and negative counts automatically",
+    "text.lower().split() splits on whitespace and lowercases"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["Counter"],
+          "description": "Import Counter from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "word_frequencies",
+          "params": ["text"],
+          "description": "Define word_frequencies that counts word occurrences"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "most_common_chars",
+          "params": ["text", "n"],
+          "description": "Define most_common_chars that finds the n most frequent characters"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "subtract_inventories",
+          "params": ["have", "used"],
+          "description": "Define subtract_inventories that subtracts item counts"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"Counter\"))",
+          "description": "Use Counter to count elements",
+          "hint": "Counter(iterable) creates a dict-like object mapping elements to their counts"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

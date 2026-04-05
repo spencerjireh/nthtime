@@ -1,0 +1,60 @@
+{
+  "title": "Remove Linked List Elements",
+  "prompt": "Write a `ListNode` class and a `removeElements` function in `solution.ts`:\n\n**Requirements:**\n1. `ListNode` class with `val: number` and `next: ListNode | null` properties, and a constructor `constructor(val = 0, next: ListNode | null = null)`\n2. `removeElements(head, val)` -- removes all nodes from the linked list that have `node.val === val` and returns the new head\n\n**Algorithm (sentinel/dummy node):**\n- Create a `dummy = new ListNode(0)` sentinel node and set `dummy.next = head`\n- Traverse with a `curr` pointer starting at `dummy`\n- While `curr.next` is not `null`: if `curr.next.val === val`, skip the node by setting `curr.next = curr.next.next`. Otherwise advance `curr` to `curr.next`\n- Return `dummy.next`\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```typescript\n// [1, 2, 6, 3, 4, 5, 6] val=6 -> [1, 2, 3, 4, 5]\n// [] val=1 -> []\n// [7, 7, 7, 7] val=7 -> []\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "dummy-node",
+    "removal",
+    "iterative"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class ListNode {\n  val: number;\n  next: ListNode | null;\n  constructor(val = 0, next: ListNode | null = null) {\n    this.val = val;\n    this.next = next;\n  }\n}\n\nexport function removeElements(\n  head: ListNode | null,\n  val: number,\n): ListNode | null {\n  const dummy = new ListNode(0);\n  dummy.next = head;\n  let curr: ListNode | null = dummy;\n  while (curr!.next) {\n    if (curr!.next.val === val) {\n      curr!.next = curr!.next.next;\n    } else {\n      curr = curr!.next;\n    }\n  }\n  return dummy.next;\n}\n"
+    }
+  ],
+  "hints": [
+    "A dummy node handles the case where the head itself needs removal",
+    "Check curr.next.val, not curr.val -- this lets you skip the target node",
+    "Only advance curr when you do NOT remove a node",
+    "Return dummy.next to get the real head"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "removeElements",
+          "params": ["head", "val"],
+          "description": "Define removeElements that accepts a head node and a value to remove"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ListNode",
+          "isDefault": false,
+          "description": "Export the ListNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "removeElements",
+          "isDefault": false,
+          "description": "Export the removeElements function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop to traverse and remove matching nodes",
+          "hint": "while (curr.next) checks each subsequent node for removal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

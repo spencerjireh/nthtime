@@ -1,0 +1,67 @@
+{
+  "title": "Pipeline with Stdlib",
+  "prompt": "Write three data-processing functions in `solution.py` combining multiple stdlib tools:\n\n**Requirements:**\n1. `word_count_pipeline(text)` -- lowercases the text, splits on whitespace, counts word frequencies, and returns the top 3 most common words as a list of `(word, count)` tuples using `collections.Counter`.\n2. `csv_aggregate(rows, group_col, value_col)` -- takes a list of dicts (rows), groups them by `group_col`, sums the `value_col` for each group, and returns a dict mapping group key to total. Use `collections.defaultdict`.\n3. `top_cooccurrences(pairs, n)` -- takes a list of 2-element tuples, counts how often each pair appears (treating `(a, b)` and `(b, a)` as the same pair), and returns the top `n` as a list of `(frozenset, count)` tuples. Use `collections.Counter` and `frozenset`.\n\n**Examples:**\n```python\nword_count_pipeline(\"the cat sat on the mat the cat\")\n# [(\"the\", 3), (\"cat\", 2), (\"sat\", 1)]\n\ncsv_aggregate(\n    [{\"dept\": \"eng\", \"cost\": 100}, {\"dept\": \"eng\", \"cost\": 200}, {\"dept\": \"hr\", \"cost\": 50}],\n    \"dept\", \"cost\"\n)\n# {\"eng\": 300, \"hr\": 50}\n\ntop_cooccurrences([(\"a\", \"b\"), (\"b\", \"a\"), (\"a\", \"c\")], 2)\n# [(frozenset({\"a\", \"b\"}), 2), (frozenset({\"a\", \"c\"}), 1)]\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "collections",
+    "counter",
+    "defaultdict",
+    "pipeline"
+  ],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import Counter, defaultdict\n\n\ndef word_count_pipeline(text):\n    words = text.lower().split()\n    counts = Counter(words)\n    return counts.most_common(3)\n\n\ndef csv_aggregate(rows, group_col, value_col):\n    totals = defaultdict(int)\n    for row in rows:\n        totals[row[group_col]] += row[value_col]\n    return dict(totals)\n\n\ndef top_cooccurrences(pairs, n):\n    counts = Counter(frozenset(pair) for pair in pairs)\n    return counts.most_common(n)\n"
+    }
+  ],
+  "hints": [
+    "Counter(words).most_common(3) returns the 3 most frequent (item, count) tuples",
+    "text.lower().split() handles lowercasing and splitting in one chain",
+    "defaultdict(int) sums values by incrementing: totals[key] += value",
+    "frozenset({a, b}) treats (a, b) and (b, a) as the same unordered pair"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["Counter", "defaultdict"],
+          "description": "Import Counter and defaultdict from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "word_count_pipeline",
+          "params": ["text"],
+          "description": "Define word_count_pipeline that returns top 3 word counts"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "csv_aggregate",
+          "params": ["rows", "group_col", "value_col"],
+          "description": "Define csv_aggregate that groups and sums values"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "top_cooccurrences",
+          "params": ["pairs", "n"],
+          "description": "Define top_cooccurrences that counts unordered pair frequencies"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"Counter\"))",
+          "description": "Use Counter for frequency counting",
+          "hint": "Counter(words) counts word occurrences; Counter(frozensets) counts pair occurrences"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"defaultdict\"))",
+          "description": "Use defaultdict for aggregation",
+          "hint": "defaultdict(int) lets you sum values with totals[key] += value"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

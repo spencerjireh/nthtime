@@ -1,0 +1,55 @@
+{
+  "title": "Merge Two Binary Trees",
+  "prompt": "Write a `TreeNode` class and a `mergeTrees` function in `solution.ts`:\n\n**TreeNode class:**\n- `constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null)` -- store val, left child, and right child\n\n**Function: `mergeTrees(root1, root2)`**\nGiven two binary trees, merge them into a new binary tree. The merge rule is: if two nodes overlap, sum their values. If only one node exists at a position, use that node's value.\n\nUse recursion:\n1. If `root1` is `null`, return `root2`\n2. If `root2` is `null`, return `root1`\n3. Create a new `TreeNode` with `root1.val + root2.val`\n4. Recursively merge left children and right children\n5. Return the new node\n\n**Complexity:** O(min(m, n)) time where m and n are the sizes of the two trees, O(min(m, n)) space.\n\n**Examples:**\n```typescript\n//     1         2           3\n//    / \\       / \\         / \\\n//   3   2     1   3  ->   4   5\n//  /           \\  \\      / \\   \\\n// 5             4  7    5   4   7\nconst root1 = new TreeNode(1, new TreeNode(3, new TreeNode(5)), new TreeNode(2));\nconst root2 = new TreeNode(2, new TreeNode(1, null, new TreeNode(4)), new TreeNode(3, null, new TreeNode(7)));\nmergeTrees(root1, root2);  // [3, 4, 5, 5, 4, null, 7]\n\nmergeTrees(new TreeNode(1), new TreeNode(1, new TreeNode(2)));  // [2, 2]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "recursion",
+    "dfs",
+    "merge",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class TreeNode {\n  val: number;\n  left: TreeNode | null;\n  right: TreeNode | null;\n  constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null) {\n    this.val = val;\n    this.left = left;\n    this.right = right;\n  }\n}\n\nexport function mergeTrees(root1: TreeNode | null, root2: TreeNode | null): TreeNode | null {\n  if (!root1) return root2;\n  if (!root2) return root1;\n  const merged = new TreeNode(root1.val + root2.val);\n  merged.left = mergeTrees(root1.left, root2.left);\n  merged.right = mergeTrees(root1.right, root2.right);\n  return merged;\n}\n"
+    }
+  ],
+  "hints": [
+    "If one tree is null at a position, the other tree's subtree fills in",
+    "When both nodes exist, create a new node with the sum of their values",
+    "Recurse on left children of both trees, then right children of both",
+    "Return the newly created node so the parent can link to it"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TreeNode",
+          "isDefault": false,
+          "description": "Export the TreeNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "mergeTrees",
+          "params": ["root1", "root2"],
+          "description": "Define mergeTrees that accepts two tree roots"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "mergeTrees",
+          "isDefault": false,
+          "description": "Export the mergeTrees function"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

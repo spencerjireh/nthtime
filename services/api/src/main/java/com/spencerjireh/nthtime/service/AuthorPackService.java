@@ -59,6 +59,7 @@ public class AuthorPackService {
                   pack.getFramework(),
                   pack.getVersion(),
                   pack.getTags(),
+                  pack.getPrerequisites(),
                   pack.getVisibility(),
                   challengeCount,
                   pack.getCreatedAt() != null ? pack.getCreatedAt().toString() : null,
@@ -97,6 +98,7 @@ public class AuthorPackService {
         pack.getFramework(),
         pack.getVersion(),
         pack.getTags(),
+        pack.getPrerequisites(),
         pack.getVisibility(),
         summaries);
   }
@@ -133,6 +135,7 @@ public class AuthorPackService {
         pack.getFramework(),
         pack.getVersion(),
         pack.getTags(),
+        pack.getPrerequisites(),
         exportChallenges);
   }
 
@@ -164,6 +167,7 @@ public class AuthorPackService {
     pack.setFramework(input.framework());
     pack.setVersion(input.version() != null ? input.version() : "1.0.0");
     pack.setTags(input.tags() != null ? input.tags() : new String[] {});
+    pack.setPrerequisites(input.prerequisites() != null ? input.prerequisites() : new String[] {});
     pack.setAuthorUser(user);
     pack.setVisibility(input.visibility() != null ? input.visibility() : "public");
     pack.setCreatedAt(Instant.now());
@@ -195,6 +199,7 @@ public class AuthorPackService {
     if (input.framework() != null) pack.setFramework(input.framework());
     if (input.version() != null) pack.setVersion(input.version());
     if (input.tags() != null) pack.setTags(input.tags());
+    if (input.prerequisites() != null) pack.setPrerequisites(input.prerequisites());
     if (input.visibility() != null) pack.setVisibility(input.visibility());
     pack.setUpdatedAt(Instant.now());
 

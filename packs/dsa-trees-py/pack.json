@@ -1,0 +1,22 @@
+{
+  "name": "DSA: Trees (Python)",
+  "slug": "dsa-trees-py",
+  "description": "DFS, BFS, and recursive tree operations for coding interviews.",
+  "language": "python",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["python", "dsa", "trees", "dfs", "bfs", "recursion", "interview"],
+  "prerequisites": ["python-foundations"],
+  "challenges": [
+    "challenges/01-same-tree.json",
+    "challenges/02a-max-depth-recursive.json",
+    "challenges/02b-max-depth-iterative.json",
+    "challenges/03-min-depth.json",
+    "challenges/04-path-sum.json",
+    "challenges/05-invert-binary-tree.json",
+    "challenges/06-binary-tree-paths.json",
+    "challenges/07-subtree-of-another.json",
+    "challenges/08-merge-two-binary-trees.json",
+    "challenges/09-average-of-levels.json"
+  ]
+}

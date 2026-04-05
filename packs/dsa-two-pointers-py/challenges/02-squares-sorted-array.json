@@ -1,0 +1,41 @@
+{
+  "title": "Squares of a Sorted Array",
+  "prompt": "Write a function in `solution.py` that returns an array of the squares of each number from a sorted input array, also in sorted order.\n\n**Approach -- Two Pointers from Both Ends:**\nSince the input is sorted (may contain negatives), the largest squares are at the extremes. Use a `left` pointer at index 0 and a `right` pointer at the last index. Compare `abs(nums[left])` and `abs(nums[right])`; place the larger square at the end of the result array and move that pointer inward. Use a `while` loop that continues while `left <= right`.\n\n**Requirements:**\n1. `sorted_squares(nums)` -- takes a sorted list of integers and returns a new list of their squares in non-decreasing order\n2. Use a `while` loop with two pointers converging from both ends\n3. Build the result array from right to left (largest to smallest)\n\n**Examples:**\n```python\nsorted_squares([-4, -1, 0, 3, 10])  # [0, 1, 9, 16, 100]\nsorted_squares([-7, -3, 2, 3, 11])  # [4, 9, 9, 49, 121]\nsorted_squares([1])                  # [1]\n```\n\n**Complexity:**\n- Time: O(n) -- single pass with two pointers\n- Space: O(n) -- result array of the same length",
+  "difficulty": "beginner",
+  "tags": [
+    "two-pointers",
+    "array",
+    "sorting"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def sorted_squares(nums):\n    n = len(nums)\n    result = [0] * n\n    left, right = 0, n - 1\n    pos = n - 1\n    while left <= right:\n        if abs(nums[left]) > abs(nums[right]):\n            result[pos] = nums[left] ** 2\n            left += 1\n        else:\n            result[pos] = nums[right] ** 2\n            right -= 1\n        pos -= 1\n    return result\n"
+    }
+  ],
+  "hints": [
+    "The largest squared value must come from either the leftmost or rightmost element",
+    "Use abs() to compare magnitudes of the two ends",
+    "Fill the result array from the back (index n-1) toward the front",
+    "Move the pointer whose absolute value was larger inward after placing its square"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "sorted_squares",
+          "params": ["nums"],
+          "description": "Define sorted_squares that accepts a nums parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for the two-pointer traversal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

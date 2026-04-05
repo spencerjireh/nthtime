@@ -1,0 +1,41 @@
+{
+  "title": "Move Zeroes",
+  "prompt": "Write a function in `solution.py` that moves all zeroes to the end of a list **in place**, preserving the relative order of non-zero elements.\n\n**Approach -- Two-Pointer Swap:**\nMaintain a `write` pointer starting at index 0. Iterate through the list with a `read` pointer using a `for` loop. Whenever `nums[read]` is non-zero, swap `nums[write]` and `nums[read]`, then advance `write`. After the loop, all non-zero elements are packed to the front and zeroes fill the remaining positions.\n\n**Requirements:**\n1. `move_zeroes(nums)` -- takes a list of integers, moves all zeroes to the end in place, and returns `None`\n2. Use a `for` loop to iterate through the list\n3. Modify the list in place -- do not create a new list\n\n**Examples:**\n```python\nnums = [0, 1, 0, 3, 12]\nmove_zeroes(nums)\nprint(nums)  # [1, 3, 12, 0, 0]\n\nnums = [0]\nmove_zeroes(nums)\nprint(nums)  # [0]\n```\n\n**Complexity:**\n- Time: O(n) -- single pass through the array\n- Space: O(1) -- in-place swaps, no extra storage",
+  "difficulty": "beginner",
+  "tags": [
+    "two-pointers",
+    "in-place",
+    "array"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def move_zeroes(nums):\n    write = 0\n    for read in range(len(nums)):\n        if nums[read] != 0:\n            nums[write], nums[read] = nums[read], nums[write]\n            write += 1\n"
+    }
+  ],
+  "hints": [
+    "Keep a write pointer that tracks where the next non-zero element should go",
+    "Iterate with a read pointer; when you find a non-zero, swap it to the write position",
+    "After swapping, advance the write pointer by one",
+    "Swapping instead of overwriting naturally fills the tail with zeroes"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "move_zeroes",
+          "params": ["nums"],
+          "description": "Define move_zeroes that accepts a nums parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to iterate through the list"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

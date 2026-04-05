@@ -1,0 +1,67 @@
+{
+  "title": "Collection Transforms",
+  "prompt": "Write three functions in `solution.py` for advanced collection transformations:\n\n**Requirements:**\n1. `frequency_rank(items)` -- returns items sorted by frequency (most common first). Items with equal frequency maintain their first-occurrence order. Use `collections.Counter`.\n2. `deduplicate_ordered(items)` -- removes duplicates while preserving the order of first occurrence. Use `dict.fromkeys`.\n3. `invert_mapping(d)` -- inverts a dict, swapping keys and values. Since multiple keys may share the same value, collect all original keys into a list. Use `collections.defaultdict`.\n\n**Examples:**\n```python\nfrequency_rank([\"b\", \"a\", \"a\", \"c\", \"b\", \"a\"])\n# [\"a\", \"a\", \"a\", \"b\", \"b\", \"c\"]\n\ndeduplicate_ordered([3, 1, 2, 1, 3, 4])\n# [3, 1, 2, 4]\n\ninvert_mapping({\"a\": 1, \"b\": 2, \"c\": 1})\n# {1: [\"a\", \"c\"], 2: [\"b\"]}\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "collections",
+    "counter",
+    "defaultdict",
+    "transforms"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import Counter, defaultdict\n\n\ndef frequency_rank(items):\n    counts = Counter(items)\n    return sorted(items, key=lambda x: -counts[x])\n\n\ndef deduplicate_ordered(items):\n    return list(dict.fromkeys(items))\n\n\ndef invert_mapping(d):\n    result = defaultdict(list)\n    for key, value in d.items():\n        result[value].append(key)\n    return dict(result)\n"
+    }
+  ],
+  "hints": [
+    "Counter(items) gives a dict-like object mapping each item to its count",
+    "sorted(items, key=lambda x: -counts[x]) puts the most frequent first",
+    "dict.fromkeys(items) preserves insertion order and drops duplicates",
+    "defaultdict(list) collects multiple keys that map to the same value"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["Counter", "defaultdict"],
+          "description": "Import Counter and defaultdict from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "frequency_rank",
+          "params": ["items"],
+          "description": "Define frequency_rank that sorts items by frequency"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "deduplicate_ordered",
+          "params": ["items"],
+          "description": "Define deduplicate_ordered that removes duplicates preserving order"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "invert_mapping",
+          "params": ["d"],
+          "description": "Define invert_mapping that swaps keys and values"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"Counter\"))",
+          "description": "Use Counter for frequency counting",
+          "hint": "Counter(items) counts occurrences of each element"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"defaultdict\"))",
+          "description": "Use defaultdict for grouping inverted values",
+          "hint": "defaultdict(list) lets you append values for each key"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

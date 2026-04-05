@@ -1,0 +1,46 @@
+{
+  "title": "Number of 1 Bits",
+  "prompt": "Count the number of set bits in an integer using Brian Kernighan's algorithm in `solution.ts`.\n\n**Approach:**\nBrian Kernighan's trick: the expression `n & (n - 1)` clears the lowest set bit of `n`. Repeat this in a while loop, incrementing a counter each time, until `n` becomes 0. The counter equals the number of 1-bits.\n\n**Why it works:** Subtracting 1 from `n` flips all bits from the rightmost set bit onward. ANDing with the original `n` zeros out that rightmost set bit while leaving all higher bits unchanged.\n\n**Requirements:**\n1. Export `hammingWeight(n: number): number` -- takes a non-negative integer `n` and returns the number of 1-bits in its binary representation\n2. Use a `while (n)` loop with Brian Kernighan's bit trick\n3. Use `n &= n - 1` to clear the lowest set bit each iteration\n\n**Examples:**\n```typescript\nhammingWeight(11)   // 3  (binary: 1011)\nhammingWeight(128)  // 1  (binary: 10000000)\nhammingWeight(0)    // 0\nhammingWeight(255)  // 8  (binary: 11111111)\n```\n\n**Complexity:** O(k) time where k is the number of set bits, O(1) space.",
+  "difficulty": "beginner",
+  "tags": [
+    "bit-manipulation",
+    "kernighan",
+    "counting"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function hammingWeight(n: number): number {\n  let count = 0;\n  while (n) {\n    n &= n - 1;\n    count++;\n  }\n  return count;\n}\n"
+    }
+  ],
+  "hints": [
+    "Initialize count = 0 before the loop",
+    "while (n) continues as long as there are set bits remaining",
+    "n &= n - 1 clears exactly one set bit per iteration",
+    "The loop runs exactly k times where k is the number of 1-bits"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "hammingWeight",
+          "description": "Define a hammingWeight function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "hammingWeight",
+          "isDefault": false,
+          "description": "Export hammingWeight as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop to iterate until all bits are cleared"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

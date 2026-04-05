@@ -1,0 +1,41 @@
+{
+  "title": "Is Subsequence",
+  "prompt": "Write a function in `solution.py` that checks whether one string is a subsequence of another.\n\n**Approach -- Two-Pointer Scan:**\nUse a pointer `i` for string `s` (the subsequence candidate) and iterate through string `t` with a `for` loop. Whenever `t[j]` matches `s[i]`, advance `i`. After the loop, `s` is a subsequence of `t` if and only if `i` has reached `len(s)` (all characters of `s` were matched in order).\n\n**Requirements:**\n1. `is_subsequence(s, t)` -- takes two strings and returns `True` if `s` is a subsequence of `t`, `False` otherwise\n2. A subsequence preserves character order but not necessarily contiguity\n3. Use a `for` loop to scan through `t` while tracking position in `s`\n4. An empty string is a subsequence of any string\n\n**Examples:**\n```python\nis_subsequence(\"abc\", \"ahbgdc\")  # True  (a...b...c found in order)\nis_subsequence(\"axc\", \"ahbgdc\")  # False (x not found after a)\nis_subsequence(\"\", \"ahbgdc\")     # True  (empty is always a subsequence)\nis_subsequence(\"abc\", \"\")        # False (non-empty can't be subseq of empty)\n```\n\n**Complexity:**\n- Time: O(m) where m is the length of t\n- Space: O(1) -- only a pointer variable",
+  "difficulty": "beginner",
+  "tags": [
+    "two-pointers",
+    "string",
+    "greedy"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def is_subsequence(s, t):\n    i = 0\n    for c in t:\n        if i < len(s) and c == s[i]:\n            i += 1\n    return i == len(s)\n"
+    }
+  ],
+  "hints": [
+    "Keep a pointer i starting at 0 for string s",
+    "Loop through each character in t; when it matches s[i], advance i",
+    "After the loop, check if i reached len(s) -- meaning all characters were found",
+    "If s is empty, i starts at 0 and len(s) is 0, so it returns True immediately"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_subsequence",
+          "params": ["s", "t"],
+          "description": "Define is_subsequence that accepts two string parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to scan through the target string"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

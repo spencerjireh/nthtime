@@ -14,5 +14,6 @@ export interface Pack {
   readonly version: string;
   readonly author: string;
   readonly tags: readonly string[];
+  readonly prerequisites?: readonly string[];
   readonly challenges: readonly Challenge[];
 }

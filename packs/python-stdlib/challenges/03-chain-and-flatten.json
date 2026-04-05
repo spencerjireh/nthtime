@@ -1,0 +1,65 @@
+{
+  "title": "Chain and Flatten",
+  "prompt": "Write three functions in `solution.py` for combining iterables:\n\n**Requirements:**\n1. `flatten_lists(lists)` -- flattens a list of lists into a single list using `itertools.chain.from_iterable`\n2. `merge_dicts(*dicts)` -- merges multiple dicts into one (later keys win) by iterating over all key-value pairs using `itertools.chain`\n3. `interleave(a, b)` -- interleaves two lists element-by-element, stopping at the shorter list, using `zip`\n\n**Examples:**\n```python\nflatten_lists([[1, 2], [3], [4, 5]])   # [1, 2, 3, 4, 5]\nmerge_dicts({\"a\": 1}, {\"b\": 2, \"a\": 3})  # {\"a\": 3, \"b\": 2}\ninterleave([1, 2, 3], [\"a\", \"b\", \"c\"])   # [1, \"a\", 2, \"b\", 3, \"c\"]\ninterleave([1, 2], [\"a\"])                 # [1, \"a\"]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "itertools",
+    "chain",
+    "flatten",
+    "interleave"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import itertools\n\n\ndef flatten_lists(lists):\n    return list(itertools.chain.from_iterable(lists))\n\n\ndef merge_dicts(*dicts):\n    return dict(itertools.chain(*(d.items() for d in dicts)))\n\n\ndef interleave(a, b):\n    result = []\n    for x, y in zip(a, b):\n        result.append(x)\n        result.append(y)\n    return result\n"
+    }
+  ],
+  "hints": [
+    "itertools.chain.from_iterable(lists) flattens one level of nesting",
+    "itertools.chain(*iterables) concatenates multiple iterables end-to-end",
+    "dict.items() returns key-value pairs that chain can concatenate",
+    "zip(a, b) pairs up elements and stops at the shorter sequence"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "description": "Import the itertools module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "flatten_lists",
+          "params": ["lists"],
+          "description": "Define flatten_lists that accepts a list of lists"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "merge_dicts",
+          "description": "Define merge_dicts that accepts variable number of dicts"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "interleave",
+          "params": ["a", "b"],
+          "description": "Define interleave that accepts two lists"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (attribute object: (identifier) @mod attribute: (identifier) @chain (#eq? @mod \"itertools\") (#eq? @chain \"chain\")) attribute: (identifier) @method (#eq? @method \"from_iterable\")))",
+          "description": "Use itertools.chain.from_iterable to flatten nested iterables",
+          "hint": "Call itertools.chain.from_iterable(lists) to flatten one level"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"chain\")))",
+          "description": "Use itertools.chain to concatenate iterables",
+          "hint": "Call itertools.chain(*iterables) to join multiple sequences"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

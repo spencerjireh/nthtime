@@ -1,0 +1,60 @@
+{
+  "title": "Palindrome Linked List",
+  "prompt": "Write a `ListNode` class and an `isPalindrome` function in `solution.ts`:\n\n**Requirements:**\n1. `ListNode` class with `val: number` and `next: ListNode | null` properties, and a constructor `constructor(val = 0, next: ListNode | null = null)`\n2. `isPalindrome(head)` -- returns `true` if the linked list reads the same forwards and backwards, `false` otherwise. Solve in O(n) time and O(1) space by reversing the second half in-place\n\n**Algorithm:**\n1. Find the middle node using slow/fast pointers\n2. Reverse the second half of the list starting from `slow`\n3. Compare the first half and the reversed second half node by node\n4. If all values match, return `true`. Otherwise return `false`\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```typescript\n// [1, 2, 2, 1] -> true\n// [1, 2] -> false\n// [1] -> true\n// [1, 2, 3, 2, 1] -> true\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "linked-list",
+    "palindrome",
+    "two-pointers",
+    "reverse"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class ListNode {\n  val: number;\n  next: ListNode | null;\n  constructor(val = 0, next: ListNode | null = null) {\n    this.val = val;\n    this.next = next;\n  }\n}\n\nexport function isPalindrome(head: ListNode | null): boolean {\n  if (!head || !head.next) {\n    return true;\n  }\n  let slow: ListNode | null = head;\n  let fast: ListNode | null = head;\n  while (fast && fast.next) {\n    slow = slow!.next;\n    fast = fast.next.next;\n  }\n  let prev: ListNode | null = null;\n  let curr: ListNode | null = slow;\n  while (curr) {\n    const next = curr.next;\n    curr.next = prev;\n    prev = curr;\n    curr = next;\n  }\n  let left: ListNode | null = head;\n  let right: ListNode | null = prev;\n  while (right) {\n    if (left!.val !== right.val) {\n      return false;\n    }\n    left = left!.next;\n    right = right.next;\n  }\n  return true;\n}\n"
+    }
+  ],
+  "hints": [
+    "Find the middle with slow/fast pointers -- slow ends at the start of the second half",
+    "Reverse the second half in-place using the standard three-pointer technique",
+    "Compare the first half (starting at head) with the reversed second half (starting at prev)",
+    "Only compare while right is not null -- the reversed half may be shorter for odd-length lists"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "isPalindrome",
+          "params": ["head"],
+          "description": "Define isPalindrome that accepts a head node"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ListNode",
+          "isDefault": false,
+          "description": "Export the ListNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "isPalindrome",
+          "isDefault": false,
+          "description": "Export the isPalindrome function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use while loops for finding the middle, reversing, and comparing",
+          "hint": "You need at least two while loops: one for slow/fast traversal and one for reversal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Index Pairs of a String",
+  "prompt": "Find all positions where words appear as substrings in a text string in `solution.py`.\n\n**Approach:**\nFor each word in the words list, use `text.find(word, start)` in a while loop to find all occurrences. Start from index 0 and advance `start` to `idx + 1` after each match. For each match at index `idx`, record the pair `[idx, idx + len(word) - 1]`. After processing all words, sort the result list (Python's default sort handles this correctly -- by start index first, then end index).\n\n**Requirements:**\n1. `index_pairs(text, words)` -- takes a string `text` and a list of strings `words`, returns a sorted list of `[i, j]` pairs where `text[i:j+1]` equals a word in `words`\n2. Use `str.find(word, start)` to locate each occurrence\n3. Find all overlapping occurrences of each word\n4. Return the result sorted by start index, then by end index\n\n**Examples:**\n```python\nindex_pairs(\"thestoryofleetcodeandme\", [\"story\", \"fleet\", \"leetcode\"])\n# [[3, 7], [9, 13], [10, 17]]\nindex_pairs(\"ababa\", [\"aba\", \"ab\"])\n# [[0, 1], [0, 2], [2, 3], [2, 4]]\n```\n\n**Complexity:** O(n * m * k) time where n = len(text), m = number of words, k = average word length. O(r) space for the result list.",
+  "difficulty": "intermediate",
+  "tags": [
+    "strings",
+    "brute-force",
+    "sorting"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def index_pairs(text, words):\n    result = []\n    for word in words:\n        start = 0\n        while True:\n            idx = text.find(word, start)\n            if idx == -1:\n                break\n            result.append([idx, idx + len(word) - 1])\n            start = idx + 1\n    result.sort()\n    return result\n"
+    }
+  ],
+  "hints": [
+    "text.find(word, start) returns -1 when no more occurrences exist",
+    "After finding a match at idx, set start = idx + 1 to find overlapping matches",
+    "The end index is idx + len(word) - 1 (inclusive)",
+    "Python's list.sort() sorts lists of lists lexicographically, which gives the correct order"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "index_pairs",
+          "params": ["text", "words"],
+          "description": "Define an index_pairs function that accepts text and words parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to iterate over words"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

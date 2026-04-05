@@ -1,0 +1,46 @@
+{
+  "title": "Valid Palindrome (Two Pointers)",
+  "prompt": "Write a function in `solution.ts` that checks whether a string is a palindrome, considering only alphanumeric characters and ignoring case.\n\n**Approach -- Two Converging Pointers:**\nPlace a `left` pointer at the start and a `right` pointer at the end. In a `while` loop, skip any non-alphanumeric characters by advancing the appropriate pointer. When both pointers point to alphanumeric characters, compare them (case-insensitive). If they differ, return `false`. If the loop completes, return `true`.\n\n**Requirements:**\n1. `export function isPalindrome(s: string): boolean` -- takes a string and returns `true` if it is a palindrome considering only alphanumeric characters (case-insensitive), `false` otherwise\n2. Use a regex like `/[a-z0-9]/i` or a helper to check for alphanumeric characters\n3. Use `.toLowerCase()` for case-insensitive comparison\n4. Use a `while` loop with two converging pointers\n\n**Examples:**\n```typescript\nisPalindrome('A man, a plan, a canal: Panama'); // true\nisPalindrome('race a car');                      // false\nisPalindrome(' ');                               // true\n```\n\n**Complexity:**\n- Time: O(n) -- single pass with two pointers\n- Space: O(1) -- only pointer variables",
+  "difficulty": "beginner",
+  "tags": [
+    "two-pointers",
+    "string",
+    "palindrome"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function isPalindrome(s: string): boolean {\n  const isAlnum = (c: string) => /[a-z0-9]/i.test(c);\n  let left = 0;\n  let right = s.length - 1;\n  while (left < right) {\n    while (left < right && !isAlnum(s[left])) {\n      left++;\n    }\n    while (left < right && !isAlnum(s[right])) {\n      right--;\n    }\n    if (s[left].toLowerCase() !== s[right].toLowerCase()) {\n      return false;\n    }\n    left++;\n    right--;\n  }\n  return true;\n}\n"
+    }
+  ],
+  "hints": [
+    "Start with left at 0 and right at s.length - 1",
+    "Use inner while loops to skip non-alphanumeric characters on each side",
+    "Compare s[left].toLowerCase() and s[right].toLowerCase() for case-insensitive matching",
+    "If any pair does not match, return false immediately"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "isPalindrome",
+          "description": "Define an isPalindrome function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "isPalindrome",
+          "isDefault": false,
+          "description": "Export isPalindrome as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for two-pointer traversal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

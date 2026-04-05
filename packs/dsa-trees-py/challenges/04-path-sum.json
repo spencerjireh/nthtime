@@ -1,0 +1,43 @@
+{
+  "title": "Path Sum",
+  "prompt": "Write a `TreeNode` class and a `has_path_sum` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `has_path_sum(root, target_sum) -> bool`**\nGiven the root of a binary tree and an integer `target_sum`, return `True` if the tree has a root-to-leaf path such that the sum of all node values along the path equals `target_sum`.\n\nUse recursive subtraction:\n1. If `root` is `None`, return `False` (an empty tree has no paths)\n2. Subtract the current node's value from `target_sum`\n3. If the current node is a leaf (no children) and `target_sum` is now `0`, return `True`\n4. Recurse on left and right children with the reduced `target_sum`\n5. Return `True` if either subtree has a valid path\n\n**Complexity:** O(n) time, O(h) space where h is tree height (recursion stack).\n\n**Examples:**\n```python\n#         5\n#        / \\\n#       4   8\n#      /   / \\\n#     11  13  4\n#    /  \\      \\\n#   7    2      1\nhas_path_sum(root, 22)  # True  (path: 5 -> 4 -> 11 -> 2)\n\n#   1\n#  / \\\n# 2   3\nhas_path_sum(root, 5)  # False\n\nhas_path_sum(None, 0)  # False\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "recursion",
+    "dfs",
+    "path-sum",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef has_path_sum(root, target_sum):\n    if not root:\n        return False\n    target_sum -= root.val\n    if not root.left and not root.right:\n        return target_sum == 0\n    return has_path_sum(root.left, target_sum) or has_path_sum(root.right, target_sum)\n"
+    }
+  ],
+  "hints": [
+    "An empty tree has no root-to-leaf paths, so return False",
+    "Subtract the current node's value from target_sum as you recurse down",
+    "A leaf node has no left and no right child",
+    "At a leaf, check if the remaining target_sum equals 0"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "has_path_sum",
+          "params": ["root", "target_sum"],
+          "description": "Define has_path_sum that accepts a tree root and target sum"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -6,6 +6,7 @@
   "version": "1.0.0",
   "author": "nthtime",
   "tags": ["python", "bitwise", "binary", "numeric", "low-level"],
+  "prerequisites": ["python-foundations"],
   "challenges": [
     "challenges/01-bitwise-basics.json",
     "challenges/02-bitflags.json",

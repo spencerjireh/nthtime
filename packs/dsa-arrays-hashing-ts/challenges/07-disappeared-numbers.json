@@ -1,0 +1,49 @@
+{
+  "title": "Find All Numbers Disappeared in an Array",
+  "prompt": "Given an array `nums` of `n` integers where `1 <= nums[i] <= n`, return a list of all integers in the range `[1, n]` that do not appear in `nums`.\n\n**Approach:** Index marking with O(1) extra space. Use the array itself as a hash map by negating values at visited indices.\n\n**Requirements:**\n1. Define and export `findDisappearedNumbers(nums: number[]): number[]` in `solution.ts`\n2. First pass: for each number, mark the value at index `Math.abs(num) - 1` as negative\n3. Second pass: collect all indices where the value is still positive -- those indices (+1) are the missing numbers\n4. Return the array of missing numbers\n\n**Examples:**\n```typescript\nfindDisappearedNumbers([4, 3, 2, 7, 8, 2, 3, 1])  // [5, 6]\nfindDisappearedNumbers([1, 1])                      // [2]\nfindDisappearedNumbers([1])                          // []\n```\n\n**Complexity:** O(n) time, O(1) extra space (output array not counted)",
+  "difficulty": "intermediate",
+  "tags": ["arrays", "index-marking", "in-place"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function findDisappearedNumbers(nums: number[]): number[] {\n  for (const num of nums) {\n    const index = Math.abs(num) - 1;\n    if (nums[index] > 0) {\n      nums[index] = -nums[index];\n    }\n  }\n  const result: number[] = [];\n  for (let i = 0; i < nums.length; i++) {\n    if (nums[i] > 0) {\n      result.push(i + 1);\n    }\n  }\n  return result;\n}\n"
+    }
+  ],
+  "hints": [
+    "Since values are in [1, n], each value maps to a valid index (value - 1)",
+    "Use Math.abs(num) because a value might already be negated from an earlier step",
+    "Negate the value at the mapped index to mark it as seen",
+    "After marking, any index with a positive value was never visited"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "findDisappearedNumbers",
+          "description": "Define a findDisappearedNumbers function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "findDisappearedNumbers",
+          "isDefault": false,
+          "description": "Export findDisappearedNumbers as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_in_statement)",
+          "description": "Iterate through the array with a for...of loop"
+        },
+        {
+          "type": "methodCall",
+          "object": "Math",
+          "method": "abs",
+          "description": "Use Math.abs() to handle already-negated values",
+          "hint": "Use Math.abs(num) - 1 to compute the index for marking"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "title": "Same Tree",
+  "prompt": "Write a `TreeNode` class and an `is_same_tree` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `is_same_tree(p, q) -> bool`**\nGiven the roots of two binary trees `p` and `q`, return `True` if they are structurally identical and have the same node values, `False` otherwise.\n\nUse recursion. At each step:\n1. If both nodes are `None`, return `True`\n2. If only one is `None`, return `False`\n3. If values differ, return `False`\n4. Recurse on left children AND right children -- both must match\n\n**Complexity:** O(n) time, O(h) space where h is tree height (recursion stack).\n\n**Examples:**\n```python\n#     1         1\n#    / \\       / \\\n#   2   3     2   3\np = TreeNode(1, TreeNode(2), TreeNode(3))\nq = TreeNode(1, TreeNode(2), TreeNode(3))\nis_same_tree(p, q)  # True\n\n#   1       1\n#  /         \\\n# 2           2\np = TreeNode(1, TreeNode(2))\nq = TreeNode(1, None, TreeNode(2))\nis_same_tree(p, q)  # False\n\nis_same_tree(None, None)  # True\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "recursion",
+    "dfs",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef is_same_tree(p, q):\n    if not p and not q:\n        return True\n    if not p or not q:\n        return False\n    return p.val == q.val and is_same_tree(p.left, q.left) and is_same_tree(p.right, q.right)\n"
+    }
+  ],
+  "hints": [
+    "Base case: two None nodes are considered the same tree",
+    "If one node is None and the other is not, the trees differ",
+    "Compare values first, then recurse on both left and right subtrees",
+    "Use 'and' to combine all three conditions in one return statement"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_same_tree",
+          "params": ["p", "q"],
+          "description": "Define is_same_tree that accepts two tree roots"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

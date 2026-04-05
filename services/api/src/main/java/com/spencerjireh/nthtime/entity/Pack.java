@@ -46,6 +46,10 @@ public class Pack {
   @Column(name = "tags", columnDefinition = "text[]")
   private String[] tags = {};
 
+  @Type(StringArrayType.class)
+  @Column(name = "prerequisites", columnDefinition = "text[]")
+  private String[] prerequisites = {};
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "author_user_id")
   private AppUser authorUser;
@@ -131,6 +135,14 @@ public class Pack {
 
   public void setTags(String[] tags) {
     this.tags = tags;
+  }
+
+  public String[] getPrerequisites() {
+    return prerequisites;
+  }
+
+  public void setPrerequisites(String[] prerequisites) {
+    this.prerequisites = prerequisites;
   }
 
   public AppUser getAuthorUser() {

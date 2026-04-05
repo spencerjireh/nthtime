@@ -1,0 +1,41 @@
+{
+  "title": "Valid Palindrome (Reverse)",
+  "prompt": "Write a function in `solution.ts` that checks whether a string is a palindrome, considering only alphanumeric characters and ignoring case.\n\n**Approach -- Clean + Reverse Comparison:**\nFilter the string to keep only alphanumeric characters using `.replace()` with a regex, convert to lowercase with `.toLowerCase()`, then compare the cleaned string to its reverse. Reverse by splitting into an array with `.split('')`, calling `.reverse()`, and joining back with `.join('')`.\n\n**Requirements:**\n1. `export function isPalindrome(s: string): boolean` -- takes a string and returns `true` if it is a palindrome considering only alphanumeric characters (case-insensitive), `false` otherwise\n2. Use `.replace()` with a regex to filter non-alphanumeric characters\n3. Use `.toLowerCase()` for case-insensitive comparison\n4. Use `.split('').reverse().join('')` to reverse the cleaned string\n\n**Examples:**\n```typescript\nisPalindrome('A man, a plan, a canal: Panama'); // true\nisPalindrome('race a car');                      // false\nisPalindrome(' ');                               // true\n```\n\n**Complexity:**\n- Time: O(n) -- one pass to filter, one to reverse\n- Space: O(n) -- the cleaned string copy",
+  "difficulty": "beginner",
+  "tags": [
+    "string",
+    "palindrome",
+    "reverse"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function isPalindrome(s: string): boolean {\n  const cleaned = s.replace(/[^a-z0-9]/gi, '').toLowerCase();\n  return cleaned === cleaned.split('').reverse().join('');\n}\n"
+    }
+  ],
+  "hints": [
+    "Use a regex to strip non-alphanumeric characters: s.replace(/[^a-z0-9]/gi, '')",
+    "Convert the result to lowercase with .toLowerCase()",
+    "Reverse a string with .split('').reverse().join('')",
+    "Compare the cleaned string to its reversed version"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "isPalindrome",
+          "description": "Define an isPalindrome function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "isPalindrome",
+          "isDefault": false,
+          "description": "Export isPalindrome as a named export"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

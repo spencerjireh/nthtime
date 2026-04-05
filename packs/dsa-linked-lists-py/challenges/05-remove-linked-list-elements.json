@@ -1,0 +1,48 @@
+{
+  "title": "Remove Linked List Elements",
+  "prompt": "Write a `ListNode` class and a `remove_elements` function in `solution.py`:\n\n**Requirements:**\n1. `ListNode` class with `__init__(self, val=0, next=None)` -- stores `val` and `next` attributes\n2. `remove_elements(head, val)` -- removes all nodes from the linked list that have `node.val == val` and returns the new head\n\n**Algorithm (sentinel/dummy node):**\n- Create a `dummy = ListNode(0)` sentinel node and set `dummy.next = head`\n- Traverse with a `curr` pointer starting at `dummy`\n- While `curr.next` is not `None`: if `curr.next.val == val`, skip the node by setting `curr.next = curr.next.next`. Otherwise advance `curr` to `curr.next`\n- Return `dummy.next`\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```python\n# [1, 2, 6, 3, 4, 5, 6] val=6 -> [1, 2, 3, 4, 5]\n# [] val=1 -> []\n# [7, 7, 7, 7] val=7 -> []\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "dummy-node",
+    "removal",
+    "iterative"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef remove_elements(head, val):\n    dummy = ListNode(0)\n    dummy.next = head\n    curr = dummy\n    while curr.next:\n        if curr.next.val == val:\n            curr.next = curr.next.next\n        else:\n            curr = curr.next\n    return dummy.next\n"
+    }
+  ],
+  "hints": [
+    "A dummy node handles the case where the head itself needs removal",
+    "Check curr.next.val, not curr.val -- this lets you skip the target node",
+    "Only advance curr when you do NOT remove a node",
+    "Return dummy.next to get the real head"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "remove_elements",
+          "params": ["head", "val"],
+          "description": "Define remove_elements that accepts a head node and a value to remove"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop to traverse and remove matching nodes",
+          "hint": "while curr.next: checks each subsequent node for removal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

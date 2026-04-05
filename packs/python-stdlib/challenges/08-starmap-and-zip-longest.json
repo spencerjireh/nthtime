@@ -1,0 +1,66 @@
+{
+  "title": "Starmap and Zip Longest",
+  "prompt": "Write three functions in `solution.py` using `itertools.starmap` and `itertools.zip_longest`:\n\n**Requirements:**\n1. `apply_pairs(pairs, fn)` -- applies `fn` to each `(a, b)` pair using `itertools.starmap`, returns a list of results\n2. `parallel_max(lists)` -- takes a list of lists and returns a list with the element-wise maximum across all lists, using `itertools.zip_longest` with `fillvalue=float('-inf')` for shorter lists\n3. `interleave_longest(a, b)` -- interleaves elements from two lists, including remaining elements from the longer list, using `itertools.zip_longest`\n\n**Examples:**\n```python\napply_pairs([(1, 2), (3, 4)], lambda a, b: a + b)  # [3, 7]\nparallel_max([[1, 5, 3], [2, 4, 6]])                # [2, 5, 6]\ninterleave_longest([1, 2, 3], ['a', 'b'])            # [1, 'a', 2, 'b', 3]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "itertools",
+    "starmap",
+    "zip-longest"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from itertools import starmap, zip_longest\n\n\ndef apply_pairs(pairs, fn):\n    return list(starmap(fn, pairs))\n\n\ndef parallel_max(lists):\n    return [max(values) for values in zip_longest(*lists, fillvalue=float('-inf'))]\n\n\ndef interleave_longest(a, b):\n    sentinel = object()\n    result = []\n    for x, y in zip_longest(a, b, fillvalue=sentinel):\n        if x is not sentinel:\n            result.append(x)\n        if y is not sentinel:\n            result.append(y)\n    return result\n"
+    }
+  ],
+  "hints": [
+    "starmap(fn, iterable) unpacks each element as arguments to fn",
+    "zip_longest fills missing values with fillvalue (default None)",
+    "float('-inf') loses to any real number in max(), making it a safe fill for parallel_max",
+    "Use a sentinel object to distinguish fill values from real None elements"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "names": ["starmap", "zip_longest"],
+          "description": "Import starmap and zip_longest from itertools"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "apply_pairs",
+          "params": ["pairs", "fn"],
+          "description": "Define apply_pairs that applies a function to each pair using starmap"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "parallel_max",
+          "params": ["lists"],
+          "description": "Define parallel_max that computes element-wise maximum across lists"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "interleave_longest",
+          "params": ["a", "b"],
+          "description": "Define interleave_longest that interleaves two lists including remainders"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"starmap\"))",
+          "description": "Call starmap to apply a function to unpacked pairs",
+          "hint": "starmap(fn, [(a, b), ...]) calls fn(a, b) for each pair"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"zip_longest\"))",
+          "description": "Call zip_longest to zip iterables of different lengths",
+          "hint": "zip_longest(*iterables, fillvalue=...) pads shorter iterables"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "title": "Permutations and Combos",
+  "prompt": "Write three functions in `solution.py` using itertools permutation and combination generators:\n\n**Requirements:**\n1. `all_arrangements(items)` -- returns all permutations of `items` as a list of tuples, using `itertools.permutations`\n2. `combo_with_replacement(items, r)` -- returns all combinations of length `r` where elements can repeat, using `itertools.combinations_with_replacement`\n3. `power_set(items)` -- returns all subsets of all sizes (including the empty tuple), using `itertools.combinations` across a range of sizes\n\n**Examples:**\n```python\nall_arrangements([1, 2, 3])  # [(1,2,3), (1,3,2), (2,1,3), (2,3,1), (3,1,2), (3,2,1)]\n\ncombo_with_replacement([\"a\", \"b\"], 2)  # [(\"a\",\"a\"), (\"a\",\"b\"), (\"b\",\"b\")]\n\npower_set([1, 2])  # [(), (1,), (2,), (1, 2)]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "itertools",
+    "permutations",
+    "combinations",
+    "power-set",
+    "combinatorics"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import itertools\n\n\ndef all_arrangements(items):\n    return list(itertools.permutations(items))\n\n\ndef combo_with_replacement(items, r):\n    return list(itertools.combinations_with_replacement(items, r))\n\n\ndef power_set(items):\n    result = []\n    for size in range(len(items) + 1):\n        result.extend(itertools.combinations(items, size))\n    return result\n"
+    }
+  ],
+  "hints": [
+    "itertools.permutations(iterable) yields all orderings of the full sequence",
+    "itertools.combinations_with_replacement(iterable, r) allows the same element to appear multiple times",
+    "The power set of n items has 2^n subsets, including the empty set",
+    "Loop over range(len(items) + 1) and collect combinations of each size"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "description": "Import the itertools module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "all_arrangements",
+          "params": ["items"],
+          "description": "Define all_arrangements that accepts items"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "combo_with_replacement",
+          "params": ["items", "r"],
+          "description": "Define combo_with_replacement that accepts items and r"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "power_set",
+          "params": ["items"],
+          "description": "Define power_set that accepts items"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"permutations\")))",
+          "description": "Use itertools.permutations to generate all orderings",
+          "hint": "Call itertools.permutations(items) for all arrangements"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"combinations_with_replacement\")))",
+          "description": "Use itertools.combinations_with_replacement for combos with repeats",
+          "hint": "Call itertools.combinations_with_replacement(items, r)"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"combinations\")))",
+          "description": "Use itertools.combinations for each subset size in power_set",
+          "hint": "Loop over sizes 0..len(items) and collect combinations of each size"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

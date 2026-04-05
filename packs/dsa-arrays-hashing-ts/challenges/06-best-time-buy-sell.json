@@ -1,0 +1,47 @@
+{
+  "title": "Best Time to Buy and Sell Stock",
+  "prompt": "Given an array `prices` where `prices[i]` is the price of a stock on the i-th day, find the maximum profit from one buy and one sell. If no profit is possible, return `0`.\n\n**Approach:** Single-pass minimum tracking. Track the minimum price seen so far and compute the profit at each step.\n\n**Requirements:**\n1. Define and export `maxProfit(prices: number[]): number` in `solution.ts`\n2. Initialize `minPrice` to `Infinity` and `profit` to `0`\n3. Iterate through `prices`:\n   - Update `minPrice` if the current price is lower\n   - Update `profit` if selling at the current price yields more than the current best\n4. Return `profit`\n\n**Examples:**\n```typescript\nmaxProfit([7, 1, 5, 3, 6, 4])  // 5  (buy at 1, sell at 6)\nmaxProfit([7, 6, 4, 3, 1])     // 0  (no profit possible)\nmaxProfit([1, 2])              // 1\nmaxProfit([2, 4, 1])           // 2\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "greedy", "stock-prices"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function maxProfit(prices: number[]): number {\n  let minPrice = Infinity;\n  let profit = 0;\n  for (const price of prices) {\n    if (price < minPrice) {\n      minPrice = price;\n    } else if (price - minPrice > profit) {\n      profit = price - minPrice;\n    }\n  }\n  return profit;\n}\n"
+    }
+  ],
+  "hints": [
+    "You must buy before you sell -- scan left to right",
+    "Track the lowest price seen so far as you iterate",
+    "At each step, the best profit is current price minus the lowest price so far",
+    "Use Infinity as the initial minPrice so any real price is lower"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "maxProfit",
+          "description": "Define a maxProfit function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "maxProfit",
+          "isDefault": false,
+          "description": "Export maxProfit as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_in_statement)",
+          "description": "Iterate through prices with a for...of loop"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Use conditional logic to track min price and max profit"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

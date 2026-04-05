@@ -1,0 +1,47 @@
+{
+  "title": "Convert 1D Array Into 2D Array",
+  "prompt": "Given a 1D array `original` and two integers `m` (rows) and `n` (columns), convert it into an `m x n` 2D array. If it is impossible (length mismatch), return an empty array.\n\n**Approach:** Index arithmetic. Check if `original.length === m * n`, then slice the array into rows of length `n`.\n\n**Requirements:**\n1. Define and export `construct2dArray(original: number[], m: number, n: number): number[][]` in `solution.ts`\n2. If `original.length !== m * n`, return `[]`\n3. Build the 2D array by slicing `original` into `m` rows, each of length `n`\n4. Use `original.slice(i * n, (i + 1) * n)` for each row `i`\n\n**Examples:**\n```typescript\nconstruct2dArray([1, 2, 3, 4], 2, 2)  // [[1, 2], [3, 4]]\nconstruct2dArray([1, 2, 3], 1, 3)     // [[1, 2, 3]]\nconstruct2dArray([1, 2], 1, 1)        // []  (2 !== 1*1)\n```\n\n**Complexity:** O(m * n) time, O(m * n) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "matrix", "index-arithmetic"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function construct2dArray(original: number[], m: number, n: number): number[][] {\n  if (original.length !== m * n) {\n    return [];\n  }\n  const result: number[][] = [];\n  for (let i = 0; i < m; i++) {\n    result.push(original.slice(i * n, (i + 1) * n));\n  }\n  return result;\n}\n"
+    }
+  ],
+  "hints": [
+    "First check if the total elements match m * n",
+    "Each row i starts at index i * n and ends at (i + 1) * n",
+    "Use .slice(start, end) to extract each row",
+    "Build the result array row by row in a for loop"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "construct2dArray",
+          "description": "Define a construct2dArray function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "construct2dArray",
+          "isDefault": false,
+          "description": "Export construct2dArray as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Check if conversion is possible before proceeding"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to build rows from the 1D array"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

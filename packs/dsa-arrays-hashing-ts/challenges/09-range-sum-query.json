@@ -1,0 +1,47 @@
+{
+  "title": "Range Sum Query (Prefix Sum)",
+  "prompt": "Implement a `NumArray` class that supports efficient range sum queries on an immutable array.\n\n**Approach:** Prefix sum array. Precompute cumulative sums so each query is O(1).\n\n**Requirements:**\n1. Define and export class `NumArray` in `solution.ts`\n2. `constructor(nums: number[])` -- build a prefix sum array where `prefix[i]` is the sum of `nums[0..i-1]`. Set `prefix[0] = 0`\n3. `sumRange(left: number, right: number): number` -- return the sum of elements from index `left` to `right` (inclusive) using `prefix[right + 1] - prefix[left]`\n\n**Examples:**\n```typescript\nconst arr = new NumArray([-2, 0, 3, -5, 2, -1]);\narr.sumRange(0, 2);  //  1  (-2 + 0 + 3)\narr.sumRange(2, 5);  // -1  (3 + -5 + 2 + -1)\narr.sumRange(0, 5);  // -3  (sum of all)\n```\n\n**Complexity:** O(n) init time, O(1) per query, O(n) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "prefix-sum", "class"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class NumArray {\n  private prefix: number[];\n\n  constructor(nums: number[]) {\n    this.prefix = [0];\n    for (const num of nums) {\n      this.prefix.push(this.prefix[this.prefix.length - 1] + num);\n    }\n  }\n\n  sumRange(left: number, right: number): number {\n    return this.prefix[right + 1] - this.prefix[left];\n  }\n}\n"
+    }
+  ],
+  "hints": [
+    "A prefix sum array stores cumulative sums: prefix[i] = sum(nums[0..i-1])",
+    "Start the prefix array with [0] so that prefix[1] = nums[0]",
+    "Build prefix by pushing prefix[prefix.length - 1] + num for each num",
+    "sumRange(left, right) = prefix[right + 1] - prefix[left]"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "NumArray",
+          "description": "Define a NumArray class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "NumArray",
+          "isDefault": false,
+          "description": "Export NumArray as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(method_definition name: (property_identifier) @name (#eq? @name \"sumRange\"))",
+          "description": "Define a sumRange method that returns the sum from left to right inclusive"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_in_statement)",
+          "description": "Use a for loop to build the prefix sum array"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -11,5 +11,6 @@ public record PackChallengesResponse(PackDetail pack, List<ChallengeSummaryRespo
       String description,
       String language,
       String framework,
-      String[] tags) {}
+      String[] tags,
+      String[] prerequisites) {}
 }

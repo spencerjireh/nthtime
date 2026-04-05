@@ -1,0 +1,61 @@
+{
+  "title": "Average of Levels",
+  "prompt": "Write a `TreeNode` class and an `averageOfLevels` function in `solution.ts`:\n\n**TreeNode class:**\n- `constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null)` -- store val, left child, and right child\n\n**Function: `averageOfLevels(root) => number[]`**\nGiven the root of a binary tree, return an array of the average value of the nodes on each level. Use **BFS** (level-order traversal).\n\nApproach:\n1. If `root` is `null`, return an empty array\n2. Initialize an array as a queue with the root and an empty `result` array\n3. While the queue is not empty:\n   - Record `levelSize = queue.length`\n   - Sum all node values at this level by processing `levelSize` nodes (using `queue.shift()`)\n   - Push `levelSum / levelSize` to `result`\n   - Push non-null children to the queue\n4. Return `result`\n\n**Complexity:** O(n) time, O(w) space where w is the maximum width of the tree.\n\n**Examples:**\n```typescript\n//       3\n//      / \\\n//     9  20\n//       /  \\\n//      15   7\nconst root = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));\naverageOfLevels(root);  // [3.0, 14.5, 11.0]\n\n//       3\n//      / \\\n//     9  20\n//    / \\\n//   15  7\nconst root2 = new TreeNode(3, new TreeNode(9, new TreeNode(15), new TreeNode(7)), new TreeNode(20));\naverageOfLevels(root2);  // [3.0, 14.5, 11.0]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "bfs",
+    "iterative",
+    "averages",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class TreeNode {\n  val: number;\n  left: TreeNode | null;\n  right: TreeNode | null;\n  constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null) {\n    this.val = val;\n    this.left = left;\n    this.right = right;\n  }\n}\n\nexport function averageOfLevels(root: TreeNode | null): number[] {\n  if (!root) return [];\n  const queue: TreeNode[] = [root];\n  const result: number[] = [];\n  while (queue.length) {\n    const levelSize = queue.length;\n    let levelSum = 0;\n    for (let i = 0; i < levelSize; i++) {\n      const node = queue.shift()!;\n      levelSum += node.val;\n      if (node.left) queue.push(node.left);\n      if (node.right) queue.push(node.right);\n    }\n    result.push(levelSum / levelSize);\n  }\n  return result;\n}\n"
+    }
+  ],
+  "hints": [
+    "Use an array with .shift() and .push() as a BFS queue",
+    "At each level, use queue.length to know how many nodes to process",
+    "Sum all values at the current level, then divide by the count",
+    "Use regular division (/) to get float averages"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TreeNode",
+          "isDefault": false,
+          "description": "Export the TreeNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "averageOfLevels",
+          "params": ["root"],
+          "description": "Define averageOfLevels that accepts a tree root"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "averageOfLevels",
+          "isDefault": false,
+          "description": "Export the averageOfLevels function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for iterative BFS traversal",
+          "hint": "Use 'while (queue.length)' to process nodes level by level"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

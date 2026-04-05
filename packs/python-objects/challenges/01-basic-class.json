@@ -55,8 +55,8 @@
         },
         {
           "type": "sexpression",
-          "pattern": "(raise_statement)",
-          "description": "Raise an exception for insufficient funds",
+          "pattern": "(function_definition name: (identifier) @name (#eq? @name \"withdraw\") body: (block (if_statement consequence: (block (raise_statement)))))",
+          "description": "Raise ValueError in withdraw for insufficient funds",
           "hint": "Use raise ValueError('Insufficient funds') when amount exceeds balance"
         }
       ]

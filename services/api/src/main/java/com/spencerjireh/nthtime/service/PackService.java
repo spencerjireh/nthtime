@@ -77,6 +77,7 @@ public class PackService {
                       pack.getVersion(),
                       pack.getAuthor(),
                       pack.getTags(),
+                      pack.getPrerequisites(),
                       challenges.size(),
                       (int) passedCount,
                       pack.getVisibility());
@@ -153,7 +154,8 @@ public class PackService {
             pack.getDescription(),
             pack.getLanguage(),
             pack.getFramework(),
-            pack.getTags());
+            pack.getTags(),
+            pack.getPrerequisites());
 
     return new PackChallengesResponse(packDetail, summaries);
   }

@@ -1,23 +1,23 @@
 {
   "title": "Exception Patterns",
-  "prompt": "Write three exception-handling utilities in `solution.py`:\n\n**Requirements:**\n1. `collect_errors(validators, data)` -- runs ALL validator functions (each takes `data` and may raise). Collects all exceptions into a list and returns them. Returns an empty list if all pass.\n2. `retry_on(exception_types, max_retries=3)` -- decorator that retries the decorated function up to `max_retries` times when it raises one of the given exception types. Re-raises on the final failure.\n3. `null_safe(fn)` -- decorator that catches `AttributeError` and `TypeError` and returns `None` instead.\n\n**Examples:**\n```python\ndef check_name(d):\n    if \"name\" not in d:\n        raise ValueError(\"missing name\")\n\ndef check_age(d):\n    if \"age\" not in d:\n        raise ValueError(\"missing age\")\n\ncollect_errors([check_name, check_age], {})  # [ValueError, ValueError]\ncollect_errors([check_name], {\"name\": \"A\"})  # []\n\n@retry_on((ConnectionError,), max_retries=2)\ndef flaky():\n    ...\n\n@null_safe\ndef get_upper(s):\n    return s.upper()\n\nget_upper(None)  # None (AttributeError suppressed)\n```",
+  "prompt": "Write three exception-handling utilities in `solution.py`:\n\n**Requirements:**\n1. `collect_errors(validators, data)` -- runs ALL validator functions (each takes `data` and may raise). Collects all exceptions into a list and returns them. Returns an empty list if all pass.\n2. `error_boundary(fn, handler)` -- calls `fn()` and returns its result. If `fn()` raises any `Exception`, calls `handler(exception)` and returns the handler's result instead.\n3. `null_safe(fn)` -- decorator that catches `AttributeError` and `TypeError` and returns `None` instead.\n\n**Examples:**\n```python\ndef check_name(d):\n    if \"name\" not in d:\n        raise ValueError(\"missing name\")\n\ndef check_age(d):\n    if \"age\" not in d:\n        raise ValueError(\"missing age\")\n\ncollect_errors([check_name, check_age], {})  # [ValueError, ValueError]\ncollect_errors([check_name], {\"name\": \"A\"})  # []\n\nerror_boundary(lambda: int(\"abc\"), lambda e: f\"failed: {e}\")\n# \"failed: invalid literal for int() with base 10: 'abc'\"\n\nerror_boundary(lambda: 42, lambda e: -1)  # 42 (no exception)\n\n@null_safe\ndef get_upper(s):\n    return s.upper()\n\nget_upper(None)  # None (AttributeError suppressed)\n```",
   "difficulty": "advanced",
   "tags": [
     "exceptions",
     "patterns",
-    "decorators",
+    "error-handling",
     "advanced"
   ],
   "timeEstimateSeconds": 420,
   "files": [
     {
       "path": "solution.py",
-      "content": "import functools\n\n\ndef collect_errors(validators, data):\n    errors = []\n    for validator in validators:\n        try:\n            validator(data)\n        except Exception as e:\n            errors.append(e)\n    return errors\n\n\ndef retry_on(exception_types, max_retries=3):\n    def decorator(fn):\n        @functools.wraps(fn)\n        def wrapper(*args, **kwargs):\n            last_error = None\n            for attempt in range(max_retries):\n                try:\n                    return fn(*args, **kwargs)\n                except exception_types as e:\n                    last_error = e\n            raise last_error\n        return wrapper\n    return decorator\n\n\ndef null_safe(fn):\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        try:\n            return fn(*args, **kwargs)\n        except (AttributeError, TypeError):\n            return None\n    return wrapper\n"
+      "content": "import functools\n\n\ndef collect_errors(validators, data):\n    errors = []\n    for validator in validators:\n        try:\n            validator(data)\n        except Exception as e:\n            errors.append(e)\n    return errors\n\n\ndef error_boundary(fn, handler):\n    try:\n        return fn()\n    except Exception as e:\n        return handler(e)\n\n\ndef null_safe(fn):\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        try:\n            return fn(*args, **kwargs)\n        except (AttributeError, TypeError):\n            return None\n    return wrapper\n"
     }
   ],
   "hints": [
     "collect_errors catches exceptions but continues to the next validator",
-    "retry_on is a parameterized decorator (3 levels of nesting)",
+    "error_boundary calls fn() in a try block and passes exceptions to handler",
     "except (TypeA, TypeB) catches multiple exception types",
     "null_safe wraps any function to return None on attribute/type errors"
   ],
@@ -37,9 +37,9 @@
         },
         {
           "type": "pythonFunctionDef",
-          "name": "retry_on",
-          "params": ["exception_types", "max_retries"],
-          "description": "Define retry_on parameterized decorator"
+          "name": "error_boundary",
+          "params": ["fn", "handler"],
+          "description": "Define error_boundary that delegates exceptions to a handler"
         },
         {
           "type": "pythonFunctionDef",
@@ -55,9 +55,9 @@
         },
         {
           "type": "sexpression",
-          "pattern": "(function_definition (block (function_definition)))",
-          "description": "Use nested function definitions for decorators",
-          "hint": "Decorators use nested functions: outer returns inner"
+          "pattern": "(function_definition (block (decorated_definition (function_definition))))",
+          "description": "Use a nested function definition for the null_safe decorator",
+          "hint": "null_safe uses a nested wrapper function"
         }
       ]
     },

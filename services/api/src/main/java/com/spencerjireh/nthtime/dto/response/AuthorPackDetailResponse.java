@@ -12,6 +12,7 @@ public record AuthorPackDetailResponse(
     String framework,
     String version,
     String[] tags,
+    String[] prerequisites,
     String visibility,
     List<AuthorChallengeSummary> challenges) {
   public record AuthorChallengeSummary(

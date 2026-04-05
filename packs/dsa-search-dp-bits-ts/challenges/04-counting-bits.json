@@ -1,0 +1,46 @@
+{
+  "title": "Counting Bits",
+  "prompt": "Count the number of 1-bits for every integer from 0 to n using dynamic programming in `solution.ts`.\n\n**Approach:**\nBuild a DP array where `dp[i]` stores the number of 1-bits in the binary representation of `i`. Use the recurrence `dp[i] = dp[i >> 1] + (i & 1)`. The key insight: right-shifting `i` by 1 removes the last bit, and `i & 1` tells you what that last bit was. So the popcount of `i` is the popcount of `i / 2` (floored) plus the last bit.\n\n**Requirements:**\n1. Export `countBits(n: number): number[]` -- takes a non-negative integer `n` and returns an array of length `n + 1` where element `i` is the number of 1-bits in the binary representation of `i`\n2. Use a `for` loop from 1 to n\n3. Use the bit-shift DP recurrence: `dp[i] = dp[i >> 1] + (i & 1)`\n\n**Examples:**\n```typescript\ncountBits(2)  // [0, 1, 1]\ncountBits(5)  // [0, 1, 1, 2, 1, 2]\ncountBits(0)  // [0]\n```\n\n**Complexity:** O(n) time, O(n) space.",
+  "difficulty": "beginner",
+  "tags": [
+    "dynamic-programming",
+    "bit-manipulation",
+    "arrays"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function countBits(n: number): number[] {\n  const dp = new Array<number>(n + 1).fill(0);\n  for (let i = 1; i <= n; i++) {\n    dp[i] = dp[i >> 1] + (i & 1);\n  }\n  return dp;\n}\n"
+    }
+  ],
+  "hints": [
+    "Initialize dp as an array of n + 1 zeros: new Array(n + 1).fill(0)",
+    "i >> 1 is the same as Math.floor(i / 2) (right shift removes the last bit)",
+    "i & 1 extracts the least significant bit (0 or 1)",
+    "dp[0] = 0 is the base case (zero has no 1-bits)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "countBits",
+          "description": "Define a countBits function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "countBits",
+          "isDefault": false,
+          "description": "Export countBits as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to build the DP array"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

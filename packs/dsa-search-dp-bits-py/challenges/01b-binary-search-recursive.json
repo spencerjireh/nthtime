@@ -1,0 +1,36 @@
+{
+  "title": "Binary Search (Recursive)",
+  "prompt": "Implement a recursive binary search in `solution.py`.\n\n**Approach:**\nDefine an inner helper function that takes `left` and `right` bounds. Base case: if `left > right`, return `-1`. Otherwise compute `mid = (left + right) // 2`. If the middle element equals the target, return `mid`. If it is less than the target, recurse on the right half. Otherwise recurse on the left half.\n\n**Requirements:**\n1. `search(nums, target)` -- takes a sorted list of integers `nums` and an integer `target`, returns the index of `target` in `nums` or `-1` if not found\n2. Use a recursive helper function (no while loop)\n3. The outer function calls the helper with initial bounds `0` and `len(nums) - 1`\n\n**Examples:**\n```python\nsearch([-1, 0, 3, 5, 9, 12], 9)   # 4\nsearch([-1, 0, 3, 5, 9, 12], 2)   # -1\nsearch([5], 5)                      # 0\nsearch([], 3)                       # -1\n```\n\n**Complexity:** O(log n) time, O(log n) space (call stack).",
+  "difficulty": "beginner",
+  "tags": [
+    "binary-search",
+    "recursion",
+    "divide-and-conquer"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def search(nums, target):\n    def helper(left, right):\n        if left > right:\n            return -1\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            return helper(mid + 1, right)\n        else:\n            return helper(left, mid - 1)\n    return helper(0, len(nums) - 1)\n"
+    }
+  ],
+  "hints": [
+    "Define a nested helper(left, right) function inside search",
+    "Base case: if left > right, the target is not in the array",
+    "Recurse on helper(mid + 1, right) when nums[mid] < target",
+    "Remember to return the result of each recursive call"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "search",
+          "params": ["nums", "target"],
+          "description": "Define a search function that accepts nums and target parameters"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

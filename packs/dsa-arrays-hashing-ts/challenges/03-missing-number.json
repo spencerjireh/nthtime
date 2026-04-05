@@ -1,0 +1,43 @@
+{
+  "title": "Missing Number",
+  "prompt": "Given an array `nums` containing `n` distinct numbers in the range `[0, n]`, return the only number in the range that is missing from the array.\n\n**Approach:** Use the Gauss summation formula. The sum of `0..n` is `n * (n + 1) / 2`. Subtract the actual sum of the array to find the missing number.\n\n**Requirements:**\n1. Define and export `missingNumber(nums: number[]): number` in `solution.ts`\n2. Compute the expected sum using `n * (n + 1) / 2` where `n = nums.length`\n3. Compute the actual sum using `.reduce()`\n4. Return the difference\n\n**Examples:**\n```typescript\nmissingNumber([3, 0, 1])                    // 2\nmissingNumber([0, 1])                        // 2\nmissingNumber([9, 6, 4, 2, 3, 5, 7, 0, 1])  // 8\nmissingNumber([0])                           // 1\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "math", "gauss-sum"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function missingNumber(nums: number[]): number {\n  const n = nums.length;\n  const expected = (n * (n + 1)) / 2;\n  const actual = nums.reduce((sum, num) => sum + num, 0);\n  return expected - actual;\n}\n"
+    }
+  ],
+  "hints": [
+    "The numbers are in range [0, n] but one is missing",
+    "The sum of 0 + 1 + 2 + ... + n equals n * (n + 1) / 2",
+    "Use .reduce() to compute the actual sum of the array",
+    "The missing number is the difference between expected and actual sums"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "missingNumber",
+          "description": "Define a missingNumber function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "missingNumber",
+          "isDefault": false,
+          "description": "Export missingNumber as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call_expression function: (member_expression property: (property_identifier) @name (#eq? @name \"reduce\")))",
+          "description": "Use .reduce() to compute the actual total of the array",
+          "hint": "Use nums.reduce((sum, num) => sum + num, 0) to add up all elements"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

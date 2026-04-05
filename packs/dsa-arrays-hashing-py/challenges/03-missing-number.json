@@ -1,0 +1,38 @@
+{
+  "title": "Missing Number",
+  "prompt": "Given an array `nums` containing `n` distinct numbers in the range `[0, n]`, return the only number in the range that is missing from the array.\n\n**Approach:** Use the Gauss summation formula. The sum of `0..n` is `n*(n+1)//2`. Subtract the actual sum of the array to find the missing number.\n\n**Requirements:**\n1. Define `missing_number(nums)` in `solution.py`\n2. Compute the expected sum using `n * (n + 1) // 2` where `n = len(nums)`\n3. Subtract `sum(nums)` from the expected sum\n4. Return the difference\n\n**Examples:**\n```python\nmissing_number([3, 0, 1])                    # 2\nmissing_number([0, 1])                        # 2\nmissing_number([9, 6, 4, 2, 3, 5, 7, 0, 1])  # 8\nmissing_number([0])                           # 1\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "math", "gauss-sum"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def missing_number(nums):\n    n = len(nums)\n    expected = n * (n + 1) // 2\n    return expected - sum(nums)\n"
+    }
+  ],
+  "hints": [
+    "The numbers are in range [0, n] but one is missing",
+    "The sum of 0 + 1 + 2 + ... + n equals n*(n+1)//2",
+    "Use Python's built-in sum() to get the actual total",
+    "The missing number is the difference between expected and actual sums"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "missing_number",
+          "params": ["nums"],
+          "description": "Define a missing_number function that accepts nums"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"sum\"))",
+          "description": "Use sum() to compute the actual total of the array",
+          "hint": "Use sum(nums) to add up all the elements"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

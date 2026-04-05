@@ -1,0 +1,21 @@
+{
+  "name": "DSA: Two Pointers & Strings (TypeScript)",
+  "slug": "dsa-two-pointers-ts",
+  "description": "Two-pointer techniques, string manipulation, and stack-based validation for coding interviews.",
+  "language": "typescript",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["typescript", "dsa", "two-pointers", "strings", "stack", "interview"],
+  "prerequisites": [],
+  "challenges": [
+    "challenges/01-move-zeroes.json",
+    "challenges/02-squares-sorted-array.json",
+    "challenges/03-backspace-string-compare.json",
+    "challenges/04a-valid-palindrome-two-pointers.json",
+    "challenges/04b-valid-palindrome-reverse.json",
+    "challenges/05a-valid-anagram-counter.json",
+    "challenges/05b-valid-anagram-hash-map.json",
+    "challenges/06-valid-parentheses.json",
+    "challenges/07-is-subsequence.json"
+  ]
+}

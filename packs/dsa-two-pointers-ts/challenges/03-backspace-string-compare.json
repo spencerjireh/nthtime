@@ -1,0 +1,46 @@
+{
+  "title": "Backspace String Compare",
+  "prompt": "Write a function in `solution.ts` that compares two strings after applying backspace operations, using O(1) extra space.\n\n**Approach -- Reverse Traversal with Skip Counter:**\nProcess each string from right to left. Maintain a `skip` counter: when you encounter `'#'`, increment `skip`; when `skip > 0` on a regular character, decrement `skip` and skip that character. The next character that is not skipped is the current \"real\" character. Compare the two strings character by character using this approach. Use a `while` loop to walk both strings simultaneously.\n\n**Requirements:**\n1. `export function backspaceCompare(s: string, t: string): boolean` -- takes two strings and returns `true` if they are equal after processing backspaces, `false` otherwise\n2. `'#'` means backspace (delete the previous character)\n3. Use O(1) space -- do not build the final strings; walk backwards with skip counters\n4. Use a `while` loop for the reverse traversal\n\n**Examples:**\n```typescript\nbackspaceCompare('ab#c', 'ad#c');  // true  (both become 'ac')\nbackspaceCompare('ab##', 'c#d#');  // true  (both become '')\nbackspaceCompare('a#c', 'b');      // false ('c' !== 'b')\n```\n\n**Complexity:**\n- Time: O(n + m) where n and m are the lengths of the two strings\n- Space: O(1) -- only pointer and counter variables",
+  "difficulty": "intermediate",
+  "tags": [
+    "two-pointers",
+    "string",
+    "stack"
+  ],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function backspaceCompare(s: string, t: string): boolean {\n  function nextValid(str: string, index: number): number {\n    let skip = 0;\n    while (index >= 0) {\n      if (str[index] === '#') {\n        skip++;\n        index--;\n      } else if (skip > 0) {\n        skip--;\n        index--;\n      } else {\n        break;\n      }\n    }\n    return index;\n  }\n\n  let i = s.length - 1;\n  let j = t.length - 1;\n  while (i >= 0 || j >= 0) {\n    i = nextValid(s, i);\n    j = nextValid(t, j);\n    if (i >= 0 && j >= 0) {\n      if (s[i] !== t[j]) {\n        return false;\n      }\n    } else if (i >= 0 || j >= 0) {\n      return false;\n    }\n    i--;\n    j--;\n  }\n  return true;\n}\n"
+    }
+  ],
+  "hints": [
+    "Walk both strings from the end toward the beginning",
+    "When you see '#', increment a skip counter instead of immediately deleting",
+    "When skip > 0 and you see a regular character, decrement skip and move on",
+    "Compare the two 'surviving' characters at each step; if one string ends early, they differ"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "backspaceCompare",
+          "description": "Define a backspaceCompare function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "backspaceCompare",
+          "isDefault": false,
+          "description": "Export backspaceCompare as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for reverse traversal"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Smallest Letter Greater Than Target",
+  "prompt": "Implement a modified binary search to find the next greatest letter in `solution.py`.\n\n**Approach:**\nUse binary search with `left` and `right` pointers on a sorted list of characters. At each step, compute `mid = (left + right) // 2`. If `letters[mid] <= target`, move `left` to `mid + 1`. Otherwise, move `right` to `mid`. When the loop ends (`left == right`), `left` points to the smallest letter greater than target. If `left` equals `len(letters)`, wrap around and return `letters[0]`.\n\n**Requirements:**\n1. `next_greatest_letter(letters, target)` -- takes a sorted list of lowercase letters and a target character, returns the smallest character strictly greater than target\n2. Use a `while left < right` binary search loop\n3. If no letter is greater than target, wrap around to the first letter\n\n**Examples:**\n```python\nnext_greatest_letter([\"c\", \"f\", \"j\"], \"a\")        # \"c\"\nnext_greatest_letter([\"c\", \"f\", \"j\"], \"c\")        # \"f\"\nnext_greatest_letter([\"c\", \"f\", \"j\"], \"d\")        # \"f\"\nnext_greatest_letter([\"x\", \"x\", \"y\", \"y\"], \"z\")  # \"x\"\n```\n\n**Complexity:** O(log n) time, O(1) space.",
+  "difficulty": "beginner",
+  "tags": [
+    "binary-search",
+    "arrays",
+    "characters"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def next_greatest_letter(letters, target):\n    left, right = 0, len(letters)\n    while left < right:\n        mid = (left + right) // 2\n        if letters[mid] <= target:\n            left = mid + 1\n        else:\n            right = mid\n    return letters[left % len(letters)]\n"
+    }
+  ],
+  "hints": [
+    "Use left = 0 and right = len(letters) (not len - 1) to allow wrapping",
+    "When letters[mid] <= target, the answer is to the right: set left = mid + 1",
+    "When letters[mid] > target, mid itself could be the answer: set right = mid",
+    "Use left % len(letters) to wrap around when all letters are <= target"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "next_greatest_letter",
+          "params": ["letters", "target"],
+          "description": "Define a next_greatest_letter function that accepts letters and target parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for binary search"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

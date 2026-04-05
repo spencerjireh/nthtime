@@ -59,8 +59,8 @@
         },
         {
           "type": "sexpression",
-          "pattern": "(yield)",
-          "description": "Use yield to make lcg an infinite generator"
+          "pattern": "(function_definition name: (identifier) @name (#eq? @name \"lcg\") body: (block (while_statement)))",
+          "description": "Use yield in lcg with an infinite while loop"
         },
         {
           "type": "sexpression",

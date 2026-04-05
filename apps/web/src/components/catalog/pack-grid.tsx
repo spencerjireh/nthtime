@@ -23,6 +23,8 @@ export function PackGrid({ packs, isLoading, searchQuery }: PackGridProps) {
     return <EmptyState variant="no-packs" />;
   }
 
+  const packLookup = packs.map((p) => ({ slug: p.slug, name: p.name }));
+
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {packs.map((pack) => (
@@ -34,6 +36,8 @@ export function PackGrid({ packs, isLoading, searchQuery }: PackGridProps) {
           language={pack.language}
           framework={pack.framework}
           tags={pack.tags}
+          prerequisites={pack.prerequisites}
+          allPacks={packLookup}
           challengeCount={pack.challengeCount}
           passedCount={pack.passedCount}
         />

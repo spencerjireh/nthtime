@@ -10,4 +10,5 @@ public record CreatePackRequest(
     String framework,
     String version,
     String[] tags,
+    String[] prerequisites,
     String visibility) {}

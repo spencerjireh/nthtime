@@ -1,0 +1,66 @@
+{
+  "title": "Product and Combinations",
+  "prompt": "Write three functions in `solution.py` using itertools combinatoric generators:\n\n**Requirements:**\n1. `coordinate_grid(rows, cols)` -- returns a list of `(r, c)` tuples for all coordinates in a grid, using `itertools.product`\n2. `choose_pairs(items)` -- returns all 2-element combinations as a list of tuples, using `itertools.combinations`\n3. `all_subsets(items, size)` -- returns all combinations of the given `size` as a list of tuples, using `itertools.combinations`\n\n**Examples:**\n```python\ncoordinate_grid(2, 3)    # [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]\nchoose_pairs([\"a\", \"b\", \"c\"])  # [(\"a\", \"b\"), (\"a\", \"c\"), (\"b\", \"c\")]\nall_subsets([1, 2, 3], 2)      # [(1, 2), (1, 3), (2, 3)]\nall_subsets([1, 2, 3], 1)      # [(1,), (2,), (3,)]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "itertools",
+    "product",
+    "combinations",
+    "combinatorics"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import itertools\n\n\ndef coordinate_grid(rows, cols):\n    return list(itertools.product(range(rows), range(cols)))\n\n\ndef choose_pairs(items):\n    return list(itertools.combinations(items, 2))\n\n\ndef all_subsets(items, size):\n    return list(itertools.combinations(items, size))\n"
+    }
+  ],
+  "hints": [
+    "itertools.product(A, B) yields all pairs (a, b) with a from A and b from B",
+    "itertools.combinations(iterable, r) yields r-length subsequences in sorted order",
+    "range(n) produces 0, 1, ..., n-1 which works well with product for grids",
+    "combinations never repeats elements -- (a, b) appears but not (b, a)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "description": "Import the itertools module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "coordinate_grid",
+          "params": ["rows", "cols"],
+          "description": "Define coordinate_grid that accepts rows and cols"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "choose_pairs",
+          "params": ["items"],
+          "description": "Define choose_pairs that accepts items"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "all_subsets",
+          "params": ["items", "size"],
+          "description": "Define all_subsets that accepts items and size"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"product\")))",
+          "description": "Use itertools.product for Cartesian product of ranges",
+          "hint": "Call itertools.product(range(rows), range(cols)) for the grid"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"combinations\")))",
+          "description": "Use itertools.combinations for choosing subsets",
+          "hint": "Call itertools.combinations(items, r) where r is the subset size"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

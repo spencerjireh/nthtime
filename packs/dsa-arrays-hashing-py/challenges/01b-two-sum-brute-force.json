@@ -1,0 +1,38 @@
+{
+  "title": "Two Sum (Brute Force)",
+  "prompt": "Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\n**Approach:** Use nested loops to check every pair for O(n^2) time complexity.\n\n**Requirements:**\n1. Define `two_sum(nums, target)` in `solution.py`\n2. Use an outer loop over each index `i`\n3. Use an inner loop over each index `j > i`\n4. If `nums[i] + nums[j] == target`, return `[i, j]`\n\n**Constraints:**\n- Each input has exactly one solution\n- You may not use the same element twice\n\n**Examples:**\n```python\ntwo_sum([2, 7, 11, 15], 9)  # [0, 1]\ntwo_sum([3, 2, 4], 6)       # [1, 2]\ntwo_sum([3, 3], 6)          # [0, 1]\n```\n\n**Complexity:** O(n^2) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "brute-force", "two-sum"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i + 1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []\n"
+    }
+  ],
+  "hints": [
+    "Start with two nested for loops",
+    "The outer loop picks the first element, the inner loop picks the second",
+    "The inner loop should start at i + 1 to avoid using the same element twice",
+    "Compare nums[i] + nums[j] against the target"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "two_sum",
+          "params": ["nums", "target"],
+          "description": "Define a two_sum function that accepts nums and target"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement body: (block (for_statement)))",
+          "description": "Use nested for loops to check every pair",
+          "hint": "The inner for loop should be inside the body of the outer for loop"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

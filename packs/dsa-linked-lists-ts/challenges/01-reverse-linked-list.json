@@ -1,0 +1,60 @@
+{
+  "title": "Reverse Linked List",
+  "prompt": "Write a `ListNode` class and a `reverseList` function in `solution.ts`:\n\n**Requirements:**\n1. `ListNode` class with `val: number` and `next: ListNode | null` properties, and a constructor `constructor(val = 0, next: ListNode | null = null)`\n2. `reverseList(head)` -- reverses a singly linked list in-place using three pointers (`prev`, `curr`, `next`) and returns the new head\n\n**Algorithm:**\n- Initialize `prev = null` and `curr = head`\n- While `curr` is not `null`: save `curr.next` into `next`, point `curr.next` to `prev`, advance `prev` to `curr`, advance `curr` to `next`\n- Return `prev` (the new head)\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```typescript\n// [1, 2, 3, 4, 5] -> [5, 4, 3, 2, 1]\n// [1, 2] -> [2, 1]\n// [] -> []\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "pointers",
+    "in-place",
+    "iterative"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class ListNode {\n  val: number;\n  next: ListNode | null;\n  constructor(val = 0, next: ListNode | null = null) {\n    this.val = val;\n    this.next = next;\n  }\n}\n\nexport function reverseList(head: ListNode | null): ListNode | null {\n  let prev: ListNode | null = null;\n  let curr = head;\n  while (curr) {\n    const next = curr.next;\n    curr.next = prev;\n    prev = curr;\n    curr = next;\n  }\n  return prev;\n}\n"
+    }
+  ],
+  "hints": [
+    "You need three pointers: prev, curr, and next",
+    "Save curr.next before overwriting it",
+    "After the loop, prev points to the new head",
+    "An empty list (null) should return null"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "reverseList",
+          "params": ["head"],
+          "description": "Define reverseList that accepts a head node"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ListNode",
+          "isDefault": false,
+          "description": "Export the ListNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "reverseList",
+          "isDefault": false,
+          "description": "Export the reverseList function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop to iterate through the list",
+          "hint": "while (curr) processes each node until the end"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

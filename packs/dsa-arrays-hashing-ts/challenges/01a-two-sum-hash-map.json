@@ -1,0 +1,48 @@
+{
+  "title": "Two Sum (Hash Map)",
+  "prompt": "Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\n**Approach:** Use a hash map (Map) for O(n) time complexity.\n\n**Requirements:**\n1. Define and export `twoSum(nums: number[], target: number): number[]` in `solution.ts`\n2. Store seen numbers in a `Map<number, number>` as you iterate\n3. For each number, check if `target - num` exists in the map\n4. Return an array of two indices `[i, j]`\n\n**Constraints:**\n- Each input has exactly one solution\n- You may not use the same element twice\n\n**Examples:**\n```typescript\ntwoSum([2, 7, 11, 15], 9)  // [0, 1]\ntwoSum([3, 2, 4], 6)       // [1, 2]\ntwoSum([3, 3], 6)          // [0, 1]\n```\n\n**Complexity:** O(n) time, O(n) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "hash-map", "two-sum"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function twoSum(nums: number[], target: number): number[] {\n  const seen = new Map<number, number>();\n  for (let i = 0; i < nums.length; i++) {\n    const complement = target - nums[i];\n    if (seen.has(complement)) {\n      return [seen.get(complement)!, i];\n    }\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n"
+    }
+  ],
+  "hints": [
+    "The brute force checks every pair -- can you do better with a lookup table?",
+    "For each number, the complement is target - num",
+    "Store each number and its index in a Map as you scan left to right",
+    "Check if the complement is already in the Map before adding the current number"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "twoSum",
+          "description": "Define a twoSum function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "twoSum",
+          "isDefault": false,
+          "description": "Export twoSum as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(new_expression constructor: (identifier) @name (#eq? @name \"Map\"))",
+          "description": "Use a Map for O(1) complement lookup",
+          "hint": "Store seen numbers in a Map: const seen = new Map<number, number>()"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through the array with a for loop"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

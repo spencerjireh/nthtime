@@ -11,6 +11,11 @@ export default defineConfig({
     include: [
       'packs/express-basics/challenges/**/*.test.ts',
       'packs/react-fundamentals/challenges/**/*.test.tsx',
+      'packs/dsa-arrays-hashing-ts/challenges/**/*.test.ts',
+      'packs/dsa-two-pointers-ts/challenges/**/*.test.ts',
+      'packs/dsa-linked-lists-ts/challenges/**/*.test.ts',
+      'packs/dsa-trees-ts/challenges/**/*.test.ts',
+      'packs/dsa-search-dp-bits-ts/challenges/**/*.test.ts',
     ],
     root: resolve(__dirname, '..'),
   },

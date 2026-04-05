@@ -1,0 +1,42 @@
+{
+  "title": "Majority Element",
+  "prompt": "Given an array `nums` of size `n`, return the majority element. The majority element is the element that appears more than `n / 2` times. You may assume the majority element always exists.\n\n**Approach:** Use Boyer-Moore Voting Algorithm. Maintain a candidate and a count. When the count drops to zero, pick a new candidate. The majority element will survive.\n\n**Requirements:**\n1. Define `majority_element(nums)` in `solution.py`\n2. Initialize `candidate` and `count` variables\n3. Iterate through `nums`:\n   - If `count == 0`, set `candidate` to the current number\n   - If the current number equals `candidate`, increment `count`\n   - Otherwise, decrement `count`\n4. Return `candidate`\n\n**Examples:**\n```python\nmajority_element([3, 2, 3])              # 3\nmajority_element([2, 2, 1, 1, 1, 2, 2])  # 2\nmajority_element([1])                    # 1\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "boyer-moore", "voting"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def majority_element(nums):\n    candidate = None\n    count = 0\n    for num in nums:\n        if count == 0:\n            candidate = num\n        count += 1 if num == candidate else -1\n    return candidate\n"
+    }
+  ],
+  "hints": [
+    "The Boyer-Moore algorithm uses a candidate and a counter",
+    "When the counter hits zero, the current element becomes the new candidate",
+    "If the next element matches the candidate, increment; otherwise decrement",
+    "The majority element will always be the final candidate"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "majority_element",
+          "params": ["nums"],
+          "description": "Define a majority_element function that accepts nums"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through the array with a for loop"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Use conditional logic to update candidate and count"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

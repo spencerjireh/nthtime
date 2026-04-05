@@ -1,0 +1,61 @@
+{
+  "title": "Minimum Depth",
+  "prompt": "Write a `TreeNode` class and a `minDepth` function in `solution.ts`:\n\n**TreeNode class:**\n- `constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null)` -- store val, left child, and right child\n\n**Function: `minDepth(root) => number`**\nGiven the root of a binary tree, return its minimum depth. The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.\n\nUse **iterative BFS** (level-order traversal) -- this is optimal because it returns as soon as the first leaf is found:\n1. If `root` is `null`, return `0`\n2. Initialize an array as a queue with the root and set `depth = 0`\n3. While the queue is not empty:\n   - Record `size = queue.length`\n   - Increment `depth`\n   - Process all nodes at the current level (loop `size` times, using `queue.shift()`)\n   - If any node is a leaf (no left and no right child), return `depth` immediately\n   - Otherwise, push non-null children to the queue\n4. Return `depth`\n\n**Complexity:** O(n) time, O(w) space where w is the maximum width of the tree.\n\n**Examples:**\n```typescript\n//       3\n//      / \\\n//     9  20\n//       /  \\\n//      15   7\nconst root = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));\nminDepth(root);  // 2  (path: 3 -> 9)\n\n// Right-skewed: 2 -> 3 -> 4 -> 5 -> 6\nminDepth(buildFromArray([2, null, 3, null, 4, null, 5, null, 6]));  // 5\nminDepth(null);  // 0\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "bfs",
+    "iterative",
+    "depth",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class TreeNode {\n  val: number;\n  left: TreeNode | null;\n  right: TreeNode | null;\n  constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null) {\n    this.val = val;\n    this.left = left;\n    this.right = right;\n  }\n}\n\nexport function minDepth(root: TreeNode | null): number {\n  if (!root) return 0;\n  const queue: TreeNode[] = [root];\n  let depth = 0;\n  while (queue.length) {\n    const size = queue.length;\n    depth++;\n    for (let i = 0; i < size; i++) {\n      const node = queue.shift()!;\n      if (!node.left && !node.right) return depth;\n      if (node.left) queue.push(node.left);\n      if (node.right) queue.push(node.right);\n    }\n  }\n  return depth;\n}\n"
+    }
+  ],
+  "hints": [
+    "BFS finds the shallowest leaf first -- no need to explore the entire tree",
+    "A leaf node has no left child and no right child",
+    "Return immediately when you find the first leaf -- that is the minimum depth",
+    "Process nodes level by level using queue.length to count nodes per level"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TreeNode",
+          "isDefault": false,
+          "description": "Export the TreeNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "minDepth",
+          "params": ["root"],
+          "description": "Define minDepth that accepts a tree root"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "minDepth",
+          "isDefault": false,
+          "description": "Export the minDepth function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for iterative BFS traversal",
+          "hint": "Use 'while (queue.length)' to process nodes level by level"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

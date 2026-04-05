@@ -7,6 +7,7 @@
   "version": "1.0.0",
   "author": "nthtime",
   "tags": ["frontend", "hooks", "components"],
+  "prerequisites": [],
   "challenges": [
     "challenges/01-counter.json",
     "challenges/02-props-display.json",

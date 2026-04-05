@@ -42,8 +42,8 @@
         },
         {
           "type": "sexpression",
-          "pattern": "(raise_statement)",
-          "description": "Raise ValueError for temperatures below absolute zero",
+          "pattern": "(class_definition name: (identifier) @name (#eq? @name \"Temperature\") body: (block (decorated_definition (function_definition body: (block (if_statement consequence: (block (raise_statement))))))))",
+          "description": "Raise ValueError in Temperature property setter for temperatures below absolute zero",
           "hint": "Use raise ValueError() when the temperature is below -273.15"
         },
         {

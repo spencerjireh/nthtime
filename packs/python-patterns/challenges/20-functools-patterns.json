@@ -53,8 +53,8 @@
         },
         {
           "type": "sexpression",
-          "pattern": "(nonlocal_statement)",
-          "description": "Use nonlocal to modify closure variables in once()",
+          "pattern": "(function_definition name: (identifier) @name (#eq? @name \"once\") body: (block (decorated_definition (function_definition body: (block (nonlocal_statement))))))",
+          "description": "Use nonlocal in once() wrapper to modify closure variables",
           "hint": "nonlocal result, called allows the wrapper to modify outer variables"
         }
       ]

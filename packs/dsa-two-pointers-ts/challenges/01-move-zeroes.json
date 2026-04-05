@@ -1,0 +1,46 @@
+{
+  "title": "Move Zeroes",
+  "prompt": "Write a function in `solution.ts` that moves all zeroes to the end of an array **in place**, preserving the relative order of non-zero elements.\n\n**Approach -- Two-Pointer Swap:**\nMaintain a `write` pointer starting at index 0. Iterate through the array with a `read` pointer using a `for` loop. Whenever `nums[read]` is non-zero, swap `nums[write]` and `nums[read]`, then advance `write`. After the loop, all non-zero elements are packed to the front and zeroes fill the remaining positions.\n\n**Requirements:**\n1. `export function moveZeroes(nums: number[]): void` -- takes an array of numbers, moves all zeroes to the end in place, and returns nothing\n2. Use a `for` loop to iterate through the array\n3. Modify the array in place -- do not create a new array\n\n**Examples:**\n```typescript\nconst nums = [0, 1, 0, 3, 12];\nmoveZeroes(nums);\nconsole.log(nums); // [1, 3, 12, 0, 0]\n\nconst single = [0];\nmoveZeroes(single);\nconsole.log(single); // [0]\n```\n\n**Complexity:**\n- Time: O(n) -- single pass through the array\n- Space: O(1) -- in-place swaps, no extra storage",
+  "difficulty": "beginner",
+  "tags": [
+    "two-pointers",
+    "in-place",
+    "array"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function moveZeroes(nums: number[]): void {\n  let write = 0;\n  for (let read = 0; read < nums.length; read++) {\n    if (nums[read] !== 0) {\n      [nums[write], nums[read]] = [nums[read], nums[write]];\n      write++;\n    }\n  }\n}\n"
+    }
+  ],
+  "hints": [
+    "Keep a write pointer that tracks where the next non-zero element should go",
+    "Iterate with a read pointer; when you find a non-zero, swap it to the write position",
+    "After swapping, advance the write pointer by one",
+    "Swapping instead of overwriting naturally fills the tail with zeroes"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "moveZeroes",
+          "description": "Define a moveZeroes function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "moveZeroes",
+          "isDefault": false,
+          "description": "Export moveZeroes as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to iterate through the array"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

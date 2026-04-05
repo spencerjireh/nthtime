@@ -1,0 +1,48 @@
+{
+  "title": "Overlapping Intervals (Meeting Rooms)",
+  "prompt": "Given a list of intervals `intervals` where each interval is `[start, end]`, determine if a person could attend all meetings (i.e., no two intervals overlap).\n\n**Approach:** Sort by start time, then check consecutive pairs for overlap.\n\n**Requirements:**\n1. Define and export `canAttendAll(intervals: number[][]): boolean` in `solution.ts`\n2. Sort the intervals by start time using `.sort((a, b) => a[0] - b[0])`\n3. Iterate through consecutive pairs of sorted intervals\n4. If any interval starts before the previous one ends, return `false`\n5. Return `true` if no overlaps found\n\n**Notes:**\n- Touching intervals `[1, 5]` and `[5, 10]` do NOT overlap (one ends when the other starts)\n- An empty array means no meetings, so return `true`\n\n**Examples:**\n```typescript\ncanAttendAll([[0, 30], [5, 10], [15, 20]])  // false\ncanAttendAll([[7, 10], [2, 4]])             // true\ncanAttendAll([])                            // true\ncanAttendAll([[1, 5], [5, 10]])             // true\n```\n\n**Complexity:** O(n log n) time, O(n) space (for sorted copy)",
+  "difficulty": "intermediate",
+  "tags": ["arrays", "sorting", "intervals"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function canAttendAll(intervals: number[][]): boolean {\n  const sorted = [...intervals].sort((a, b) => a[0] - b[0]);\n  for (let i = 1; i < sorted.length; i++) {\n    if (sorted[i][0] < sorted[i - 1][1]) {\n      return false;\n    }\n  }\n  return true;\n}\n"
+    }
+  ],
+  "hints": [
+    "Sort the intervals by their start time first",
+    "Use [...intervals].sort((a, b) => a[0] - b[0]) to sort without mutating",
+    "Two intervals overlap if the second starts before the first ends",
+    "Check: sorted[i][0] < sorted[i - 1][1]"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "canAttendAll",
+          "description": "Define a canAttendAll function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "canAttendAll",
+          "isDefault": false,
+          "description": "Export canAttendAll as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call_expression function: (member_expression property: (property_identifier) @name (#eq? @name \"sort\")))",
+          "description": "Sort the intervals by start time",
+          "hint": "Use .sort((a, b) => a[0] - b[0]) to sort by start time"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through consecutive pairs with a for loop"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

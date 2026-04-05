@@ -73,6 +73,10 @@ public class AdminService {
     pack.setVersion(input.version() != null ? input.version() : "1.0.0");
     pack.setAuthor(input.author() != null ? input.author() : "");
     pack.setTags(input.tags() != null ? input.tags().toArray(new String[0]) : new String[] {});
+    pack.setPrerequisites(
+        input.prerequisites() != null
+            ? input.prerequisites().toArray(new String[0])
+            : new String[] {});
     pack.setUpdatedAt(Instant.now());
     pack = packRepository.save(pack);
 

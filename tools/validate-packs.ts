@@ -17,6 +17,7 @@ interface PackManifest {
   version: string;
   author: string;
   tags: string[];
+  prerequisites?: string[];
   challenges: string[];
 }
 
@@ -53,6 +54,19 @@ function validatePackManifest(manifest: PackManifest, packDir: string): string[]
     errors.push(fail('Missing or invalid "version"'));
   if (!Array.isArray(manifest.challenges) || manifest.challenges.length === 0)
     errors.push(fail('Missing or empty "challenges" array'));
+
+  // Validate prerequisites if present
+  if (manifest.prerequisites !== undefined) {
+    if (!Array.isArray(manifest.prerequisites)) {
+      errors.push(fail('"prerequisites" must be an array'));
+    } else {
+      for (const slug of manifest.prerequisites) {
+        if (typeof slug !== 'string' || !SLUG_PATTERN.test(slug)) {
+          errors.push(fail(`Invalid prerequisite slug: "${slug}"`));
+        }
+      }
+    }
+  }
 
   // Verify referenced challenge files exist
   if (Array.isArray(manifest.challenges)) {
@@ -134,9 +148,9 @@ async function validatePack(
     const filename = basename(challengePath);
 
     // Derive and validate slug from filename
-    const slugMatch = filename.match(/^\d+-(.+)\.json$/);
+    const slugMatch = filename.match(/^\d+[a-z]?-(.+)\.json$/);
     if (!slugMatch) {
-      errors.push(`[${filename}] Cannot derive slug from filename (expected NN-slug-name.json)`);
+      errors.push(`[${filename}] Cannot derive slug from filename (expected NN-slug-name.json or NNx-slug-name.json)`);
     } else {
       const slug = slugMatch[1];
       if (!SLUG_PATTERN.test(slug)) {
@@ -200,8 +214,34 @@ async function main(): Promise<void> {
 
   console.log(`Found ${packJsonPaths.length} pack(s) to validate.\n`);
 
+  // Collect all pack slugs for cross-reference validation
+  const allSlugs = new Set<string>();
+  const prereqMap = new Map<string, string[]>();
+  for (const p of packJsonPaths) {
+    const m: PackManifest = JSON.parse(readFileSync(p, 'utf-8'));
+    allSlugs.add(m.slug);
+    if (m.prerequisites?.length) {
+      prereqMap.set(m.slug, m.prerequisites);
+    }
+  }
+
   let totalErrors = 0;
   let totalChallenges = 0;
+
+  // Validate prerequisite references
+  for (const [packSlug, prereqs] of prereqMap) {
+    for (const prereq of prereqs) {
+      if (!allSlugs.has(prereq)) {
+        console.log(
+          `  WARN  ${packSlug}: prerequisite "${prereq}" does not match any known pack slug`,
+        );
+      }
+      if (prereq === packSlug) {
+        console.log(`  FAIL  ${packSlug}: pack cannot be a prerequisite of itself`);
+        totalErrors++;
+      }
+    }
+  }
 
   for (const packJsonPath of packJsonPaths) {
     // Reset WASM cache between packs to avoid stale state

@@ -1,0 +1,66 @@
+{
+  "title": "Namedtuple and ChainMap",
+  "prompt": "Write three functions in `solution.py` using `collections.namedtuple` and `collections.ChainMap`:\n\n**Requirements:**\n1. `make_point(x, y)` -- returns a `Point` namedtuple with fields `x` and `y`. The `Point` type should be defined at module level using `collections.namedtuple`.\n2. `make_color(r, g, b, a=255)` -- returns a `Color` namedtuple with fields `r`, `g`, `b`, `a`. The `Color` type should be defined at module level using `namedtuple` with `defaults=(255,)` for the alpha channel.\n3. `layered_config(*configs)` -- takes multiple config dicts and merges them using `ChainMap`, with earlier dicts taking priority over later ones. Returns a plain `dict`.\n\n**Examples:**\n```python\np = make_point(3, 4)\np.x             # 3\np.y             # 4\n\nc = make_color(255, 0, 0)\nc.a             # 255 (default)\nc = make_color(255, 0, 0, 128)\nc.a             # 128\n\nlayered_config({\"a\": 1}, {\"a\": 2, \"b\": 3})\n# {\"a\": 1, \"b\": 3}\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "collections",
+    "namedtuple",
+    "chainmap",
+    "config"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import namedtuple, ChainMap\n\nPoint = namedtuple(\"Point\", [\"x\", \"y\"])\nColor = namedtuple(\"Color\", [\"r\", \"g\", \"b\", \"a\"], defaults=(255,))\n\n\ndef make_point(x, y):\n    return Point(x, y)\n\n\ndef make_color(r, g, b, a=255):\n    return Color(r, g, b, a)\n\n\ndef layered_config(*configs):\n    return dict(ChainMap(*configs))\n"
+    }
+  ],
+  "hints": [
+    "namedtuple('Point', ['x', 'y']) creates a tuple subclass with named fields",
+    "The defaults parameter fills from the right: defaults=(255,) sets only 'a'",
+    "ChainMap(*dicts) looks up keys in the first dict, then the second, etc.",
+    "dict(chain_map) flattens a ChainMap into a regular dictionary"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["namedtuple", "ChainMap"],
+          "description": "Import namedtuple and ChainMap from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "make_point",
+          "params": ["x", "y"],
+          "description": "Define make_point that returns a Point namedtuple"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "make_color",
+          "params": ["r", "g", "b", "a"],
+          "description": "Define make_color that returns a Color namedtuple"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "layered_config",
+          "description": "Define layered_config that merges dicts using ChainMap"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"namedtuple\"))",
+          "description": "Use namedtuple to define structured tuple types",
+          "hint": "Define Point and Color with namedtuple('Name', ['field1', 'field2'])"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"ChainMap\"))",
+          "description": "Use ChainMap to layer config dictionaries",
+          "hint": "ChainMap(*configs) merges dicts with earlier ones taking priority"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

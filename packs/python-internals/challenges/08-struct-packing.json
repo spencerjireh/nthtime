@@ -55,8 +55,8 @@
         },
         {
           "type": "sexpression",
-          "pattern": "(yield)",
-          "description": "Use yield to make read_records a generator"
+          "pattern": "(function_definition name: (identifier) @name (#eq? @name \"read_records\") body: (block (for_statement)))",
+          "description": "Use yield in read_records to generate record tuples"
         }
       ]
     },

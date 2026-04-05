@@ -15,6 +15,7 @@ interface PackManifest {
   version: string;
   author: string;
   tags: string[];
+  prerequisites?: string[];
   challenges: string[];
 }
 
@@ -59,7 +60,7 @@ interface LoadedChallenge extends ChallengeFile {
 }
 
 function deriveSlug(filename: string): string {
-  const match = filename.match(/^\d+-(.+)\.json$/);
+  const match = filename.match(/^\d+[a-z]?-(.+)\.json$/);
   if (!match) throw new Error(`Cannot derive slug from filename: ${filename}`);
   return match[1];
 }
@@ -96,6 +97,7 @@ function toSeedPayload(manifest: PackManifest, challenges: LoadedChallenge[]) {
     version: manifest.version,
     author: manifest.author,
     tags: manifest.tags,
+    prerequisites: manifest.prerequisites ?? [],
     challenges: challenges.map((c) => ({
       slug: c.slug,
       title: c.title,

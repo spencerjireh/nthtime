@@ -1,0 +1,48 @@
+{
+  "title": "Reverse Linked List",
+  "prompt": "Write a `ListNode` class and a `reverse_list` function in `solution.py`:\n\n**Requirements:**\n1. `ListNode` class with `__init__(self, val=0, next=None)` -- stores `val` and `next` attributes\n2. `reverse_list(head)` -- reverses a singly linked list in-place using three pointers (`prev`, `curr`, `next_node`) and returns the new head\n\n**Algorithm:**\n- Initialize `prev = None` and `curr = head`\n- While `curr` is not `None`: save `curr.next` into `next_node`, point `curr.next` to `prev`, advance `prev` to `curr`, advance `curr` to `next_node`\n- Return `prev` (the new head)\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```python\n# [1, 2, 3, 4, 5] -> [5, 4, 3, 2, 1]\n# [1, 2] -> [2, 1]\n# [] -> []\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "pointers",
+    "in-place",
+    "iterative"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef reverse_list(head):\n    prev = None\n    curr = head\n    while curr:\n        next_node = curr.next\n        curr.next = prev\n        prev = curr\n        curr = next_node\n    return prev\n"
+    }
+  ],
+  "hints": [
+    "You need three pointers: prev, curr, and next_node",
+    "Save curr.next before overwriting it",
+    "After the loop, prev points to the new head",
+    "An empty list (None) should return None"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "reverse_list",
+          "params": ["head"],
+          "description": "Define reverse_list that accepts a head node"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop to iterate through the list",
+          "hint": "while curr: processes each node until the end"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

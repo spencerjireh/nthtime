@@ -1,0 +1,42 @@
+{
+  "title": "Best Time to Buy and Sell Stock",
+  "prompt": "Given an array `prices` where `prices[i]` is the price of a stock on the i-th day, find the maximum profit from one buy and one sell. If no profit is possible, return `0`.\n\n**Approach:** Single-pass minimum tracking. Track the minimum price seen so far and compute the profit at each step.\n\n**Requirements:**\n1. Define `max_profit(prices)` in `solution.py`\n2. Initialize `min_price` to infinity (`float('inf')`) and `profit` to `0`\n3. Iterate through `prices`:\n   - Update `min_price` if the current price is lower\n   - Update `profit` if selling at the current price yields more than the current best\n4. Return `profit`\n\n**Examples:**\n```python\nmax_profit([7, 1, 5, 3, 6, 4])  # 5  (buy at 1, sell at 6)\nmax_profit([7, 6, 4, 3, 1])     # 0  (no profit possible)\nmax_profit([1, 2])              # 1\nmax_profit([2, 4, 1])           # 2\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "greedy", "stock-prices"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def max_profit(prices):\n    min_price = float('inf')\n    profit = 0\n    for price in prices:\n        if price < min_price:\n            min_price = price\n        elif price - min_price > profit:\n            profit = price - min_price\n    return profit\n"
+    }
+  ],
+  "hints": [
+    "You must buy before you sell -- scan left to right",
+    "Track the lowest price seen so far as you iterate",
+    "At each step, the best profit is current price minus the lowest price so far",
+    "Use float('inf') as the initial min_price so any real price is lower"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "max_profit",
+          "params": ["prices"],
+          "description": "Define a max_profit function that accepts prices"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through prices with a for loop"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Use conditional logic to track min price and max profit"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

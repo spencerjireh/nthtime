@@ -1,0 +1,60 @@
+{
+  "title": "Groupby Basics",
+  "prompt": "Write three grouping functions in `solution.py` using `itertools.groupby`:\n\n**Requirements:**\n1. `group_by_length(words)` -- takes a list of words already sorted by length, returns a dict mapping word length to list of words using `itertools.groupby` with `len` as the key function\n2. `consecutive_runs(items)` -- returns a list of `(value, count)` tuples for consecutive equal elements using `itertools.groupby`\n3. `group_by_key(items, key_fn)` -- takes items pre-sorted by key function and a key function, returns a dict mapping key to list of items using `itertools.groupby`\n\n**Important:** `itertools.groupby` only groups consecutive elements, so input must be sorted by the grouping key.\n\n**Examples:**\n```python\ngroup_by_length(['a', 'be', 'an', 'cat', 'dog'])\n# {1: ['a'], 2: ['be', 'an'], 3: ['cat', 'dog']}\n\nconsecutive_runs([1, 1, 2, 2, 2, 3])\n# [(1, 2), (2, 3), (3, 1)]\n\ngroup_by_key([1, 3, 2, 4], lambda x: x % 2)\n# Assumes input sorted by key: group_by_key([2, 4, 1, 3], lambda x: x % 2)\n# {0: [2, 4], 1: [1, 3]}\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "itertools",
+    "groupby",
+    "grouping"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from itertools import groupby\n\n\ndef group_by_length(words):\n    result = {}\n    for key, group in groupby(words, key=len):\n        result[key] = list(group)\n    return result\n\n\ndef consecutive_runs(items):\n    result = []\n    for key, group in groupby(items):\n        result.append((key, sum(1 for _ in group)))\n    return result\n\n\ndef group_by_key(items, key_fn):\n    result = {}\n    for key, group in groupby(items, key=key_fn):\n        result[key] = list(group)\n    return result\n"
+    }
+  ],
+  "hints": [
+    "itertools.groupby yields (key, group_iterator) pairs for consecutive runs",
+    "You must consume the group iterator (e.g., with list()) before advancing to the next group",
+    "groupby only groups consecutive elements -- input must be pre-sorted by the key",
+    "sum(1 for _ in group) counts elements without building a list"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "names": ["groupby"],
+          "description": "Import groupby from itertools"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "group_by_length",
+          "params": ["words"],
+          "description": "Define group_by_length that groups words by their length"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "consecutive_runs",
+          "params": ["items"],
+          "description": "Define consecutive_runs that counts consecutive equal elements"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "group_by_key",
+          "params": ["items", "key_fn"],
+          "description": "Define group_by_key that groups pre-sorted items by a key function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"groupby\"))",
+          "description": "Call groupby to group consecutive elements",
+          "hint": "Use groupby(iterable, key=...) to group consecutive elements sharing the same key"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

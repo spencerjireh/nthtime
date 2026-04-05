@@ -11,6 +11,7 @@ public record AuthorPackSummaryResponse(
     String framework,
     String version,
     String[] tags,
+    String[] prerequisites,
     String visibility,
     int challengeCount,
     String createdAt,

@@ -1,0 +1,43 @@
+{
+  "title": "Two Sum (Hash Map)",
+  "prompt": "Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\n**Approach:** Use a hash map (dictionary) for O(n) time complexity.\n\n**Requirements:**\n1. Define `two_sum(nums, target)` in `solution.py`\n2. Store seen numbers in a dictionary as you iterate\n3. For each number, check if `target - num` exists in the dictionary\n4. Return a list of two indices `[i, j]`\n\n**Constraints:**\n- Each input has exactly one solution\n- You may not use the same element twice\n\n**Examples:**\n```python\ntwo_sum([2, 7, 11, 15], 9)  # [0, 1]\ntwo_sum([3, 2, 4], 6)       # [1, 2]\ntwo_sum([3, 3], 6)          # [0, 1]\n```\n\n**Complexity:** O(n) time, O(n) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "hash-map", "two-sum"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []\n"
+    }
+  ],
+  "hints": [
+    "The brute force checks every pair -- can you do better with a lookup table?",
+    "For each number, the complement is target - num",
+    "Store {number: index} in a dict as you scan left to right",
+    "Check if the complement is already in the dict before adding the current number"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "two_sum",
+          "params": ["nums", "target"],
+          "description": "Define a two_sum function that accepts nums and target"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(dictionary)",
+          "description": "Use a dictionary for O(1) complement lookup",
+          "hint": "Store seen numbers in a dict: seen = {}"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Iterate through the array with a for loop"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

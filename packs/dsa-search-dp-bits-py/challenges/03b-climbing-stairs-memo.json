@@ -1,0 +1,41 @@
+{
+  "title": "Climbing Stairs (Memoization)",
+  "prompt": "Solve the climbing stairs problem using top-down memoization in `solution.py`.\n\n**Approach:**\nYou can climb 1 or 2 steps at a time. Define a recursive helper inside `climb_stairs` that computes the number of ways to reach step `i`. Use a dictionary `memo` to cache results. Base case: if `i <= 2`, return `i`. Otherwise, check if `i` is in `memo`; if so, return the cached value. If not, compute `helper(i - 1) + helper(i - 2)`, store it in `memo`, and return it.\n\n**Requirements:**\n1. `climb_stairs(n)` -- takes a positive integer `n` and returns the number of distinct ways to climb to the top\n2. Use a dictionary for memoization (not an array)\n3. Use a recursive helper function\n4. Base case: `i <= 2` returns `i`\n\n**Examples:**\n```python\nclimb_stairs(2)   # 2  (1+1 or 2)\nclimb_stairs(3)   # 3  (1+1+1, 1+2, 2+1)\nclimb_stairs(5)   # 8\nclimb_stairs(10)  # 89\n```\n\n**Complexity:** O(n) time, O(n) space.",
+  "difficulty": "beginner",
+  "tags": [
+    "dynamic-programming",
+    "memoization",
+    "recursion"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def climb_stairs(n):\n    memo = {}\n    def helper(i):\n        if i <= 2:\n            return i\n        if i in memo:\n            return memo[i]\n        memo[i] = helper(i - 1) + helper(i - 2)\n        return memo[i]\n    return helper(n)\n"
+    }
+  ],
+  "hints": [
+    "Create an empty dictionary memo = {} before the helper function",
+    "Base case: return i directly when i <= 2 (1 way for 1 step, 2 ways for 2 steps)",
+    "Check if i in memo before computing to avoid redundant work",
+    "Store the result in memo[i] before returning it"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "climb_stairs",
+          "params": ["n"],
+          "description": "Define a climb_stairs function that accepts an n parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(dictionary)",
+          "description": "Use a dictionary for memoization"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

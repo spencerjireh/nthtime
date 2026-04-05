@@ -1,0 +1,46 @@
+{
+  "title": "Valid Parentheses",
+  "prompt": "Write a function in `solution.py` that determines if a string of bracket characters is valid.\n\n**Approach -- Stack Matching:**\nUse a list as a stack. Iterate through each character. When you encounter an opening bracket (`(`, `[`, `{`), push it onto the stack using `append()`. When you encounter a closing bracket, check that the stack is not empty and that the top element (removed via `pop()`) is the matching opening bracket. Use a dictionary to map closing brackets to their openers. After processing all characters, the string is valid only if the stack is empty.\n\n**Requirements:**\n1. `is_valid(s)` -- takes a string containing only `()[]{}` characters and returns `True` if the brackets are valid, `False` otherwise\n2. Use a list as a stack with `append()` for push and `pop()` for pop\n3. Use a dictionary to map each closing bracket to its opening bracket\n4. Return `True` only if the stack is empty at the end\n\n**Examples:**\n```python\nis_valid(\"()\")     # True\nis_valid(\"()[]{}\") # True\nis_valid(\"(]\")     # False\nis_valid(\"([)]\")   # False\nis_valid(\"{[]}\")   # True\n```\n\n**Complexity:**\n- Time: O(n) -- single pass through the string\n- Space: O(n) -- stack may hold all opening brackets in worst case",
+  "difficulty": "beginner",
+  "tags": [
+    "stack",
+    "string",
+    "matching"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def is_valid(s):\n    stack = []\n    pairs = {')': '(', ']': '[', '}': '{'}\n    for c in s:\n        if c in pairs:\n            if not stack or stack.pop() != pairs[c]:\n                return False\n        else:\n            stack.append(c)\n    return len(stack) == 0\n"
+    }
+  ],
+  "hints": [
+    "Map each closing bracket to its opener: {')': '(', ']': '[', '}': '{'}",
+    "Push opening brackets onto the stack with append()",
+    "For closing brackets, pop from the stack and check it matches the expected opener",
+    "If the stack is not empty after processing all characters, the string is invalid"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_valid",
+          "params": ["s"],
+          "description": "Define is_valid that accepts a string parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute attribute: (identifier) @m (#eq? @m \"append\")))",
+          "description": "Use list.append() to push opening brackets onto the stack"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute attribute: (identifier) @m (#eq? @m \"pop\")))",
+          "description": "Use list.pop() to remove and check the top of the stack"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

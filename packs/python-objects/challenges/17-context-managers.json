@@ -60,8 +60,8 @@
         },
         {
           "type": "sexpression",
-          "pattern": "(yield)",
-          "description": "Yield inside the context manager generator",
+          "pattern": "(function_definition name: (identifier) @name (#eq? @name \"temporary_value\") body: (block (try_statement)))",
+          "description": "Use yield inside temporary_value with try/finally for cleanup",
           "hint": "Use yield to pause the generator and give control to the with block"
         }
       ]

@@ -1,0 +1,46 @@
+{
+  "title": "Reverse Bits",
+  "prompt": "Reverse the bits of a 32-bit unsigned integer in `solution.ts`.\n\n**Approach:**\nIterate 32 times with a for loop. Each iteration: left-shift `result` by 1 to make room, extract the lowest bit of `n` with `n & 1`, OR it into `result`, then unsigned-right-shift `n` by 1 to move to the next bit. After 32 iterations, use `result >>> 0` to convert to an unsigned 32-bit integer.\n\n**Important:** JavaScript bitwise operators work on 32-bit signed integers. Use `>>>` (unsigned right shift) instead of `>>` when shifting `n`, and use `>>> 0` on the final result to ensure it is treated as an unsigned 32-bit integer.\n\n**Requirements:**\n1. Export `reverseBits(n: number): number` -- takes a 32-bit unsigned integer `n` and returns the integer formed by reversing all 32 bits\n2. Use a `for` loop iterating 32 times\n3. Use left-shift (`<<`), unsigned-right-shift (`>>>=`), bitwise AND (`& 1`), and bitwise OR (`|`) operators\n4. Return `result >>> 0` to ensure unsigned 32-bit output\n\n**Examples:**\n```typescript\nreverseBits(43261596)   // 964176192\n// 00000010100101000001111010011100 -> 00111001011110000010100101000000\nreverseBits(4294967293) // 3221225471\n// 11111111111111111111111111111101 -> 10111111111111111111111111111111\nreverseBits(0)          // 0\n```\n\n**Complexity:** O(1) time (fixed 32 iterations), O(1) space.",
+  "difficulty": "intermediate",
+  "tags": [
+    "bit-manipulation",
+    "bitwise-operators",
+    "shifting"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function reverseBits(n: number): number {\n  let result = 0;\n  for (let i = 0; i < 32; i++) {\n    result = (result << 1) | (n & 1);\n    n >>>= 1;\n  }\n  return result >>> 0;\n}\n"
+    }
+  ],
+  "hints": [
+    "Initialize result = 0 before the loop",
+    "result << 1 shifts all accumulated bits left to make room for the next bit",
+    "n & 1 extracts the rightmost bit of n (0 or 1)",
+    "Use n >>>= 1 (unsigned right shift) instead of n >>= 1 to handle large unsigned values correctly"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "reverseBits",
+          "description": "Define a reverseBits function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "reverseBits",
+          "isDefault": false,
+          "description": "Export reverseBits as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to iterate over all 32 bits"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

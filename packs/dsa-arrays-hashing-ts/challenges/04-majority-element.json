@@ -1,0 +1,47 @@
+{
+  "title": "Majority Element",
+  "prompt": "Given an array `nums` of size `n`, return the majority element. The majority element is the element that appears more than `n / 2` times. You may assume the majority element always exists.\n\n**Approach:** Use Boyer-Moore Voting Algorithm. Maintain a candidate and a count. When the count drops to zero, pick a new candidate. The majority element will survive.\n\n**Requirements:**\n1. Define and export `majorityElement(nums: number[]): number` in `solution.ts`\n2. Initialize `candidate` and `count` variables\n3. Iterate through `nums`:\n   - If `count === 0`, set `candidate` to the current number\n   - If the current number equals `candidate`, increment `count`\n   - Otherwise, decrement `count`\n4. Return `candidate`\n\n**Examples:**\n```typescript\nmajorityElement([3, 2, 3])              // 3\nmajorityElement([2, 2, 1, 1, 1, 2, 2])  // 2\nmajorityElement([1])                    // 1\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "boyer-moore", "voting"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function majorityElement(nums: number[]): number {\n  let candidate = 0;\n  let count = 0;\n  for (const num of nums) {\n    if (count === 0) {\n      candidate = num;\n    }\n    count += num === candidate ? 1 : -1;\n  }\n  return candidate;\n}\n"
+    }
+  ],
+  "hints": [
+    "The Boyer-Moore algorithm uses a candidate and a counter",
+    "When the counter hits zero, the current element becomes the new candidate",
+    "If the next element matches the candidate, increment; otherwise decrement",
+    "The majority element will always be the final candidate"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "majorityElement",
+          "description": "Define a majorityElement function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "majorityElement",
+          "isDefault": false,
+          "description": "Export majorityElement as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_in_statement)",
+          "description": "Iterate through the array with a for...of loop"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(if_statement)",
+          "description": "Use conditional logic to update candidate and count"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

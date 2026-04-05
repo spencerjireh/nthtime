@@ -1,0 +1,66 @@
+{
+  "title": "Defaultdict Patterns",
+  "prompt": "Write three functions in `solution.py` using `collections.defaultdict`:\n\n**Requirements:**\n1. `word_positions(text)` -- splits `text` on whitespace and returns a dict mapping each word to a list of its 0-based positions. Use `defaultdict(list)` and `enumerate`.\n2. `nested_group(items, key1_fn, key2_fn)` -- groups items into a nested dict using `defaultdict(lambda: defaultdict(list))`. Each item is placed under `result[key1_fn(item)][key2_fn(item)]`.\n3. `count_by(items, key_fn)` -- returns a dict mapping `key_fn(item)` to the count of items with that key. Use `defaultdict(int)`.\n\n**Examples:**\n```python\nword_positions(\"the cat and the dog\")\n# {\"the\": [0, 3], \"cat\": [1], \"and\": [2], \"dog\": [4]}\n\nnested_group(\n    [\"alice\", \"bob\", \"aaron\"],\n    lambda s: s[0],\n    lambda s: len(s)\n)\n# {\"a\": {5: [\"alice\", \"aaron\"]}, \"b\": {3: [\"bob\"]}}\n\ncount_by([1, 2, 3, 4, 5], lambda x: \"even\" if x % 2 == 0 else \"odd\")\n# {\"odd\": 3, \"even\": 2}\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "collections",
+    "defaultdict",
+    "grouping"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import defaultdict\n\n\ndef word_positions(text):\n    positions = defaultdict(list)\n    for i, word in enumerate(text.split()):\n        positions[word].append(i)\n    return dict(positions)\n\n\ndef nested_group(items, key1_fn, key2_fn):\n    result = defaultdict(lambda: defaultdict(list))\n    for item in items:\n        result[key1_fn(item)][key2_fn(item)].append(item)\n    return {k: dict(v) for k, v in result.items()}\n\n\ndef count_by(items, key_fn):\n    counts = defaultdict(int)\n    for item in items:\n        counts[key_fn(item)] += 1\n    return dict(counts)\n"
+    }
+  ],
+  "hints": [
+    "defaultdict(list) auto-creates an empty list for missing keys",
+    "enumerate(iterable) yields (index, value) pairs",
+    "defaultdict(lambda: defaultdict(list)) nests two levels of defaults",
+    "defaultdict(int) starts missing keys at 0, perfect for counting"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["defaultdict"],
+          "description": "Import defaultdict from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "word_positions",
+          "params": ["text"],
+          "description": "Define word_positions that maps words to their positions"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "nested_group",
+          "params": ["items", "key1_fn", "key2_fn"],
+          "description": "Define nested_group that groups items by two key functions"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "count_by",
+          "params": ["items", "key_fn"],
+          "description": "Define count_by that counts items by key function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"defaultdict\"))",
+          "description": "Use defaultdict for automatic default values",
+          "hint": "Use defaultdict(list), defaultdict(int), or defaultdict(lambda: ...) as needed"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"enumerate\"))",
+          "description": "Use enumerate to get index-value pairs",
+          "hint": "for i, word in enumerate(text.split()) gives position and word"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

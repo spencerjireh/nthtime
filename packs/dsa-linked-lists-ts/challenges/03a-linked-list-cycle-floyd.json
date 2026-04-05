@@ -1,0 +1,60 @@
+{
+  "title": "Linked List Cycle (Floyd's)",
+  "prompt": "Write a `ListNode` class and a `hasCycle` function in `solution.ts`:\n\n**Requirements:**\n1. `ListNode` class with `val: number` and `next: ListNode | null` properties, and a constructor `constructor(val = 0, next: ListNode | null = null)`\n2. `hasCycle(head)` -- returns `true` if the linked list contains a cycle, `false` otherwise. Use Floyd's tortoise and hare algorithm with O(1) space\n\n**Algorithm (Floyd's cycle detection):**\n- Initialize `slow = head` and `fast = head`\n- While `fast` is not `null` and `fast.next` is not `null`: advance `slow` by one step, advance `fast` by two steps. If `slow === fast`, return `true`\n- Return `false` (no cycle found)\n\n**Complexity:** O(n) time, O(1) space.\n\n**Examples:**\n```typescript\n// [1] -> [2] -> [3] -> [2] (cycle back to node 2) -> true\n// [1] -> [2] -> [3] -> null -> false\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "cycle-detection",
+    "floyd",
+    "two-pointers"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export class ListNode {\n  val: number;\n  next: ListNode | null;\n  constructor(val = 0, next: ListNode | null = null) {\n    this.val = val;\n    this.next = next;\n  }\n}\n\nexport function hasCycle(head: ListNode | null): boolean {\n  let slow = head;\n  let fast = head;\n  while (fast && fast.next) {\n    slow = slow!.next;\n    fast = fast.next.next;\n    if (slow === fast) {\n      return true;\n    }\n  }\n  return false;\n}\n"
+    }
+  ],
+  "hints": [
+    "Use two pointers: slow moves one step, fast moves two steps",
+    "If there is a cycle, fast will eventually catch up to slow",
+    "Check fast and fast.next before advancing to avoid null reference errors",
+    "Compare with === (identity), not deep equality"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "classDeclaration",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "hasCycle",
+          "params": ["head"],
+          "description": "Define hasCycle that accepts a head node"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ListNode",
+          "isDefault": false,
+          "description": "Export the ListNode class"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "hasCycle",
+          "isDefault": false,
+          "description": "Export the hasCycle function"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for the tortoise and hare traversal",
+          "hint": "while (fast && fast.next) advances both pointers each iteration"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

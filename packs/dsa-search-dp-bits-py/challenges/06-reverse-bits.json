@@ -1,0 +1,41 @@
+{
+  "title": "Reverse Bits",
+  "prompt": "Reverse the bits of a 32-bit unsigned integer in `solution.py`.\n\n**Approach:**\nIterate 32 times with a for loop. Each iteration: left-shift `result` by 1 to make room, extract the lowest bit of `n` with `n & 1`, OR it into `result`, then right-shift `n` by 1 to move to the next bit. After 32 iterations, `result` contains the reversed bits.\n\n**Requirements:**\n1. `reverse_bits(n)` -- takes a 32-bit unsigned integer `n` and returns the integer formed by reversing all 32 bits\n2. Use a `for _ in range(32)` loop\n3. Use left-shift (`<<`), right-shift (`>>=`), bitwise AND (`& 1`), and bitwise OR (`|`) operators\n\n**Examples:**\n```python\nreverse_bits(43261596)   # 964176192\n# 00000010100101000001111010011100 -> 00111001011110000010100101000000\nreverse_bits(4294967293) # 3221225471\n# 11111111111111111111111111111101 -> 10111111111111111111111111111111\nreverse_bits(0)          # 0\n```\n\n**Complexity:** O(1) time (fixed 32 iterations), O(1) space.",
+  "difficulty": "intermediate",
+  "tags": [
+    "bit-manipulation",
+    "bitwise-operators",
+    "shifting"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def reverse_bits(n):\n    result = 0\n    for _ in range(32):\n        result = (result << 1) | (n & 1)\n        n >>= 1\n    return result\n"
+    }
+  ],
+  "hints": [
+    "Initialize result = 0 before the loop",
+    "result << 1 shifts all accumulated bits left to make room for the next bit",
+    "n & 1 extracts the rightmost bit of n (0 or 1)",
+    "n >>= 1 removes the rightmost bit of n so the next iteration processes the next bit"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "reverse_bits",
+          "params": ["n"],
+          "description": "Define a reverse_bits function that accepts an n parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to iterate over all 32 bits"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

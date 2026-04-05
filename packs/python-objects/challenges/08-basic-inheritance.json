@@ -53,8 +53,8 @@
         },
         {
           "type": "sexpression",
-          "pattern": "(raise_statement)",
-          "description": "Raise NotImplementedError in the base class",
+          "pattern": "(class_definition name: (identifier) @name (#eq? @name \"Shape\") body: (block (function_definition name: (identifier) @method (#eq? @method \"area\") body: (block (raise_statement)))))",
+          "description": "Raise NotImplementedError in Shape.area()",
           "hint": "Use raise NotImplementedError() in Shape.area()"
         }
       ]

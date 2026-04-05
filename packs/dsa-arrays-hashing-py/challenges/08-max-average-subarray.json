@@ -1,0 +1,37 @@
+{
+  "title": "Maximum Average Subarray I",
+  "prompt": "Given an integer array `nums` and an integer `k`, find the contiguous subarray of length `k` that has the maximum average value. Return the maximum average as a float.\n\n**Approach:** Sliding window. Compute the sum of the first `k` elements, then slide the window by adding the next element and removing the first element of the previous window.\n\n**Requirements:**\n1. Define `find_max_average(nums, k)` in `solution.py`\n2. Compute the sum of the first `k` elements as the initial window sum\n3. Slide the window: for each position from `k` to `len(nums) - 1`, add the new element and subtract the element leaving the window\n4. Track the maximum window sum seen\n5. Return `max_sum / k`\n\n**Examples:**\n```python\nfind_max_average([1, 12, -5, -6, 50, 3], 4)  # 12.75\nfind_max_average([5], 1)                      # 5.0\nfind_max_average([0, 4, 0, 3, 2], 1)         # 4.0\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "sliding-window", "average"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def find_max_average(nums, k):\n    window_sum = sum(nums[:k])\n    max_sum = window_sum\n    for i in range(k, len(nums)):\n        window_sum += nums[i] - nums[i - k]\n        if window_sum > max_sum:\n            max_sum = window_sum\n    return max_sum / k\n"
+    }
+  ],
+  "hints": [
+    "Compute the sum of the first k elements as your starting window",
+    "To slide the window, add the incoming element and subtract the outgoing one",
+    "Track the maximum window sum as you slide",
+    "Divide the maximum sum by k at the end to get the average"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "find_max_average",
+          "params": ["nums", "k"],
+          "description": "Define a find_max_average function that accepts nums and k"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to slide the window across the array"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

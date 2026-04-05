@@ -1,0 +1,71 @@
+{
+  "title": "Accumulate Patterns",
+  "prompt": "Write three functions in `solution.py` using `itertools.accumulate`:\n\n**Requirements:**\n1. `running_total(numbers)` -- returns a list of running sums using `itertools.accumulate`\n2. `running_max(numbers)` -- returns a list of running maximums using `itertools.accumulate` with the `max` function\n3. `factorial_sequence(n)` -- returns a list of factorials `[1!, 2!, ..., n!]` using `itertools.accumulate` with `operator.mul`\n\n**Examples:**\n```python\nrunning_total([1, 2, 3, 4])      # [1, 3, 6, 10]\nrunning_max([3, 1, 4, 1, 5])     # [3, 3, 4, 4, 5]\nfactorial_sequence(5)             # [1, 2, 6, 24, 120]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "itertools",
+    "accumulate",
+    "operator",
+    "running-totals"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import itertools\nimport operator\n\n\ndef running_total(numbers):\n    return list(itertools.accumulate(numbers))\n\n\ndef running_max(numbers):\n    return list(itertools.accumulate(numbers, max))\n\n\ndef factorial_sequence(n):\n    return list(itertools.accumulate(range(1, n + 1), operator.mul))\n"
+    }
+  ],
+  "hints": [
+    "itertools.accumulate(iterable) defaults to addition (running sum)",
+    "Pass a two-argument function as the second argument to change the operation",
+    "itertools.accumulate(iterable, max) tracks running maximums",
+    "operator.mul multiplies two values -- accumulate(range(1, n+1), operator.mul) gives factorials"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "description": "Import the itertools module"
+        },
+        {
+          "type": "pythonImport",
+          "module": "operator",
+          "description": "Import the operator module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "running_total",
+          "params": ["numbers"],
+          "description": "Define running_total that accepts numbers"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "running_max",
+          "params": ["numbers"],
+          "description": "Define running_max that accepts numbers"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "factorial_sequence",
+          "params": ["n"],
+          "description": "Define factorial_sequence that accepts n"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"accumulate\")))",
+          "description": "Use itertools.accumulate for running computations",
+          "hint": "Call itertools.accumulate(iterable) or itertools.accumulate(iterable, func)"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"operator\") (#eq? @attr \"mul\"))",
+          "description": "Use operator.mul for multiplication in accumulate",
+          "hint": "Pass operator.mul as the function argument to accumulate"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

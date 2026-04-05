@@ -1,0 +1,51 @@
+{
+  "title": "Valid Parentheses",
+  "prompt": "Write a function in `solution.ts` that determines if a string of bracket characters is valid.\n\n**Approach -- Stack Matching:**\nUse an array as a stack. Iterate through each character. When you encounter an opening bracket (`(`, `[`, `{`), push it onto the stack using `.push()`. When you encounter a closing bracket, check that the stack is not empty and that the top element (removed via `.pop()`) is the matching opening bracket. Use an object to map closing brackets to their openers. After processing all characters, the string is valid only if the stack is empty.\n\n**Requirements:**\n1. `export function isValid(s: string): boolean` -- takes a string containing only `()[]{}` characters and returns `true` if the brackets are valid, `false` otherwise\n2. Use an array as a stack with `.push()` for push and `.pop()` for pop\n3. Use an object or Map to map each closing bracket to its opening bracket\n4. Return `true` only if the stack is empty at the end\n\n**Examples:**\n```typescript\nisValid('()');     // true\nisValid('()[]{}'); // true\nisValid('(]');     // false\nisValid('([)]');   // false\nisValid('{[]}');   // true\n```\n\n**Complexity:**\n- Time: O(n) -- single pass through the string\n- Space: O(n) -- stack may hold all opening brackets in worst case",
+  "difficulty": "beginner",
+  "tags": [
+    "stack",
+    "string",
+    "matching"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function isValid(s: string): boolean {\n  const stack: string[] = [];\n  const pairs: Record<string, string> = { ')': '(', ']': '[', '}': '{' };\n  for (const c of s) {\n    if (c in pairs) {\n      if (stack.length === 0 || stack.pop() !== pairs[c]) {\n        return false;\n      }\n    } else {\n      stack.push(c);\n    }\n  }\n  return stack.length === 0;\n}\n"
+    }
+  ],
+  "hints": [
+    "Map each closing bracket to its opener: { ')': '(', ']': '[', '}': '{' }",
+    "Push opening brackets onto the stack with .push()",
+    "For closing brackets, pop from the stack and check it matches the expected opener",
+    "If the stack is not empty after processing all characters, the string is invalid"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "isValid",
+          "description": "Define an isValid function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "isValid",
+          "isDefault": false,
+          "description": "Export isValid as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call_expression function: (member_expression property: (property_identifier) @m (#eq? @m \"push\")))",
+          "description": "Use array .push() to push opening brackets onto the stack"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call_expression function: (member_expression property: (property_identifier) @m (#eq? @m \"pop\")))",
+          "description": "Use array .pop() to remove and check the top of the stack"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

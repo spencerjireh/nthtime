@@ -1,0 +1,20 @@
+{
+  "name": "DSA: Linked Lists (Python)",
+  "slug": "dsa-linked-lists-py",
+  "description": "Pointer manipulation, cycle detection, and recursive list operations for coding interviews.",
+  "language": "python",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["python", "dsa", "linked-lists", "two-pointers", "recursion", "interview"],
+  "prerequisites": ["python-foundations"],
+  "challenges": [
+    "challenges/01-reverse-linked-list.json",
+    "challenges/02-middle-of-linked-list.json",
+    "challenges/03a-linked-list-cycle-floyd.json",
+    "challenges/03b-linked-list-cycle-set.json",
+    "challenges/04-merge-two-sorted-lists.json",
+    "challenges/05-remove-linked-list-elements.json",
+    "challenges/06-remove-duplicates-sorted.json",
+    "challenges/07-palindrome-linked-list.json"
+  ]
+}

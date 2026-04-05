@@ -1,0 +1,73 @@
+{
+  "title": "Count, Cycle, Repeat",
+  "prompt": "Write three functions in `solution.py` using infinite itertools iterators:\n\n**Requirements:**\n1. `take_from_count(start, n)` -- returns a list of `n` consecutive integers starting from `start`, using `itertools.count` and `itertools.islice`\n2. `cycle_items(items, n)` -- returns the first `n` values produced by cycling through `items`, using `itertools.cycle` and `itertools.islice`\n3. `repeat_value(value, n)` -- returns a list of `value` repeated `n` times, using `itertools.repeat`\n\n**Examples:**\n```python\ntake_from_count(5, 4)          # [5, 6, 7, 8]\ncycle_items([\"a\", \"b\"], 5)     # [\"a\", \"b\", \"a\", \"b\", \"a\"]\nrepeat_value(0, 3)             # [0, 0, 0]\nrepeat_value(\"x\", 0)           # []\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "itertools",
+    "count",
+    "cycle",
+    "repeat",
+    "infinite-iterators"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import itertools\n\n\ndef take_from_count(start, n):\n    return list(itertools.islice(itertools.count(start), n))\n\n\ndef cycle_items(items, n):\n    return list(itertools.islice(itertools.cycle(items), n))\n\n\ndef repeat_value(value, n):\n    return list(itertools.repeat(value, n))\n"
+    }
+  ],
+  "hints": [
+    "itertools.count(start) yields start, start+1, start+2, ... forever",
+    "itertools.cycle(iterable) repeats the iterable endlessly",
+    "itertools.repeat(value, n) yields value exactly n times",
+    "Use itertools.islice to take a finite number of items from an infinite iterator"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "description": "Import the itertools module"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "take_from_count",
+          "params": ["start", "n"],
+          "description": "Define take_from_count that accepts start and n"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "cycle_items",
+          "params": ["items", "n"],
+          "description": "Define cycle_items that accepts items and n"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "repeat_value",
+          "params": ["value", "n"],
+          "description": "Define repeat_value that accepts value and n"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"count\")))",
+          "description": "Use itertools.count to generate consecutive integers",
+          "hint": "Call itertools.count(start) to create an infinite counter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"cycle\")))",
+          "description": "Use itertools.cycle to repeat items endlessly",
+          "hint": "Call itertools.cycle(items) to cycle through the sequence"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (attribute object: (identifier) @mod attribute: (identifier) @attr (#eq? @mod \"itertools\") (#eq? @attr \"repeat\")))",
+          "description": "Use itertools.repeat to produce repeated values",
+          "hint": "Call itertools.repeat(value, n) for a finite repetition"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

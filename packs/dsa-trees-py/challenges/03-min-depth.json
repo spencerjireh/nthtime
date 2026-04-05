@@ -1,0 +1,55 @@
+{
+  "title": "Minimum Depth",
+  "prompt": "Write a `TreeNode` class and a `min_depth` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `min_depth(root) -> int`**\nGiven the root of a binary tree, return its minimum depth. The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.\n\nUse **iterative BFS** (level-order traversal) -- this is optimal because it returns as soon as the first leaf is found:\n1. If `root` is `None`, return `0`\n2. Import `deque` from `collections`\n3. Initialize a queue with the root and set `depth = 0`\n4. While the queue is not empty:\n   - Increment `depth`\n   - Process all nodes at the current level\n   - If any node is a leaf (no left and no right child), return `depth` immediately\n   - Otherwise, add non-None children to the queue\n5. Return `depth`\n\n**Complexity:** O(n) time, O(w) space where w is the maximum width of the tree.\n\n**Examples:**\n```python\n#       3\n#      / \\\n#     9  20\n#       /  \\\n#      15   7\nroot = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))\nmin_depth(root)  # 2  (path: 3 -> 9)\n\n# Right-skewed: 2 -> 3 -> 4 -> 5 -> 6\nmin_depth(build_from([2, None, 3, None, 4, None, 5, None, 6]))  # 5\nmin_depth(None)  # 0\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "bfs",
+    "iterative",
+    "depth",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef min_depth(root):\n    if not root:\n        return 0\n    queue = deque([root])\n    depth = 0\n    while queue:\n        depth += 1\n        for _ in range(len(queue)):\n            node = queue.popleft()\n            if not node.left and not node.right:\n                return depth\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n    return depth\n"
+    }
+  ],
+  "hints": [
+    "BFS finds the shallowest leaf first -- no need to explore the entire tree",
+    "A leaf node has no left child and no right child",
+    "Return immediately when you find the first leaf -- that is the minimum depth",
+    "Process nodes level by level using len(queue) to count nodes per level"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "min_depth",
+          "params": ["root"],
+          "description": "Define min_depth that accepts a tree root"
+        },
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["deque"],
+          "description": "Import deque from collections for BFS queue"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for iterative BFS traversal",
+          "hint": "Use 'while queue:' to process nodes level by level"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

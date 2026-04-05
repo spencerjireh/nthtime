@@ -1,0 +1,43 @@
+{
+  "title": "Max Depth (Recursive)",
+  "prompt": "Write a `TreeNode` class and a `max_depth` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `max_depth(root) -> int`**\nGiven the root of a binary tree, return its maximum depth. The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.\n\nUse recursion:\n1. If `root` is `None`, return `0`\n2. Recursively compute the max depth of the left and right subtrees\n3. Return `1 + max(left_depth, right_depth)`\n\n**Complexity:** O(n) time, O(h) space where h is tree height (recursion stack).\n\n**Examples:**\n```python\n#       3\n#      / \\\n#     9  20\n#       /  \\\n#      15   7\nroot = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))\nmax_depth(root)  # 3\n\nmax_depth(TreeNode(1, None, TreeNode(2)))  # 2\nmax_depth(None)  # 0\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "recursion",
+    "dfs",
+    "depth",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef max_depth(root):\n    if not root:\n        return 0\n    return 1 + max(max_depth(root.left), max_depth(root.right))\n"
+    }
+  ],
+  "hints": [
+    "An empty tree (None) has depth 0",
+    "A single node has depth 1",
+    "Use max() to pick the deeper subtree",
+    "The answer is 1 (current node) plus the max of left and right depths"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "max_depth",
+          "params": ["root"],
+          "description": "Define max_depth that accepts a tree root"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

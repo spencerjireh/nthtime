@@ -1,0 +1,41 @@
+{
+  "title": "Valid Anagram (Hash Map)",
+  "prompt": "Write a function in `solution.py` that determines whether two strings are anagrams of each other using a manual frequency dictionary.\n\n**Approach -- Manual Dictionary Counting:**\nBuild a frequency dictionary for each string by iterating over the characters and counting occurrences. Use `dict.get(key, 0)` to handle missing keys. Compare the two dictionaries with `==`. Do NOT use `collections.Counter`.\n\n**Requirements:**\n1. `is_anagram(s, t)` -- takes two strings and returns `True` if `t` is an anagram of `s`, `False` otherwise\n2. Build frequency dictionaries manually using `dict` literals or `dict()`\n3. Use `dict.get(key, 0)` to safely increment counts\n4. Do not import `Counter` from `collections`\n\n**Examples:**\n```python\nis_anagram(\"anagram\", \"nagaram\")  # True\nis_anagram(\"rat\", \"car\")          # False\nis_anagram(\"\", \"\")                # True\n```\n\n**Complexity:**\n- Time: O(n) where n is the length of the strings\n- Space: O(n) for the frequency dictionaries",
+  "difficulty": "beginner",
+  "tags": [
+    "string",
+    "hash-map",
+    "dictionary"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def is_anagram(s, t):\n    freq_s = {}\n    freq_t = {}\n    for c in s:\n        freq_s[c] = freq_s.get(c, 0) + 1\n    for c in t:\n        freq_t[c] = freq_t.get(c, 0) + 1\n    return freq_s == freq_t\n"
+    }
+  ],
+  "hints": [
+    "Initialize an empty dict: freq = {}",
+    "Use freq.get(c, 0) + 1 to increment a count safely without KeyError",
+    "Build one frequency dict for each string, then compare them",
+    "Two dicts are equal if they have the same keys with the same values"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "is_anagram",
+          "params": ["s", "t"],
+          "description": "Define is_anagram that accepts two string parameters"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(dictionary)",
+          "description": "Use a dictionary for character frequency counting"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

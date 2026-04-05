@@ -1,0 +1,55 @@
+{
+  "title": "Average of Levels",
+  "prompt": "Write a `TreeNode` class and an `average_of_levels` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `average_of_levels(root) -> list`**\nGiven the root of a binary tree, return a list of the average value of the nodes on each level. Use **BFS** (level-order traversal).\n\nApproach:\n1. Import `deque` from `collections`\n2. If `root` is `None`, return an empty list\n3. Initialize a queue with the root and an empty `result` list\n4. While the queue is not empty:\n   - Record `level_size = len(queue)`\n   - Sum all node values at this level by processing `level_size` nodes\n   - Append `level_sum / level_size` to `result`\n   - Add non-None children to the queue\n5. Return `result`\n\n**Complexity:** O(n) time, O(w) space where w is the maximum width of the tree.\n\n**Examples:**\n```python\n#       3\n#      / \\\n#     9  20\n#       /  \\\n#      15   7\nroot = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))\naverage_of_levels(root)  # [3.0, 14.5, 11.0]\n\n#       3\n#      / \\\n#     9  20\n#    / \\\n#   15  7\nroot = TreeNode(3, TreeNode(9, TreeNode(15), TreeNode(7)), TreeNode(20))\naverage_of_levels(root)  # [3.0, 14.5, 11.0]\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "trees",
+    "bfs",
+    "iterative",
+    "averages",
+    "beginner"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef average_of_levels(root):\n    if not root:\n        return []\n    queue = deque([root])\n    result = []\n    while queue:\n        level_size = len(queue)\n        level_sum = 0\n        for _ in range(level_size):\n            node = queue.popleft()\n            level_sum += node.val\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level_sum / level_size)\n    return result\n"
+    }
+  ],
+  "hints": [
+    "Use deque from collections for an efficient BFS queue",
+    "At each level, use len(queue) to know how many nodes to process",
+    "Sum all values at the current level, then divide by the count",
+    "Use regular division (/) not integer division (//) to get float averages"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "average_of_levels",
+          "params": ["root"],
+          "description": "Define average_of_levels that accepts a tree root"
+        },
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["deque"],
+          "description": "Import deque from collections for BFS queue"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(while_statement)",
+          "description": "Use a while loop for iterative BFS traversal",
+          "hint": "Use 'while queue:' to process nodes level by level"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

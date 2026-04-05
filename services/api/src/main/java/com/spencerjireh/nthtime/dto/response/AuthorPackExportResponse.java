@@ -10,6 +10,7 @@ public record AuthorPackExportResponse(
     String framework,
     String version,
     String[] tags,
+    String[] prerequisites,
     List<ExportChallenge> challenges) {
   public record ExportChallenge(
       String slug,

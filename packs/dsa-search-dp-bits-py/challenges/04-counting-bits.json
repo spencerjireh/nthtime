@@ -1,0 +1,41 @@
+{
+  "title": "Counting Bits",
+  "prompt": "Count the number of 1-bits for every integer from 0 to n using dynamic programming in `solution.py`.\n\n**Approach:**\nBuild a DP array where `dp[i]` stores the number of 1-bits in the binary representation of `i`. Use the recurrence `dp[i] = dp[i >> 1] + (i & 1)`. The key insight: right-shifting `i` by 1 removes the last bit, and `i & 1` tells you what that last bit was. So the popcount of `i` is the popcount of `i // 2` plus the last bit.\n\n**Requirements:**\n1. `count_bits(n)` -- takes a non-negative integer `n` and returns a list of length `n + 1` where element `i` is the number of 1-bits in the binary representation of `i`\n2. Use a `for` loop from 1 to n\n3. Use the bit-shift DP recurrence: `dp[i] = dp[i >> 1] + (i & 1)`\n\n**Examples:**\n```python\ncount_bits(2)  # [0, 1, 1]\ncount_bits(5)  # [0, 1, 1, 2, 1, 2]\ncount_bits(0)  # [0]\n```\n\n**Complexity:** O(n) time, O(n) space.",
+  "difficulty": "beginner",
+  "tags": [
+    "dynamic-programming",
+    "bit-manipulation",
+    "arrays"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "def count_bits(n):\n    dp = [0] * (n + 1)\n    for i in range(1, n + 1):\n        dp[i] = dp[i >> 1] + (i & 1)\n    return dp\n"
+    }
+  ],
+  "hints": [
+    "Initialize dp as a list of n + 1 zeros: dp = [0] * (n + 1)",
+    "i >> 1 is the same as i // 2 (right shift removes the last bit)",
+    "i & 1 extracts the least significant bit (0 or 1)",
+    "dp[0] = 0 is the base case (zero has no 1-bits)"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonFunctionDef",
+          "name": "count_bits",
+          "params": ["n"],
+          "description": "Define a count_bits function that accepts an n parameter"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to build the DP array"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

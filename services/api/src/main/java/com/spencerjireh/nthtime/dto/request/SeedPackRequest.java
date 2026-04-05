@@ -12,6 +12,7 @@ public record SeedPackRequest(
     String version,
     String author,
     List<String> tags,
+    List<String> prerequisites,
     List<SeedChallengeData> challenges) {
   public record SeedChallengeData(
       String slug,

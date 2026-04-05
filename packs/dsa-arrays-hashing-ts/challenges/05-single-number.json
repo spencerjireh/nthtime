@@ -1,0 +1,48 @@
+{
+  "title": "Single Number",
+  "prompt": "Given a non-empty array of integers `nums`, every element appears twice except for one. Find that single one.\n\n**Approach:** Use XOR (exclusive or). XOR of a number with itself is 0, and XOR of a number with 0 is the number itself. XOR all elements together and the duplicate pairs cancel out.\n\n**Requirements:**\n1. Define and export `singleNumber(nums: number[]): number` in `solution.ts`\n2. Initialize a `result` variable to `0`\n3. Iterate through `nums` and XOR each number with `result` using `^=`\n4. Return `result`\n\n**Examples:**\n```typescript\nsingleNumber([2, 2, 1])        // 1\nsingleNumber([4, 1, 2, 1, 2])  // 4\nsingleNumber([1])              // 1\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "bit-manipulation", "xor"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function singleNumber(nums: number[]): number {\n  let result = 0;\n  for (const num of nums) {\n    result ^= num;\n  }\n  return result;\n}\n"
+    }
+  ],
+  "hints": [
+    "XOR has a key property: a ^ a === 0 and a ^ 0 === a",
+    "If you XOR all numbers together, pairs cancel out",
+    "Initialize result to 0, then XOR each element",
+    "The ^= operator is the XOR assignment shorthand"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "singleNumber",
+          "description": "Define a singleNumber function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "singleNumber",
+          "isDefault": false,
+          "description": "Export singleNumber as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_in_statement)",
+          "description": "Iterate through the array with a for...of loop"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(augmented_assignment_expression)",
+          "description": "Use augmented assignment (^=) to XOR each element",
+          "hint": "Use result ^= num to XOR each number into the result"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

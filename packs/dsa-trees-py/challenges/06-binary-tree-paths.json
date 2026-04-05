@@ -1,0 +1,43 @@
+{
+  "title": "Binary Tree Paths",
+  "prompt": "Write a `TreeNode` class and a `binary_tree_paths` function in `solution.py`:\n\n**TreeNode class:**\n- `__init__(self, val=0, left=None, right=None)` -- store val, left child, and right child\n\n**Function: `binary_tree_paths(root) -> list`**\nGiven the root of a binary tree, return all root-to-leaf paths as a list of strings. Each path should be formatted as `\"1->2->5\"` with `->` separating node values.\n\nUse DFS with path tracking:\n1. If `root` is `None`, return an empty list\n2. Define a helper function that takes a node and the current path string\n3. Append the current node's value to the path\n4. If the node is a leaf, add the path to the results list\n5. Otherwise, recurse on left and right children (if they exist)\n\n**Complexity:** O(n) time, O(n) space for storing all paths.\n\n**Examples:**\n```python\n#     1\n#    / \\\n#   2   3\n#    \\\n#     5\nroot = TreeNode(1, TreeNode(2, None, TreeNode(5)), TreeNode(3))\nbinary_tree_paths(root)  # [\"1->2->5\", \"1->3\"]\n\nbinary_tree_paths(TreeNode(1))  # [\"1\"]\n```",
+  "difficulty": "intermediate",
+  "tags": [
+    "trees",
+    "dfs",
+    "recursion",
+    "paths",
+    "intermediate"
+  ],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef binary_tree_paths(root):\n    if not root:\n        return []\n    paths = []\n\n    def dfs(node, path):\n        path += str(node.val)\n        if not node.left and not node.right:\n            paths.append(path)\n            return\n        if node.left:\n            dfs(node.left, path + \"->\")\n        if node.right:\n            dfs(node.right, path + \"->\")\n\n    dfs(root, \"\")\n    return paths\n"
+    }
+  ],
+  "hints": [
+    "Build the path string as you recurse, appending each node's value",
+    "A leaf node has no left and no right child -- add the completed path to results",
+    "Use '->' to separate values in the path string",
+    "Only recurse into children that are not None"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "TreeNode",
+          "description": "Define a TreeNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "binary_tree_paths",
+          "params": ["root"],
+          "description": "Define binary_tree_paths that accepts a tree root"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

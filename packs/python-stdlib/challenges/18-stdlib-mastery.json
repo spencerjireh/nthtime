@@ -1,0 +1,72 @@
+{
+  "title": "Stdlib Mastery",
+  "prompt": "Write three functions in `solution.py` combining `itertools` and `collections` for advanced patterns:\n\n**Requirements:**\n1. `poker_hands(cards, hand_size)` -- returns a list of all possible hands (combinations) of `hand_size` cards drawn from `cards`. Each hand is a tuple. Use `itertools.combinations`.\n2. `bounded_history(maxsize)` -- returns a callable object that tracks the last `maxsize` items appended. Calling `.append(item)` adds an item. Calling `.items()` returns the current history as a list. Use `collections.deque` internally.\n3. `multidict_merge(*dicts)` -- merges multiple dicts, collecting all values for each key across all dicts into a list. Use `collections.defaultdict` and `itertools.chain`.\n\n**Examples:**\n```python\npoker_hands([\"A\", \"K\", \"Q\"], 2)\n# [(\"A\", \"K\"), (\"A\", \"Q\"), (\"K\", \"Q\")]\n\nh = bounded_history(3)\nh.append(\"a\")\nh.append(\"b\")\nh.append(\"c\")\nh.append(\"d\")\nh.items()  # [\"b\", \"c\", \"d\"]\n\nmultidict_merge({\"a\": 1, \"b\": 2}, {\"a\": 3, \"c\": 4})\n# {\"a\": [1, 3], \"b\": [2], \"c\": [4]}\n```",
+  "difficulty": "advanced",
+  "tags": [
+    "itertools",
+    "collections",
+    "combinations",
+    "deque",
+    "mastery"
+  ],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "import itertools\nfrom collections import defaultdict, deque\n\n\ndef poker_hands(cards, hand_size):\n    return list(itertools.combinations(cards, hand_size))\n\n\nclass _BoundedHistory:\n    def __init__(self, maxsize):\n        self._history = deque(maxlen=maxsize)\n\n    def append(self, item):\n        self._history.append(item)\n\n    def items(self):\n        return list(self._history)\n\n\ndef bounded_history(maxsize):\n    return _BoundedHistory(maxsize)\n\n\ndef multidict_merge(*dicts):\n    result = defaultdict(list)\n    for key, value in itertools.chain.from_iterable(d.items() for d in dicts):\n        result[key].append(value)\n    return dict(result)\n"
+    }
+  ],
+  "hints": [
+    "itertools.combinations(cards, n) yields all n-length tuples in sorted order",
+    "A class with append() and items() methods works as a bounded history tracker",
+    "deque(maxlen=n) automatically evicts the oldest item when full",
+    "itertools.chain.from_iterable(d.items() for d in dicts) flattens all key-value pairs"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonImport",
+          "module": "itertools",
+          "description": "Import the itertools module"
+        },
+        {
+          "type": "pythonImport",
+          "module": "collections",
+          "names": ["defaultdict", "deque"],
+          "description": "Import defaultdict and deque from collections"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "poker_hands",
+          "params": ["cards", "hand_size"],
+          "description": "Define poker_hands that returns all combinations of given size"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "bounded_history",
+          "params": ["maxsize"],
+          "description": "Define bounded_history that returns a bounded history tracker"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "multidict_merge",
+          "description": "Define multidict_merge that collects all values per key"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (attribute (identifier) @mod (#eq? @mod \"itertools\")) @method)",
+          "description": "Use itertools functions for iteration",
+          "hint": "Use itertools.combinations for hands and itertools.chain for merging"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call (identifier) @fn (#eq? @fn \"deque\"))",
+          "description": "Use deque for bounded history storage",
+          "hint": "deque(maxlen=n) keeps only the last n items"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

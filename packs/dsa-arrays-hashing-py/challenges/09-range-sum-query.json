@@ -1,0 +1,48 @@
+{
+  "title": "Range Sum Query (Prefix Sum)",
+  "prompt": "Implement a `NumArray` class that supports efficient range sum queries on an immutable array.\n\n**Approach:** Prefix sum array. Precompute cumulative sums so each query is O(1).\n\n**Requirements:**\n1. Define class `NumArray` in `solution.py`\n2. `__init__(self, nums)` -- build a prefix sum array where `prefix[i]` is the sum of `nums[0..i-1]`. Set `prefix[0] = 0`\n3. `sum_range(self, left, right)` -- return the sum of elements from index `left` to `right` (inclusive) using `prefix[right + 1] - prefix[left]`\n\n**Examples:**\n```python\narr = NumArray([-2, 0, 3, -5, 2, -1])\narr.sum_range(0, 2)  #  1  (-2 + 0 + 3)\narr.sum_range(2, 5)  # -1  (3 + -5 + 2 + -1)\narr.sum_range(0, 5)  # -3  (sum of all)\n```\n\n**Complexity:** O(n) init time, O(1) per query, O(n) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "prefix-sum", "class"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class NumArray:\n    def __init__(self, nums):\n        self.prefix = [0]\n        for num in nums:\n            self.prefix.append(self.prefix[-1] + num)\n\n    def sum_range(self, left, right):\n        return self.prefix[right + 1] - self.prefix[left]\n"
+    }
+  ],
+  "hints": [
+    "A prefix sum array stores cumulative sums: prefix[i] = sum(nums[0..i-1])",
+    "Start the prefix array with [0] so that prefix[1] = nums[0]",
+    "Build prefix by appending prefix[-1] + num for each num",
+    "sum_range(left, right) = prefix[right + 1] - prefix[left]"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "NumArray",
+          "description": "Define a NumArray class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "__init__",
+          "params": ["self", "nums"],
+          "description": "Define __init__ that accepts nums and builds a prefix sum"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "sum_range",
+          "params": ["self", "left", "right"],
+          "description": "Define sum_range that returns the sum from left to right inclusive"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to build the prefix sum array"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

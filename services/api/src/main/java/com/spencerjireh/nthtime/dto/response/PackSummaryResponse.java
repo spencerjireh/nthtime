@@ -12,6 +12,7 @@ public record PackSummaryResponse(
     String version,
     String author,
     String[] tags,
+    String[] prerequisites,
     int challengeCount,
     int passedCount,
     String visibility) {}

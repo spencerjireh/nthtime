@@ -1,0 +1,47 @@
+{
+  "title": "Linked List Cycle (Hash Set)",
+  "prompt": "Write a `ListNode` class and a `has_cycle` function in `solution.py`:\n\n**Requirements:**\n1. `ListNode` class with `__init__(self, val=0, next=None)` -- stores `val` and `next` attributes\n2. `has_cycle(head)` -- returns `True` if the linked list contains a cycle, `False` otherwise. Use a hash set to track visited nodes\n\n**Algorithm (hash set approach):**\n- Create an empty `set()` called `visited`\n- Traverse the list with a `curr` pointer starting at `head`\n- While `curr` is not `None`: if `curr` is already in `visited`, return `True`. Otherwise add `curr` to `visited` and advance `curr` to `curr.next`\n- Return `False` (no cycle found)\n\n**Complexity:** O(n) time, O(n) space.\n\n**Examples:**\n```python\n# [1] -> [2] -> [3] -> [2] (cycle back to node 2) -> True\n# [1] -> [2] -> [3] -> None -> False\n```",
+  "difficulty": "beginner",
+  "tags": [
+    "linked-list",
+    "cycle-detection",
+    "hash-set"
+  ],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.py",
+      "content": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef has_cycle(head):\n    visited = set()\n    curr = head\n    while curr:\n        if curr in visited:\n            return True\n        visited.add(curr)\n        curr = curr.next\n    return False\n"
+    }
+  ],
+  "hints": [
+    "Create a set() to store references to visited nodes",
+    "Check if the current node is already in the set before adding it",
+    "Python sets use object identity for unhashable types by default",
+    "This approach trades O(n) space for simpler logic than Floyd's"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.py": [
+        {
+          "type": "pythonClassDef",
+          "name": "ListNode",
+          "description": "Define the ListNode class"
+        },
+        {
+          "type": "pythonFunctionDef",
+          "name": "has_cycle",
+          "params": ["head"],
+          "description": "Define has_cycle that accepts a head node"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(call function: (identifier) @fn (#eq? @fn \"set\"))",
+          "description": "Use a set() to track visited nodes",
+          "hint": "visited = set() creates an empty hash set for O(1) lookups"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

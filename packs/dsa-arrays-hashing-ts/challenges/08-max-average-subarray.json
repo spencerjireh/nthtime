@@ -1,0 +1,42 @@
+{
+  "title": "Maximum Average Subarray I",
+  "prompt": "Given an integer array `nums` and an integer `k`, find the contiguous subarray of length `k` that has the maximum average value. Return the maximum average as a number.\n\n**Approach:** Sliding window. Compute the sum of the first `k` elements, then slide the window by adding the next element and removing the first element of the previous window.\n\n**Requirements:**\n1. Define and export `findMaxAverage(nums: number[], k: number): number` in `solution.ts`\n2. Compute the sum of the first `k` elements as the initial window sum\n3. Slide the window: for each position from `k` to `nums.length - 1`, add the new element and subtract the element leaving the window\n4. Track the maximum window sum seen\n5. Return `maxSum / k`\n\n**Examples:**\n```typescript\nfindMaxAverage([1, 12, -5, -6, 50, 3], 4)  // 12.75\nfindMaxAverage([5], 1)                      // 5.0\nfindMaxAverage([0, 4, 0, 3, 2], 1)         // 4.0\n```\n\n**Complexity:** O(n) time, O(1) space",
+  "difficulty": "beginner",
+  "tags": ["arrays", "sliding-window", "average"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "solution.ts",
+      "content": "export function findMaxAverage(nums: number[], k: number): number {\n  let windowSum = 0;\n  for (let i = 0; i < k; i++) {\n    windowSum += nums[i];\n  }\n  let maxSum = windowSum;\n  for (let i = k; i < nums.length; i++) {\n    windowSum += nums[i] - nums[i - k];\n    if (windowSum > maxSum) {\n      maxSum = windowSum;\n    }\n  }\n  return maxSum / k;\n}\n"
+    }
+  ],
+  "hints": [
+    "Compute the sum of the first k elements as your starting window",
+    "To slide the window, add the incoming element and subtract the outgoing one",
+    "Track the maximum window sum as you slide",
+    "Divide the maximum sum by k at the end to get the average"
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "functionDeclaration",
+          "name": "findMaxAverage",
+          "description": "Define a findMaxAverage function"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "findMaxAverage",
+          "isDefault": false,
+          "description": "Export findMaxAverage as a named export"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(for_statement)",
+          "description": "Use a for loop to slide the window across the array"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
