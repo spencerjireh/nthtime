@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { submitAndWaitForResults, EXPRESS_SOLUTION, getChallengeId } from './helpers';
+import {
+  submitAndWaitForResults,
+  EXPRESS_SOLUTION,
+  getChallengeId,
+  getEditorContent,
+} from './helpers';
 
 let challengeId: string;
 
@@ -29,5 +34,6 @@ test.describe('Challenge drill loop', () => {
 
     await page.getByRole('button', { name: 'Retry' }).click();
     await expect(page.getByRole('button', { name: 'Run' })).toBeVisible();
+    await expect.poll(() => getEditorContent(page)).toBe(EXPRESS_SOLUTION);
   });
 });

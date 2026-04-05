@@ -2,19 +2,19 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from 'zustand';
-import {
-  Group,
-  Panel,
-  Separator,
-  useDefaultLayout,
-  usePanelRef,
-} from 'react-resizable-panels';
+import { Group, Panel, Separator, useDefaultLayout, usePanelRef } from 'react-resizable-panels';
 import { PromptPanel } from './prompt-panel';
 import { ResultsPanel } from './results-panel';
 import { EditorPanel } from './editor-panel';
 import { StatusBar } from './status-bar';
-import { DEFAULT_LAYOUT, LAYOUT_GROUP_ID, RESET_LAYOUT_EVENT, clearPanelStorage } from './default-layout';
+import {
+  DEFAULT_LAYOUT,
+  LAYOUT_GROUP_ID,
+  RESET_LAYOUT_EVENT,
+  clearPanelStorage,
+} from './default-layout';
 import { useEditorStore } from './editor-store-context';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 import { getSettingsStore } from '@/lib/settings-store';
 
 interface DockableLayoutProps {
@@ -25,8 +25,15 @@ interface DockableLayoutProps {
   challengeIds?: string[];
 }
 
-export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds }: DockableLayoutProps) {
+export function DockableLayout({
+  onRun,
+  onRetry,
+  onReset,
+  packSlug,
+  challengeIds,
+}: DockableLayoutProps) {
   const [resetKey, setResetKey] = useState(0);
+  const [isPeekingSolution, setIsPeekingSolution] = useState(false);
   const promptPanelRef = usePanelRef();
   const mountedRef = useRef(false);
   const statusBarRef = useRef<HTMLDivElement>(null);
@@ -34,12 +41,19 @@ export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds
   const viewMode = useEditorStore((s) => s.viewMode);
   const tabOrder = useEditorStore((s) => s.tabOrder);
   const activeFilePath = useEditorStore((s) => s.activeFilePath);
+  const referenceSolutionFiles = useEditorStore((s) => s.referenceSolutionFiles);
   const setActiveFile = useEditorStore((s) => s.setActiveFile);
   const closeTab = useEditorStore((s) => s.closeTab);
   const store = getSettingsStore();
   const promptCollapsed = useStore(store, (s) => s.settings.promptCollapsed);
   const keybindings = useStore(store, (s) => s.settings.keybindings);
+  const showSolution = useStore(store, (s) => s.settings.feedback.showSolution);
   const isResults = viewMode === 'results';
+  const canPeekSolution =
+    isFeatureEnabled('solutionView') &&
+    showSolution &&
+    !!activeFilePath &&
+    !!referenceSolutionFiles?.[activeFilePath];
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: LAYOUT_GROUP_ID,
@@ -102,8 +116,18 @@ export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds
 
   // Keyboard shortcuts
   useEffect(() => {
+    const stopPeeking = () => setIsPeekingSolution(false);
+
     const handleKeyDown = (e: KeyboardEvent) => {
+      const lowerKey = e.key.toLowerCase();
       const mod = e.ctrlKey || e.metaKey;
+
+      if (mod && e.altKey && lowerKey === 's' && canPeekSolution) {
+        if (e.repeat) return;
+        e.preventDefault();
+        setIsPeekingSolution(true);
+        return;
+      }
 
       // Ctrl+Enter: run
       if (mod && e.key === 'Enter') {
@@ -149,8 +173,12 @@ export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds
         if (tabOrder.length < 2) return;
         const idx = tabOrder.indexOf(activeFilePath ?? '');
         const next = e.shiftKey
-          ? idx <= 0 ? tabOrder.length - 1 : idx - 1
-          : idx >= tabOrder.length - 1 ? 0 : idx + 1;
+          ? idx <= 0
+            ? tabOrder.length - 1
+            : idx - 1
+          : idx >= tabOrder.length - 1
+            ? 0
+            : idx + 1;
         setActiveFile(tabOrder[next]);
         return;
       }
@@ -173,9 +201,40 @@ export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds
       }
     };
 
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!isPeekingSolution) return;
+      const releasedChordKey = ['alt', 'control', 'meta', 's'].includes(e.key.toLowerCase());
+      if (releasedChordKey) {
+        stopPeeking();
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') {
+        stopPeeking();
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onRun, togglePrompt, tabOrder, activeFilePath, setActiveFile, closeTab]);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', stopPeeking);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', stopPeeking);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [
+    onRun,
+    togglePrompt,
+    tabOrder,
+    activeFilePath,
+    setActiveFile,
+    closeTab,
+    canPeekSolution,
+    isPeekingSolution,
+  ]);
 
   return (
     <div className="relative flex h-full w-full flex-col">
@@ -197,18 +256,14 @@ export function DockableLayout({ onRun, onRetry, onReset, packSlug, challengeIds
             onResize={handlePromptResize}
           >
             {isResults ? (
-              <ResultsPanel
-                onRetry={onRetry}
-                packSlug={packSlug}
-                challengeIds={challengeIds}
-              />
+              <ResultsPanel onRetry={onRetry} packSlug={packSlug} challengeIds={challengeIds} />
             ) : (
               <PromptPanel />
             )}
           </Panel>
           <Separator className="w-1 bg-border transition-colors hover:bg-primary active:bg-primary" />
           <Panel id="editor" defaultSize="70%" minSize="25%">
-            <EditorPanel statusBarRef={statusBarRef} />
+            <EditorPanel statusBarRef={statusBarRef} isPeekingSolution={isPeekingSolution} />
           </Panel>
         </Group>
       </div>

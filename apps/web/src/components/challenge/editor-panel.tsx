@@ -21,23 +21,21 @@ import { formatCode } from '@/lib/formatter';
 import { LogoSpinner } from '@/components/ui/logo-spinner';
 
 // Lazy-loaded diff view
-const DiffViewLazy = dynamic(
-  () => import('./diff-view').then((m) => ({ default: m.DiffView })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-full items-center justify-center bg-background">
-        <LogoSpinner label="Loading diff view..." />
-      </div>
-    ),
-  },
-);
+const DiffViewLazy = dynamic(() => import('./diff-view').then((m) => ({ default: m.DiffView })), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full items-center justify-center bg-background">
+      <LogoSpinner label="Loading diff view..." />
+    </div>
+  ),
+});
 
 interface EditorPanelProps {
   statusBarRef?: RefObject<HTMLDivElement | null>;
+  isPeekingSolution?: boolean;
 }
 
-export function EditorPanel({ statusBarRef }: EditorPanelProps) {
+export function EditorPanel({ statusBarRef, isPeekingSolution = false }: EditorPanelProps) {
   const files = useEditorStore((s) => s.files);
   const activeFilePath = useEditorStore((s) => s.activeFilePath);
   const tabOrder = useEditorStore((s) => s.tabOrder);
@@ -72,17 +70,23 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
 
   const [editorInstance, setEditorInstance] = useState<Parameters<OnMount>[0] | null>(null);
   const [monacoInstance, setMonacoInstance] = useState<Parameters<OnMount>[1] | null>(null);
-  const [ghostEditorInstance, setGhostEditorInstance] = useState<Parameters<OnMount>[0] | null>(null);
-  const [ghostMonacoInstance, setGhostMonacoInstance] = useState<Parameters<OnMount>[1] | null>(null);
+  const [ghostEditorInstance, setGhostEditorInstance] = useState<Parameters<OnMount>[0] | null>(
+    null,
+  );
+  const [ghostMonacoInstance, setGhostMonacoInstance] = useState<Parameters<OnMount>[1] | null>(
+    null,
+  );
 
-  const isTraceModeActive = traceMode && !isResults;
+  const isTraceModeActive = traceMode && !isResults && !isPeekingSolution;
 
   useKeybindingMode(editorInstance, statusBarRef ?? { current: null }, keybindings);
   useParseDiagnostics(editorInstance, monacoInstance, activeFilePath, activeFile?.content);
   useTraceMode(
     editorInstance,
-    ghostEditorInstance, ghostMonacoInstance,
-    activeFilePath, referenceSolutionFiles,
+    ghostEditorInstance,
+    ghostMonacoInstance,
+    activeFilePath,
+    referenceSolutionFiles,
     isTraceModeActive,
   );
 
@@ -138,9 +142,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
   }, [files, submittedFiles, tabOrder]);
 
   const monacoOptions = useMemo(() => {
-    const base = autocomplete
-      ? {}
-      : { quickSuggestions: false, suggestOnTriggerCharacters: false };
+    const base = autocomplete ? {} : { quickSuggestions: false, suggestOnTriggerCharacters: false };
     if (isResults) {
       return { ...base, readOnly: true, glyphMargin: showGlyphMargin };
     }
@@ -178,6 +180,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
 
   const handleFileSelect = useCallback(
     (path: string) => {
+      if (isPeekingSolution) return;
       if (isResults) {
         setActiveFile(path);
       } else {
@@ -187,7 +190,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
         openTab(path);
       }
     },
-    [isResults, openTab, setActiveFile, files, createFile],
+    [isPeekingSolution, isResults, openTab, setActiveFile, files, createFile],
   );
 
   const handleDeleteFile = useCallback(
@@ -218,9 +221,10 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
 
   // Ghost files: reference solution files that the user hasn't created yet
   const ghostFilePaths = useMemo(() => {
-    if (!traceMode || !referenceSolutionFiles || isResults) return [];
+    if (!referenceSolutionFiles) return [];
+    if (!isPeekingSolution && (!traceMode || isResults)) return [];
     return Object.keys(referenceSolutionFiles).filter((p) => !files[p]);
-  }, [traceMode, referenceSolutionFiles, files, isResults]);
+  }, [traceMode, referenceSolutionFiles, files, isResults, isPeekingSolution]);
 
   const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
   const language = activeFilePath ? getMonacoLanguage(activeFilePath) : 'plaintext';
@@ -265,6 +269,16 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
         <SolutionPanel
           content={referenceSolutionFiles[activeFilePath]?.content ?? ''}
           language={language}
+        />
+      );
+    }
+
+    if (isPeekingSolution && referenceSolutionFiles && activeFilePath) {
+      return (
+        <SolutionPanel
+          content={referenceSolutionFiles[activeFilePath]?.content ?? ''}
+          language={language}
+          peek
         />
       );
     }
@@ -351,9 +365,7 @@ export function EditorPanel({ statusBarRef }: EditorPanelProps) {
           onReorder={isResults ? undefined : reorderTabs}
           modifiedPaths={modifiedPaths}
         />
-        <div className="min-h-0 flex-1">
-          {renderMainEditor()}
-        </div>
+        <div className="min-h-0 flex-1">{renderMainEditor()}</div>
       </div>
     </div>
   );

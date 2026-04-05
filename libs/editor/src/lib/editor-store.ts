@@ -67,10 +67,7 @@ export function createEditorStore() {
           set({
             ...baseState,
             files: draft.files,
-            hintsRevealed: Math.min(
-              draft.hintsRevealed,
-              challenge.hints.length,
-            ),
+            hintsRevealed: Math.min(draft.hintsRevealed, challenge.hints.length),
           });
           return;
         }
@@ -160,9 +157,12 @@ export function createEditorStore() {
     reorderTabs(fromIndex, toIndex) {
       const { tabOrder } = get();
       if (
-        fromIndex < 0 || fromIndex >= tabOrder.length ||
-        toIndex < 0 || toIndex >= tabOrder.length
-      ) return;
+        fromIndex < 0 ||
+        fromIndex >= tabOrder.length ||
+        toIndex < 0 ||
+        toIndex >= tabOrder.length
+      )
+        return;
       const newOrder = [...tabOrder];
       const [moved] = newOrder.splice(fromIndex, 1);
       newOrder.splice(toIndex, 0, moved);
@@ -193,14 +193,11 @@ export function createEditorStore() {
     },
 
     retry() {
-      const { submittedFiles } = get();
       set({
         viewMode: 'editing',
         resultsCodeView: 'submitted',
         runState: 'idle',
         verificationResult: null,
-        // Restore submitted code into editor
-        ...(submittedFiles ? { files: { ...submittedFiles } } : {}),
       });
     },
 
@@ -245,6 +242,5 @@ export function createEditorStore() {
         clearDraftFromStorage(challengeId);
       }
     },
-
   }));
 }

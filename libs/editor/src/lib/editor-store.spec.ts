@@ -312,10 +312,12 @@ describe('submit and retry', () => {
     expect(state.resultsCodeView).toBe('submitted');
   });
 
-  it('retry restores submitted files and switches to editing', () => {
+  it('retry preserves current files and switches to editing', () => {
     store.getState().initFromChallenge(mockChallenge);
     store.getState().setFileContent('app.js', 'submitted code');
     store.getState().submit();
+
+    store.getState().setFileContent('app.js', 'edited after submit');
 
     // Verify we are in results mode
     expect(store.getState().viewMode).toBe('results');
@@ -326,7 +328,7 @@ describe('submit and retry', () => {
     expect(state.viewMode).toBe('editing');
     expect(state.runState).toBe('idle');
     expect(state.verificationResult).toBeNull();
-    expect(state.files['app.js'].content).toBe('submitted code');
+    expect(state.files['app.js'].content).toBe('edited after submit');
     expect(state.resultsCodeView).toBe('submitted');
   });
 

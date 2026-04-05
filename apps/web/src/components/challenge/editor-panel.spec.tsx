@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { createStore } from 'zustand/vanilla';
 import type { EditorStore } from '@nthtime/editor';
 import { buildEditorStore } from '../../test-utils';
@@ -36,7 +36,11 @@ vi.mock('@/lib/feature-flags', () => ({
 }));
 vi.mock('./solution-panel', () => ({
   SolutionPanel: (props: Record<string, unknown>) => (
-    <div data-testid="solution-panel" data-language={props.language} />
+    <div
+      data-testid="solution-panel"
+      data-language={props.language}
+      data-peek={String(Boolean(props.peek))}
+    />
   ),
 }));
 vi.mock('next/dynamic', () => ({
@@ -60,18 +64,25 @@ vi.mock('@/lib/settings-store', () => ({
           return mockKeybindings.value;
         },
         formatter: { defaults: { enabled: true, trigger: 'manual', tabSize: 2, useTabs: false } },
-        feedback: { showPassFail: true, showHints: true, showAssertionDetails: true, showDiff: true, showSolution: false },
+        feedback: {
+          showPassFail: true,
+          showHints: true,
+          showAssertionDetails: true,
+          showDiff: true,
+          showSolution: false,
+        },
       },
     })),
 }));
 
 import { EditorPanel } from './editor-panel';
+import { useKeybindingMode } from '@/hooks/use-keybinding-mode';
 
-function renderEditor(overrides?: Partial<EditorStore>) {
+function renderEditor(overrides?: Partial<EditorStore>, isPeekingSolution = false) {
   const store = buildEditorStore(overrides);
   const result = render(
     <EditorStoreContext.Provider value={store}>
-      <EditorPanel />
+      <EditorPanel isPeekingSolution={isPeekingSolution} />
     </EditorStoreContext.Provider>,
   );
   return { ...result, store };
@@ -95,6 +106,53 @@ describe('EditorPanel', () => {
     const monaco = screen.getByTestId('monaco-wrapper');
     expect(monaco).toBeInTheDocument();
     expect(monaco).toHaveAttribute('data-language', 'javascript');
+  });
+
+  it('peek mode: renders SolutionPanel for the active file', () => {
+    renderEditor(
+      {
+        referenceSolutionFiles: {
+          'app.js': { path: 'app.js', content: 'solution' },
+        },
+      },
+      true,
+    );
+
+    expect(screen.getByTestId('solution-panel')).toHaveAttribute('data-peek', 'true');
+  });
+
+  it('peek mode: shows solution-only files in explorer', () => {
+    renderEditor(
+      {
+        referenceSolutionFiles: {
+          'app.js': { path: 'app.js', content: 'solution' },
+          'solution.ts': { path: 'solution.ts', content: 'export {}' },
+        },
+      },
+      true,
+    );
+
+    expect(screen.getByText('solution.ts')).toBeInTheDocument();
+  });
+
+  it('peek mode: ignores file selection from explorer', () => {
+    const { store, container } = renderEditor(
+      {
+        referenceSolutionFiles: {
+          'app.js': { path: 'app.js', content: 'solution' },
+          'solution.ts': { path: 'solution.ts', content: 'export {}' },
+        },
+      },
+      true,
+    );
+
+    const nav = container.querySelector('nav');
+    if (!nav) throw new Error('Expected file tree nav');
+    fireEvent.click(within(nav).getByText('solution.ts'));
+
+    expect(store.getState().setActiveFile).not.toHaveBeenCalled();
+    expect(store.getState().openTab).not.toHaveBeenCalled();
+    expect(store.getState().createFile).not.toHaveBeenCalled();
   });
 
   it('shows file tree', () => {
@@ -135,9 +193,9 @@ describe('EditorPanel', () => {
   it('clicking a different tab calls setActiveFile', () => {
     const { store } = renderEditor();
     // Click the second tab (server.js)
-    const serverTab = screen.getAllByText('server.js').find(
-      (el) => el.closest('[draggable]') !== null,
-    );
+    const serverTab = screen
+      .getAllByText('server.js')
+      .find((el) => el.closest('[draggable]') !== null);
     expect(serverTab).toBeDefined();
     fireEvent.click(serverTab!);
     expect(store.getState().setActiveFile).toHaveBeenCalledWith('server.js');
@@ -151,7 +209,6 @@ describe('EditorPanel', () => {
   });
 
   it('passes statusBarRef prop to useKeybindingMode', async () => {
-    const { useKeybindingMode } = await import('@/hooks/use-keybinding-mode');
     renderEditor();
     // useKeybindingMode is called with (editor, ref, keybindings)
     expect(useKeybindingMode).toHaveBeenCalled();
