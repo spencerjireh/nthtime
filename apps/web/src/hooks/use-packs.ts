@@ -2,6 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { fetchPacks, fetchPackChallenges } from '@/lib/api-client';
+import { applyAnonymousPassedCounts, applyAnonymousStatuses } from '@/lib/anonymous-attempt-status';
+import { useAuthSession } from '@/hooks/use-auth-session';
 import type { PackSummary } from '@nthtime/data-access';
 import type { CompletionStatus } from '@/components/catalog/catalog-filters';
 
@@ -14,6 +16,8 @@ interface PackListFilters {
 }
 
 export function usePackList(filters: PackListFilters) {
+  const { status } = useAuthSession();
+  const isAuthenticated = status === 'authenticated';
   const { data, isLoading } = useQuery({
     queryKey: ['packs', filters.language, filters.difficulty, filters.tags],
     queryFn: () =>
@@ -28,7 +32,7 @@ export function usePackList(filters: PackListFilters) {
     return { packs: [] as PackSummary[], availableTags: [] as string[], isLoading };
   }
 
-  let packs = [...data.packs] as PackSummary[];
+  let packs = applyAnonymousPassedCounts(data.packs, isAuthenticated);
 
   // Client-side search
   if (filters.searchQuery) {
@@ -56,6 +60,8 @@ export function usePackList(filters: PackListFilters) {
 }
 
 export function useChallenges(slug: string | undefined) {
+  const { status } = useAuthSession();
+  const isAuthenticated = status === 'authenticated';
   const { data, isLoading, error } = useQuery({
     queryKey: ['pack-challenges', slug],
     queryFn: () => {
@@ -75,7 +81,7 @@ export function useChallenges(slug: string | undefined) {
 
   return {
     pack: data.pack,
-    challenges: [...data.challenges],
+    challenges: applyAnonymousStatuses(data.challenges, isAuthenticated),
     isLoading: false,
   };
 }

@@ -9,14 +9,16 @@ import { ChallengeDetailView } from './challenge-detail-view';
 import { runVerification } from '@/lib/run-verification';
 import { formatAllFiles } from '@/lib/formatter';
 import { getSettingsStore } from '@/lib/settings-store';
+import { setAnonymousChallengeStatus } from '@/lib/anonymous-attempt-status';
 import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { useChallenge } from '@/hooks/use-challenge';
 import { useCreateAttempt } from '@/hooks/use-attempts';
+import { useAuthSession } from '@/hooks/use-auth-session';
 import { useChallenges } from '@/hooks/use-packs';
 import type { Challenge } from '@nthtime/shared';
 
-const DockableLayout = dynamic(() =>
-  import('./dockable-layout').then((m) => ({ default: m.DockableLayout })),
+const DockableLayout = dynamic(
+  () => import('./dockable-layout').then((m) => ({ default: m.DockableLayout })),
   { ssr: false },
 );
 
@@ -93,6 +95,7 @@ function ChallengeViewEditor({
   const store = storeRef.current;
   const draftTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
   const createAttempt = useCreateAttempt();
+  const { status } = useAuthSession();
   const { challenges } = useChallenges(packSlug);
   const challengeIds = useMemo(
     () => [...challenges].sort((a, b) => a.order - b.order).map((c) => c._id),
@@ -139,18 +142,22 @@ function ChallengeViewEditor({
     state.submit();
 
     // Persist attempt (fire-and-forget)
-    createAttempt({
-      challengeId,
-      passed: result.passed,
-      assertionResults: result.fileResults,
-      hintsUsed: state.hintsRevealed,
-    });
+    if (status === 'authenticated') {
+      createAttempt({
+        challengeId,
+        passed: result.passed,
+        assertionResults: result.fileResults,
+        hintsUsed: state.hintsRevealed,
+      });
+    } else if (status === 'unauthenticated') {
+      setAnonymousChallengeStatus(challengeId, result.passed ? 'passed' : 'failed', packSlug);
+    }
 
     // Clear draft on successful submission
     if (result.passed) {
       state.clearDraft();
     }
-  }, [challengeData.assertions, challengeId, createAttempt, store]);
+  }, [challengeData.assertions, challengeId, createAttempt, packSlug, status, store]);
 
   const handleRetry = useCallback(() => {
     store.getState().retry();

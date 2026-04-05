@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import { createStore } from 'zustand/vanilla';
 import type { EditorStore } from '@nthtime/editor';
+import type { StoreApi } from 'zustand/vanilla';
 import { buildEditorStore, MOCK_VERIFICATION_RESULT } from '../../test-utils';
 
 // vi.hoisted() runs before vi.mock() factories, making these accessible in mock scopes
@@ -11,15 +12,19 @@ const {
   mockRunVerification,
   mockFormatAllFiles,
   mockCreateAttempt,
+  mockSetAnonymousChallengeStatus,
   mockFormatterTrigger,
+  mockAuthStatus,
   MOCK_CHALLENGE_DATA,
 } = vi.hoisted(() => {
   return {
-    mockStore: { current: null as ReturnType<typeof createStore<EditorStore>> | null },
+    mockStore: { current: null as StoreApi<EditorStore> | null },
     mockRunVerification: vi.fn(),
     mockFormatAllFiles: vi.fn().mockResolvedValue(new Map()),
     mockCreateAttempt: vi.fn().mockResolvedValue(undefined),
+    mockSetAnonymousChallengeStatus: vi.fn(),
     mockFormatterTrigger: { value: 'manual' },
+    mockAuthStatus: { value: 'authenticated' as 'authenticated' | 'unauthenticated' },
     MOCK_CHALLENGE_DATA: {
       id: 'ch_test_1',
       title: 'Test Challenge',
@@ -45,6 +50,9 @@ vi.mock('@nthtime/editor', async (importOriginal) => {
 // --- Mock child components as simple stubs ---
 vi.mock('./challenge-detail-view', () => ({
   ChallengeDetailView: () => <div data-testid="challenge-detail-view" />,
+}));
+vi.mock('@/components/ui/logo-spinner', () => ({
+  LogoSpinner: () => <div data-testid="logo-spinner" />,
 }));
 
 // Mock dynamic imports -- challenge-view.tsx calls dynamic() for DockableLayout
@@ -83,8 +91,14 @@ vi.mock('@/hooks/use-challenge', () => ({
 vi.mock('@/hooks/use-attempts', () => ({
   useCreateAttempt: () => mockCreateAttempt,
 }));
+vi.mock('@/hooks/use-auth-session', () => ({
+  useAuthSession: () => ({ status: mockAuthStatus.value, userId: null }),
+}));
 vi.mock('@/hooks/use-packs', () => ({
   useChallenges: () => ({ pack: null, challenges: [], isLoading: false }),
+}));
+vi.mock('@/lib/anonymous-attempt-status', () => ({
+  setAnonymousChallengeStatus: (...args: unknown[]) => mockSetAnonymousChallengeStatus(...args),
 }));
 vi.mock('@/lib/settings-store', () => ({
   getSettingsStore: () =>
@@ -110,6 +124,7 @@ describe('ChallengeView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFormatterTrigger.value = 'manual';
+    mockAuthStatus.value = 'authenticated';
     mockStoreRef.current = buildEditorStore();
     mockRunVerification.mockResolvedValue(MOCK_VERIFICATION_RESULT);
   });
@@ -174,6 +189,23 @@ describe('ChallengeView', () => {
         passed: MOCK_VERIFICATION_RESULT.passed,
         assertionResults: MOCK_VERIFICATION_RESULT.fileResults,
       }),
+    );
+  });
+
+  it('handleRun: stores anonymous status when unauthenticated', async () => {
+    mockAuthStatus.value = 'unauthenticated';
+
+    render(<ChallengeView challengeId="ch_test_1" packSlug="express-basics" />);
+
+    await act(async () => {
+      screen.getByTestId('run-button').click();
+    });
+
+    expect(mockCreateAttempt).not.toHaveBeenCalled();
+    expect(mockSetAnonymousChallengeStatus).toHaveBeenCalledWith(
+      'ch_test_1',
+      'failed',
+      'express-basics',
     );
   });
 
