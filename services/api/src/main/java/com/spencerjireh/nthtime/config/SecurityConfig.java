@@ -40,6 +40,8 @@ public class SecurityConfig {
                     // Public endpoints
                     .requestMatchers("/api/packs/**")
                     .permitAll()
+                    .requestMatchers("/api/tracks/**")
+                    .permitAll()
                     .requestMatchers("/api/challenges/**")
                     .permitAll()
                     .requestMatchers("/api/search/**")

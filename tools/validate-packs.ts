@@ -201,6 +201,74 @@ async function validatePack(
   return { packName, errors };
 }
 
+// ── Track validation ────────────────────────────────────────────────────────
+
+interface TrackManifest {
+  slug: string;
+  title: string;
+  description: string;
+  longDescription?: string;
+  tags: string[];
+  packSlugs: string[];
+}
+
+function discoverTracks(tracksDir: string): string[] {
+  if (!existsSync(tracksDir)) return [];
+  return readdirSync(tracksDir, { withFileTypes: true })
+    .filter((d) => d.isFile() && d.name.endsWith('.json'))
+    .map((d) => resolve(tracksDir, d.name));
+}
+
+function validateTrackManifest(
+  track: TrackManifest,
+  allPackSlugs: Set<string>,
+  prereqMap: Map<string, string[]>,
+  filename: string,
+): string[] {
+  const errors: string[] = [];
+
+  if (!track.slug || typeof track.slug !== 'string')
+    errors.push(`[${filename}] Missing or invalid "slug"`);
+  else if (!SLUG_PATTERN.test(track.slug))
+    errors.push(`[${filename}] Invalid slug "${track.slug}"`);
+
+  if (!track.title || typeof track.title !== 'string')
+    errors.push(`[${filename}] Missing or invalid "title"`);
+
+  if (!Array.isArray(track.packSlugs) || track.packSlugs.length === 0)
+    errors.push(`[${filename}] Missing or empty "packSlugs" array`);
+
+  if (errors.length > 0) return errors;
+
+  // Check all referenced pack slugs exist
+  const seen = new Set<string>();
+  for (const slug of track.packSlugs) {
+    if (!allPackSlugs.has(slug)) {
+      errors.push(`[${filename}] packSlugs references unknown pack "${slug}"`);
+    }
+    if (seen.has(slug)) {
+      errors.push(`[${filename}] duplicate pack slug "${slug}" in packSlugs`);
+    }
+    seen.add(slug);
+  }
+
+  // Check track ordering does not violate prerequisites
+  const seenInOrder = new Set<string>();
+  for (const slug of track.packSlugs) {
+    const prereqs = prereqMap.get(slug) ?? [];
+    for (const prereq of prereqs) {
+      if (track.packSlugs.includes(prereq) && !seenInOrder.has(prereq)) {
+        errors.push(
+          `[${filename}] pack "${slug}" requires prerequisite "${prereq}" which appears later in the track`,
+        );
+      }
+    }
+    seenInOrder.add(slug);
+  }
+
+  return errors;
+}
+
 // ── CLI entry point ──────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
@@ -266,6 +334,49 @@ async function main(): Promise<void> {
   console.log(
     `\n${totalChallenges} challenges across ${packJsonPaths.length} pack(s), ${totalErrors} error(s).`,
   );
+
+  // Validate tracks
+  const tracksDir = resolve(packsDir, '_tracks');
+  const trackJsonPaths = discoverTracks(tracksDir);
+
+  if (trackJsonPaths.length > 0) {
+    console.log(`\nFound ${trackJsonPaths.length} track(s) to validate.\n`);
+
+    const trackSlugs = new Set<string>();
+    let trackErrors = 0;
+
+    for (const trackPath of trackJsonPaths) {
+      const filename = basename(trackPath);
+      let track: TrackManifest;
+      try {
+        track = JSON.parse(readFileSync(trackPath, 'utf-8'));
+      } catch (e) {
+        console.log(`  FAIL  ${filename}: Failed to parse: ${e}`);
+        trackErrors++;
+        continue;
+      }
+
+      if (trackSlugs.has(track.slug)) {
+        console.log(`  FAIL  ${filename}: duplicate track slug "${track.slug}"`);
+        trackErrors++;
+      }
+      trackSlugs.add(track.slug);
+
+      const errors = validateTrackManifest(track, allSlugs, prereqMap, filename);
+      if (errors.length === 0) {
+        console.log(`  PASS  ${track.slug} (${track.packSlugs.length} packs)`);
+      } else {
+        console.log(`  FAIL  ${track.slug} (${errors.length} error(s)):`);
+        for (const error of errors) {
+          console.log(`        ${error}`);
+        }
+        trackErrors += errors.length;
+      }
+    }
+
+    console.log(`\n${trackJsonPaths.length} track(s), ${trackErrors} error(s).`);
+    totalErrors += trackErrors;
+  }
 
   if (totalErrors > 0) {
     process.exit(1);

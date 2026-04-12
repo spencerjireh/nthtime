@@ -1,4 +1,9 @@
-import type { CliChallengeResponse, CliPackResponse } from './types.js';
+import type {
+  CliChallengeResponse,
+  CliPackResponse,
+  CliTrackSummary,
+  CliTrackDetail,
+} from './types.js';
 
 export class ApiError extends Error {
   constructor(
@@ -42,5 +47,22 @@ export async function fetchPack(
 ): Promise<CliPackResponse> {
   return fetchJson<CliPackResponse>(
     `${serverUrl}/api/cli/pack/${encodeURIComponent(packSlug)}`,
+  );
+}
+
+export async function fetchTracks(
+  serverUrl: string,
+): Promise<CliTrackSummary[]> {
+  return fetchJson<CliTrackSummary[]>(
+    `${serverUrl}/api/cli/tracks`,
+  );
+}
+
+export async function fetchTrackDetail(
+  serverUrl: string,
+  slug: string,
+): Promise<CliTrackDetail> {
+  return fetchJson<CliTrackDetail>(
+    `${serverUrl}/api/cli/tracks/${encodeURIComponent(slug)}`,
   );
 }

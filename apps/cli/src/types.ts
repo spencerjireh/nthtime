@@ -36,6 +36,24 @@ export interface NthtimeMetadata {
   readonly webUrl: string;
 }
 
+export interface CliTrackSummary {
+  readonly slug: string;
+  readonly title: string;
+  readonly description: string;
+  readonly packCount: number;
+}
+
+export interface CliTrackDetail {
+  readonly slug: string;
+  readonly title: string;
+  readonly description: string;
+  readonly packs: readonly {
+    readonly slug: string;
+    readonly name: string;
+    readonly position: number;
+  }[];
+}
+
 export interface CliConfig {
   readonly serverUrl: string;
   readonly workspace: string;

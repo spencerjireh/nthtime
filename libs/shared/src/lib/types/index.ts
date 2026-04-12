@@ -4,6 +4,10 @@ export type {
 } from './pack.js';
 
 export type {
+  Track,
+} from './track.js';
+
+export type {
   Challenge,
 } from './challenge.js';
 

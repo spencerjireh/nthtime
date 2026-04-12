@@ -1,4 +1,15 @@
-import { fetchPacks, fetchChallenge, createAttempt, patchSettings } from './api-client';
+import {
+  fetchPacks,
+  fetchChallenge,
+  createAttempt,
+  patchSettings,
+  fetchTracks,
+  fetchTrack,
+  createAuthorTrack,
+  updateAuthorTrack,
+  deleteAuthorTrack,
+  reorderTrackPacks,
+} from './api-client';
 
 const BASE = '/api/v1';
 
@@ -118,5 +129,83 @@ describe('api-client request()', () => {
       expect.objectContaining({ 'X-XSRF-TOKEN': 'a=b&c' }),
     );
     cookieSpy.mockRestore();
+  });
+});
+
+describe('track endpoints', () => {
+  it('fetchTracks sends GET to /tracks', async () => {
+    const spy = mockFetch(200, [{ _id: '1', slug: 'python-curriculum', title: 'Python', tags: [], packCount: 5 }]);
+    const result = await fetchTracks();
+    expect(result).toHaveLength(1);
+    expect(result[0].slug).toBe('python-curriculum');
+    const [url] = spy.mock.calls[0];
+    expect(url).toBe(`${BASE}/tracks`);
+  });
+
+  it('fetchTrack sends GET to /tracks/:slug', async () => {
+    const spy = mockFetch(200, {
+      _id: '1',
+      slug: 'python-curriculum',
+      title: 'Python',
+      description: '',
+      longDescription: '## Hello',
+      tags: [],
+      packs: [],
+    });
+    const result = await fetchTrack('python-curriculum');
+    expect(result.slug).toBe('python-curriculum');
+    const [url] = spy.mock.calls[0];
+    expect(url).toBe(`${BASE}/tracks/python-curriculum`);
+  });
+
+  it('createAuthorTrack sends POST with JSON body', async () => {
+    const spy = mockFetch(201, { id: 't1' });
+    const result = await createAuthorTrack({
+      slug: 'my-track',
+      title: 'My Track',
+      description: 'desc',
+      tags: ['python'],
+      packSlugs: ['python-foundations'],
+    });
+    expect(result.id).toBe('t1');
+    const [url, init] = spy.mock.calls[0];
+    expect(url).toBe(`${BASE}/author/tracks`);
+    expect(init?.method).toBe('POST');
+    const body = JSON.parse(init?.body as string);
+    expect(body.slug).toBe('my-track');
+    expect(body.packSlugs).toEqual(['python-foundations']);
+  });
+
+  it('updateAuthorTrack sends PATCH to /author/tracks/:slug', async () => {
+    const spy = mockFetch(200, undefined);
+    await updateAuthorTrack('my-track', { title: 'Updated' });
+    const [url, init] = spy.mock.calls[0];
+    expect(url).toBe(`${BASE}/author/tracks/my-track`);
+    expect(init?.method).toBe('PATCH');
+    const body = JSON.parse(init?.body as string);
+    expect(body.title).toBe('Updated');
+  });
+
+  it('deleteAuthorTrack sends DELETE to /author/tracks/:slug', async () => {
+    const spy = mockFetch(200, undefined);
+    await deleteAuthorTrack('my-track');
+    const [url, init] = spy.mock.calls[0];
+    expect(url).toBe(`${BASE}/author/tracks/my-track`);
+    expect(init?.method).toBe('DELETE');
+  });
+
+  it('reorderTrackPacks sends PUT with packSlugs', async () => {
+    const spy = mockFetch(200, undefined);
+    await reorderTrackPacks('my-track', ['pack-b', 'pack-a']);
+    const [url, init] = spy.mock.calls[0];
+    expect(url).toBe(`${BASE}/author/tracks/my-track/packs/order`);
+    expect(init?.method).toBe('PUT');
+    const body = JSON.parse(init?.body as string);
+    expect(body.packSlugs).toEqual(['pack-b', 'pack-a']);
+  });
+
+  it('fetchTrack throws on 404', async () => {
+    mockFetch(404, { error: 'Track not found' });
+    await expect(fetchTrack('bad-slug')).rejects.toThrow('Track not found');
   });
 });

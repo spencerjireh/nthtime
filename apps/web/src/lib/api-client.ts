@@ -12,6 +12,12 @@ import type {
   UpdatePackInput,
   CreateChallengeInput,
   UpdateChallengeInput,
+  TrackSummary,
+  TrackDetail,
+  AuthorTrackSummary,
+  AuthorTrackDetail,
+  CreateTrackInput,
+  UpdateTrackInput,
 } from '@nthtime/data-access';
 
 const BASE = '/api/v1';
@@ -230,5 +236,57 @@ export function reorderAuthorChallenges(
   return request(`/author/packs/${encodeURIComponent(packSlug)}/challenges/order`, {
     method: 'PUT',
     body: JSON.stringify({ challengeIds }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Tracks
+// ---------------------------------------------------------------------------
+
+export function fetchTracks(): Promise<TrackSummary[]> {
+  return request('/tracks');
+}
+
+export function fetchTrack(slug: string): Promise<TrackDetail> {
+  return request(`/tracks/${encodeURIComponent(slug)}`);
+}
+
+// ---------------------------------------------------------------------------
+// Author Tracks
+// ---------------------------------------------------------------------------
+
+export function fetchAuthorTracks(): Promise<AuthorTrackSummary[]> {
+  return request('/author/tracks');
+}
+
+export function fetchAuthorTrack(slug: string): Promise<AuthorTrackDetail> {
+  return request(`/author/tracks/${encodeURIComponent(slug)}`);
+}
+
+export function createAuthorTrack(body: CreateTrackInput): Promise<{ id: string }> {
+  return request('/author/tracks', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export function updateAuthorTrack(
+  slug: string,
+  body: Omit<UpdateTrackInput, 'trackId'>,
+): Promise<void> {
+  return request(`/author/tracks/${encodeURIComponent(slug)}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  });
+}
+
+export function deleteAuthorTrack(slug: string): Promise<void> {
+  return request(`/author/tracks/${encodeURIComponent(slug)}`, { method: 'DELETE' });
+}
+
+export function reorderTrackPacks(slug: string, packSlugs: string[]): Promise<void> {
+  return request(`/author/tracks/${encodeURIComponent(slug)}/packs/order`, {
+    method: 'PUT',
+    body: JSON.stringify({ packSlugs }),
   });
 }

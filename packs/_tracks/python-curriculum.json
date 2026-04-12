@@ -1,0 +1,14 @@
+{
+  "slug": "python-curriculum",
+  "title": "Python Curriculum",
+  "description": "A complete Python learning path from syntax foundations to advanced patterns and standard library mastery.",
+  "longDescription": "## Python Curriculum\n\nThis track walks you through Python from the ground up. Start with core syntax and data types, then move into object-oriented programming, CPython internals, idiomatic patterns, and finally the standard library.\n\n### What you will learn\n\n- Variables, control flow, functions, and data structures\n- Classes, inheritance, dunder methods, and descriptors\n- How CPython works under the hood: bytecode, memory, GIL\n- Pythonic idioms: comprehensions, generators, decorators, context managers\n- itertools, collections, functools, and other stdlib essentials",
+  "tags": ["python", "curriculum"],
+  "packSlugs": [
+    "python-foundations",
+    "python-objects",
+    "python-internals",
+    "python-patterns",
+    "python-stdlib"
+  ]
+}

@@ -7,6 +7,8 @@ import type {
   UpdatePackInput,
   CreateChallengeInput,
   UpdateChallengeInput,
+  CreateTrackInput,
+  UpdateTrackInput,
 } from '@nthtime/data-access';
 import {
   fetchAuthorPacks,
@@ -21,9 +23,16 @@ import {
   updateAuthorChallenge,
   deleteAuthorChallenge,
   reorderAuthorChallenges,
+  fetchAuthorTracks,
+  fetchAuthorTrack,
+  createAuthorTrack,
+  updateAuthorTrack,
+  deleteAuthorTrack,
+  reorderTrackPacks,
 } from '@/lib/api-client';
 
 type UpdatePackBody = Omit<UpdatePackInput, 'packId'>;
+type UpdateTrackBody = Omit<UpdateTrackInput, 'trackId'>;
 type CreateChallengeBody = Omit<CreateChallengeInput, 'packId'>;
 type UpdateChallengeBody = Omit<UpdateChallengeInput, 'challengeId'>;
 
@@ -192,6 +201,91 @@ export function useReorderChallenges() {
   return useCallback(
     async (packSlug: string, challengeIds: string[]) => {
       await mutateAsync({ packSlug, challengeIds });
+    },
+    [mutateAsync],
+  );
+}
+
+// -- Track queries --
+
+export function useMyTracks() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['author-tracks'],
+    queryFn: fetchAuthorTracks,
+  });
+  return { tracks: data ?? [], isLoading };
+}
+
+export function useAuthorTrack(slug: string) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['author-track', slug],
+    queryFn: () => fetchAuthorTrack(slug),
+    enabled: !!slug,
+  });
+  if (isLoading || data === undefined) return { track: null, isLoading: true };
+  return { track: data, isLoading: false };
+}
+
+// -- Track mutations --
+
+export function useCreateTrack() {
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: (args: CreateTrackInput) => createAuthorTrack(args),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-tracks'] });
+    },
+  });
+  return useCallback(
+    async (args: CreateTrackInput) => {
+      const result = await mutateAsync(args);
+      return result.id;
+    },
+    [mutateAsync],
+  );
+}
+
+export function useUpdateTrack() {
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: ({ slug, body }: { slug: string; body: UpdateTrackBody }) =>
+      updateAuthorTrack(slug, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-tracks'] });
+      queryClient.invalidateQueries({ queryKey: ['author-track'] });
+    },
+  });
+  return useCallback(
+    async (slug: string, body: UpdateTrackBody) => {
+      await mutateAsync({ slug, body });
+    },
+    [mutateAsync],
+  );
+}
+
+export function useDeleteTrack() {
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: deleteAuthorTrack,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-tracks'] });
+    },
+  });
+  return mutateAsync;
+}
+
+export function useReorderTrackPacks() {
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation({
+    mutationFn: ({ slug, packSlugs }: { slug: string; packSlugs: string[] }) =>
+      reorderTrackPacks(slug, packSlugs),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['author-track'] });
+    },
+  });
+  return useCallback(
+    async (slug: string, packSlugs: string[]) => {
+      await mutateAsync({ slug, packSlugs });
     },
     [mutateAsync],
   );

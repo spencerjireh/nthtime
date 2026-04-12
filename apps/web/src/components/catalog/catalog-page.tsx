@@ -3,9 +3,11 @@
 import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PackGrid } from './pack-grid';
+import { TrackCarousel } from './track-carousel';
 import { CatalogSearch } from './catalog-search';
 import { CatalogFilters, type CompletionStatus } from './catalog-filters';
 import { usePackList } from '@/hooks/use-packs';
+import { useTrackList } from '@/hooks/use-tracks';
 
 interface CatalogPageProps {
   searchQuery: string;
@@ -27,6 +29,8 @@ export function CatalogPage({
     () => (tags ? tags.split(',').filter(Boolean) : []),
     [tags],
   );
+
+  const { tracks, isLoading: tracksLoading } = useTrackList();
 
   const { packs, availableTags, isLoading } = usePackList({
     language,
@@ -86,6 +90,8 @@ export function CatalogPage({
           Pick a pack, work through the challenges, and build real skills.
         </p>
       </div>
+
+      <TrackCarousel tracks={tracks} isLoading={tracksLoading} />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <CatalogFilters

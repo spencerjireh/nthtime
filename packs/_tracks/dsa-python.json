@@ -1,0 +1,14 @@
+{
+  "slug": "dsa-python",
+  "title": "DSA in Python",
+  "description": "Classic data structures and algorithms implemented in Python, from arrays and hashing through trees and dynamic programming.",
+  "longDescription": "## Data Structures & Algorithms in Python\n\nWork through the most common interview-style DSA topics using Python. Each pack focuses on a category of problems with multiple solution approaches.\n\n### Topics covered\n\n- Arrays, hashing, and sliding window techniques\n- Two-pointer and string manipulation patterns\n- Linked list traversal, reversal, and cycle detection\n- Binary trees: traversal, depth, paths, and construction\n- Binary search, dynamic programming, and bit manipulation",
+  "tags": ["python", "dsa", "algorithms"],
+  "packSlugs": [
+    "dsa-arrays-hashing-py",
+    "dsa-two-pointers-py",
+    "dsa-linked-lists-py",
+    "dsa-trees-py",
+    "dsa-search-dp-bits-py"
+  ]
+}

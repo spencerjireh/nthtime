@@ -1,11 +1,16 @@
 package com.spencerjireh.nthtime.service;
 
 import com.spencerjireh.nthtime.dto.request.SeedPackRequest;
+import com.spencerjireh.nthtime.dto.request.SeedTrackRequest;
 import com.spencerjireh.nthtime.entity.Challenge;
 import com.spencerjireh.nthtime.entity.Pack;
+import com.spencerjireh.nthtime.entity.PackTrack;
+import com.spencerjireh.nthtime.entity.Track;
 import com.spencerjireh.nthtime.repository.AttemptRepository;
 import com.spencerjireh.nthtime.repository.ChallengeRepository;
 import com.spencerjireh.nthtime.repository.PackRepository;
+import com.spencerjireh.nthtime.repository.PackTrackRepository;
+import com.spencerjireh.nthtime.repository.TrackRepository;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -19,14 +24,20 @@ public class AdminService {
   private final PackRepository packRepository;
   private final ChallengeRepository challengeRepository;
   private final AttemptRepository attemptRepository;
+  private final TrackRepository trackRepository;
+  private final PackTrackRepository packTrackRepository;
 
   public AdminService(
       PackRepository packRepository,
       ChallengeRepository challengeRepository,
-      AttemptRepository attemptRepository) {
+      AttemptRepository attemptRepository,
+      TrackRepository trackRepository,
+      PackTrackRepository packTrackRepository) {
     this.packRepository = packRepository;
     this.challengeRepository = challengeRepository;
     this.attemptRepository = attemptRepository;
+    this.trackRepository = trackRepository;
+    this.packTrackRepository = packTrackRepository;
   }
 
   @Transactional
@@ -53,6 +64,61 @@ public class AdminService {
         }
         challengeRepository.deleteAllByPackId(pack.getId());
         packRepository.delete(pack);
+      }
+    }
+  }
+
+  @Transactional
+  public void seedTrack(SeedTrackRequest input) {
+    upsertTrack(input);
+  }
+
+  @Transactional
+  public void syncTracks(List<SeedTrackRequest> tracks) {
+    Set<String> syncedSlugs = new HashSet<>();
+    for (SeedTrackRequest track : tracks) {
+      upsertTrack(track);
+      syncedSlugs.add(track.slug());
+    }
+
+    List<Track> allTracks = trackRepository.findAll();
+    for (Track track : allTracks) {
+      if (track.getAuthorUser() == null && !syncedSlugs.contains(track.getSlug())) {
+        packTrackRepository.deleteByTrackId(track.getId());
+        trackRepository.delete(track);
+      }
+    }
+  }
+
+  private void upsertTrack(SeedTrackRequest input) {
+    Track track = trackRepository.findBySlug(input.slug()).orElse(null);
+
+    if (track == null) {
+      track = new Track();
+      track.setSlug(input.slug());
+      track.setCreatedAt(Instant.now());
+    }
+
+    track.setTitle(input.title());
+    track.setDescription(input.description() != null ? input.description() : "");
+    track.setLongDescription(input.longDescription() != null ? input.longDescription() : "");
+    track.setTags(input.tags() != null ? input.tags().toArray(new String[0]) : new String[] {});
+    track.setUpdatedAt(Instant.now());
+    track = trackRepository.save(track);
+
+    packTrackRepository.deleteByTrackId(track.getId());
+    packTrackRepository.flush();
+
+    if (input.packSlugs() != null) {
+      for (int i = 0; i < input.packSlugs().size(); i++) {
+        Pack pack = packRepository.findBySlug(input.packSlugs().get(i)).orElse(null);
+        if (pack != null) {
+          PackTrack pt = new PackTrack();
+          pt.setTrack(track);
+          pt.setPack(pack);
+          pt.setPosition(i + 1);
+          packTrackRepository.save(pt);
+        }
       }
     }
   }

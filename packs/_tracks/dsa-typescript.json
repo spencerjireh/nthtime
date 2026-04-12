@@ -1,0 +1,14 @@
+{
+  "slug": "dsa-typescript",
+  "title": "DSA in TypeScript",
+  "description": "Classic data structures and algorithms implemented in TypeScript, from arrays and hashing through trees and dynamic programming.",
+  "longDescription": "## Data Structures & Algorithms in TypeScript\n\nThe same DSA curriculum as the Python track, but implemented in TypeScript. Practice the patterns in a statically typed environment.\n\n### Topics covered\n\n- Arrays, hashing, and sliding window techniques\n- Two-pointer and string manipulation patterns\n- Linked list traversal, reversal, and cycle detection\n- Binary trees: traversal, depth, paths, and construction\n- Binary search, dynamic programming, and bit manipulation",
+  "tags": ["typescript", "dsa", "algorithms"],
+  "packSlugs": [
+    "dsa-arrays-hashing-ts",
+    "dsa-two-pointers-ts",
+    "dsa-linked-lists-ts",
+    "dsa-trees-ts",
+    "dsa-search-dp-bits-ts"
+  ]
+}

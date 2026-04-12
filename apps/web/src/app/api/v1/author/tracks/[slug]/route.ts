@@ -1,0 +1,25 @@
+import { proxyToSpringBoot } from '@/lib/spring-boot-proxy';
+
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  const { slug } = await params;
+  return proxyToSpringBoot(req, `/api/author/tracks/${encodeURIComponent(slug)}`);
+}
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  const { slug } = await params;
+  return proxyToSpringBoot(req, `/api/author/tracks/${encodeURIComponent(slug)}`);
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  const { slug } = await params;
+  return proxyToSpringBoot(req, `/api/author/tracks/${encodeURIComponent(slug)}`);
+}

@@ -1,4 +1,4 @@
-import { fetchChallenge, fetchPack, ApiError } from '../api.js';
+import { fetchChallenge, fetchPack, fetchTracks, fetchTrackDetail, ApiError } from '../api.js';
 
 const originalFetch = globalThis.fetch;
 
@@ -71,5 +71,68 @@ describe('fetchPack', () => {
     mockFetch({ status: 404, body: { error: 'not found' } });
 
     await expect(fetchPack('http://localhost:3000', 'bad')).rejects.toThrow(ApiError);
+  });
+});
+
+describe('fetchTracks', () => {
+  it('returns track list on success', async () => {
+    const mockData = [
+      { slug: 'python-curriculum', title: 'Python Curriculum', description: 'Learn Python', packCount: 5 },
+      { slug: 'dsa-python', title: 'DSA in Python', description: 'DSA', packCount: 5 },
+    ];
+    mockFetch({ status: 200, body: mockData });
+
+    const result = await fetchTracks('http://localhost:3000');
+    expect(result).toHaveLength(2);
+    expect(result[0].slug).toBe('python-curriculum');
+    expect(result[0].packCount).toBe(5);
+  });
+
+  it('throws ApiError on server error', async () => {
+    mockFetch({ status: 500, body: { error: 'internal' } });
+
+    await expect(fetchTracks('http://localhost:3000')).rejects.toThrow(ApiError);
+  });
+
+  it('calls correct URL', async () => {
+    mockFetch({ status: 200, body: [] });
+
+    await fetchTracks('http://localhost:3000');
+    const calledUrl = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(calledUrl).toBe('http://localhost:3000/api/cli/tracks');
+  });
+});
+
+describe('fetchTrackDetail', () => {
+  it('returns track detail with packs on success', async () => {
+    const mockData = {
+      slug: 'python-curriculum',
+      title: 'Python Curriculum',
+      description: 'Learn Python',
+      packs: [
+        { slug: 'python-foundations', name: 'Python Foundations', position: 1 },
+        { slug: 'python-objects', name: 'Python Objects', position: 2 },
+      ],
+    };
+    mockFetch({ status: 200, body: mockData });
+
+    const result = await fetchTrackDetail('http://localhost:3000', 'python-curriculum');
+    expect(result.slug).toBe('python-curriculum');
+    expect(result.packs).toHaveLength(2);
+    expect(result.packs[0].position).toBe(1);
+  });
+
+  it('throws ApiError on 404', async () => {
+    mockFetch({ status: 404, body: { error: 'not found' } });
+
+    await expect(fetchTrackDetail('http://localhost:3000', 'bad')).rejects.toThrow(ApiError);
+  });
+
+  it('encodes slug in URL', async () => {
+    mockFetch({ status: 200, body: { slug: 'test', packs: [] } });
+
+    await fetchTrackDetail('http://localhost:3000', 'my track');
+    const calledUrl = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(calledUrl).toContain('my%20track');
   });
 });

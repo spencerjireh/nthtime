@@ -48,6 +48,9 @@ export function AuthorDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/author/tracks">My Tracks</Link>
+          </Button>
           <input
             ref={fileInputRef}
             type="file"

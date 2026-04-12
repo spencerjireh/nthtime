@@ -18,6 +18,17 @@ export type {
 export type { SettingsRepository } from './settings-repository.js';
 
 export type {
+  TrackRepository,
+  TrackSummary,
+  TrackPackSummary,
+  TrackDetail,
+  AuthorTrackSummary,
+  AuthorTrackDetail,
+  CreateTrackInput,
+  UpdateTrackInput,
+} from './track-repository.js';
+
+export type {
   AuthorRepository,
   AuthorPackSummary,
   AuthorChallengeSummary,

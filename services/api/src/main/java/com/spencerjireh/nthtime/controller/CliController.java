@@ -3,10 +3,14 @@ package com.spencerjireh.nthtime.controller;
 import com.spencerjireh.nthtime.dto.response.ChallengeResponse;
 import com.spencerjireh.nthtime.dto.response.CliChallengeResponse;
 import com.spencerjireh.nthtime.dto.response.CliPackResponse;
+import com.spencerjireh.nthtime.dto.response.CliTrackDetailResponse;
+import com.spencerjireh.nthtime.dto.response.CliTrackSummaryResponse;
 import com.spencerjireh.nthtime.dto.response.PackChallengesResponse;
 import com.spencerjireh.nthtime.exception.ResourceNotFoundException;
 import com.spencerjireh.nthtime.service.ChallengeService;
 import com.spencerjireh.nthtime.service.PackService;
+import com.spencerjireh.nthtime.service.TrackService;
+import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +22,13 @@ public class CliController {
 
   private final PackService packService;
   private final ChallengeService challengeService;
+  private final TrackService trackService;
 
-  public CliController(PackService packService, ChallengeService challengeService) {
+  public CliController(
+      PackService packService, ChallengeService challengeService, TrackService trackService) {
     this.packService = packService;
     this.challengeService = challengeService;
+    this.trackService = trackService;
   }
 
   @GetMapping("/pack/{packSlug}")
@@ -62,5 +69,19 @@ public class CliController {
         cr.assertions(),
         cr.referenceSolution(),
         packSlug);
+  }
+
+  @GetMapping("/tracks")
+  public List<CliTrackSummaryResponse> listTracks() {
+    return trackService.listTracksForCli();
+  }
+
+  @GetMapping("/tracks/{slug}")
+  public CliTrackDetailResponse getTrack(@PathVariable String slug) {
+    CliTrackDetailResponse response = trackService.getTrackForCli(slug);
+    if (response == null) {
+      throw new ResourceNotFoundException("Track not found");
+    }
+    return response;
   }
 }

@@ -112,6 +112,39 @@ function toSeedPayload(manifest: PackManifest, challenges: LoadedChallenge[]) {
   };
 }
 
+// -- Track types and helpers ------------------------------------------------
+
+interface TrackManifest {
+  slug: string;
+  title: string;
+  description: string;
+  longDescription?: string;
+  tags: string[];
+  packSlugs: string[];
+}
+
+function discoverTracks(tracksDir: string): string[] {
+  if (!existsSync(tracksDir)) return [];
+  return readdirSync(tracksDir, { withFileTypes: true })
+    .filter((d) => d.isFile() && d.name.endsWith('.json'))
+    .map((d) => resolve(tracksDir, d.name));
+}
+
+function loadTrack(trackJsonPath: string): TrackManifest {
+  return JSON.parse(readFileSync(trackJsonPath, 'utf-8'));
+}
+
+function toTrackSeedPayload(manifest: TrackManifest) {
+  return {
+    slug: manifest.slug,
+    title: manifest.title,
+    description: manifest.description,
+    longDescription: manifest.longDescription ?? '',
+    tags: manifest.tags,
+    packSlugs: manifest.packSlugs,
+  };
+}
+
 // -- Main -------------------------------------------------------------------
 
 async function main(): Promise<void> {
@@ -172,6 +205,53 @@ async function main(): Promise<void> {
       }
 
       console.log(`  SEEDED  ${packName} (${challenges.length} challenges)`);
+    }
+  }
+
+  // Seed tracks (after packs, to satisfy FK constraints)
+  const tracksDir = resolve(packsDir, '_tracks');
+  const trackJsonPaths = discoverTracks(tracksDir);
+
+  if (trackJsonPaths.length > 0) {
+    console.log(`\nFound ${trackJsonPaths.length} track(s).\n`);
+
+    if (useSync) {
+      const tracks = trackJsonPaths.map((p) => toTrackSeedPayload(loadTrack(p)));
+
+      const res = await fetch(`${apiBase}/api/admin/sync-tracks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminSecret, tracks }),
+      });
+
+      if (!res.ok) {
+        const body = await res.text();
+        console.error(`  TRACK SYNC FAILED: ${res.status} ${body}`);
+        process.exit(1);
+      }
+
+      for (const track of tracks) {
+        console.log(`  SYNCED  ${track.slug} (${track.packSlugs.length} packs)`);
+      }
+    } else {
+      for (const trackJsonPath of trackJsonPaths) {
+        const manifest = loadTrack(trackJsonPath);
+        const payload = toTrackSeedPayload(manifest);
+
+        const res = await fetch(`${apiBase}/api/admin/seed-track`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminSecret, ...payload }),
+        });
+
+        if (!res.ok) {
+          const body = await res.text();
+          console.error(`  FAILED  ${manifest.slug}: ${res.status} ${body}`);
+          process.exit(1);
+        }
+
+        console.log(`  SEEDED  ${manifest.slug} (${manifest.packSlugs.length} packs)`);
+      }
     }
   }
 
