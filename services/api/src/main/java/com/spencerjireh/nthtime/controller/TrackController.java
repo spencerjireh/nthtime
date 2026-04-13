@@ -24,8 +24,9 @@ public class TrackController {
   }
 
   @GetMapping
-  public List<TrackSummaryResponse> listTracks() {
-    return trackService.listTracks();
+  public List<TrackSummaryResponse> listTracks(HttpServletRequest request) {
+    Long userId = getUserId(request);
+    return trackService.listTracks(userId);
   }
 
   @GetMapping("/{slug}")

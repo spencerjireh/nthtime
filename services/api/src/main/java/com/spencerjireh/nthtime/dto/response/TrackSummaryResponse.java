@@ -9,4 +9,6 @@ public record TrackSummaryResponse(
     String title,
     String description,
     List<String> tags,
-    int packCount) {}
+    int packCount,
+    int totalChallenges,
+    int passedChallenges) {}

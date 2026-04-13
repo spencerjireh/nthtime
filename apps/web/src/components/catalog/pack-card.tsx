@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Info } from 'lucide-react';
 import {
   Card,
   CardHeader,
@@ -10,8 +11,15 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { usePrefetchOnHover } from '@/hooks/use-prefetch-on-hover';
 import { fetchPackChallenges } from '@/lib/api-client';
+
+const MAX_VISIBLE_TAGS = 4;
 
 interface PackCardProps {
   slug: string;
@@ -45,41 +53,66 @@ export function PackCard({
     () => fetchPackChallenges(slug),
   );
 
+  const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS);
+  const hiddenTagCount = tags.length - visibleTags.length;
+
+  const prereqNames = prerequisites?.map((prereqSlug) => {
+    const pack = allPacks?.find((p) => p.slug === prereqSlug);
+    return pack?.name ?? prereqSlug;
+  });
+
   return (
-    <Link href={`/pack/${slug}`} className="group block" {...hoverHandlers}>
-      <Card className="h-full transition-colors hover:border-primary/50">
+    <Link href={`/pack/${slug}`} className="group block h-full" {...hoverHandlers}>
+      <Card className="flex h-full flex-col transition-colors hover:border-primary/50">
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary">{language}</Badge>
-            {framework && <Badge variant="outline">{framework}</Badge>}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">{language}</Badge>
+              {framework && <Badge variant="outline">{framework}</Badge>}
+            </div>
+            {prereqNames && prereqNames.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="View prerequisites"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="shrink-0 rounded-full p-0.5 text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Info className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="text-xs">
+                    <span className="font-medium">Recommended after:</span>{' '}
+                    {prereqNames.join(', ')}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
           <CardTitle className="mt-2 text-lg">{name}</CardTitle>
-          <CardDescription className="line-clamp-2">
+          <CardDescription className="line-clamp-2 min-h-[2.5rem]">
             {description}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-1">
-            {tags.map((tag) => (
+        <CardContent className="flex-1">
+          <div className="flex flex-wrap items-center gap-1 overflow-hidden">
+            {visibleTags.map((tag) => (
               <Badge key={tag} variant="outline" className="text-xs">
                 {tag}
               </Badge>
             ))}
+            {hiddenTagCount > 0 && (
+              <span className="text-xs text-muted-foreground">
+                +{hiddenTagCount}
+              </span>
+            )}
           </div>
         </CardContent>
-        {prerequisites && prerequisites.length > 0 && (
-          <CardContent className="pt-0">
-            <p className="text-xs text-muted-foreground">
-              Recommended after:{' '}
-              {prerequisites
-                .map((prereqSlug) => {
-                  const pack = allPacks?.find((p) => p.slug === prereqSlug);
-                  return pack?.name ?? prereqSlug;
-                })
-                .join(', ')}
-            </p>
-          </CardContent>
-        )}
         <CardFooter className="flex-col items-start gap-2">
           <div className="text-sm text-muted-foreground">
             {passedCount}/{challengeCount} challenges

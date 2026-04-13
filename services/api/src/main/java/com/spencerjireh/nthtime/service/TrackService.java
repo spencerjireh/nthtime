@@ -37,20 +37,38 @@ public class TrackService {
     this.attemptRepository = attemptRepository;
   }
 
-  public List<TrackSummaryResponse> listTracks() {
+  public List<TrackSummaryResponse> listTracks(Long userId) {
     List<Track> tracks = trackRepository.findAll();
+    Set<Long> passedChallengeIds =
+        userId != null ? attemptRepository.findPassedChallengeIdsByUserId(userId) : Set.of();
+
     return tracks.stream()
         .map(
             track -> {
-              int packCount =
-                  packTrackRepository.findByTrackIdOrderByPositionAsc(track.getId()).size();
+              List<PackTrack> packTracks =
+                  packTrackRepository.findByTrackIdOrderByPositionAsc(track.getId());
+              int totalChallenges = 0;
+              int passedChallenges = 0;
+              for (PackTrack pt : packTracks) {
+                Long packId = pt.getPack().getId();
+                totalChallenges += challengeRepository.countByPackId(packId);
+                if (!passedChallengeIds.isEmpty()) {
+                  for (var challenge : challengeRepository.findByPackIdOrderByOrderAsc(packId)) {
+                    if (passedChallengeIds.contains(challenge.getId())) {
+                      passedChallenges++;
+                    }
+                  }
+                }
+              }
               return new TrackSummaryResponse(
                   track.getId().toString(),
                   track.getSlug(),
                   track.getTitle(),
                   track.getDescription(),
                   Arrays.asList(track.getTags()),
-                  packCount);
+                  packTracks.size(),
+                  totalChallenges,
+                  passedChallenges);
             })
         .toList();
   }

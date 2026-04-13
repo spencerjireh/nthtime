@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-const SPRING_BOOT_URL = process.env.SPRING_BOOT_URL || 'http://localhost:8080';
+const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 
 /** Set Monaco editor content via the browser's Monaco API. */
 export async function setEditorContent(page: Page, content: string) {
@@ -45,9 +45,9 @@ export const EXPRESS_SOLUTION = [
   'export default app;',
 ].join('\n');
 
-/** Resolve a challenge ID by pack slug and order number via Spring Boot API. */
+/** Resolve a challenge ID by pack slug and order number via the Next.js proxy. */
 export async function getChallengeId(packSlug: string, order: number): Promise<string> {
-  const res = await fetch(`${SPRING_BOOT_URL}/api/packs/${encodeURIComponent(packSlug)}`);
+  const res = await fetch(`${BASE_URL}/api/v1/packs/${encodeURIComponent(packSlug)}`);
   if (!res.ok) throw new Error(`Failed to fetch pack ${packSlug}: ${res.status}`);
   const data = await res.json();
   const challenge = data.challenges.find((c: { order: number }) => c.order === order);

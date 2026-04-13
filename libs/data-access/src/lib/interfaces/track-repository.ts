@@ -5,6 +5,8 @@ export interface TrackSummary {
   readonly description: string;
   readonly tags: readonly string[];
   readonly packCount: number;
+  readonly totalChallenges: number;
+  readonly passedChallenges: number;
 }
 
 export interface TrackPackSummary {

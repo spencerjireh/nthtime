@@ -35,6 +35,8 @@ test.describe('Navigation', () => {
     await page.goto('/pack/express-basics');
     await page.getByRole('link', { name: 'nthtime' }).click();
     await expect(page).toHaveURL('/');
-    await expect(page.getByText('Challenge Packs')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Challenge Packs', level: 1 }),
+    ).toBeVisible();
   });
 });

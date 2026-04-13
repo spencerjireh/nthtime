@@ -47,6 +47,7 @@ services:
     depends_on:
       - api
     environment:
+      PORT: 3000
       SPRING_BOOT_URL: http://api:8080
       FRONTEND_URL: ${FRONTEND_URL}
     healthcheck:

@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PackGrid } from './pack-grid';
-import { TrackCarousel } from './track-carousel';
+import { TrackHero } from './track-hero';
 import { CatalogSearch } from './catalog-search';
 import { CatalogFilters, type CompletionStatus } from './catalog-filters';
 import { usePackList } from '@/hooks/use-packs';
@@ -126,7 +126,7 @@ export function CatalogPage({
         </p>
       </div>
 
-      <TrackCarousel tracks={tracks} isLoading={tracksLoading} />
+      <TrackHero tracks={tracks} isLoading={tracksLoading} />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <CatalogFilters

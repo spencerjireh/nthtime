@@ -134,7 +134,18 @@ describe('api-client request()', () => {
 
 describe('track endpoints', () => {
   it('fetchTracks sends GET to /tracks', async () => {
-    const spy = mockFetch(200, [{ _id: '1', slug: 'python-curriculum', title: 'Python', tags: [], packCount: 5 }]);
+    const spy = mockFetch(200, [
+      {
+        _id: '1',
+        slug: 'python-curriculum',
+        title: 'Python',
+        description: '',
+        tags: [],
+        packCount: 5,
+        totalChallenges: 50,
+        passedChallenges: 10,
+      },
+    ]);
     const result = await fetchTracks();
     expect(result).toHaveLength(1);
     expect(result[0].slug).toBe('python-curriculum');
