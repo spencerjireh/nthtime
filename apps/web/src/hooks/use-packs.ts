@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchPacks, fetchPackChallenges } from '@/lib/api-client';
 import { applyAnonymousPassedCounts, applyAnonymousStatuses } from '@/lib/anonymous-attempt-status';
 import { useAuthSession } from '@/hooks/use-auth-session';
+import { useIsHydrated } from '@/hooks/use-is-hydrated';
 import type { PackSummary } from '@nthtime/data-access';
 import type { CompletionStatus } from '@/components/catalog/catalog-filters';
 
@@ -18,6 +19,7 @@ interface PackListFilters {
 export function usePackList(filters: PackListFilters) {
   const { status } = useAuthSession();
   const isAuthenticated = status === 'authenticated';
+  const isHydrated = useIsHydrated();
   const { data, isLoading } = useQuery({
     queryKey: ['packs', filters.language, filters.difficulty, filters.tags],
     queryFn: () =>
@@ -32,7 +34,12 @@ export function usePackList(filters: PackListFilters) {
     return { packs: [] as PackSummary[], availableTags: [] as string[], isLoading };
   }
 
-  let packs = applyAnonymousPassedCounts(data.packs, isAuthenticated);
+  // Skip the localStorage overlay until after hydration so the first client
+  // render matches the SSR output. useEffect flips isHydrated and the overlay
+  // applies on the next render.
+  let packs = isHydrated
+    ? applyAnonymousPassedCounts(data.packs, isAuthenticated)
+    : [...data.packs];
 
   // Client-side search
   if (filters.searchQuery) {
@@ -62,6 +69,7 @@ export function usePackList(filters: PackListFilters) {
 export function useChallenges(slug: string | undefined) {
   const { status } = useAuthSession();
   const isAuthenticated = status === 'authenticated';
+  const isHydrated = useIsHydrated();
   const { data, isLoading, error } = useQuery({
     queryKey: ['pack-challenges', slug],
     queryFn: () => {
@@ -81,7 +89,9 @@ export function useChallenges(slug: string | undefined) {
 
   return {
     pack: data.pack,
-    challenges: applyAnonymousStatuses(data.challenges, isAuthenticated),
+    challenges: isHydrated
+      ? applyAnonymousStatuses(data.challenges, isAuthenticated)
+      : [...data.challenges],
     isLoading: false,
   };
 }

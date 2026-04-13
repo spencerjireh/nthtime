@@ -30,6 +30,41 @@ export function CatalogPage({
     [tags],
   );
 
+  // TODO(user): implement Option A (instant local filter + debounced URL push).
+  //
+  // The `searchQuery` prop still comes from the URL (RSC-controlled). But the
+  // input should feel instant: each keystroke should immediately update the
+  // client-side filter (so PackGrid re-filters in memory) while only the URL
+  // update is debounced, so we don't refire the RSC on every keystroke.
+  //
+  // What to wire:
+  //   1. `const [localSearch, setLocalSearch] = useState(searchQuery)`
+  //   2. Keep localSearch in sync when the URL-provided searchQuery prop
+  //      changes (e.g., back/forward navigation): useEffect on [searchQuery]
+  //      calling setLocalSearch.
+  //   3. Use `localSearch` (not `searchQuery`) as the `searchQuery` filter
+  //      passed into `usePackList({ ..., searchQuery: localSearch })` below
+  //      AND as the `value` of <CatalogSearch />.
+  //   4. Rewrite `handleSearch` so it:
+  //        - calls setLocalSearch(q) synchronously (instant filter)
+  //        - schedules updateParams({ q }) after SEARCH_DEBOUNCE_MS using
+  //          a useRef-held timer; clear the previous timer each call.
+  //   5. Clean up the pending timer on unmount via a useEffect cleanup.
+  //
+  // Approximate 8-line core:
+  //   const [localSearch, setLocalSearch] = useState(searchQuery);
+  //   useEffect(() => setLocalSearch(searchQuery), [searchQuery]);
+  //   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  //   const handleSearch = useCallback((q: string) => {
+  //     setLocalSearch(q);
+  //     if (timerRef.current) clearTimeout(timerRef.current);
+  //     timerRef.current = setTimeout(() => updateParams({ q }), SEARCH_DEBOUNCE_MS);
+  //   }, [updateParams]);
+  //   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+  //
+  // Then change the `searchQuery: searchQuery` below to `searchQuery: localSearch`
+  // and change the <CatalogSearch value={searchQuery} .../> at the bottom to
+  // value={localSearch}.
   const { tracks, isLoading: tracksLoading } = useTrackList();
 
   const { packs, availableTags, isLoading } = usePackList({

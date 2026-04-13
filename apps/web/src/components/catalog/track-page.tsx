@@ -14,10 +14,84 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { useTrack } from '@/hooks/use-tracks';
+import { usePrefetchOnHover } from '@/hooks/use-prefetch-on-hover';
+import { fetchPackChallenges } from '@/lib/api-client';
 import { ArrowLeft } from 'lucide-react';
 
 interface TrackPageProps {
   slug: string;
+}
+
+interface TrackPackCardProps {
+  pack: {
+    _id: string;
+    name: string;
+    slug: string;
+    description: string;
+    language: string;
+    framework?: string;
+    tags: readonly string[];
+    challengeCount: number;
+    passedCount: number;
+  };
+  index: number;
+}
+
+function TrackPackCard({ pack, index }: TrackPackCardProps) {
+  const progress =
+    pack.challengeCount > 0
+      ? (pack.passedCount / pack.challengeCount) * 100
+      : 0;
+  const hoverHandlers = usePrefetchOnHover(
+    ['pack-challenges', pack.slug],
+    () => fetchPackChallenges(pack.slug),
+  );
+
+  return (
+    <Link
+      href={`/pack/${pack.slug}`}
+      className="group block"
+      {...hoverHandlers}
+    >
+      <Card className="h-full transition-colors hover:border-primary/50">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+              {index + 1}
+            </span>
+            <Badge variant="secondary">{pack.language}</Badge>
+            {pack.framework && (
+              <Badge variant="outline">{pack.framework}</Badge>
+            )}
+          </div>
+          <CardTitle className="mt-2 text-lg">{pack.name}</CardTitle>
+          <CardDescription className="line-clamp-2">
+            {pack.description}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-1">
+            {pack.tags.map((tag) => (
+              <Badge key={tag} variant="outline" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+        <CardFooter className="flex-col items-start gap-2">
+          <div className="text-sm text-muted-foreground">
+            {pack.passedCount}/{pack.challengeCount} challenges
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-all"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </CardFooter>
+      </Card>
+    </Link>
+  );
 }
 
 export function TrackPage({ slug }: TrackPageProps) {
@@ -79,57 +153,9 @@ export function TrackPage({ slug }: TrackPageProps) {
           Packs ({track.packs.length})
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {track.packs.map((pack, index) => {
-            const progress =
-              pack.challengeCount > 0
-                ? (pack.passedCount / pack.challengeCount) * 100
-                : 0;
-            return (
-              <Link
-                key={pack._id}
-                href={`/pack/${pack.slug}`}
-                className="group block"
-              >
-                <Card className="h-full transition-colors hover:border-primary/50">
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-                        {index + 1}
-                      </span>
-                      <Badge variant="secondary">{pack.language}</Badge>
-                      {pack.framework && (
-                        <Badge variant="outline">{pack.framework}</Badge>
-                      )}
-                    </div>
-                    <CardTitle className="mt-2 text-lg">{pack.name}</CardTitle>
-                    <CardDescription className="line-clamp-2">
-                      {pack.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-1">
-                      {pack.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex-col items-start gap-2">
-                    <div className="text-sm text-muted-foreground">
-                      {pack.passedCount}/{pack.challengeCount} challenges
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-primary transition-all"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Link>
-            );
-          })}
+          {track.packs.map((pack, index) => (
+            <TrackPackCard key={pack._id} pack={pack} index={index} />
+          ))}
         </div>
       </div>
     </div>

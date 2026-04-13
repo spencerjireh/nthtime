@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import {
   Card,
@@ -8,6 +10,8 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { usePrefetchOnHover } from '@/hooks/use-prefetch-on-hover';
+import { fetchPackChallenges } from '@/lib/api-client';
 
 interface PackCardProps {
   slug: string;
@@ -36,8 +40,13 @@ export function PackCard({
 }: PackCardProps) {
   const progress = challengeCount > 0 ? (passedCount / challengeCount) * 100 : 0;
 
+  const hoverHandlers = usePrefetchOnHover(
+    ['pack-challenges', slug],
+    () => fetchPackChallenges(slug),
+  );
+
   return (
-    <Link href={`/pack/${slug}`} className="group block">
+    <Link href={`/pack/${slug}`} className="group block" {...hoverHandlers}>
       <Card className="h-full transition-colors hover:border-primary/50">
         <CardHeader>
           <div className="flex items-center gap-2">
