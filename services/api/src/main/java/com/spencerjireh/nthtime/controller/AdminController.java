@@ -3,7 +3,6 @@ package com.spencerjireh.nthtime.controller;
 import com.spencerjireh.nthtime.dto.request.SeedPackRequest;
 import com.spencerjireh.nthtime.dto.request.SeedTrackRequest;
 import com.spencerjireh.nthtime.dto.request.SyncPacksRequest;
-import com.spencerjireh.nthtime.dto.request.SyncTracksRequest;
 import com.spencerjireh.nthtime.exception.ForbiddenException;
 import com.spencerjireh.nthtime.service.AdminService;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +37,7 @@ public class AdminController {
   @PostMapping("/sync")
   public Map<String, Boolean> syncPacks(@RequestBody SyncPacksRequest input) {
     verifyAdminSecret(input.adminSecret());
-    adminService.syncPacks(input.packs());
+    adminService.syncPacks(input.packs(), input.tracks());
     return Map.of("ok", true);
   }
 
@@ -46,13 +45,6 @@ public class AdminController {
   public Map<String, Boolean> seedTrack(@RequestBody SeedTrackRequest input) {
     verifyAdminSecret(input.adminSecret());
     adminService.seedTrack(input);
-    return Map.of("ok", true);
-  }
-
-  @PostMapping("/sync-tracks")
-  public Map<String, Boolean> syncTracks(@RequestBody SyncTracksRequest input) {
-    verifyAdminSecret(input.adminSecret());
-    adminService.syncTracks(input.tracks());
     return Map.of("ok", true);
   }
 

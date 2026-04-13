@@ -46,18 +46,18 @@ public class AdminService {
   }
 
   @Transactional
-  public void syncPacks(List<SeedPackRequest> packs) {
-    Set<String> syncedSlugs = new HashSet<>();
+  public void syncPacks(List<SeedPackRequest> packs, List<SeedTrackRequest> tracks) {
+    Set<String> syncedPackSlugs = new HashSet<>();
     for (SeedPackRequest pack : packs) {
       upsertPack(pack);
-      syncedSlugs.add(pack.slug());
+      syncedPackSlugs.add(pack.slug());
     }
 
     // Delete system-seeded packs not in the sync list
     // Only delete packs without an authorUserId (system-seeded packs)
     List<Pack> allPacks = packRepository.findAll();
     for (Pack pack : allPacks) {
-      if (pack.getAuthorUser() == null && !syncedSlugs.contains(pack.getSlug())) {
+      if (pack.getAuthorUser() == null && !syncedPackSlugs.contains(pack.getSlug())) {
         List<Challenge> challenges = challengeRepository.findByPackIdOrderByOrderAsc(pack.getId());
         for (Challenge challenge : challenges) {
           attemptRepository.deleteByChallengeId(challenge.getId());
@@ -66,28 +66,29 @@ public class AdminService {
         packRepository.delete(pack);
       }
     }
+
+    // Tracks are optional. null means "caller did not touch tracks, leave them alone".
+    // An empty list means "sync to empty, remove all system-seeded tracks".
+    if (tracks == null) return;
+
+    Set<String> syncedTrackSlugs = new HashSet<>();
+    for (SeedTrackRequest track : tracks) {
+      upsertTrack(track);
+      syncedTrackSlugs.add(track.slug());
+    }
+
+    List<Track> allTracks = trackRepository.findAll();
+    for (Track track : allTracks) {
+      if (track.getAuthorUser() == null && !syncedTrackSlugs.contains(track.getSlug())) {
+        packTrackRepository.deleteByTrackId(track.getId());
+        trackRepository.delete(track);
+      }
+    }
   }
 
   @Transactional
   public void seedTrack(SeedTrackRequest input) {
     upsertTrack(input);
-  }
-
-  @Transactional
-  public void syncTracks(List<SeedTrackRequest> tracks) {
-    Set<String> syncedSlugs = new HashSet<>();
-    for (SeedTrackRequest track : tracks) {
-      upsertTrack(track);
-      syncedSlugs.add(track.slug());
-    }
-
-    List<Track> allTracks = trackRepository.findAll();
-    for (Track track : allTracks) {
-      if (track.getAuthorUser() == null && !syncedSlugs.contains(track.getSlug())) {
-        packTrackRepository.deleteByTrackId(track.getId());
-        trackRepository.delete(track);
-      }
-    }
   }
 
   private void upsertTrack(SeedTrackRequest input) {

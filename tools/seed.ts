@@ -165,16 +165,20 @@ async function main(): Promise<void> {
 
   console.log(`Found ${packJsonPaths.length} pack(s).\n`);
 
+  const tracksDir = resolve(packsDir, '_tracks');
+  const trackJsonPaths = discoverTracks(tracksDir);
+
   if (useSync) {
     const packs = packJsonPaths.map((p) => {
       const { manifest, challenges } = loadPack(p);
       return toSeedPayload(manifest, challenges);
     });
+    const tracks = trackJsonPaths.map((p) => toTrackSeedPayload(loadTrack(p)));
 
     const res = await fetch(`${apiBase}/api/admin/sync`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ adminSecret, packs }),
+      body: JSON.stringify({ adminSecret, packs, tracks }),
     });
 
     if (!res.ok) {
@@ -185,6 +189,12 @@ async function main(): Promise<void> {
 
     for (const pack of packs) {
       console.log(`  SYNCED  ${pack.slug} (${pack.challenges.length} challenges)`);
+    }
+    if (tracks.length > 0) {
+      console.log();
+      for (const track of tracks) {
+        console.log(`  SYNCED  ${track.slug} (${track.packSlugs.length} packs)`);
+      }
     }
   } else {
     for (const packJsonPath of packJsonPaths) {
@@ -206,34 +216,10 @@ async function main(): Promise<void> {
 
       console.log(`  SEEDED  ${packName} (${challenges.length} challenges)`);
     }
-  }
 
-  // Seed tracks (after packs, to satisfy FK constraints)
-  const tracksDir = resolve(packsDir, '_tracks');
-  const trackJsonPaths = discoverTracks(tracksDir);
+    if (trackJsonPaths.length > 0) {
+      console.log(`\nFound ${trackJsonPaths.length} track(s).\n`);
 
-  if (trackJsonPaths.length > 0) {
-    console.log(`\nFound ${trackJsonPaths.length} track(s).\n`);
-
-    if (useSync) {
-      const tracks = trackJsonPaths.map((p) => toTrackSeedPayload(loadTrack(p)));
-
-      const res = await fetch(`${apiBase}/api/admin/sync-tracks`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminSecret, tracks }),
-      });
-
-      if (!res.ok) {
-        const body = await res.text();
-        console.error(`  TRACK SYNC FAILED: ${res.status} ${body}`);
-        process.exit(1);
-      }
-
-      for (const track of tracks) {
-        console.log(`  SYNCED  ${track.slug} (${track.packSlugs.length} packs)`);
-      }
-    } else {
       for (const trackJsonPath of trackJsonPaths) {
         const manifest = loadTrack(trackJsonPath);
         const payload = toTrackSeedPayload(manifest);
