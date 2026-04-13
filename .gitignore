@@ -11,6 +11,11 @@ out/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
 
+# Next.js 16 rewrites the routes import in this file between `next dev`
+# and `next build`, so tracking it creates a spurious dirty tree on every
+# mode switch. It's regenerated on any dev/build run.
+apps/web/next-env.d.ts
+
 # Nx
 .nx/cache
 .nx/installation
