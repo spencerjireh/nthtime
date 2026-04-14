@@ -3,11 +3,10 @@
 import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PackGrid } from './pack-grid';
-import { TrackHero } from './track-hero';
+import { ContextStrip } from './context-strip';
 import { CatalogSearch } from './catalog-search';
 import { CatalogFilters, type CompletionStatus } from './catalog-filters';
 import { usePackList } from '@/hooks/use-packs';
-import { useTrackList } from '@/hooks/use-tracks';
 
 interface CatalogPageProps {
   searchQuery: string;
@@ -15,6 +14,9 @@ interface CatalogPageProps {
   difficulty: string;
   tags: string;
   status: CompletionStatus;
+  trackCount: number;
+  packCount: number;
+  challengeCount: number;
 }
 
 export function CatalogPage({
@@ -23,6 +25,9 @@ export function CatalogPage({
   difficulty,
   tags,
   status,
+  trackCount,
+  packCount,
+  challengeCount,
 }: CatalogPageProps) {
   const router = useRouter();
   const selectedTags = useMemo(
@@ -65,8 +70,6 @@ export function CatalogPage({
   // Then change the `searchQuery: searchQuery` below to `searchQuery: localSearch`
   // and change the <CatalogSearch value={searchQuery} .../> at the bottom to
   // value={localSearch}.
-  const { tracks, isLoading: tracksLoading } = useTrackList();
-
   const { packs, availableTags, isLoading } = usePackList({
     language,
     difficulty,
@@ -116,17 +119,11 @@ export function CatalogPage({
 
   return (
     <div className="mx-auto max-w-screen-2xl space-y-6 px-9 py-10">
-      <div>
-        <p className="eyebrow">Practice</p>
-        <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-foreground">
-          Challenge Packs
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Pick a pack, work through the challenges, and build real skills.
-        </p>
-      </div>
-
-      <TrackHero tracks={tracks} isLoading={tracksLoading} />
+      <ContextStrip
+        trackCount={trackCount}
+        packCount={packCount}
+        challengeCount={challengeCount}
+      />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <CatalogFilters

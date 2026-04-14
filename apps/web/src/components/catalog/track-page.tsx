@@ -16,7 +16,6 @@ import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { useTrack } from '@/hooks/use-tracks';
 import { usePrefetchOnHover } from '@/hooks/use-prefetch-on-hover';
 import { fetchPackChallenges } from '@/lib/api-client';
-import { ArrowLeft } from 'lucide-react';
 
 interface TrackPageProps {
   slug: string;
@@ -35,9 +34,10 @@ interface TrackPackCardProps {
     passedCount: number;
   };
   index: number;
+  fromTrackSlug: string;
 }
 
-function TrackPackCard({ pack, index }: TrackPackCardProps) {
+function TrackPackCard({ pack, index, fromTrackSlug }: TrackPackCardProps) {
   const progress =
     pack.challengeCount > 0
       ? (pack.passedCount / pack.challengeCount) * 100
@@ -49,7 +49,7 @@ function TrackPackCard({ pack, index }: TrackPackCardProps) {
 
   return (
     <Link
-      href={`/pack/${pack.slug}`}
+      href={`/pack/${pack.slug}?from=${fromTrackSlug}`}
       className="group block"
       {...hoverHandlers}
     >
@@ -116,15 +116,7 @@ export function TrackPage({ slug }: TrackPageProps) {
   return (
     <div className="mx-auto max-w-screen-2xl space-y-8 px-9 py-10">
       <div>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-3 w-3" />
-          Back to catalog
-        </Link>
-
-        <h1 className="mt-4 font-sans text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="font-sans text-2xl font-bold tracking-tight text-foreground">
           {track.title}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">{track.description}</p>
@@ -154,7 +146,12 @@ export function TrackPage({ slug }: TrackPageProps) {
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {track.packs.map((pack, index) => (
-            <TrackPackCard key={pack._id} pack={pack} index={index} />
+            <TrackPackCard
+              key={pack._id}
+              pack={pack}
+              index={index}
+              fromTrackSlug={track.slug}
+            />
           ))}
         </div>
       </div>

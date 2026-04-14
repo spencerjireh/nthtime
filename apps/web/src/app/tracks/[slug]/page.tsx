@@ -1,6 +1,9 @@
 import { QueryClient, HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
+
+import { Breadcrumbs } from '@/components/chrome/breadcrumbs';
 import { TrackPage } from '@/components/catalog/track-page';
+import { trackBreadcrumbs } from '@/lib/breadcrumb-source';
 import { serverFetchTrack } from '@/lib/server-api-client';
 
 export default async function TrackRoute({
@@ -17,12 +20,15 @@ export default async function TrackRoute({
   queryClient.setQueryData(['track', slug], data);
 
   return (
-    <HydrationBoundary
-      state={dehydrate(queryClient, {
-        shouldDehydrateQuery: (query) => query.state.status === 'success',
-      })}
-    >
-      <TrackPage slug={slug} />
-    </HydrationBoundary>
+    <>
+      <Breadcrumbs items={trackBreadcrumbs(data.title)} />
+      <HydrationBoundary
+        state={dehydrate(queryClient, {
+          shouldDehydrateQuery: (query) => query.state.status === 'success',
+        })}
+      >
+        <TrackPage slug={slug} />
+      </HydrationBoundary>
+    </>
   );
 }

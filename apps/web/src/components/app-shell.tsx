@@ -1,41 +1,12 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { ThemeToggle } from './theme-toggle';
-import { SettingsTrigger } from './settings/settings-trigger';
-import { ConditionalUserMenu } from './auth/conditional-user-menu';
-import { ConditionalAuthorLink } from './author/conditional-author-link';
+import { SiteFooter } from './chrome/site-footer';
+import { SiteHeader } from './chrome/site-header';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-        <div className="mx-auto flex h-14 max-w-screen-2xl items-center justify-between px-9">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-foreground hover:text-primary"
-          >
-            <Image
-              src="/logo-mark.png"
-              alt=""
-              width={20}
-              height={20}
-              className="dark:invert"
-            />
-            <span className="font-mono text-xs font-medium uppercase tracking-wider">
-              nthtime
-            </span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <ConditionalAuthorLink />
-            <div className="flex items-center gap-1">
-              <SettingsTrigger />
-              <ThemeToggle />
-              <ConditionalUserMenu />
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
       <main className="w-full flex-1">{children}</main>
+      <SiteFooter />
     </div>
   );
 }

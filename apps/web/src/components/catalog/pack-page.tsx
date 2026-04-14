@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { ChallengeList } from './challenge-list';
 import { useChallenges } from '@/hooks/use-packs';
-import { ArrowLeft } from 'lucide-react';
 
 interface PackPageProps {
   slug: string;
@@ -42,12 +41,6 @@ export function PackPage({ slug }: PackPageProps) {
   return (
     <div className="mx-auto max-w-screen-2xl space-y-6 px-9 py-10">
       <div>
-        <Button variant="ghost" size="sm" className="-ml-2 mb-2" asChild>
-          <Link href="/">
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            Back
-          </Link>
-        </Button>
         <div className="flex items-center gap-3">
           <h1 className="font-sans text-2xl font-bold tracking-tight text-foreground">
             {pack.name}

@@ -33,14 +33,32 @@ export default async function Home({ searchParams }: HomeProps) {
   // Fetch directly (not via prefetchQuery) so server errors propagate to
   // Next.js instead of being caught by TanStack Query's internal handling.
   // See apps/web/src/app/pack/[slug]/page.tsx for the reasoning.
-  const [packsData, tracksData] = await Promise.all([
+  //
+  // Two pack fetches: one filtered (for the grid + TanStack cache hydration)
+  // and one unfiltered (for the context strip stats). The unfiltered call is
+  // heavily cacheable via Next's data cache (5-minute revalidate), so the
+  // second fetch is effectively free on warm renders. We want the strip to
+  // reflect the catalog's total size regardless of active filters — it's an
+  // identity signal, not a filter indicator.
+  const hasFilters =
+    Boolean(language) || Boolean(difficulty) || tagsArray.length > 0;
+  const [packsData, tracksData, allPacksData] = await Promise.all([
     serverFetchPacks({
       language: language || undefined,
       difficulty: difficulty || undefined,
       tags: tagsArray.length ? tagsArray : undefined,
     }),
     serverFetchTracks(),
+    hasFilters ? serverFetchPacks() : Promise.resolve(null),
   ]);
+
+  const statsSource = allPacksData ?? packsData;
+  const trackCount = tracksData.length;
+  const packCount = statsSource.packs.length;
+  const challengeCount = statsSource.packs.reduce(
+    (sum, pack) => sum + pack.challengeCount,
+    0,
+  );
 
   const queryClient = new QueryClient();
   queryClient.setQueryData(['packs', language, difficulty, tagsArray], packsData);
@@ -58,6 +76,9 @@ export default async function Home({ searchParams }: HomeProps) {
         difficulty={params.difficulty ?? ''}
         tags={params.tags ?? ''}
         status={(params.status ?? '') as CompletionStatus}
+        trackCount={trackCount}
+        packCount={packCount}
+        challengeCount={challengeCount}
       />
     </HydrationBoundary>
   );
