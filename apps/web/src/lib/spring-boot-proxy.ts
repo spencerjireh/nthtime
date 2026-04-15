@@ -31,6 +31,13 @@ export async function proxyToSpringBoot(req: Request, path: string): Promise<Res
   if (csrfToken) {
     headers['X-XSRF-TOKEN'] = csrfToken;
   }
+  // Admin endpoints (e.g. POST /api/admin/featured) validate an
+  // `X-Admin-Secret` header against ADMIN_SECRET. Forward it unconditionally
+  // so curators can schedule featured challenges via `curl` through Next.js.
+  const adminSecret = req.headers.get('x-admin-secret');
+  if (adminSecret) {
+    headers['X-Admin-Secret'] = adminSecret;
+  }
   const contentType = req.headers.get('content-type');
   if (contentType) {
     headers['Content-Type'] = contentType;

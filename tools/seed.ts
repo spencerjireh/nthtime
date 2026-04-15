@@ -177,8 +177,11 @@ async function main(): Promise<void> {
 
     const res = await fetch(`${apiBase}/api/admin/sync`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ adminSecret, packs, tracks }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Secret': adminSecret,
+      },
+      body: JSON.stringify({ packs, tracks }),
     });
 
     if (!res.ok) {
@@ -204,8 +207,11 @@ async function main(): Promise<void> {
 
       const res = await fetch(`${apiBase}/api/admin/seed`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminSecret, ...payload }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Secret': adminSecret,
+        },
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -226,8 +232,11 @@ async function main(): Promise<void> {
 
         const res = await fetch(`${apiBase}/api/admin/seed-track`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ adminSecret, ...payload }),
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Secret': adminSecret,
+          },
+          body: JSON.stringify(payload),
         });
 
         if (!res.ok) {
