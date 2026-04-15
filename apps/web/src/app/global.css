@@ -113,6 +113,41 @@
     content: '';
     @apply inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary;
   }
+  /* At-risk variant: amber dot that pulses. Reused by StreakCounter when
+     lastPassDate === yesterday and today has no pass. */
+  .eyebrow--at-risk::before {
+    @apply bg-amber-500;
+    animation: nthtime-pulse-dot 1.2s ease-in-out infinite;
+  }
+}
+
+/* Home dashboard: at-risk dot pulse */
+@keyframes nthtime-pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+/* Home dashboard: activity heatmap cells stagger-fade-in on mount */
+@keyframes nthtime-cell-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.heatmap-cell {
+  animation: nthtime-cell-fade-in 260ms ease-out both;
+  animation-delay: calc(var(--i, 0) * 4ms);
 }
 
 /* Monaco editor decorations for failed assertions (L3 feedback) */
@@ -178,8 +213,14 @@
 
 /* Editor demo cursor blink */
 @keyframes cursor-blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 .animate-cursor-blink {
   animation: cursor-blink 1s step-end infinite;

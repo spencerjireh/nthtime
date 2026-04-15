@@ -14,7 +14,7 @@ const COLUMNS: readonly FooterColumn[] = [
   {
     heading: 'Practice',
     links: [
-      { label: 'Catalog', href: '/' },
+      { label: 'Catalog', href: '/catalog' },
       { label: 'Tracks', href: '/tracks' },
       { label: 'Random challenge', href: '/random' },
     ],
@@ -61,13 +61,7 @@ export function SiteFooter() {
               aria-label="nthtime home"
               className="inline-flex items-center gap-3 text-foreground transition-colors hover:text-primary"
             >
-              <Image
-                src="/logo-mark.png"
-                alt=""
-                width={48}
-                height={48}
-                className="dark:invert"
-              />
+              <Image src="/logo-mark.png" alt="" width={48} height={48} className="dark:invert" />
               <span className="font-mono text-sm font-medium uppercase tracking-wider">
                 nthtime
               </span>
@@ -76,9 +70,7 @@ export function SiteFooter() {
 
           {COLUMNS.map((column) => (
             <div key={column.heading} className="flex flex-col gap-4">
-              <h3 className="font-sans text-sm font-medium text-foreground">
-                {column.heading}
-              </h3>
+              <h3 className="font-sans text-sm font-medium text-foreground">{column.heading}</h3>
               <ul className="flex flex-col gap-3">
                 {column.links.map((link) => (
                   <li key={link.href}>
@@ -113,7 +105,11 @@ export function SiteFooter() {
           <div className="flex items-center gap-4 font-sans text-sm text-muted-foreground">
             {SOCIAL_LINKS.map((social, idx) => (
               <span key={social.href} className="flex items-center gap-4">
-                {idx > 0 && <span aria-hidden className="text-border">&middot;</span>}
+                {idx > 0 && (
+                  <span aria-hidden className="text-border">
+                    &middot;
+                  </span>
+                )}
                 <a
                   href={social.href}
                   target="_blank"

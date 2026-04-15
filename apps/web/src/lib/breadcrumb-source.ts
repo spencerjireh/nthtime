@@ -3,7 +3,7 @@ import 'server-only';
 import type { BreadcrumbItem } from '@/components/chrome/breadcrumbs';
 import { serverFetchTrack, serverFetchTracks } from './server-api-client';
 
-const CATALOG_ITEM: BreadcrumbItem = { label: 'Catalog', href: '/' };
+const CATALOG_ITEM: BreadcrumbItem = { label: 'Catalog', href: '/catalog' };
 const TRACKS_ITEM: BreadcrumbItem = { label: 'Tracks', href: '/tracks' };
 
 export function trackBreadcrumbs(trackTitle: string): BreadcrumbItem[] {
@@ -37,12 +37,8 @@ export async function resolvePackBreadcrumb(
 
   try {
     const summaries = await serverFetchTracks();
-    const details = await Promise.all(
-      summaries.map((s) => serverFetchTrack(s.slug)),
-    );
-    const owning = details.find((d) =>
-      d?.packs.some((p) => p.slug === packSlug),
-    );
+    const details = await Promise.all(summaries.map((s) => serverFetchTrack(s.slug)));
+    const owning = details.find((d) => d?.packs.some((p) => p.slug === packSlug));
     if (owning) {
       return [
         CATALOG_ITEM,

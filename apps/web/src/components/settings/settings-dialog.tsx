@@ -19,10 +19,11 @@ import {
 } from '@/components/ui/sheet';
 import { getSettingsStore } from '@/lib/settings-store';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Code2, MessageSquare, SlidersHorizontal } from 'lucide-react';
+import { Code2, MessageSquare, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { EditorSettings } from './editor-settings';
 import { FeedbackSettings } from './feedback-settings';
 import { FormattingSettings } from './formatting-settings';
+import { IntroSettings } from './intro-settings';
 import type { SettingsStore } from '@/lib/settings-store';
 import type { UserSettings } from '@nthtime/shared';
 import type { LucideIcon } from 'lucide-react';
@@ -37,15 +38,20 @@ interface SettingsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type SettingsCategory = 'editor' | 'feedback' | 'formatting';
+type SettingsCategory = 'editor' | 'feedback' | 'formatting' | 'intro';
 
 const CATEGORIES: { id: SettingsCategory; label: string; icon: LucideIcon }[] = [
   { id: 'editor', label: 'Editor', icon: Code2 },
   { id: 'feedback', label: 'Feedback', icon: MessageSquare },
   { id: 'formatting', label: 'Formatting & Layout', icon: SlidersHorizontal },
+  { id: 'intro', label: 'Intro', icon: Sparkles },
 ];
 
-function CategoryContent({ category, ...props }: SettingsPanelProps & { category: SettingsCategory }) {
+function CategoryContent({
+  category,
+  onClose,
+  ...props
+}: SettingsPanelProps & { category: SettingsCategory; onClose: () => void }) {
   switch (category) {
     case 'editor':
       return <EditorSettings {...props} />;
@@ -53,6 +59,8 @@ function CategoryContent({ category, ...props }: SettingsPanelProps & { category
       return <FeedbackSettings {...props} />;
     case 'formatting':
       return <FormattingSettings {...props} />;
+    case 'intro':
+      return <IntroSettings {...props} onClose={onClose} />;
   }
 }
 
@@ -79,6 +87,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               <EditorSettings {...panelProps} />
               <FeedbackSettings {...panelProps} />
               <FormattingSettings {...panelProps} />
+              <IntroSettings {...panelProps} onClose={() => onOpenChange(false)} />
             </div>
           </div>
         </SheetContent>
@@ -115,7 +124,11 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             </div>
           </nav>
           <div className="flex-1 overflow-y-auto p-6">
-            <CategoryContent category={category} {...panelProps} />
+            <CategoryContent
+              category={category}
+              onClose={() => onOpenChange(false)}
+              {...panelProps}
+            />
           </div>
         </div>
       </DialogContent>

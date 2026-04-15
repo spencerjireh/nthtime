@@ -27,6 +27,17 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", ex.getMessage()));
   }
 
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<Map<String, String>> handleBadRequest(BadRequestException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+  }
+
+  @ExceptionHandler(PayloadTooLargeException.class)
+  public ResponseEntity<Map<String, String>> handlePayloadTooLarge(PayloadTooLargeException ex) {
+    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+        .body(Map.of("error", ex.getMessage()));
+  }
+
   @ExceptionHandler(RateLimitExceededException.class)
   public ResponseEntity<Map<String, String>> handleRateLimitExceeded(
       RateLimitExceededException ex) {

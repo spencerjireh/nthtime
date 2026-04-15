@@ -18,6 +18,7 @@ export interface PackSummary {
 export interface ChallengeSummary {
   readonly _id: string;
   readonly slug: string;
+  readonly packSlug: string;
   readonly title: string;
   readonly difficulty: 'beginner' | 'intermediate' | 'advanced';
   readonly tags: readonly string[];

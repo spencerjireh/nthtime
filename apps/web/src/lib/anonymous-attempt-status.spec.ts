@@ -3,8 +3,11 @@ import type { ChallengeSummary, PackSummary } from '@nthtime/data-access';
 import {
   applyAnonymousPassedCounts,
   applyAnonymousStatuses,
+  clearAnonAttemptsLog,
   getAnonymousAttemptState,
   getAnonymousChallengeStatus,
+  logAnonPass,
+  readAnonAttemptsLog,
   setAnonymousChallengeStatus,
 } from './anonymous-attempt-status';
 
@@ -59,6 +62,7 @@ const challenges: ChallengeSummary[] = [
   {
     _id: 'c1',
     slug: 'one',
+    packSlug: 'express-basics',
     title: 'One',
     difficulty: 'beginner',
     tags: ['express'],
@@ -69,6 +73,7 @@ const challenges: ChallengeSummary[] = [
   {
     _id: 'c2',
     slug: 'two',
+    packSlug: 'express-basics',
     title: 'Two',
     difficulty: 'beginner',
     tags: ['express'],
@@ -122,5 +127,54 @@ describe('anonymous-attempt-status', () => {
     setAnonymousChallengeStatus('c1', 'passed', 'express-basics');
 
     expect(applyAnonymousPassedCounts(packs, true)).toEqual(packs);
+  });
+});
+
+describe('anon-attempts-log', () => {
+  beforeEach(() => {
+    store.clear();
+  });
+
+  it('logAnonPass appends an entry with ISO timestamp', () => {
+    logAnonPass('c1', new Date('2026-04-15T08:00:00Z'));
+    expect(readAnonAttemptsLog()).toEqual([
+      { challengeId: 'c1', passedAt: '2026-04-15T08:00:00.000Z' },
+    ]);
+  });
+
+  it('setAnonymousChallengeStatus("passed") auto-logs to the attempts log', () => {
+    setAnonymousChallengeStatus('c1', 'passed', 'express-basics');
+    const log = readAnonAttemptsLog();
+    expect(log).toHaveLength(1);
+    expect(log[0].challengeId).toBe('c1');
+    expect(log[0].passedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it('setAnonymousChallengeStatus("failed") does NOT touch the log', () => {
+    setAnonymousChallengeStatus('c1', 'failed', 'express-basics');
+    expect(readAnonAttemptsLog()).toHaveLength(0);
+  });
+
+  it('enforces the 500-entry FIFO cap on overflow', () => {
+    // Fill to the cap, then add one more — the oldest entry should be
+    // dropped.
+    for (let i = 0; i < 500; i++) {
+      logAnonPass(`c${i}`, new Date(`2026-01-01T00:00:00Z`));
+    }
+    expect(readAnonAttemptsLog()).toHaveLength(500);
+
+    logAnonPass('c-new', new Date('2026-04-15T00:00:00Z'));
+    const log = readAnonAttemptsLog();
+    expect(log).toHaveLength(500);
+    expect(log[0].challengeId).toBe('c1'); // c0 was evicted
+    expect(log[499].challengeId).toBe('c-new');
+  });
+
+  it('clearAnonAttemptsLog empties the log but leaves the status map', () => {
+    setAnonymousChallengeStatus('c1', 'passed', 'express-basics');
+    expect(readAnonAttemptsLog()).toHaveLength(1);
+    clearAnonAttemptsLog();
+    expect(readAnonAttemptsLog()).toHaveLength(0);
+    expect(getAnonymousChallengeStatus('c1')).toBe('passed');
   });
 });

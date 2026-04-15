@@ -10,6 +10,13 @@ interface AnonymousAttemptEntry {
 type AnonymousAttemptState = Record<string, AnonymousAttemptEntry>;
 
 const STORAGE_KEY = 'nthtime:anonymous-attempt-status';
+const LOG_KEY = 'nthtime:anon-attempts-log';
+const LOG_MAX = 500;
+
+export interface AnonPassLogEntry {
+  challengeId: string;
+  passedAt: string;
+}
 
 function canUseStorage() {
   return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
@@ -47,6 +54,54 @@ function writeState(state: AnonymousAttemptState): void {
   }
 }
 
+export function readAnonAttemptsLog(): AnonPassLogEntry[] {
+  if (!canUseStorage()) return [];
+
+  try {
+    const raw = localStorage.getItem(LOG_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (entry): entry is AnonPassLogEntry =>
+        !!entry &&
+        typeof entry === 'object' &&
+        typeof (entry as AnonPassLogEntry).challengeId === 'string' &&
+        typeof (entry as AnonPassLogEntry).passedAt === 'string',
+    );
+  } catch {
+    return [];
+  }
+}
+
+function writeAnonAttemptsLog(entries: AnonPassLogEntry[]): void {
+  if (!canUseStorage()) return;
+  try {
+    localStorage.setItem(LOG_KEY, JSON.stringify(entries));
+  } catch {
+    // Ignore quota failures.
+  }
+}
+
+export function logAnonPass(challengeId: string, at: Date = new Date()): void {
+  const current = readAnonAttemptsLog();
+  const next: AnonPassLogEntry[] = [...current, { challengeId, passedAt: at.toISOString() }];
+  // FIFO cap: keep the most recent LOG_MAX entries. This preserves the
+  // current streak if the user passes a 501st challenge — only the oldest
+  // heatmap tail gets trimmed.
+  const trimmed = next.length > LOG_MAX ? next.slice(next.length - LOG_MAX) : next;
+  writeAnonAttemptsLog(trimmed);
+}
+
+export function clearAnonAttemptsLog(): void {
+  if (!canUseStorage()) return;
+  try {
+    localStorage.removeItem(LOG_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 export function getAnonymousChallengeStatus(challengeId: string): AnonymousChallengeStatus | null {
   return readState()[challengeId]?.status ?? null;
 }
@@ -63,6 +118,12 @@ export function setAnonymousChallengeStatus(
   const state = readState();
   state[challengeId] = packSlug ? { status, packSlug } : { status };
   writeState(state);
+
+  // Log passes for the dashboard streak / heatmap. Failures never
+  // contribute to the streak, so they're omitted from the log.
+  if (status === 'passed') {
+    logAnonPass(challengeId);
+  }
 }
 
 export function applyAnonymousStatuses(

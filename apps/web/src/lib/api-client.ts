@@ -1,4 +1,4 @@
-import type { Challenge, UserSettings } from '@nthtime/shared';
+import type { BackfillEntry, Challenge, StreakSnapshot, UserSettings } from '@nthtime/shared';
 import type {
   PackListResult,
   PackChallengesResult,
@@ -18,6 +18,7 @@ import type {
   AuthorTrackDetail,
   CreateTrackInput,
   UpdateTrackInput,
+  ChallengeSummary,
 } from '@nthtime/data-access';
 
 const BASE = '/api/v1';
@@ -31,10 +32,7 @@ function getCsrfToken(): string | undefined {
 }
 
 class ApiError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-  ) {
+  constructor(public status: number, message: string) {
     super(message);
     this.name = 'ApiError';
   }
@@ -64,6 +62,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(res.status, body.error ?? res.statusText);
   }
 
+  // 204 No Content — don't try to parse an empty body.
+  if (res.status === 204) return undefined as T;
+
   return res.json();
 }
 
@@ -92,10 +93,7 @@ export function fetchChallenge(id: string): Promise<Challenge> {
   return request(`/challenges/${encodeURIComponent(id)}`);
 }
 
-export function fetchChallengeBySlug(
-  packSlug: string,
-  challengeSlug: string,
-): Promise<Challenge> {
+export function fetchChallengeBySlug(packSlug: string, challengeSlug: string): Promise<Challenge> {
   return request(
     `/packs/${encodeURIComponent(packSlug)}/challenges/${encodeURIComponent(challengeSlug)}`,
   );
@@ -229,10 +227,7 @@ export function deleteAuthorChallenge(id: string): Promise<void> {
   return request(`/author/challenges/${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
-export function reorderAuthorChallenges(
-  packSlug: string,
-  challengeIds: string[],
-): Promise<void> {
+export function reorderAuthorChallenges(packSlug: string, challengeIds: string[]): Promise<void> {
   return request(`/author/packs/${encodeURIComponent(packSlug)}/challenges/order`, {
     method: 'PUT',
     body: JSON.stringify({ challengeIds }),
@@ -288,5 +283,29 @@ export function reorderTrackPacks(slug: string, packSlugs: string[]): Promise<vo
   return request(`/author/tracks/${encodeURIComponent(slug)}/packs/order`, {
     method: 'PUT',
     body: JSON.stringify({ packSlugs }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Home dashboard: featured challenge + streak + backfill
+// ---------------------------------------------------------------------------
+
+export async function fetchFeaturedToday(): Promise<ChallengeSummary | null> {
+  // 204 from Spring Boot becomes undefined, which we normalize to null so
+  // callers can distinguish "nothing scheduled" from a real challenge.
+  const result = await request<ChallengeSummary | undefined>('/featured/today');
+  return result ?? null;
+}
+
+export function fetchStreak(): Promise<StreakSnapshot> {
+  return request('/me/streak');
+}
+
+export function backfillAttempts(
+  entries: readonly BackfillEntry[],
+): Promise<{ ok: boolean; inserted: number }> {
+  return request('/me/backfill-attempts', {
+    method: 'POST',
+    body: JSON.stringify({ entries }),
   });
 }

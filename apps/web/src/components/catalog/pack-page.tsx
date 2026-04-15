@@ -32,7 +32,7 @@ export function PackPage({ slug }: PackPageProps) {
           The pack &quot;{slug}&quot; does not exist.
         </p>
         <Button variant="ghost" className="mt-4" asChild>
-          <Link href="/">Back to catalog</Link>
+          <Link href="/catalog">Back to catalog</Link>
         </Button>
       </div>
     );

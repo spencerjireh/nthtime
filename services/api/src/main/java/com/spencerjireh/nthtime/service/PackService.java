@@ -137,6 +137,7 @@ public class PackService {
                   return new ChallengeSummaryResponse(
                       c.getId().toString(),
                       c.getSlug(),
+                      slug,
                       c.getTitle(),
                       c.getDifficulty(),
                       c.getTags(),

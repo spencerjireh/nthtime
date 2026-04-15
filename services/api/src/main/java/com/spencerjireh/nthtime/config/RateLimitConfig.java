@@ -33,6 +33,10 @@ public class RateLimitConfig {
           Bucket.builder()
               .addLimit(limit -> limit.capacity(10).refillGreedy(30, Duration.ofMinutes(1)))
               .build();
+      case "attempts:backfill" ->
+          Bucket.builder()
+              .addLimit(limit -> limit.capacity(1).refillGreedy(1, Duration.ofMinutes(1)))
+              .build();
       default -> throw new IllegalArgumentException("Unknown rate limit: " + operation);
     };
   }

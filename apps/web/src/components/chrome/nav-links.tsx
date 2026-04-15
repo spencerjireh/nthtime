@@ -14,8 +14,13 @@ interface NavLink {
 const LINKS: readonly NavLink[] = [
   {
     href: '/',
-    label: 'Catalog',
+    label: 'Home',
     match: (p) => p === '/',
+  },
+  {
+    href: '/catalog',
+    label: 'Catalog',
+    match: (p) => p === '/catalog' || p.startsWith('/pack/'),
   },
   {
     href: '/tracks',
@@ -30,19 +35,13 @@ interface NavLinksProps {
   onNavigate?: () => void;
 }
 
-export function NavLinks({
-  className,
-  orientation = 'horizontal',
-  onNavigate,
-}: NavLinksProps) {
+export function NavLinks({ className, orientation = 'horizontal', onNavigate }: NavLinksProps) {
   const pathname = usePathname() ?? '/';
 
   return (
     <nav
       className={cn(
-        orientation === 'horizontal'
-          ? 'flex items-center gap-8'
-          : 'flex flex-col gap-4',
+        orientation === 'horizontal' ? 'flex items-center gap-8' : 'flex flex-col gap-4',
         className,
       )}
       aria-label="Primary"
@@ -57,9 +56,7 @@ export function NavLinks({
             aria-current={active ? 'page' : undefined}
             className={cn(
               'group flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-wider transition-colors duration-200',
-              active
-                ? 'text-foreground'
-                : 'text-muted-foreground hover:text-foreground',
+              active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
             )}
           >
             <span

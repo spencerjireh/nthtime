@@ -11,7 +11,7 @@ export default function TrackNotFound() {
         That track does not exist or has been removed.
       </p>
       <Button variant="ghost" className="mt-4" asChild>
-        <Link href="/">Back to catalog</Link>
+        <Link href="/catalog">Back to catalog</Link>
       </Button>
     </div>
   );

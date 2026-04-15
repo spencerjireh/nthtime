@@ -5,7 +5,9 @@ import type {
   PackChallengesResult,
   TrackSummary,
   TrackDetail,
+  ChallengeSummary,
 } from '@nthtime/data-access';
+import type { StreakSnapshot } from '@nthtime/shared';
 
 const SPRING_BOOT_URL = process.env.SPRING_BOOT_URL ?? 'http://api:8080';
 
@@ -18,7 +20,10 @@ const SPRING_BOOT_URL = process.env.SPRING_BOOT_URL ?? 'http://api:8080';
 // check for null and call `notFound()` from the page.tsx top level so the
 // thrown NEXT_NOT_FOUND propagates directly to the page function (required
 // for Next.js to set the HTTP 404 status).
-async function serverFetch<T>(path: string): Promise<T | null> {
+async function serverFetch<T>(
+  path: string,
+  opts?: { cacheMode?: 'no-store' },
+): Promise<T | null> {
   const cookieStore = await cookies();
   const session = cookieStore.get('JSESSIONID');
   const xsrf = cookieStore.get('XSRF-TOKEN');
@@ -30,12 +35,20 @@ async function serverFetch<T>(path: string): Promise<T | null> {
       : `JSESSIONID=${session.value}`;
   }
 
+  const forceNoStore = opts?.cacheMode === 'no-store';
   const res = await fetch(`${SPRING_BOOT_URL}${path}`, {
     headers,
-    ...(session ? { cache: 'no-store' } : { next: { revalidate: 300 } }),
+    ...(session || forceNoStore
+      ? { cache: 'no-store' }
+      : { next: { revalidate: 300 } }),
   });
 
+  // 204: the Spring Boot endpoint explicitly returned "nothing scheduled".
+  // 404: missing resource. 403: unauthenticated (home dashboard calls this
+  // for anon users and expects a graceful null).
+  if (res.status === 204) return null;
   if (res.status === 404) return null;
+  if (res.status === 403) return null;
   if (!res.ok) throw new Error(`Spring Boot ${path} -> ${res.status}`);
   return res.json() as Promise<T>;
 }
@@ -56,9 +69,7 @@ export async function serverFetchPacks(params?: {
   return data;
 }
 
-export function serverFetchPackChallenges(
-  slug: string,
-): Promise<PackChallengesResult | null> {
+export function serverFetchPackChallenges(slug: string): Promise<PackChallengesResult | null> {
   return serverFetch(`/api/packs/${encodeURIComponent(slug)}`);
 }
 
@@ -70,4 +81,25 @@ export async function serverFetchTracks(): Promise<TrackSummary[]> {
 
 export function serverFetchTrack(slug: string): Promise<TrackDetail | null> {
   return serverFetch(`/api/tracks/${encodeURIComponent(slug)}`);
+}
+
+// Home dashboard — always fetch no-store so curator changes land on the
+// next page load, and swallow any infrastructure error so the anonymous
+// empty state renders instead of throwing from an RSC.
+export async function serverFetchFeaturedToday(): Promise<ChallengeSummary | null> {
+  try {
+    return await serverFetch<ChallengeSummary>('/api/featured/today', {
+      cacheMode: 'no-store',
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function serverFetchStreak(): Promise<StreakSnapshot | null> {
+  try {
+    return await serverFetch(`/api/me/streak`);
+  } catch {
+    return null;
+  }
 }

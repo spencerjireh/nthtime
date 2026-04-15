@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record ChallengeSummaryResponse(
     @JsonProperty("_id") String id,
     String slug,
+    String packSlug,
     String title,
     String difficulty,
     String[] tags,
