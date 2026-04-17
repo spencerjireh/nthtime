@@ -1,7 +1,7 @@
 {
   "name": "@nthtime/source",
   "version": "0.0.0",
-  "license": "AGPL-3.0",
+  "license": "Apache-2.0",
   "scripts": {
     "dev": "nx dev @nthtime/web",
     "dev:db": "docker compose -f docker-compose.dev.yml up -d --wait",

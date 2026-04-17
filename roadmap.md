@@ -2,7 +2,7 @@
 
 **Derived from:** nthtime PRD v4 (MVP)
 **Created:** 2026-02-19
-**License:** AGPL-3.0
+**License:** Apache-2.0
 
 ---
 
@@ -594,7 +594,7 @@ All three packs pass schema validation and reference solution verification. Seed
 - [ ] Final cleanup (deferred):
   - [ ] Remove development-only code/routes
   - [ ] Verify environment variable documentation
-  - [ ] Verify AGPL-3.0 license headers where required
+  - [ ] Verify Apache-2.0 license headers where required
 
 ### Validation Gate
 

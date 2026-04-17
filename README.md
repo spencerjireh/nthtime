@@ -6,7 +6,7 @@
 <p align="center">Drill code patterns until they're muscle memory.</p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License: AGPL-3.0" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache-2.0" /></a>
   <img src="https://img.shields.io/badge/Node-%3E%3D22-green.svg" alt="Node >= 22" />
   <img src="https://img.shields.io/badge/pnpm-10-orange.svg" alt="pnpm 10" />
 </p>
@@ -75,4 +75,4 @@ Full documentation at [spencerjireh.github.io/nthtime](https://spencerjireh.gith
 
 ## License
 
-[AGPL-3.0](LICENSE)
+[Apache-2.0](LICENSE)
