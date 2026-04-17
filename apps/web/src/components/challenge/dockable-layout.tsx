@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import { Group, Panel, Separator, useDefaultLayout, usePanelRef } from 'react-resizable-panels';
 import { PromptPanel } from './prompt-panel';
-import { ResultsPanel } from './results-panel';
+import { ResultsPanel, type ChallengeRef } from './results-panel';
 import { EditorPanel } from './editor-panel';
 import { StatusBar } from './status-bar';
 import {
@@ -21,8 +21,8 @@ interface DockableLayoutProps {
   onRun: () => void;
   onRetry: () => void;
   onReset: () => void;
-  packSlug?: string;
-  challengeIds?: string[];
+  packSlug: string;
+  challengeRefs?: ChallengeRef[];
 }
 
 export function DockableLayout({
@@ -30,7 +30,7 @@ export function DockableLayout({
   onRetry,
   onReset,
   packSlug,
-  challengeIds,
+  challengeRefs,
 }: DockableLayoutProps) {
   const [resetKey, setResetKey] = useState(0);
   const [isPeekingSolution, setIsPeekingSolution] = useState(false);
@@ -256,7 +256,7 @@ export function DockableLayout({
             onResize={handlePromptResize}
           >
             {isResults ? (
-              <ResultsPanel onRetry={onRetry} packSlug={packSlug} challengeIds={challengeIds} />
+              <ResultsPanel onRetry={onRetry} packSlug={packSlug} challengeRefs={challengeRefs} />
             ) : (
               <PromptPanel />
             )}

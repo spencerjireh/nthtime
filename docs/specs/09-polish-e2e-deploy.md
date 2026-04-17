@@ -82,7 +82,7 @@ This phase adds production readiness: end-to-end tests covering all major user f
 
 ### Patterns and Decisions
 
-- **Real backend for E2E** -- tests run against Docker Compose stack (PostgreSQL + Spring Boot + Next.js), seeded via `/api/admin/seed`. No mocks.
+- **Real backend for E2E** -- tests run against Docker Compose stack (PostgreSQL + Spring Boot + Next.js), seeded via `/api/admin/packs/seed`. No mocks.
 - **Monaco interaction via `page.evaluate`** -- Playwright cannot type directly into Monaco. Tests use `window.monaco.editor.getEditors()[0].setValue()` to inject code.
 - **Alpine-based image** -- Next.js uses `node:22-alpine` for minimal image size. Spring Boot uses `eclipse-temurin:25-jre-alpine`.
 - **Standalone output** -- Next.js `output: 'standalone'` produces a self-contained server without node_modules, reducing image size to ~100-200MB.

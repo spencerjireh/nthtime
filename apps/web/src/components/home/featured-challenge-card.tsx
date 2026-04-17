@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { ChallengeSummary } from '@nthtime/data-access';
+import { challengeHrefBySlug } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 
 interface FeaturedChallengeCardProps {
@@ -38,7 +39,7 @@ export function FeaturedChallengeCard({ featured }: FeaturedChallengeCardProps) 
         </div>
 
         <Link
-          href={`/challenge/${featured._id}?pack=${featured.packSlug}`}
+          href={challengeHrefBySlug(featured.packSlug, featured.slug)}
           className={cn(
             'group/start inline-flex items-center gap-2 self-start font-mono text-sm font-medium uppercase tracking-wider text-foreground',
             'transition-colors hover:text-primary',

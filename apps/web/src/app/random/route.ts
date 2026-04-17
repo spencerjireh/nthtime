@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
+import { challengeHrefBySlug } from '@/lib/routes';
 import {
   serverFetchPackChallenges,
   serverFetchPacks,
@@ -25,5 +26,5 @@ export async function GET() {
   const challenge =
     data.challenges[Math.floor(Math.random() * data.challenges.length)];
 
-  redirect(`/challenge/${challenge._id}?pack=${pack.slug}`);
+  redirect(challengeHrefBySlug(pack.slug, challenge.slug));
 }

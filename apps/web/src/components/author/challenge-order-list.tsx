@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useDeleteChallenge, useReorderChallenges } from '@/hooks/use-author';
+import { authorChallengeEditHref, authorChallengeNewHref } from '@/lib/routes';
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react';
 
 interface ChallengeSummary {
   _id: string;
+  slug: string;
   title: string;
   difficulty: string;
   order: number;
@@ -83,7 +85,7 @@ export function ChallengeOrderList({ packSlug, challenges }: ChallengeOrderListP
           Challenges ({sorted.length})
         </h2>
         <Button size="sm" variant="outline" asChild>
-          <Link href={`/author/${packSlug}/challenges/new`}>
+          <Link href={authorChallengeNewHref(packSlug)}>
             <Plus className="mr-1.5 h-3.5 w-3.5" />
             Add Challenge
           </Link>
@@ -123,7 +125,7 @@ export function ChallengeOrderList({ packSlug, challenges }: ChallengeOrderListP
                 className="h-7 w-7 p-0"
                 asChild
               >
-                <Link href={`/author/${packSlug}/challenges/${challenge.order}`}>
+                <Link href={authorChallengeEditHref(packSlug, challenge.slug)}>
                   <Pencil className="h-3.5 w-3.5" />
                 </Link>
               </Button>

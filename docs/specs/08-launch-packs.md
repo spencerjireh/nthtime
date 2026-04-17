@@ -51,8 +51,8 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 
 ### Seeding
 
-- [ ] **PACK-09** -- `pnpm seed` upserts all packs and challenges to Spring Boot via POST /api/admin/seed, matching by slug. Existing packs are updated, new packs are created.
-- [ ] **PACK-10** -- `pnpm seed -- --sync` deletes Spring Boot packs whose slugs are not in the local pack set via POST /api/admin/sync.
+- [ ] **PACK-09** -- `pnpm seed` upserts all packs and challenges to Spring Boot via POST /api/admin/packs/seed, matching by slug. Existing packs are updated, new packs are created.
+- [ ] **PACK-10** -- `pnpm seed -- --sync` deletes Spring Boot packs whose slugs are not in the local pack set via POST /api/admin/packs/sync.
 
 ## Technical Context
 
@@ -67,7 +67,7 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 | `packs/react-fundamentals/challenges/*.json` | 10 React challenge definitions |
 | `packs/fastapi-basics/challenges/*.json` | 10 FastAPI challenge definitions |
 | `tools/validate-packs.ts` | Structural validation via verification engine |
-| `tools/seed.ts` | Spring Boot seeding via POST /api/admin/seed and POST /api/admin/sync |
+| `tools/seed.ts` | Spring Boot seeding via POST /api/admin/packs/seed and POST /api/admin/packs/sync |
 | `packs/vitest.config.mts` | Behavioral test config (root resolves via __dirname) |
 | `packs/test-helpers.ts` | writeChallengeToTmp, importModule helpers |
 | `packs/python-test-helpers.ts` | uv-based Python test execution |
@@ -85,8 +85,8 @@ Launch packs are the initial set of curated challenge packs that ship with the p
 
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /api/admin/seed` | Upsert packs and their challenges |
-| `POST /api/admin/sync` | Upsert all packs, delete stale ones |
+| `POST /api/admin/packs/seed` | Upsert packs and their challenges |
+| `POST /api/admin/packs/sync` | Upsert all packs, delete stale ones |
 
 ## Test Coverage
 

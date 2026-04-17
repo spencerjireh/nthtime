@@ -1,10 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { waitForEditorReady, setEditorContent, getChallengeId } from './helpers';
+import {
+  waitForEditorReady,
+  setEditorContent,
+  getChallengeSlug,
+  challengePath,
+} from './helpers';
 
-let challengeId: string;
+let challengeSlug: string;
 
 test.beforeAll(async () => {
-  challengeId = await getChallengeId('express-basics', 1);
+  challengeSlug = await getChallengeSlug('express-basics', 1);
 });
 
 /**
@@ -48,7 +53,7 @@ test.describe('Feedback flags', () => {
       'Show reference solution': false,
     });
 
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await submitPartialSolution(page);
 
     // Banner always shown
@@ -68,7 +73,7 @@ test.describe('Feedback flags', () => {
       'Show diff': false,
     });
 
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await submitPartialSolution(page);
 
     // At showPassFail, pass/fail badges should be visible
@@ -80,7 +85,7 @@ test.describe('Feedback flags', () => {
     await page.goto('/');
     await setFeedbackFlags(page, { 'Show diff': true });
 
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await submitPartialSolution(page);
 
     // Diff button should be visible

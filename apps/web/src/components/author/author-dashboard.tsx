@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { useMyPacks } from '@/hooks/use-author';
 import { importPackFromZip } from '@/lib/author/import-pack';
+import { authorPackHref } from '@/lib/routes';
 import { Plus, Upload } from 'lucide-react';
 
 export function AuthorDashboard() {
@@ -94,7 +95,7 @@ export function AuthorDashboard() {
           {packs.map((pack) => (
             <Link
               key={pack._id}
-              href={`/author/${pack.slug}`}
+              href={authorPackHref(pack.slug)}
               className="group rounded-lg border border-border p-4 transition-colors hover:border-primary/50 hover:bg-muted/50"
             >
               <div className="flex items-start justify-between">

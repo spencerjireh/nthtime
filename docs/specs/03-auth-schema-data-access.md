@@ -106,8 +106,8 @@ Establishes the authentication system, Spring Boot backend, and data access laye
 | `GET /api/challenges/{id}/attempts` | AttemptController | List attempts for user+challenge |
 | `GET /api/settings` | SettingsController | Get user settings |
 | `PATCH /api/settings` | SettingsController | Update user settings (rate-limited) |
-| `POST /api/admin/seed` | AdminController | Seed packs from JSON |
-| `POST /api/admin/sync` | AdminController | Sync packs (seed + delete stale) |
+| `POST /api/admin/packs/seed` | AdminController | Seed packs from JSON |
+| `POST /api/admin/packs/sync` | AdminController | Sync packs (seed + delete stale) |
 
 ### API Routes
 

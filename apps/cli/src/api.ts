@@ -37,7 +37,7 @@ export async function fetchChallenge(
   challengeSlug: string,
 ): Promise<CliChallengeResponse> {
   return fetchJson<CliChallengeResponse>(
-    `${serverUrl}/api/cli/challenge/${encodeURIComponent(packSlug)}/${encodeURIComponent(challengeSlug)}`,
+    `${serverUrl}/api/cli/challenges/${encodeURIComponent(packSlug)}/${encodeURIComponent(challengeSlug)}`,
   );
 }
 
@@ -46,7 +46,7 @@ export async function fetchPack(
   packSlug: string,
 ): Promise<CliPackResponse> {
   return fetchJson<CliPackResponse>(
-    `${serverUrl}/api/cli/pack/${encodeURIComponent(packSlug)}`,
+    `${serverUrl}/api/cli/packs/${encodeURIComponent(packSlug)}`,
   );
 }
 

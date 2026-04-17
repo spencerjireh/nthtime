@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { authorPacksHref } from '@/lib/routes';
 
 interface FooterColumn {
   heading: string;
@@ -35,7 +36,7 @@ const COLUMNS: readonly FooterColumn[] = [
         href: 'https://github.com/spencerjireh/nthtime',
         external: true,
       },
-      { label: 'Author tools', href: '/author' },
+      { label: 'Author tools', href: authorPacksHref() },
       { label: 'Privacy', href: '/privacy' },
     ],
   },

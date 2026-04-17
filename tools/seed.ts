@@ -175,7 +175,7 @@ async function main(): Promise<void> {
     });
     const tracks = trackJsonPaths.map((p) => toTrackSeedPayload(loadTrack(p)));
 
-    const res = await fetch(`${apiBase}/api/admin/sync`, {
+    const res = await fetch(`${apiBase}/api/admin/packs/sync`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -205,7 +205,7 @@ async function main(): Promise<void> {
       const { manifest, challenges } = loadPack(packJsonPath);
       const payload = toSeedPayload(manifest, challenges);
 
-      const res = await fetch(`${apiBase}/api/admin/seed`, {
+      const res = await fetch(`${apiBase}/api/admin/packs/seed`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +230,7 @@ async function main(): Promise<void> {
         const manifest = loadTrack(trackJsonPath);
         const payload = toTrackSeedPayload(manifest);
 
-        const res = await fetch(`${apiBase}/api/admin/seed-track`, {
+        const res = await fetch(`${apiBase}/api/admin/tracks/seed`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
