@@ -1,0 +1,36 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["tools/*.ts"],
+      "project": ["tools/**/*.ts"]
+    },
+    "apps/web": {
+      "entry": [
+        "src/sentry.server.config.ts",
+        "src/sentry.edge.config.ts",
+        "src/test-utils.tsx"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "next": true,
+      "vitest": true,
+      "playwright": { "config": "playwright.config.ts", "entry": "e2e/**/*.spec.ts" },
+      "tailwind": true,
+      "eslint": true
+    },
+    "apps/cli": {
+      "entry": [
+        "tests/integration/**/*.{ts,tsx}",
+        "scripts/*.js"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "vitest": true,
+      "eslint": true
+    },
+    "libs/*": {
+      "project": ["src/**/*.ts"],
+      "vitest": true,
+      "eslint": true
+    }
+  }
+}
