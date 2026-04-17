@@ -24,7 +24,7 @@ public class AdminController {
     this.adminSecretVerifier = adminSecretVerifier;
   }
 
-  @PostMapping("/seed")
+  @PostMapping("/packs/seed")
   public Map<String, Boolean> seedPack(
       @RequestHeader(value = "X-Admin-Secret", required = false) String adminSecret,
       @RequestBody SeedPackRequest input) {
@@ -33,7 +33,7 @@ public class AdminController {
     return Map.of("ok", true);
   }
 
-  @PostMapping("/sync")
+  @PostMapping("/packs/sync")
   public Map<String, Boolean> syncPacks(
       @RequestHeader(value = "X-Admin-Secret", required = false) String adminSecret,
       @RequestBody SyncPacksRequest input) {
@@ -42,7 +42,7 @@ public class AdminController {
     return Map.of("ok", true);
   }
 
-  @PostMapping("/seed-track")
+  @PostMapping("/tracks/seed")
   public Map<String, Boolean> seedTrack(
       @RequestHeader(value = "X-Admin-Secret", required = false) String adminSecret,
       @RequestBody SeedTrackRequest input) {

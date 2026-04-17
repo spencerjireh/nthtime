@@ -1,15 +1,21 @@
 import { test, expect } from '@playwright/test';
-import { waitForEditorReady, getEditorContent, setEditorContent, getChallengeId } from './helpers';
+import {
+  waitForEditorReady,
+  getEditorContent,
+  setEditorContent,
+  getChallengeSlug,
+  challengePath,
+} from './helpers';
 
-let challengeId: string;
+let challengeSlug: string;
 
 test.beforeAll(async () => {
-  challengeId = await getChallengeId('express-basics', 1);
+  challengeSlug = await getChallengeSlug('express-basics', 1);
 });
 
 test.describe('Multi-file challenges', () => {
   test('create new file via file tree', async ({ page }) => {
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await waitForEditorReady(page);
 
     // Click the "+" button in the file tree to create a new file
@@ -25,7 +31,7 @@ test.describe('Multi-file challenges', () => {
   });
 
   test('switch between files using file tree', async ({ page }) => {
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await waitForEditorReady(page);
 
     // The challenge has app.js and server.js
@@ -40,7 +46,7 @@ test.describe('Multi-file challenges', () => {
   });
 
   test('submit multi-file challenge, results show file tabs', async ({ page }) => {
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await waitForEditorReady(page);
 
     // Write a solution

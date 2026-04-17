@@ -30,7 +30,7 @@ The catalog is the entry point for users browsing available challenge packs. The
 
 ### Viewing a Pack
 
-1. User arrives at `/pack/[slug]`
+1. User arrives at `/packs/[slug]`
 2. Page displays pack metadata (name, description, language, tags)
 3. Challenge list shows each challenge with title, difficulty, time estimate, and completion status
 4. User clicks a challenge row to navigate to the challenge editor
@@ -41,7 +41,7 @@ The catalog is the entry point for users browsing available challenge packs. The
 
 - [ ] **CTLG-01** -- The home page renders a grid of pack cards with name, description, language, and challenge count.
 - [ ] **CTLG-02** -- Each pack card displays the pack's programming language and number of challenges.
-- [ ] **CTLG-03** -- Clicking a pack card navigates to the pack detail page at `/pack/[slug]`.
+- [ ] **CTLG-03** -- Clicking a pack card navigates to the pack detail page at `/packs/[slug]`.
 
 ### Filtering
 
@@ -52,9 +52,9 @@ The catalog is the entry point for users browsing available challenge packs. The
 
 ### Pack Detail
 
-- [ ] **CTLG-08** -- The pack page at `/pack/[slug]` displays pack metadata and a list of challenges.
+- [ ] **CTLG-08** -- The pack page at `/packs/[slug]` displays pack metadata and a list of challenges.
 - [ ] **CTLG-09** -- Each challenge row shows title, difficulty, time estimate, and completion status badge.
-- [ ] **CTLG-10** -- Clicking a challenge row navigates to the challenge editor with the pack context preserved via `?pack=` query param.
+- [ ] **CTLG-10** -- Clicking a challenge row navigates to the nested challenge editor at `/packs/[packSlug]/challenges/[challengeSlug]`.
 
 ## Technical Context
 

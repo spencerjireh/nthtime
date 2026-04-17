@@ -104,7 +104,7 @@ The Next.js configuration handles several integration concerns:
 The core user journey follows this path:
 
 ```
-Catalog (/) --> Pack (/pack/[slug]) --> Challenge (/challenge/[id]?pack=slug)
+Catalog (/) --> Pack (/packs/[slug]) --> Challenge (/packs/[packSlug]/challenges/[challengeSlug])
                                               |
                                               v
                                         Monaco Editor

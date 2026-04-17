@@ -20,7 +20,7 @@ const LINKS: readonly NavLink[] = [
   {
     href: '/catalog',
     label: 'Catalog',
-    match: (p) => p === '/catalog' || p.startsWith('/pack/'),
+    match: (p) => p === '/catalog' || p.startsWith('/packs/'),
   },
   {
     href: '/tracks',

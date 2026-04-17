@@ -1,10 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { waitForEditorReady, setEditorContent, getChallengeId } from './helpers';
+import {
+  waitForEditorReady,
+  setEditorContent,
+  getChallengeSlug,
+  challengePath,
+} from './helpers';
 
-let challengeId: string;
+let challengeSlug: string;
 
 test.beforeAll(async () => {
-  challengeId = await getChallengeId('express-basics', 1);
+  challengeSlug = await getChallengeSlug('express-basics', 1);
 });
 
 async function setFeedbackFlags(
@@ -35,7 +40,7 @@ test.describe('Results views', () => {
     await page.goto('/');
     await setFeedbackFlags(page, { 'Show diff': true });
 
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await submitPartialSolution(page);
 
     await expect(page.getByText('Diff')).toBeVisible();
@@ -51,7 +56,7 @@ test.describe('Results views', () => {
       'Show assertion details': true,
     });
 
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await submitPartialSolution(page);
 
     // Assertion details text should be visible (pass/fail badges + descriptions)
@@ -63,7 +68,7 @@ test.describe('Results views', () => {
     await page.goto('/');
     await setFeedbackFlags(page, { 'Show reference solution': true });
 
-    await page.goto(`/challenge/${challengeId}`);
+    await page.goto(challengePath('express-basics', challengeSlug));
     await submitPartialSolution(page);
 
     // Solution tab should appear when feature flag is enabled (default)

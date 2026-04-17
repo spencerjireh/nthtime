@@ -9,6 +9,7 @@ import { PackForm, type PackFormData } from './pack-form';
 import { ChallengeOrderList } from './challenge-order-list';
 import { useAuthorPack, useAuthorPackForExport, useUpdatePack, useDeletePack } from '@/hooks/use-author';
 import { exportPackAsZip } from '@/lib/author/export-pack';
+import { authorPackHref, authorPacksHref } from '@/lib/routes';
 import { ArrowLeft, Download, Trash2 } from 'lucide-react';
 
 interface PackEditorProps {
@@ -39,7 +40,7 @@ export function PackEditor({ slug }: PackEditorProps) {
           This pack does not exist or you do not have permission to edit it.
         </p>
         <Button variant="ghost" className="mt-4" asChild>
-          <Link href="/author">Back to dashboard</Link>
+          <Link href={authorPacksHref()}>Back to dashboard</Link>
         </Button>
       </div>
     );
@@ -67,7 +68,7 @@ export function PackEditor({ slug }: PackEditorProps) {
 
       // If slug changed, redirect to new URL
       if (data.slug !== slug) {
-        router.push(`/author/${data.slug}`);
+        router.push(authorPackHref(data.slug));
       }
     } catch (err) {
       console.error('Failed to update pack:', err);
@@ -81,7 +82,7 @@ export function PackEditor({ slug }: PackEditorProps) {
     if (!confirm(`Delete "${pack.name}"? This will delete all challenges and attempts.`)) return;
     try {
       await deletePack(slug);
-      router.push('/author');
+      router.push(authorPacksHref());
     } catch (err) {
       console.error('Failed to delete pack:', err);
     }
@@ -92,7 +93,7 @@ export function PackEditor({ slug }: PackEditorProps) {
       <div className="flex items-center justify-between">
         <div>
           <Button variant="ghost" size="sm" className="-ml-2 mb-2" asChild>
-            <Link href="/author">
+            <Link href={authorPacksHref()}>
               <ArrowLeft className="mr-1 h-4 w-4" />
               Back
             </Link>

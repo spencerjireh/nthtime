@@ -9,14 +9,14 @@ import { getAssertionTechnicalDetail } from './assertion-detail';
 import { getSettingsStore } from '@/lib/settings-store';
 import { getMonacoLanguage, loadDraft } from '@nthtime/editor';
 import { isFeatureEnabled } from '@/lib/feature-flags';
-import { challengeHref, solutionHref } from '@/lib/routes';
+import { challengeHrefBySlug, packHref, solutionHrefBySlug } from '@/lib/routes';
 import { PromptText } from './prompt-text';
 import type { Challenge, Assertion } from '@nthtime/shared';
 
 interface ChallengeDetailViewProps {
   challenge: Challenge;
   challengeId: string;
-  packSlug?: string;
+  packSlug: string;
 }
 
 export function ChallengeDetailView({
@@ -34,8 +34,8 @@ export function ChallengeDetailView({
     setHasDraft(loadDraft(challengeId) !== null);
   }, [challengeId]);
 
-  const editorHref = challengeHref(challengeId, packSlug, 'editor');
-  const backHref = packSlug ? `/pack/${packSlug}` : '/';
+  const editorHref = challengeHrefBySlug(packSlug, challenge.slug, 'editor');
+  const backHref = packHref(packSlug);
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
@@ -45,7 +45,7 @@ export function ChallengeDetailView({
           href={backHref}
           className="mb-6 inline-block text-sm text-muted-foreground hover:text-foreground"
         >
-          &larr; {packSlug ? 'Back to pack' : 'Back to catalog'}
+          &larr; Back to pack
         </Link>
 
         {/* Header */}
@@ -124,7 +124,7 @@ export function ChallengeDetailView({
             <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Reference Solution</h2>
             {feedback.showSolution ? (
               <Link
-                href={solutionHref(challengeId, packSlug)}
+                href={solutionHrefBySlug(packSlug, challenge.slug)}
                 className="inline-block rounded-md border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 View Reference Solution

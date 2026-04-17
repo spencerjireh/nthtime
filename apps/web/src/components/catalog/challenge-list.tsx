@@ -8,7 +8,7 @@ import type { ChallengeSummary } from '@nthtime/data-access';
 interface ChallengeListProps {
   challenges: ChallengeSummary[] | undefined;
   isLoading: boolean;
-  packSlug?: string;
+  packSlug: string;
 }
 
 export function ChallengeList({
@@ -31,7 +31,7 @@ export function ChallengeList({
       {sorted.map((challenge) => (
         <ChallengeRow
           key={challenge._id}
-          id={challenge._id}
+          slug={challenge.slug}
           order={challenge.order}
           title={challenge.title}
           difficulty={challenge.difficulty}

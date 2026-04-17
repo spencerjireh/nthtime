@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/command';
 import { useAuthSession } from '@/hooks/use-auth-session';
 import { usePackList } from '@/hooks/use-packs';
+import { authorPacksHref, packHref } from '@/lib/routes';
 import { useRecentlyVisited } from '@/hooks/use-recently-visited';
 import { useTrackList } from '@/hooks/use-tracks';
 import { isFeatureEnabled } from '@/lib/feature-flags';
@@ -161,10 +162,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               value={`pack ${pack.name} ${pack.language} ${pack.tags.join(' ')}`}
               onSelect={() =>
                 runCommand(() =>
-                  navigateTo(`/pack/${pack.slug}`, {
+                  navigateTo(packHref(pack.slug), {
                     kind: 'pack',
                     label: pack.name,
-                    href: `/pack/${pack.slug}`,
+                    href: packHref(pack.slug),
                   }),
                 )
               }
@@ -235,7 +236,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <>
               <CommandItem
                 value="action author tools"
-                onSelect={() => runCommand(() => navigateTo('/author'))}
+                onSelect={() => runCommand(() => navigateTo(authorPacksHref()))}
               >
                 <PenLine aria-hidden />
                 <span>Author tools</span>

@@ -151,7 +151,7 @@ Caches everything the watch screen and verify command need. Fully offline after 
 
 Two endpoints on the Next.js app. No authentication required (read-only challenge data).
 
-### `GET /api/cli/challenge/:packSlug/:challengeSlug`
+### `GET /api/cli/challenges/:packSlug/:challengeSlug`
 
 Returns the full challenge payload for the CLI.
 
@@ -163,11 +163,11 @@ Returns the full challenge payload for the CLI.
   "scaffold": [{ "path": "app.js", "content": "..." }],
   "assertions": { "perFile": {}, "crossFile": [] },
   "hints": ["Start by importing express", "..."],
-  "webUrl": "https://nthtime.dev/challenge/abc123?pack=express-basics"
+  "webUrl": "https://nthtime.dev/packs/express-basics/challenges/middleware-chain"
 }
 ```
 
-### `GET /api/cli/pack/:packSlug`
+### `GET /api/cli/packs/:packSlug`
 
 Returns the challenge list for a pack (used for validation and the "next challenge" URL on success).
 

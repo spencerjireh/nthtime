@@ -18,7 +18,7 @@ Filter state is stored in URL search parameters, so filtered views are shareable
 
 ## Selecting a Pack
 
-Clicking a pack card navigates to the pack detail page (`/pack/[slug]`). This page lists all challenges in the pack with their current status:
+Clicking a pack card navigates to the pack detail page (`/packs/[slug]`). This page lists all challenges in the pack with their current status:
 
 | Status | Meaning |
 |--------|---------|
@@ -31,7 +31,7 @@ Click any challenge row to open the editor.
 
 ## Working a Challenge
 
-The challenge view (`/challenge/[id]?pack=slug`) uses a three-panel layout:
+The challenge view (`/packs/[packSlug]/challenges/[challengeSlug]`) uses a three-panel layout:
 
 ### Prompt Panel (left)
 

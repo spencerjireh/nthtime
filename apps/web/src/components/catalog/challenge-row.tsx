@@ -2,18 +2,16 @@
 
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { challengeHref } from '@/lib/routes';
-import { usePrefetchOnHover } from '@/hooks/use-prefetch-on-hover';
-import { fetchChallenge } from '@/lib/api-client';
+import { challengeHrefBySlug } from '@/lib/routes';
 
 interface ChallengeRowProps {
-  id: string;
+  slug: string;
   order: number;
   title: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   tags: readonly string[];
   status: 'not-attempted' | 'failed' | 'passed';
-  packSlug?: string;
+  packSlug: string;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -23,7 +21,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export function ChallengeRow({
-  id,
+  slug,
   order,
   title,
   difficulty,
@@ -31,18 +29,10 @@ export function ChallengeRow({
   status,
   packSlug,
 }: ChallengeRowProps) {
-  const href = challengeHref(id, packSlug);
-
-  const hoverHandlers = usePrefetchOnHover(
-    ['challenge', id],
-    () => fetchChallenge(id),
-  );
+  const href = challengeHrefBySlug(packSlug, slug);
 
   return (
-    <div
-      className="group relative flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/30"
-      {...hoverHandlers}
-    >
+    <div className="group relative flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/30">
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
         {order}
       </span>

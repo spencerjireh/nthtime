@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuthSession } from '@/hooks/use-auth-session';
+import { authorPacksHref } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 
 import { SignInButton } from './sign-in-button';
@@ -54,7 +55,7 @@ export function UserMenu() {
         <DropdownMenuLabel>Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/author" className="cursor-pointer">
+          <Link href={authorPacksHref()} className="cursor-pointer">
             <PenLine className="h-3.5 w-3.5" aria-hidden />
             Author tools
           </Link>

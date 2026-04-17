@@ -340,9 +340,9 @@ See the 9 service files in `services/api/src/main/java/com/spencerjireh/nthtime/
 | `PATCH /api/settings` | Required | SettingsController |
 | `GET /api/auth/session` | No | AuthController |
 | `GET /api/author/packs` | Required | AuthorPackController |
-| `POST /api/admin/seed` | Admin secret | AdminController |
+| `POST /api/admin/packs/seed` | Admin secret | AdminController |
 | `GET /api/health` | No | HealthController |
-| `GET /api/cli/pack/{slug}` | No | CliController |
+| `GET /api/cli/packs/{slug}` | No | CliController |
 | ... | (full list in plan Section 7.1) |
 
 ### How controllers get the user ID
@@ -628,8 +628,8 @@ See: `.github/workflows/ci.yml`
 
 `tools/seed.ts` previously used `ConvexHttpClient` to call Convex mutations. Replace with `fetch()` calls to Spring Boot's admin endpoints:
 
-- `POST /api/admin/seed` (single pack)
-- `POST /api/admin/sync` (batch + stale cleanup)
+- `POST /api/admin/packs/seed` (single pack)
+- `POST /api/admin/packs/sync` (batch + stale cleanup)
 
 Both require `adminSecret` in the request body. The tool reads `SPRING_BOOT_URL` and `ADMIN_SECRET` from env vars.
 

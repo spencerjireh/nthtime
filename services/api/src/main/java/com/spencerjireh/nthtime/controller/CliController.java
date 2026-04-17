@@ -31,7 +31,7 @@ public class CliController {
     this.trackService = trackService;
   }
 
-  @GetMapping("/pack/{packSlug}")
+  @GetMapping("/packs/{packSlug}")
   public CliPackResponse getPackChallenges(@PathVariable String packSlug) {
     PackChallengesResponse data = packService.getChallenges(packSlug, null);
     if (data == null) {
@@ -53,7 +53,7 @@ public class CliController {
         challenges);
   }
 
-  @GetMapping("/challenge/{packSlug}/{challengeSlug}")
+  @GetMapping("/challenges/{packSlug}/{challengeSlug}")
   public CliChallengeResponse getChallenge(
       @PathVariable String packSlug, @PathVariable String challengeSlug) {
     ChallengeResponse cr = challengeService.getByPackAndSlug(packSlug, challengeSlug);

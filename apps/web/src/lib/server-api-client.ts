@@ -7,7 +7,7 @@ import type {
   TrackDetail,
   ChallengeSummary,
 } from '@nthtime/data-access';
-import type { StreakSnapshot } from '@nthtime/shared';
+import type { Challenge, StreakSnapshot } from '@nthtime/shared';
 
 const SPRING_BOOT_URL = process.env.SPRING_BOOT_URL ?? 'http://api:8080';
 
@@ -71,6 +71,21 @@ export async function serverFetchPacks(params?: {
 
 export function serverFetchPackChallenges(slug: string): Promise<PackChallengesResult | null> {
   return serverFetch(`/api/packs/${encodeURIComponent(slug)}`);
+}
+
+export async function serverFetchChallengeBySlug(
+  packSlug: string,
+  challengeSlug: string,
+): Promise<Challenge | null> {
+  // Spring Boot serializes the primary key as `_id` (legacy contract
+  // baked into existing DTOs). The shared `Challenge` type declares
+  // `id`, so we normalize at the boundary here.
+  const raw = await serverFetch<Record<string, unknown>>(
+    `/api/packs/${encodeURIComponent(packSlug)}/challenges/${encodeURIComponent(challengeSlug)}`,
+  );
+  if (raw === null) return null;
+  const { _id, ...rest } = raw;
+  return { ...rest, id: _id as string } as Challenge;
 }
 
 export async function serverFetchTracks(): Promise<TrackSummary[]> {

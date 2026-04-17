@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { PackForm, type PackFormData } from '@/components/author/pack-form';
 import { useCreatePack, useCreateChallenge } from '@/hooks/use-author';
 import type { PackImportData } from '@/lib/author/import-pack';
+import { authorPackHref, authorPacksHref } from '@/lib/routes';
 import { ArrowLeft } from 'lucide-react';
 
 export default function NewPackPage() {
@@ -72,7 +73,7 @@ export default function NewPackPage() {
         }
       }
 
-      router.push(`/author/${data.slug}`);
+      router.push(authorPackHref(data.slug));
     } catch (err) {
       console.error('Failed to create pack:', err);
       setIsSubmitting(false);
@@ -96,7 +97,7 @@ export default function NewPackPage() {
     <div className="mx-auto max-w-screen-md space-y-6 px-9 py-10">
       <div>
         <Button variant="ghost" size="sm" className="-ml-2 mb-2" asChild>
-          <Link href="/author">
+          <Link href={authorPacksHref()}>
             <ArrowLeft className="mr-1 h-4 w-4" />
             Back
           </Link>
@@ -116,7 +117,7 @@ export default function NewPackPage() {
       <PackForm
         initial={initialData}
         onSubmit={handleSubmit}
-        onCancel={() => router.push('/author')}
+        onCancel={() => router.push(authorPacksHref())}
         submitLabel={importData ? 'Import Pack' : 'Create Pack'}
         isSubmitting={isSubmitting}
       />

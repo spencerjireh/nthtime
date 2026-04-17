@@ -27,10 +27,12 @@ const {
     mockAuthStatus: { value: 'authenticated' as 'authenticated' | 'unauthenticated' },
     MOCK_CHALLENGE_DATA: {
       id: 'ch_test_1',
+      slug: 'test-challenge',
       title: 'Test Challenge',
       prompt: 'Write a test',
       difficulty: 'beginner' as const,
       tags: ['test'] as const,
+      timeEstimateSeconds: 300,
       hints: ['hint 1', 'hint 2'],
       assertions: { perFile: [{ file: 'app.js', assertions: [] }], crossFile: [] },
       referenceSolution: [{ path: 'app.js', content: 'const a = 1;' }],
@@ -51,10 +53,6 @@ vi.mock('@nthtime/editor', async (importOriginal) => {
 vi.mock('./challenge-detail-view', () => ({
   ChallengeDetailView: () => <div data-testid="challenge-detail-view" />,
 }));
-vi.mock('@/components/ui/logo-spinner', () => ({
-  LogoSpinner: () => <div data-testid="logo-spinner" />,
-}));
-
 // Mock dynamic imports -- challenge-view.tsx calls dynamic() for DockableLayout
 vi.mock('next/dynamic', () => {
   return {
@@ -84,9 +82,6 @@ vi.mock('@/lib/run-verification', () => ({
 }));
 vi.mock('@/lib/formatter', () => ({
   formatAllFiles: (...args: unknown[]) => mockFormatAllFiles(...args),
-}));
-vi.mock('@/hooks/use-challenge', () => ({
-  useChallenge: () => ({ challenge: MOCK_CHALLENGE_DATA, isLoading: false }),
 }));
 vi.mock('@/hooks/use-attempts', () => ({
   useCreateAttempt: () => mockCreateAttempt,
@@ -139,7 +134,7 @@ describe('ChallengeView', () => {
   }
 
   it('calls initFromChallenge on mount', () => {
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
     expect(getStore().getState().initFromChallenge).toHaveBeenCalledWith(
       MOCK_CHALLENGE_DATA,
       'ch_test_1',
@@ -148,7 +143,7 @@ describe('ChallengeView', () => {
   });
 
   it('renders editing layout with prompt, editor, and toolbar', () => {
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
     expect(screen.getByTestId('prompt-panel')).toBeInTheDocument();
     expect(screen.getByTestId('editor-panel')).toBeInTheDocument();
     expect(screen.getByTestId('run-button')).toBeInTheDocument();
@@ -156,13 +151,13 @@ describe('ChallengeView', () => {
 
   it('always renders dockable layout regardless of viewMode', () => {
     mockStoreRef.current = buildEditorStore({ viewMode: 'results' });
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
     expect(screen.getByTestId('dockable-layout')).toBeInTheDocument();
     expect(screen.getByTestId('retry-button')).toBeInTheDocument();
   });
 
   it('handleRun: calls setRunState, runVerification, setVerificationResult, submit', async () => {
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
 
     await act(async () => {
       screen.getByTestId('run-button').click();
@@ -177,7 +172,7 @@ describe('ChallengeView', () => {
   });
 
   it('handleRun: calls createAttempt with correct args', async () => {
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
 
     await act(async () => {
       screen.getByTestId('run-button').click();
@@ -195,7 +190,7 @@ describe('ChallengeView', () => {
   it('handleRun: stores anonymous status when unauthenticated', async () => {
     mockAuthStatus.value = 'unauthenticated';
 
-    render(<ChallengeView challengeId="ch_test_1" packSlug="express-basics" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="express-basics" />);
 
     await act(async () => {
       screen.getByTestId('run-button').click();
@@ -213,7 +208,7 @@ describe('ChallengeView', () => {
     const passingResult = { ...MOCK_VERIFICATION_RESULT, passed: true };
     mockRunVerification.mockResolvedValue(passingResult);
 
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
 
     await act(async () => {
       screen.getByTestId('run-button').click();
@@ -225,7 +220,7 @@ describe('ChallengeView', () => {
   it('handleRun: does NOT call clearDraft when result.passed is false', async () => {
     mockRunVerification.mockResolvedValue({ ...MOCK_VERIFICATION_RESULT, passed: false });
 
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
 
     await act(async () => {
       screen.getByTestId('run-button').click();
@@ -237,7 +232,7 @@ describe('ChallengeView', () => {
   it('format on submit: calls formatCode when trigger is onSubmit', async () => {
     mockFormatterTrigger.value = 'onSubmit';
 
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
 
     await act(async () => {
       screen.getByTestId('run-button').click();
@@ -249,7 +244,7 @@ describe('ChallengeView', () => {
   it('handleRetry: calls store.retry()', () => {
     mockStoreRef.current = buildEditorStore({ viewMode: 'results' });
 
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
     screen.getByTestId('retry-button').click();
 
     expect(getStore().getState().retry).toHaveBeenCalled();
@@ -258,7 +253,7 @@ describe('ChallengeView', () => {
   it('draft save: file change triggers debounced saveDraft after 500ms', async () => {
     vi.useFakeTimers();
 
-    render(<ChallengeView challengeId="ch_test_1" />);
+    render(<ChallengeView challengeId="ch_test_1" challenge={MOCK_CHALLENGE_DATA} packSlug="test-pack" />);
 
     // Simulate a file change by updating the store's files reference
     const newFiles = {

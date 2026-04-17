@@ -1,6 +1,6 @@
 import {
   fetchPacks,
-  fetchChallenge,
+  fetchPackChallenges,
   createAttempt,
   patchSettings,
   fetchTracks,
@@ -36,7 +36,7 @@ describe('api-client request()', () => {
 
   it('throws ApiError with server error message on failure', async () => {
     mockFetch(404, { error: 'Pack not found' });
-    await expect(fetchChallenge('nonexistent')).rejects.toThrow('Pack not found');
+    await expect(fetchPackChallenges('nonexistent')).rejects.toThrow('Pack not found');
   });
 
   it('throws ApiError with statusText when body has no error field', async () => {

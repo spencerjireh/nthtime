@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { isFeatureEnabled } from '@/lib/feature-flags';
 import { useAuthSession } from '@/hooks/use-auth-session';
+import { authorPacksHref } from '@/lib/routes';
 
 export function ConditionalAuthorLink() {
   if (!isFeatureEnabled('auth')) return null;
@@ -15,7 +16,7 @@ function AuthorLink() {
 
   return (
     <Link
-      href="/author"
+      href={authorPacksHref()}
       className="text-xs text-muted-foreground transition-colors hover:text-foreground"
     >
       Author

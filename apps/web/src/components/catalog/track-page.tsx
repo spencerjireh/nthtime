@@ -16,6 +16,7 @@ import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { useTrack } from '@/hooks/use-tracks';
 import { usePrefetchOnHover } from '@/hooks/use-prefetch-on-hover';
 import { fetchPackChallenges } from '@/lib/api-client';
+import { packHref } from '@/lib/routes';
 
 interface TrackPageProps {
   slug: string;
@@ -49,7 +50,7 @@ function TrackPackCard({ pack, index, fromTrackSlug }: TrackPackCardProps) {
 
   return (
     <Link
-      href={`/pack/${pack.slug}?from=${fromTrackSlug}`}
+      href={packHref(pack.slug, fromTrackSlug)}
       className="group block"
       {...hoverHandlers}
     >

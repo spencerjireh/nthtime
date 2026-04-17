@@ -1,4 +1,4 @@
-import type { BackfillEntry, Challenge, StreakSnapshot, UserSettings } from '@nthtime/shared';
+import type { BackfillEntry, StreakSnapshot, UserSettings } from '@nthtime/shared';
 import type {
   PackListResult,
   PackChallengesResult,
@@ -87,16 +87,6 @@ export function fetchPacks(params?: {
 
 export function fetchPackChallenges(slug: string): Promise<PackChallengesResult> {
   return request(`/packs/${encodeURIComponent(slug)}`);
-}
-
-export function fetchChallenge(id: string): Promise<Challenge> {
-  return request(`/challenges/${encodeURIComponent(id)}`);
-}
-
-export function fetchChallengeBySlug(packSlug: string, challengeSlug: string): Promise<Challenge> {
-  return request(
-    `/packs/${encodeURIComponent(packSlug)}/challenges/${encodeURIComponent(challengeSlug)}`,
-  );
 }
 
 export function fetchSearch(query: string): Promise<SearchResult[]> {

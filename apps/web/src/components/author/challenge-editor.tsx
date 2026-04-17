@@ -11,6 +11,7 @@ import { AssertionEditor } from './assertion-editor';
 import { ValidationPanel } from './validation-panel';
 import { useCreateChallenge, useUpdateChallenge, useAuthorPack } from '@/hooks/use-author';
 import { ArrowLeft, Eye, Save } from 'lucide-react';
+import { authorPackHref, authorPreviewHref } from '@/lib/routes';
 import { slugify } from '@/lib/author/slug-utils';
 
 interface ChallengeEditorProps {
@@ -99,7 +100,7 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
           ...challengeData,
         });
       }
-      router.push(`/author/${packSlug}`);
+      router.push(authorPackHref(packSlug));
     } catch (err) {
       console.error('Failed to save challenge:', err);
     } finally {
@@ -123,7 +124,7 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
       <div className="flex items-center justify-between">
         <div>
           <Button variant="ghost" size="sm" className="-ml-2 mb-2" asChild>
-            <Link href={`/author/${packSlug}`}>
+            <Link href={authorPackHref(packSlug)}>
               <ArrowLeft className="mr-1 h-4 w-4" />
               Back to {pack?.name ?? 'pack'}
             </Link>
@@ -133,9 +134,9 @@ export function ChallengeEditor({ packSlug, existingChallenge }: ChallengeEditor
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          {isEdit && existingChallenge?.order && (
+          {isEdit && existingChallenge?.slug && (
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/author/${packSlug}/preview/${existingChallenge.order}`}>
+              <Link href={authorPreviewHref(packSlug, existingChallenge.slug)}>
                 <Eye className="mr-1.5 h-3.5 w-3.5" />
                 Preview
               </Link>

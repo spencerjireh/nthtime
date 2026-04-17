@@ -21,7 +21,7 @@ The nthtime CLI provides a terminal-based workflow for solving challenges withou
 
 1. User runs `nthtime start express-basics/hello-world`
 2. CLI parses the `pack/challenge` slug
-3. CLI fetches challenge data from the server via `/api/cli/challenge/[packSlug]/[challengeSlug]`
+3. CLI fetches challenge data from the server via `/api/cli/challenges/[packSlug]/[challengeSlug]`
 4. CLI creates the working directory (based on workspace config or cwd)
 5. If fileStubs is enabled (default), empty files are created at expected paths
 6. `.nthtime.json` metadata file is written with assertions, hints, and expected files
@@ -55,8 +55,8 @@ The nthtime CLI provides a terminal-based workflow for solving challenges withou
 
 ### API Communication
 
-- [ ] **CLI-03** -- `fetchPack()` retrieves pack data from `/api/cli/pack/[packSlug]`.
-- [ ] **CLI-04** -- `fetchChallenge()` retrieves challenge data from `/api/cli/challenge/[packSlug]/[challengeSlug]`.
+- [ ] **CLI-03** -- `fetchPack()` retrieves pack data from `/api/cli/packs/[packSlug]`.
+- [ ] **CLI-04** -- `fetchChallenge()` retrieves challenge data from `/api/cli/challenges/[packSlug]/[challengeSlug]`.
 - [ ] **CLI-05** -- API functions throw `ApiError` with status code on non-200 responses.
 - [ ] **CLI-06** -- Slugs are URL-encoded in API requests.
 
@@ -102,8 +102,8 @@ The nthtime CLI provides a terminal-based workflow for solving challenges withou
 | `apps/cli/src/format-results.ts` | formatResultLines, formatResultSummary |
 | `apps/cli/src/resolve-dir.ts` | resolveStartDir working directory resolution |
 | `apps/cli/scripts/copy-wasm.js` | Copies WASM grammars to apps/cli/wasm/ for bundling |
-| `apps/web/src/app/api/cli/pack/[packSlug]/route.ts` | CLI pack data endpoint |
-| `apps/web/src/app/api/cli/challenge/[packSlug]/[challengeSlug]/route.ts` | CLI challenge data endpoint |
+| `apps/web/src/app/api/cli/packs/[packSlug]/route.ts` | CLI pack data endpoint |
+| `apps/web/src/app/api/cli/challenges/[packSlug]/[challengeSlug]/route.ts` | CLI challenge data endpoint |
 
 ### Patterns and Decisions
 
@@ -117,8 +117,8 @@ The nthtime CLI provides a terminal-based workflow for solving challenges withou
 
 | Route | Method | Purpose |
 |-------|--------|---------|
-| `/api/cli/pack/[packSlug]` | GET | Pack metadata with challenge list for CLI |
-| `/api/cli/challenge/[packSlug]/[challengeSlug]` | GET | Full challenge data for CLI |
+| `/api/cli/packs/[packSlug]` | GET | Pack metadata with challenge list for CLI |
+| `/api/cli/challenges/[packSlug]/[challengeSlug]` | GET | Full challenge data for CLI |
 
 ## Test Coverage
 

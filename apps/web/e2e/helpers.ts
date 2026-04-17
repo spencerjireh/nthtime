@@ -45,12 +45,17 @@ export const EXPRESS_SOLUTION = [
   'export default app;',
 ].join('\n');
 
-/** Resolve a challenge ID by pack slug and order number via the Next.js proxy. */
-export async function getChallengeId(packSlug: string, order: number): Promise<string> {
+/** Resolve a challenge slug by pack slug and order number via the Next.js proxy. */
+export async function getChallengeSlug(packSlug: string, order: number): Promise<string> {
   const res = await fetch(`${BASE_URL}/api/v1/packs/${encodeURIComponent(packSlug)}`);
   if (!res.ok) throw new Error(`Failed to fetch pack ${packSlug}: ${res.status}`);
   const data = await res.json();
   const challenge = data.challenges.find((c: { order: number }) => c.order === order);
   if (!challenge) throw new Error(`Challenge not found: ${packSlug} #${order}`);
-  return challenge._id;
+  return challenge.slug;
+}
+
+/** Build a challenge page URL path: /packs/[packSlug]/challenges/[challengeSlug]. */
+export function challengePath(packSlug: string, challengeSlug: string): string {
+  return `/packs/${packSlug}/challenges/${challengeSlug}`;
 }

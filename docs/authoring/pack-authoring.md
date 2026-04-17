@@ -383,14 +383,14 @@ Run `pnpm seed` to push pack data to the Spring Boot backend. This executes `too
 
 1. Reads `SPRING_BOOT_URL` from environment or `.env.local`
 2. Requires `ADMIN_SECRET` for authenticated access to the admin endpoint
-3. For each pack, calls `POST /api/admin/seed` with the manifest and challenges
+3. For each pack, calls `POST /api/admin/packs/seed` with the manifest and challenges
 4. Maps `scaffold` (not `files`) to the database `files` field
 
 ```bash
 SPRING_BOOT_URL=http://localhost:8080 ADMIN_SECRET=your-secret pnpm seed
 ```
 
-The `--sync` flag calls `POST /api/admin/sync` which also cleans up stale packs that no longer exist in the `packs/` directory:
+The `--sync` flag calls `POST /api/admin/packs/sync` which also cleans up stale packs that no longer exist in the `packs/` directory:
 
 ```bash
 pnpm seed -- --sync

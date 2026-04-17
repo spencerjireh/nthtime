@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/tooltip';
 import { usePrefetchOnHover } from '@/hooks/use-prefetch-on-hover';
 import { fetchPackChallenges } from '@/lib/api-client';
+import { packHref } from '@/lib/routes';
 
 const MAX_VISIBLE_TAGS = 4;
 
@@ -62,7 +63,7 @@ export function PackCard({
   });
 
   return (
-    <Link href={`/pack/${slug}`} className="group block h-full" {...hoverHandlers}>
+    <Link href={packHref(slug)} className="group block h-full" {...hoverHandlers}>
       <Card className="flex h-full flex-col transition-colors hover:border-primary/50">
         <CardHeader>
           <div className="flex items-start justify-between gap-2">

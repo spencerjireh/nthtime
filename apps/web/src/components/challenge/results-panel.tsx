@@ -8,17 +8,22 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getSettingsStore } from '@/lib/settings-store';
 import { isFeatureEnabled } from '@/lib/feature-flags';
-import { challengeHref } from '@/lib/routes';
+import { challengeHrefBySlug, packHref } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { VerificationResult } from '@nthtime/shared';
 
-interface ResultsPanelProps {
-  onRetry: () => void;
-  packSlug?: string;
-  challengeIds?: string[];
+export interface ChallengeRef {
+  id: string;
+  slug: string;
 }
 
-export function ResultsPanel({ onRetry, packSlug, challengeIds }: ResultsPanelProps) {
+interface ResultsPanelProps {
+  onRetry: () => void;
+  packSlug: string;
+  challengeRefs?: ChallengeRef[];
+}
+
+export function ResultsPanel({ onRetry, packSlug, challengeRefs }: ResultsPanelProps) {
   const result = useEditorStore((s) => s.verificationResult);
   const challengeId = useEditorStore((s) => s.challengeId);
   const hintsRevealed = useEditorStore((s) => s.hintsRevealed);
@@ -30,12 +35,12 @@ export function ResultsPanel({ onRetry, packSlug, challengeIds }: ResultsPanelPr
   const referenceSolutionFiles = useEditorStore((s) => s.referenceSolutionFiles);
   const feedback = useStore(getSettingsStore(), (s) => s.settings.feedback);
 
-  const nextChallengeId = useMemo(() => {
-    if (!challengeIds?.length || !challengeId) return null;
-    const currentIndex = challengeIds.indexOf(challengeId);
-    if (currentIndex === -1 || currentIndex >= challengeIds.length - 1) return null;
-    return challengeIds[currentIndex + 1];
-  }, [challengeIds, challengeId]);
+  const nextChallenge = useMemo(() => {
+    if (!challengeRefs?.length || !challengeId) return null;
+    const currentIndex = challengeRefs.findIndex((c) => c.id === challengeId);
+    if (currentIndex === -1 || currentIndex >= challengeRefs.length - 1) return null;
+    return challengeRefs[currentIndex + 1];
+  }, [challengeRefs, challengeId]);
 
   if (!result) return null;
 
@@ -130,20 +135,16 @@ export function ResultsPanel({ onRetry, packSlug, challengeIds }: ResultsPanelPr
 
       {/* Navigation footer */}
       <div className="flex shrink-0 items-center justify-between border-t border-border px-4 py-3">
-        <div>
-          {packSlug && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/pack/${packSlug}`}>Back to pack</Link>
-            </Button>
-          )}
-        </div>
+        <Button variant="ghost" size="sm" asChild>
+          <Link href={packHref(packSlug)}>Back to pack</Link>
+        </Button>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={onRetry}>
             Retry
           </Button>
-          {nextChallengeId && passed && (
+          {nextChallenge && passed && (
             <Button size="sm" asChild>
-              <Link href={challengeHref(nextChallengeId, packSlug)}>Next</Link>
+              <Link href={challengeHrefBySlug(packSlug, nextChallenge.slug)}>Next</Link>
             </Button>
           )}
         </div>

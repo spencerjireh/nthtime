@@ -10,8 +10,6 @@ import { runVerification } from '@/lib/run-verification';
 import { formatAllFiles } from '@/lib/formatter';
 import { getSettingsStore } from '@/lib/settings-store';
 import { setAnonymousChallengeStatus } from '@/lib/anonymous-attempt-status';
-import { LogoSpinner } from '@/components/ui/logo-spinner';
-import { useChallenge } from '@/hooks/use-challenge';
 import { useCreateAttempt } from '@/hooks/use-attempts';
 import { useAuthSession } from '@/hooks/use-auth-session';
 import { useChallenges } from '@/hooks/use-packs';
@@ -24,8 +22,8 @@ const DockableLayout = dynamic(
 
 interface ChallengeViewProps {
   challengeId: string;
-  packSlug?: string;
-  challenge?: Challenge;
+  packSlug: string;
+  challenge: Challenge;
   initialView?: 'details';
 }
 
@@ -35,35 +33,10 @@ export function ChallengeView({
   challenge,
   initialView,
 }: ChallengeViewProps) {
-  const { challenge: fetched, isLoading } = useChallenge(challengeId);
-
-  const challengeData = challenge ?? fetched;
-
-  if (isLoading && !challengeData) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <LogoSpinner label="Loading challenge..." />
-      </div>
-    );
-  }
-
-  if (!challengeData) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-2">
-        <div className="text-muted-foreground text-sm">Challenge not found</div>
-        {packSlug && (
-          <a href={`/pack/${packSlug}`} className="text-primary text-sm hover:underline">
-            Back to pack
-          </a>
-        )}
-      </div>
-    );
-  }
-
   if (initialView === 'details') {
     return (
       <ChallengeDetailView
-        challenge={challengeData}
+        challenge={challenge}
         challengeId={challengeId}
         packSlug={packSlug}
       />
@@ -74,7 +47,7 @@ export function ChallengeView({
     <ChallengeViewEditor
       challengeId={challengeId}
       packSlug={packSlug}
-      challengeData={challengeData}
+      challengeData={challenge}
     />
   );
 }
@@ -85,7 +58,7 @@ function ChallengeViewEditor({
   challengeData,
 }: {
   challengeId: string;
-  packSlug?: string;
+  packSlug: string;
   challengeData: Challenge;
 }) {
   const storeRef = useRef<StoreApi<EditorStore> | null>(null);
@@ -97,8 +70,11 @@ function ChallengeViewEditor({
   const createAttempt = useCreateAttempt();
   const { status } = useAuthSession();
   const { challenges } = useChallenges(packSlug);
-  const challengeIds = useMemo(
-    () => [...challenges].sort((a, b) => a.order - b.order).map((c) => c._id),
+  const challengeRefs = useMemo(
+    () =>
+      [...challenges]
+        .sort((a, b) => a.order - b.order)
+        .map((c) => ({ id: c._id, slug: c.slug })),
     [challenges],
   );
 
@@ -177,7 +153,7 @@ function ChallengeViewEditor({
         onRetry={handleRetry}
         onReset={handleReset}
         packSlug={packSlug}
-        challengeIds={challengeIds}
+        challengeRefs={challengeRefs}
       />
     </EditorStoreContext>
   );

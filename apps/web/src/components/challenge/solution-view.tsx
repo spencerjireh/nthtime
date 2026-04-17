@@ -10,43 +10,24 @@ import {
 } from 'react-resizable-panels';
 import { useTheme } from 'next-themes';
 import { Badge } from '@/components/ui/badge';
-import { LogoSpinner } from '@/components/ui/logo-spinner';
 import { MonacoWrapper } from './monaco-wrapper';
-import { useChallenge } from '@/hooks/use-challenge';
 import { getSettingsStore } from '@/lib/settings-store';
-import { challengeHref } from '@/lib/routes';
+import { challengeHrefBySlug } from '@/lib/routes';
 import { getMonacoLanguage } from '@nthtime/editor';
 import { PromptText } from './prompt-text';
 import { cn } from '@/lib/utils';
 import type { Challenge } from '@nthtime/shared';
 
 interface SolutionViewProps {
-  challengeId: string;
-  packSlug?: string;
+  challenge: Challenge;
+  packSlug: string;
 }
 
-export function SolutionView({ challengeId, packSlug }: SolutionViewProps) {
-  const { challenge, isLoading } = useChallenge(challengeId);
+export function SolutionView({ challenge, packSlug }: SolutionViewProps) {
   const showSolution = useStore(
     getSettingsStore(),
     (s) => s.settings.feedback.showSolution,
   );
-
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <LogoSpinner />
-      </div>
-    );
-  }
-
-  if (!challenge) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-2">
-        <div className="text-muted-foreground text-sm">Challenge not found</div>
-      </div>
-    );
-  }
 
   if (!showSolution) {
     return (
@@ -55,7 +36,7 @@ export function SolutionView({ challengeId, packSlug }: SolutionViewProps) {
           Enable &quot;Show reference solution&quot; in settings to view.
         </p>
         <Link
-          href={challengeHref(challengeId, packSlug, 'details')}
+          href={challengeHrefBySlug(packSlug, challenge.slug, 'details')}
           className="text-primary text-sm hover:underline"
         >
           Back to challenge
@@ -71,7 +52,7 @@ export function SolutionView({ challengeId, packSlug }: SolutionViewProps) {
           No reference solution available for this challenge.
         </p>
         <Link
-          href={challengeHref(challengeId, packSlug, 'details')}
+          href={challengeHrefBySlug(packSlug, challenge.slug, 'details')}
           className="text-primary text-sm hover:underline"
         >
           Back to challenge
@@ -80,23 +61,15 @@ export function SolutionView({ challengeId, packSlug }: SolutionViewProps) {
     );
   }
 
-  return (
-    <SolutionViewContent
-      challenge={challenge}
-      challengeId={challengeId}
-      packSlug={packSlug}
-    />
-  );
+  return <SolutionViewContent challenge={challenge} packSlug={packSlug} />;
 }
 
 function SolutionViewContent({
   challenge,
-  challengeId,
   packSlug,
 }: {
   challenge: Challenge;
-  challengeId: string;
-  packSlug?: string;
+  packSlug: string;
 }) {
   const { resolvedTheme } = useTheme();
   const monacoTheme = resolvedTheme === 'dark' ? 'vs-dark' : 'light';
@@ -174,7 +147,7 @@ function SolutionViewContent({
       <div className="shrink-0 border-t border-border">
         <div className="flex items-center px-4 py-2">
           <Link
-            href={challengeHref(challengeId, packSlug, 'details')}
+            href={challengeHrefBySlug(packSlug, challenge.slug, 'details')}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             &larr; Back to challenge
