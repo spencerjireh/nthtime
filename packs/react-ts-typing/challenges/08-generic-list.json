@@ -1,0 +1,47 @@
+{
+  "title": "Generic Component: List<T>",
+  "prompt": "Write a reusable generic list component.\n\n**Requirements:**\n1. Import `ReactNode` from `react`.\n2. Define a generic `ListProps<T>` with:\n   - `items: T[]`\n   - `renderItem: (item: T, index: number) => ReactNode`\n   - `getKey: (item: T) => string | number`\n3. Export a function component `List` parameterised by `<T,>` that renders a `<ul>` containing one `<li key={getKey(item)}>` per item.\n\nThe component's generic should be declared with the trailing comma syntax in `.tsx`: `function List<T,>(...)`.",
+  "difficulty": "intermediate",
+  "tags": ["generics", "components", "reusable"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "List.tsx",
+      "content": "import { ReactNode } from 'react';\n\nexport type ListProps<T> = {\n  items: T[];\n  renderItem: (item: T, index: number) => ReactNode;\n  getKey: (item: T) => string | number;\n};\n\nexport function List<T,>({ items, renderItem, getKey }: ListProps<T>) {\n  return (\n    <ul>\n      {items.map((item, index) => (\n        <li key={getKey(item)}>{renderItem(item, index)}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "In `.tsx`, declare generics on functions with a trailing comma: `<T,>` -- otherwise the parser mistakes it for JSX.",
+    "Propagate the generic: `ListProps<T>` in the annotation keeps the inference chain intact.",
+    "`getKey` lets callers pick a stable identifier; React still needs a `key` on the list item."
+  ],
+  "assertions": {
+    "perFile": {
+      "List.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["ReactNode"],
+          "description": "Import ReactNode from react"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "List",
+          "description": "Define the generic List component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "ul",
+          "description": "Render a <ul> container"
+        },
+        {
+          "type": "jsxElement",
+          "name": "li",
+          "props": ["key"],
+          "description": "Render each child as a <li> with a key"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

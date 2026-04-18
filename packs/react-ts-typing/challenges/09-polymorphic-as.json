@@ -1,0 +1,41 @@
+{
+  "title": "Polymorphic `as` Prop",
+  "prompt": "A small taste of polymorphism: let callers choose the rendered element via an `as` prop.\n\n**Requirements:**\n1. Import `ReactNode` from `react`.\n2. Define `BoxProps` with:\n   - optional `as?: 'div' | 'section' | 'article'` (default `'div'`)\n   - `children: ReactNode`\n3. Export a function component `Box({ as = 'div', children })` that:\n   - Stores the tag in a local variable `const Tag = as;`\n   - Renders `<Tag>{children}</Tag>`.\n\nWith the tag stored in a capitalised binding, JSX treats it as a component type even though it's a string.",
+  "difficulty": "intermediate",
+  "tags": ["polymorphism", "components", "jsx"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "Box.tsx",
+      "content": "import { ReactNode } from 'react';\n\nexport type BoxProps = {\n  as?: 'div' | 'section' | 'article';\n  children: ReactNode;\n};\n\nexport function Box({ as = 'div', children }: BoxProps) {\n  const Tag = as;\n  return <Tag>{children}</Tag>;\n}\n"
+    }
+  ],
+  "hints": [
+    "JSX requires a capitalised identifier to treat a value as a component type.",
+    "Store the `as` string in `const Tag = as;` and render `<Tag>{children}</Tag>`."
+  ],
+  "assertions": {
+    "perFile": {
+      "Box.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["ReactNode"],
+          "description": "Import ReactNode"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Box",
+          "description": "Define Box"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "Tag",
+          "kind": "const",
+          "description": "Capture the tag in a capitalised local binding"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "title": "Typed useRef: DOM element",
+  "prompt": "Type `useRef` correctly when attaching it to a DOM element.\n\n**Requirements:**\n1. Import `useRef` and `useEffect` from `react`.\n2. Export a function component `AutoFocusInput` that:\n   - declares `const inputRef = useRef<HTMLInputElement>(null);`\n   - attaches the ref to a single `<input>`.\n   - uses `useEffect` on mount to call `inputRef.current?.focus()`.\n3. The optional chain is critical -- `.current` can still be `null` during the initial render.",
+  "difficulty": "beginner",
+  "tags": ["useRef", "useEffect", "DOM"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "AutoFocusInput.tsx",
+      "content": "import { useEffect, useRef } from 'react';\n\nexport function AutoFocusInput() {\n  const inputRef = useRef<HTMLInputElement>(null);\n\n  useEffect(() => {\n    inputRef.current?.focus();\n  }, []);\n\n  return <input ref={inputRef} placeholder=\"auto-focused\" />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`useRef<HTMLInputElement>(null)` -- the element type is the generic parameter.",
+    "`inputRef.current` is `HTMLInputElement | null`; always narrow via optional chaining."
+  ],
+  "assertions": {
+    "perFile": {
+      "AutoFocusInput.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useRef"],
+          "description": "Import useRef and useEffect"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "AutoFocusInput",
+          "description": "Define AutoFocusInput"
+        },
+        {
+          "type": "methodCall",
+          "method": "useRef",
+          "description": "Call useRef"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Call useEffect for the focus effect"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["ref"],
+          "description": "Render an input with ref"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

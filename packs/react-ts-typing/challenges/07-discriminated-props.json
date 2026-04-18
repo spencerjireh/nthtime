@@ -1,0 +1,40 @@
+{
+  "title": "Discriminated Union Props",
+  "prompt": "Use a discriminated union so different variants require different props.\n\n**Requirements:**\n1. Define and export `AlertProps` as a union:\n   - `{ variant: 'success'; message: string }`\n   - `{ variant: 'error'; message: string; retry: () => void }`\n2. Export a function component `Alert(props: AlertProps)`.\n3. Always render a `<div role=\"alert\">` containing `{props.message}`.\n4. When `props.variant === 'error'`, additionally render a `<button>` labelled `\"Retry\"` that calls `props.retry`.\n\nTypeScript should only allow `retry` to be accessed after narrowing via the `variant` discriminant.",
+  "difficulty": "intermediate",
+  "tags": ["discriminated-union", "variants", "narrowing"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "Alert.tsx",
+      "content": "export type AlertProps =\n  | { variant: 'success'; message: string }\n  | { variant: 'error'; message: string; retry: () => void };\n\nexport function Alert(props: AlertProps) {\n  return (\n    <div role=\"alert\">\n      {props.message}\n      {props.variant === 'error' ? (\n        <button onClick={props.retry}>Retry</button>\n      ) : null}\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "A discriminated union is `{ kind: 'a'; ... } | { kind: 'b'; ... }` -- the shared literal is the discriminant.",
+    "Narrow inside the component with `if (props.variant === 'error') { ... }` -- TypeScript then knows `props.retry` exists."
+  ],
+  "assertions": {
+    "perFile": {
+      "Alert.tsx": [
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"AlertProps\"))",
+          "description": "Declare AlertProps as a union type"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Alert",
+          "description": "Define Alert"
+        },
+        {
+          "type": "jsxElement",
+          "name": "div",
+          "props": ["role"],
+          "description": "Render the alert container"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "title": "React 19: ref as a Prop",
+  "prompt": "In React 19, refs pass through as ordinary props -- no `forwardRef` needed.\n\n**Requirements:**\n1. Import `Ref` from `react`.\n2. Define `InputProps` with:\n   - optional `placeholder?: string`\n   - optional `ref?: Ref<HTMLInputElement>`\n3. Export a function component `Input({ ref, placeholder })` that renders `<input ref={ref} placeholder={placeholder} />`.\n\nCallers can now do `<Input ref={myRef} />` directly with no wrapper.",
+  "difficulty": "intermediate",
+  "tags": ["react-19", "ref", "forwardRef"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "Input.tsx",
+      "content": "import { Ref } from 'react';\n\nexport type InputProps = {\n  placeholder?: string;\n  ref?: Ref<HTMLInputElement>;\n};\n\nexport function Input({ ref, placeholder }: InputProps) {\n  return <input ref={ref} placeholder={placeholder} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "React 19 lets you declare `ref` as a normal prop on your component's props type.",
+    "`Ref<HTMLInputElement>` is the right type -- it covers both callback refs and ref objects.",
+    "Forward the ref straight through to the underlying element: `<input ref={ref} ... />`."
+  ],
+  "assertions": {
+    "perFile": {
+      "Input.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["Ref"],
+          "description": "Import Ref from react"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Input",
+          "description": "Define Input"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["ref", "placeholder"],
+          "description": "Render an input with ref and placeholder"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Strictly Typed Context",
+  "prompt": "Build a context that can't be consumed outside its provider.\n\n**Requirements:**\n1. Import `createContext`, `useContext`, and `ReactNode` from `react`.\n2. Define and export a `User` type `{ id: string; name: string }`.\n3. Create a context whose value is `User | null`, initial value `null`.\n4. Export a `UserProvider({ user, children })` component that wraps its children in the context provider.\n5. Export a `useUser()` hook:\n   - calls the context\n   - if the value is `null`, throws `new Error('useUser must be used inside <UserProvider>')`\n   - otherwise returns a non-null `User`.\n\nCallers of `useUser()` get a guaranteed `User`, not `User | null`.",
+  "difficulty": "intermediate",
+  "tags": ["context", "hooks", "types"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "user-context.tsx",
+      "content": "import { createContext, useContext, ReactNode } from 'react';\n\nexport type User = {\n  id: string;\n  name: string;\n};\n\nconst UserContext = createContext<User | null>(null);\n\nexport type UserProviderProps = {\n  user: User;\n  children: ReactNode;\n};\n\nexport function UserProvider({ user, children }: UserProviderProps) {\n  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;\n}\n\nexport function useUser(): User {\n  const user = useContext(UserContext);\n  if (user === null) {\n    throw new Error('useUser must be used inside <UserProvider>');\n  }\n  return user;\n}\n"
+    }
+  ],
+  "hints": [
+    "Initialising with `null` is the honest default -- it reflects 'no provider in the tree'.",
+    "Assert non-null inside `useUser()` so every consumer gets a guaranteed `User`.",
+    "Throwing inside the hook is the idiomatic way to surface misuse."
+  ],
+  "assertions": {
+    "perFile": {
+      "user-context.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["createContext", "useContext", "ReactNode"],
+          "description": "Import createContext, useContext, and ReactNode"
+        },
+        {
+          "type": "methodCall",
+          "method": "createContext",
+          "description": "Call createContext with an explicit type argument"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "UserProvider",
+          "description": "Define UserProvider"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useUser",
+          "description": "Define the useUser hook"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
