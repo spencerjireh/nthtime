@@ -1,0 +1,40 @@
+{
+  "title": "useDeferredValue: Stale-while-fresh",
+  "prompt": "Show the previous value while new filter results are being computed.\n\n**Requirements:**\n1. Import `useState` and `useDeferredValue` from `react`.\n2. Export a function component `LiveSearch({ items })` with prop `items: string[]`.\n3. Track `query` state directly and derive `const deferredQuery = useDeferredValue(query);`.\n4. Compute `results = items.filter(i => i.toLowerCase().includes(deferredQuery.toLowerCase()))` on every render.\n5. Render the input and the `<ul>` of results.\n\nDuring fast typing, `deferredQuery` lags behind `query` so the previous results stay visible, avoiding UI thrash.",
+  "difficulty": "intermediate",
+  "tags": ["useDeferredValue", "concurrent", "ux"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "LiveSearch.tsx",
+      "content": "import { useState, useDeferredValue } from 'react';\n\nexport function LiveSearch({ items }: { items: string[] }) {\n  const [query, setQuery] = useState('');\n  const deferredQuery = useDeferredValue(query);\n\n  const results = items.filter((i) =>\n    i.toLowerCase().includes(deferredQuery.toLowerCase()),\n  );\n\n  return (\n    <div>\n      <input value={query} onChange={(e) => setQuery(e.target.value)} />\n      <ul>\n        {results.map((r) => (\n          <li key={r}>{r}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`useDeferredValue(value)` returns a deferred copy that React updates at lower priority.",
+    "Unlike `useTransition`, it works when you don't control the state setter (e.g., props)."
+  ],
+  "assertions": {
+    "perFile": {
+      "LiveSearch.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "useDeferredValue"],
+          "description": "Import useDeferredValue"
+        },
+        {
+          "type": "methodCall",
+          "method": "useDeferredValue",
+          "description": "Call useDeferredValue"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "LiveSearch",
+          "description": "Define LiveSearch"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

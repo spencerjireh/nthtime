@@ -1,0 +1,41 @@
+{
+  "title": "useSyncExternalStore: Subscribe to Window Size",
+  "prompt": "Read values from an external store (the browser's `window`) without tearing across concurrent renders.\n\n**Requirements:**\n1. Import `useSyncExternalStore` from `react`.\n2. Export a hook `useWindowWidth(): number` that:\n   - defines `subscribe(onStoreChange)` -- adds a `resize` listener to `window` and returns an unsubscribe function\n   - defines `getSnapshot()` -- returns `window.innerWidth`\n   - defines `getServerSnapshot()` -- returns `0` for SSR\n   - returns `useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)`\n3. Export a function component `WindowWidth` that renders `<p>width: {useWindowWidth()}</p>`.",
+  "difficulty": "advanced",
+  "tags": ["useSyncExternalStore", "external-store", "ssr"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "WindowWidth.tsx",
+      "content": "import { useSyncExternalStore } from 'react';\n\nexport function useWindowWidth(): number {\n  return useSyncExternalStore(\n    (onStoreChange) => {\n      window.addEventListener('resize', onStoreChange);\n      return () => window.removeEventListener('resize', onStoreChange);\n    },\n    () => window.innerWidth,\n    () => 0,\n  );\n}\n\nexport function WindowWidth() {\n  const width = useWindowWidth();\n  return <p>width: {width}</p>;\n}\n"
+    }
+  ],
+  "hints": [
+    "`subscribe` returns an unsubscribe function -- React calls it on unmount.",
+    "`getSnapshot` must be referentially stable across renders or React warns.",
+    "`getServerSnapshot` is required when your component renders on the server."
+  ],
+  "assertions": {
+    "perFile": {
+      "WindowWidth.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useSyncExternalStore"],
+          "description": "Import useSyncExternalStore"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useWindowWidth",
+          "description": "Define useWindowWidth"
+        },
+        {
+          "type": "methodCall",
+          "method": "useSyncExternalStore",
+          "description": "Call useSyncExternalStore"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

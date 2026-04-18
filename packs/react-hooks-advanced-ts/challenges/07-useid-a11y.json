@@ -1,0 +1,47 @@
+{
+  "title": "useId for Stable Form IDs",
+  "prompt": "Generate unique, stable IDs for label/input pairs without manual bookkeeping.\n\n**Requirements:**\n1. Import `useId` from `react`.\n2. Export a function component `LabeledInput({ label, value, onChange })` with:\n   - `label: string`\n   - `value: string`\n   - `onChange: (next: string) => void`\n3. Call `const id = useId();` inside the component.\n4. Render a `<label htmlFor={id}>{label}</label>` plus `<input id={id} value={value} onChange={...} />`.\n\n`useId` returns the same opaque ID on both server and client, so hydration won't mismatch.",
+  "difficulty": "intermediate",
+  "tags": ["useId", "accessibility", "forms"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "LabeledInput.tsx",
+      "content": "import { useId } from 'react';\n\nexport type LabeledInputProps = {\n  label: string;\n  value: string;\n  onChange: (next: string) => void;\n};\n\nexport function LabeledInput({ label, value, onChange }: LabeledInputProps) {\n  const id = useId();\n  return (\n    <>\n      <label htmlFor={id}>{label}</label>\n      <input id={id} value={value} onChange={(e) => onChange(e.target.value)} />\n    </>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Never hard-code IDs or derive them from props -- collisions break accessibility tooling.",
+    "`useId` survives server rendering and hydration with no mismatch risk."
+  ],
+  "assertions": {
+    "perFile": {
+      "LabeledInput.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useId"],
+          "description": "Import useId"
+        },
+        {
+          "type": "methodCall",
+          "method": "useId",
+          "description": "Call useId"
+        },
+        {
+          "type": "jsxElement",
+          "name": "label",
+          "props": ["htmlFor"],
+          "description": "Render a label with htmlFor"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["id"],
+          "description": "Render an input with the matching id"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

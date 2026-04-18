@@ -1,0 +1,35 @@
+{
+  "name": "React Advanced Hooks",
+  "slug": "react-hooks-advanced-ts",
+  "description": "Go beyond useState/useEffect: useReducer, useTransition, useDeferredValue, useLayoutEffect, useImperativeHandle, useId, and useSyncExternalStore.",
+  "language": "typescript",
+  "framework": "react",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["react", "hooks", "typescript", "concurrent"],
+  "prerequisites": ["react-ts-typing"],
+  "sources": [
+    {
+      "name": "react.dev Reference",
+      "url": "https://react.dev/reference/react",
+      "license": "CC BY 4.0"
+    },
+    {
+      "name": "overreacted.io",
+      "url": "https://overreacted.io/",
+      "license": "Copyright Dan Abramov (inspired)"
+    }
+  ],
+  "challenges": [
+    "challenges/01-usereducer-counter.json",
+    "challenges/02-usereducer-form.json",
+    "challenges/03-context-reducer.json",
+    "challenges/04-uselayouteffect.json",
+    "challenges/05-usetransition.json",
+    "challenges/06-usedeferredvalue.json",
+    "challenges/07-useid-a11y.json",
+    "challenges/08-useimperativehandle.json",
+    "challenges/09-usesyncexternalstore.json",
+    "challenges/10-hook-order-fix.json"
+  ]
+}

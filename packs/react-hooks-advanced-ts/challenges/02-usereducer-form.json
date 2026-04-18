@@ -1,0 +1,46 @@
+{
+  "title": "useReducer Form State Machine",
+  "prompt": "Model multi-field form state with a reducer and a typed action union.\n\n**Requirements:**\n1. Define a `FormState` type with `name: string`, `email: string`, and `submitted: boolean`.\n2. Define a `FormAction` discriminated union:\n   - `{ type: 'setName'; value: string }`\n   - `{ type: 'setEmail'; value: string }`\n   - `{ type: 'submit' }`\n   - `{ type: 'reset' }`\n3. Write a pure `formReducer(state: FormState, action: FormAction): FormState`.\n4. Export a function component `SignupForm` that uses `useReducer(formReducer, { name: '', email: '', submitted: false })` and wires each field / submit button.\n5. When `submitted` is `true`, render `<p>Thanks, {state.name}!</p>` in place of the form.",
+  "difficulty": "intermediate",
+  "tags": ["useReducer", "forms", "state-machines"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "SignupForm.tsx",
+      "content": "import { useReducer } from 'react';\n\nexport type FormState = {\n  name: string;\n  email: string;\n  submitted: boolean;\n};\n\nexport type FormAction =\n  | { type: 'setName'; value: string }\n  | { type: 'setEmail'; value: string }\n  | { type: 'submit' }\n  | { type: 'reset' };\n\nexport function formReducer(state: FormState, action: FormAction): FormState {\n  switch (action.type) {\n    case 'setName':\n      return { ...state, name: action.value };\n    case 'setEmail':\n      return { ...state, email: action.value };\n    case 'submit':\n      return { ...state, submitted: true };\n    case 'reset':\n      return { name: '', email: '', submitted: false };\n  }\n}\n\nconst INITIAL: FormState = { name: '', email: '', submitted: false };\n\nexport function SignupForm() {\n  const [state, dispatch] = useReducer(formReducer, INITIAL);\n\n  if (state.submitted) {\n    return <p>Thanks, {state.name}!</p>;\n  }\n\n  return (\n    <form\n      onSubmit={(e) => {\n        e.preventDefault();\n        dispatch({ type: 'submit' });\n      }}\n    >\n      <input\n        aria-label=\"name\"\n        value={state.name}\n        onChange={(e) => dispatch({ type: 'setName', value: e.target.value })}\n      />\n      <input\n        aria-label=\"email\"\n        value={state.email}\n        onChange={(e) => dispatch({ type: 'setEmail', value: e.target.value })}\n      />\n      <button type=\"submit\">Sign up</button>\n    </form>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Each action carries only the data the branch needs -- keep payloads minimal.",
+    "Return new state objects; never mutate the current one.",
+    "Exhaustive `switch` on discriminated unions is a compile-time guardrail."
+  ],
+  "assertions": {
+    "perFile": {
+      "SignupForm.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useReducer"],
+          "description": "Import useReducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "formReducer",
+          "description": "Define formReducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "SignupForm",
+          "description": "Define SignupForm"
+        },
+        {
+          "type": "methodCall",
+          "method": "useReducer",
+          "description": "Call useReducer"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
