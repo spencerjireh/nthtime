@@ -1,0 +1,14 @@
+{
+  "slug": "react-typescript",
+  "title": "React with TypeScript",
+  "description": "Type-safe React from hooks through composition -- typing, advanced hooks, custom hooks, and component patterns.",
+  "longDescription": "## React with TypeScript\n\nA curriculum for building type-safe React applications. Starts from the fundamentals pack, drills down into how to type React components and hooks, then moves through advanced hooks, custom hook authoring, and the composition patterns that make React libraries reusable.\n\n### Topics covered\n\n- Typing components, children, events, refs, generics, and polymorphic `as` props\n- `useReducer`, `useLayoutEffect`, `useTransition`, `useDeferredValue`, `useId`, `useImperativeHandle`, `useSyncExternalStore`\n- Custom hooks: toggles, local storage, debounce, fetch, click-outside, controllable state\n- Patterns: compound components, render props, HOCs, slot, provider, prop getters, state machines, hook factories, pub/sub",
+  "tags": ["react", "typescript", "frontend"],
+  "packSlugs": [
+    "react-fundamentals",
+    "react-ts-typing",
+    "react-hooks-advanced-ts",
+    "react-custom-hooks-ts",
+    "react-patterns-ts"
+  ]
+}
