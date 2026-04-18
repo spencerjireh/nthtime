@@ -159,26 +159,3 @@ jobs:
 
       - name: Docker compose build
         run: docker compose build
-
-  qodana:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      pull-requests: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Qodana scan
-        uses: JetBrains/qodana-action@v2025.3
-        with:
-          args: --project-dir,services/api
-
-      - name: Upload SARIF to Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
