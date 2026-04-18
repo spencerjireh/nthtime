@@ -16,6 +16,8 @@ interface PackManifest {
   author: string;
   tags: string[];
   prerequisites?: string[];
+  // sources is file-only attribution metadata; not seeded to the API by design.
+  sources?: { name: string; url: string; license: string }[];
   challenges: string[];
 }
 

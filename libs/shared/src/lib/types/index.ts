@@ -1,4 +1,4 @@
-export type { FileEntry, Pack } from './pack.js';
+export type { FileEntry, Pack, PackSource } from './pack.js';
 
 export type { Track } from './track.js';
 
