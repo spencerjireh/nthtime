@@ -1,0 +1,42 @@
+{
+  "title": "Controlled / Uncontrolled Input",
+  "prompt": "Build a `TextInput` that works in both controlled and uncontrolled modes.\n\n**Requirements:**\n1. Import `useCallback` and `useState` from `react`.\n2. Define and export `TextInputProps`:\n   - optional `value?: string`\n   - optional `defaultValue?: string`\n   - optional `onChange?: (next: string) => void`\n3. Export a function component `TextInput`:\n   - If `value` is defined, the input is controlled -- use it directly; call `onChange` inside the change handler.\n   - Otherwise, track an internal `useState(defaultValue ?? '')`; update state on change and also call `onChange`.\n4. Always render a single `<input>` bound to the effective value.",
+  "difficulty": "intermediate",
+  "tags": ["controlled", "uncontrolled", "composition"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "TextInput.tsx",
+      "content": "import { useCallback, useState } from 'react';\n\nexport type TextInputProps = {\n  value?: string;\n  defaultValue?: string;\n  onChange?: (next: string) => void;\n};\n\nexport function TextInput({ value, defaultValue = '', onChange }: TextInputProps) {\n  const [internal, setInternal] = useState(defaultValue);\n  const isControlled = value !== undefined;\n  const current = isControlled ? (value as string) : internal;\n\n  const handleChange = useCallback(\n    (next: string) => {\n      if (!isControlled) setInternal(next);\n      onChange?.(next);\n    },\n    [isControlled, onChange],\n  );\n\n  return <input value={current} onChange={(e) => handleChange(e.target.value)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`value !== undefined` is the canonical `isControlled` check.",
+    "Always fire `onChange` so consumers see changes in both modes.",
+    "Seed `internal` from `defaultValue` only on first render -- `useState` does this automatically."
+  ],
+  "assertions": {
+    "perFile": {
+      "TextInput.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useCallback", "useState"],
+          "description": "Import useCallback and useState"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TextInput",
+          "description": "Define TextInput"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["value", "onChange"],
+          "description": "Render an input wired to the effective value"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

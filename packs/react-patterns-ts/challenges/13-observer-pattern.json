@@ -1,0 +1,41 @@
+{
+  "title": "Observer Pattern: Typed Pub/Sub",
+  "prompt": "Implement a lightweight, typed event emitter and a hook to subscribe to it.\n\n**Requirements:**\n1. Import `useEffect` from `react`.\n2. Export a generic class:\n   ```ts\n   class EventBus<TEvents extends Record<string, unknown>> {\n     on<K extends keyof TEvents>(event: K, handler: (payload: TEvents[K]) => void): () => void;\n     emit<K extends keyof TEvents>(event: K, payload: TEvents[K]): void;\n   }\n   ```\n3. `on()` returns an unsubscribe function.\n4. Export a hook `useEvent<K extends keyof TEvents, TEvents extends Record<string, unknown>>(bus: EventBus<TEvents>, event: K, handler: (payload: TEvents[K]) => void): void` that wires/unwires in `useEffect([bus, event])`.\n5. Store the handler in a closure captured by the effect so identity changes don't restart the subscription (alternatively: pin the handler to a ref -- either works).",
+  "difficulty": "advanced",
+  "tags": ["observer", "pub-sub", "generics"],
+  "timeEstimateSeconds": 600,
+  "files": [
+    {
+      "path": "eventBus.ts",
+      "content": "import { useEffect, useRef } from 'react';\n\nexport class EventBus<TEvents extends Record<string, unknown>> {\n  private handlers: {\n    [K in keyof TEvents]?: Array<(payload: TEvents[K]) => void>;\n  } = {};\n\n  on<K extends keyof TEvents>(event: K, handler: (payload: TEvents[K]) => void): () => void {\n    const list = this.handlers[event] ?? [];\n    list.push(handler);\n    this.handlers[event] = list;\n    return () => {\n      const current = this.handlers[event];\n      if (!current) return;\n      this.handlers[event] = current.filter((h) => h !== handler);\n    };\n  }\n\n  emit<K extends keyof TEvents>(event: K, payload: TEvents[K]): void {\n    const list = this.handlers[event];\n    if (!list) return;\n    for (const h of list) h(payload);\n  }\n}\n\nexport function useEvent<\n  TEvents extends Record<string, unknown>,\n  K extends keyof TEvents,\n>(bus: EventBus<TEvents>, event: K, handler: (payload: TEvents[K]) => void): void {\n  const handlerRef = useRef(handler);\n  useEffect(() => {\n    handlerRef.current = handler;\n  }, [handler]);\n\n  useEffect(() => {\n    const unsubscribe = bus.on(event, (payload) => handlerRef.current(payload));\n    return unsubscribe;\n  }, [bus, event]);\n}\n"
+    }
+  ],
+  "hints": [
+    "Keying `handlers` by event name gives each event its own subscriber list.",
+    "The unsubscribe closure filters out THIS handler, not all handlers -- other subscribers shouldn't be affected.",
+    "Wrap the subscribed handler in a stable function that reads from a ref, so consumers can pass inline closures safely."
+  ],
+  "assertions": {
+    "perFile": {
+      "eventBus.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useRef"],
+          "description": "Import useEffect and useRef"
+        },
+        {
+          "type": "classDeclaration",
+          "name": "EventBus",
+          "description": "Declare the EventBus class"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useEvent",
+          "description": "Define the useEvent hook"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "title": "Slot Pattern",
+  "prompt": "Expose named slots so callers fill specific regions of your component.\n\n**Requirements:**\n1. Import `ReactNode` from `react`.\n2. Define and export `CardProps`:\n   - `header: ReactNode`\n   - `body: ReactNode`\n   - `footer?: ReactNode`\n3. Export a function component `Card({ header, body, footer })` that renders:\n   - `<article>` wrapper\n   - `<header>{header}</header>`\n   - `<div data-slot=\"body\">{body}</div>`\n   - `{footer ? <footer>{footer}</footer> : null}`\n\nEach slot is a `ReactNode` prop rather than children -- callers can pass different content per region.",
+  "difficulty": "beginner",
+  "tags": ["slots", "composition", "layout"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "Card.tsx",
+      "content": "import { ReactNode } from 'react';\n\nexport type CardProps = {\n  header: ReactNode;\n  body: ReactNode;\n  footer?: ReactNode;\n};\n\nexport function Card({ header, body, footer }: CardProps) {\n  return (\n    <article>\n      <header>{header}</header>\n      <div data-slot=\"body\">{body}</div>\n      {footer ? <footer>{footer}</footer> : null}\n    </article>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Each slot is just a `ReactNode` prop -- no magic.",
+    "Optional slots conditionally render. Returning `null` is idiomatic."
+  ],
+  "assertions": {
+    "perFile": {
+      "Card.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["ReactNode"],
+          "description": "Import ReactNode"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Card",
+          "description": "Define Card"
+        },
+        {
+          "type": "jsxElement",
+          "name": "article",
+          "description": "Render an article wrapper"
+        },
+        {
+          "type": "jsxElement",
+          "name": "header",
+          "description": "Render the header slot"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "title": "Provider Pattern: Theme",
+  "prompt": "Expose shared state through a typed provider + hook pair.\n\n**Requirements:**\n1. Import `createContext`, `useContext`, `useMemo`, `useState`, `ReactNode` from `react`.\n2. Define `Theme = 'light' | 'dark'` and `ThemeContextValue = { theme: Theme; toggle: () => void }`.\n3. Export a `ThemeProvider({ children })` that stores `theme` in `useState` and exposes the value through a provider.\n4. Wrap the context value in `useMemo([theme])` to keep its identity stable.\n5. Export `useTheme(): ThemeContextValue` that throws if used outside the provider.",
+  "difficulty": "intermediate",
+  "tags": ["provider", "context", "useMemo"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "theme.tsx",
+      "content": "import { createContext, useContext, useMemo, useState, ReactNode } from 'react';\n\nexport type Theme = 'light' | 'dark';\n\nexport type ThemeContextValue = {\n  theme: Theme;\n  toggle: () => void;\n};\n\nconst ThemeContext = createContext<ThemeContextValue | null>(null);\n\nexport function ThemeProvider({ children }: { children: ReactNode }) {\n  const [theme, setTheme] = useState<Theme>('light');\n  const value = useMemo<ThemeContextValue>(\n    () => ({\n      theme,\n      toggle: () => setTheme((t) => (t === 'light' ? 'dark' : 'light')),\n    }),\n    [theme],\n  );\n  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;\n}\n\nexport function useTheme(): ThemeContextValue {\n  const ctx = useContext(ThemeContext);\n  if (!ctx) throw new Error('useTheme must be used inside <ThemeProvider>');\n  return ctx;\n}\n"
+    }
+  ],
+  "hints": [
+    "Memoise the provider value so consumers don't re-render when unrelated parent state changes.",
+    "Keep the toggle inside the memo -- its identity shouldn't change just because the parent re-rendered."
+  ],
+  "assertions": {
+    "perFile": {
+      "theme.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["createContext", "useContext", "useMemo", "useState", "ReactNode"],
+          "description": "Import the required hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "ThemeProvider",
+          "description": "Define ThemeProvider"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useTheme",
+          "description": "Define useTheme"
+        },
+        {
+          "type": "methodCall",
+          "method": "useMemo",
+          "description": "Memoise the provider value"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

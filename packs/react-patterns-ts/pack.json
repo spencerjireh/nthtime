@@ -1,0 +1,43 @@
+{
+  "name": "React Component Patterns",
+  "slug": "react-patterns-ts",
+  "description": "13 reusable composition patterns: compound components, render props, HOCs, controlled/uncontrolled, state reducers, slots, providers, prop getters, children-as-config, polymorphic components, finite state machines, hook factories, and observers.",
+  "language": "typescript",
+  "framework": "react",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["react", "patterns", "composition", "typescript"],
+  "prerequisites": ["react-custom-hooks-ts"],
+  "sources": [
+    {
+      "name": "patterns.dev",
+      "url": "https://www.patterns.dev/react",
+      "license": "Free online resource (concepts inspired)"
+    },
+    {
+      "name": "TkDodo's blog",
+      "url": "https://tkdodo.eu/blog",
+      "license": "Copyright Dominik Dorfmeister (inspired)"
+    },
+    {
+      "name": "React TypeScript Cheatsheet (Advanced + HOC)",
+      "url": "https://react-typescript-cheatsheet.netlify.app/",
+      "license": "MIT"
+    }
+  ],
+  "challenges": [
+    "challenges/01-compound-tabs.json",
+    "challenges/02-render-props-downloader.json",
+    "challenges/03-hoc-with-auth.json",
+    "challenges/04-controlled-uncontrolled-input.json",
+    "challenges/05-state-reducer-pattern.json",
+    "challenges/06-slot-pattern.json",
+    "challenges/07-provider-pattern.json",
+    "challenges/08-prop-getters.json",
+    "challenges/09-children-as-config.json",
+    "challenges/10-polymorphic-component.json",
+    "challenges/11-fsm-loader.json",
+    "challenges/12-hook-factory.json",
+    "challenges/13-observer-pattern.json"
+  ]
+}
