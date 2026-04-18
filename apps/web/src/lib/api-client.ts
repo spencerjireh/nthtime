@@ -2,8 +2,6 @@ import type { BackfillEntry, StreakSnapshot, UserSettings } from '@nthtime/share
 import type {
   PackListResult,
   PackChallengesResult,
-  SearchResult,
-  AttemptRecord,
   AuthorPackSummary,
   AuthorPackDetail,
   AuthorPackExport,
@@ -18,7 +16,6 @@ import type {
   AuthorTrackDetail,
   CreateTrackInput,
   UpdateTrackInput,
-  ChallengeSummary,
 } from '@nthtime/data-access';
 
 const BASE = '/api/v1';
@@ -89,10 +86,6 @@ export function fetchPackChallenges(slug: string): Promise<PackChallengesResult>
   return request(`/packs/${encodeURIComponent(slug)}`);
 }
 
-export function fetchSearch(query: string): Promise<SearchResult[]> {
-  return request(`/search?q=${encodeURIComponent(query)}`);
-}
-
 // ---------------------------------------------------------------------------
 // Attempts
 // ---------------------------------------------------------------------------
@@ -107,10 +100,6 @@ export function createAttempt(body: {
     method: 'POST',
     body: JSON.stringify(body),
   });
-}
-
-export function fetchAttempts(challengeId: string): Promise<AttemptRecord[]> {
-  return request(`/challenges/${encodeURIComponent(challengeId)}/attempts`);
 }
 
 // ---------------------------------------------------------------------------
@@ -277,15 +266,8 @@ export function reorderTrackPacks(slug: string, packSlugs: string[]): Promise<vo
 }
 
 // ---------------------------------------------------------------------------
-// Home dashboard: featured challenge + streak + backfill
+// Home dashboard: streak + backfill
 // ---------------------------------------------------------------------------
-
-export async function fetchFeaturedToday(): Promise<ChallengeSummary | null> {
-  // 204 from Spring Boot becomes undefined, which we normalize to null so
-  // callers can distinguish "nothing scheduled" from a real challenge.
-  const result = await request<ChallengeSummary | undefined>('/featured/today');
-  return result ?? null;
-}
 
 export function fetchStreak(): Promise<StreakSnapshot> {
   return request('/me/streak');

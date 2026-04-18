@@ -60,3 +60,4 @@ services/api/.qodana/
 
 # Claude Code
 CLAUDE.md
+deadcodereport.md

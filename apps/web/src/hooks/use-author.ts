@@ -28,7 +28,6 @@ import {
   createAuthorTrack,
   updateAuthorTrack,
   deleteAuthorTrack,
-  reorderTrackPacks,
 } from '@/lib/api-client';
 
 type UpdatePackBody = Omit<UpdatePackInput, 'packId'>;
@@ -272,21 +271,4 @@ export function useDeleteTrack() {
     },
   });
   return mutateAsync;
-}
-
-export function useReorderTrackPacks() {
-  const queryClient = useQueryClient();
-  const { mutateAsync } = useMutation({
-    mutationFn: ({ slug, packSlugs }: { slug: string; packSlugs: string[] }) =>
-      reorderTrackPacks(slug, packSlugs),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['author-track'] });
-    },
-  });
-  return useCallback(
-    async (slug: string, packSlugs: string[]) => {
-      await mutateAsync({ slug, packSlugs });
-    },
-    [mutateAsync],
-  );
 }
