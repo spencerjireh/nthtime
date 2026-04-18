@@ -1,0 +1,33 @@
+{
+  "title": "Concat<T, U>",
+  "prompt": "Concatenate two tuples into a single tuple type.\n\n**Requirements:**\n- Declare and export `Concat<T, U>` where both are readonly tuples.\n- Result is the elements of `T` followed by the elements of `U`.\n\n**Example:**\n```ts\ntype A = Concat<[1, 2], [3, 4]>;\n// => [1, 2, 3, 4]\n```",
+  "difficulty": "beginner",
+  "tags": ["types", "tuples", "variadic"],
+  "timeEstimateSeconds": 240,
+  "files": [
+    {
+      "path": "type-utils.ts",
+      "content": "// Type-level assertion helpers for ts-types-drills.\n// Adapted from type-challenges (https://github.com/type-challenges/type-challenges) — MIT.\n\nexport type Expect<T extends true> = T;\n\nexport type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2\n  ? true\n  : false;\n\nexport type NotEqual<X, Y> = Equal<X, Y> extends true ? false : true;\n\nexport type NotAny<T> = [T] extends [never] ? false : 0 extends 1 & T ? false : true;\n"
+    },
+    {
+      "path": "solution.ts",
+      "content": "import type { Expect, Equal } from './type-utils.js';\n\nexport type Concat<T extends readonly unknown[], U extends readonly unknown[]> = [...T, ...U];\n\ntype cases = [\n  Expect<Equal<Concat<[], []>, []>>,\n  Expect<Equal<Concat<[], [1]>, [1]>>,\n  Expect<Equal<Concat<[1, 2], [3, 4]>, [1, 2, 3, 4]>>,\n  Expect<Equal<Concat<['a'], ['b', 'c']>, ['a', 'b', 'c']>>,\n];\n\nexport type { cases };\n"
+    }
+  ],
+  "hints": [
+    "Use variadic tuple types: `[...T, ...U]` concatenates two tuple types at the type level.",
+    "Constrain both parameters to `readonly unknown[]` so arbitrary tuples are accepted."
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"Concat\"))",
+          "description": "Declare a type alias Concat"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

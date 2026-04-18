@@ -1,0 +1,39 @@
+{
+  "title": "Includes<T, U>",
+  "prompt": "Check whether a tuple contains a given type.\n\n**Requirements:**\n- Declare and export `Includes<T, U>` where `T` is a readonly tuple.\n- Return `true` when some element of `T` is exactly equal to `U` (using the `Equal` helper), otherwise `false`.\n\n**Example:**\n```ts\ntype A = Includes<[1, 2, 3], 2>;     // => true\ntype B = Includes<[1, 2, 3], 4>;     // => false\ntype C = Includes<[boolean], true>;  // => false (true is not Equal to boolean)\n```",
+  "difficulty": "intermediate",
+  "tags": ["types", "tuples", "recursive-types"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "type-utils.ts",
+      "content": "// Type-level assertion helpers for ts-types-drills.\n// Adapted from type-challenges (https://github.com/type-challenges/type-challenges) — MIT.\n\nexport type Expect<T extends true> = T;\n\nexport type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2\n  ? true\n  : false;\n\nexport type NotEqual<X, Y> = Equal<X, Y> extends true ? false : true;\n\nexport type NotAny<T> = [T] extends [never] ? false : 0 extends 1 & T ? false : true;\n"
+    },
+    {
+      "path": "solution.ts",
+      "content": "import type { Expect, Equal } from './type-utils.js';\n\nexport type Includes<T extends readonly unknown[], U> = T extends readonly [\n  infer Head,\n  ...infer Rest,\n]\n  ? Equal<Head, U> extends true\n    ? true\n    : Includes<Rest, U>\n  : false;\n\ntype cases = [\n  Expect<Equal<Includes<[1, 2, 3], 2>, true>>,\n  Expect<Equal<Includes<[1, 2, 3], 4>, false>>,\n  Expect<Equal<Includes<['a', 'b', 'c'], 'b'>, true>>,\n  Expect<Equal<Includes<[boolean], true>, false>>,\n  Expect<Equal<Includes<[], 1>, false>>,\n];\n\nexport type { cases };\n"
+    }
+  ],
+  "hints": [
+    "Recurse on the tuple: destructure `[infer Head, ...infer Rest]` and check `Head` against `U`.",
+    "Use the `Equal` helper — plain `Head extends U` is too permissive (e.g., `true extends boolean` would be true).",
+    "Base case: empty tuple returns `false`."
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"Includes\"))",
+          "description": "Declare a type alias Includes"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(infer_type)",
+          "description": "Use `infer` to destructure the tuple into head and rest"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
