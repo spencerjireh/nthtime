@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import type { StreakSnapshot } from '@nthtime/shared';
 import { fetchStreak } from '@/lib/api-client';
 import { readAnonAttemptsLog, type AnonPassLogEntry } from '@/lib/anonymous-attempt-status';
@@ -47,9 +47,4 @@ export function useStreak(serverSnapshot: StreakSnapshot | null): StreakSnapshot
   if (status === 'loading') return serverSnapshot;
   if (status === 'authenticated') return serverQuery.data ?? serverSnapshot;
   return anonSnapshot;
-}
-
-export function useInvalidateStreak(): () => void {
-  const queryClient = useQueryClient();
-  return () => queryClient.invalidateQueries({ queryKey: ['streak'] });
 }

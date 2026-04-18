@@ -2,7 +2,7 @@
 
 **Version 4.0 -- MVP**
 **February 2026**
-**License: AGPL-3.0 -- Open Source, Free to Use**
+**License: Apache-2.0 -- Open Source, Free to Use**
 
 ---
 
@@ -346,7 +346,7 @@ Vitest for unit and integration tests. Playwright for E2E. Tests must pass in CI
 - Vitest + Playwright test suite (blocking CI gate)
 - Nx monorepo with pnpm
 - WASM binaries bundled in Next.js public/ directory
-- AGPL-3.0
+- Apache-2.0
 
 ### Out of Scope (v2+)
 

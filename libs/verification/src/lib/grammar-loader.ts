@@ -19,19 +19,11 @@ function isBrowser(): boolean {
   return typeof window !== 'undefined' && typeof window.document !== 'undefined';
 }
 
-async function findNodeModulesFor(pkg: string): Promise<string> {
-  const { existsSync } = await import('node:fs');
-  const { resolve, dirname } = await import('node:path');
-
-  let dir = process.cwd();
-  while (dir !== dirname(dir)) {
-    const candidate = resolve(dir, 'node_modules');
-    if (existsSync(resolve(candidate, pkg))) {
-      return candidate;
-    }
-    dir = dirname(dir);
-  }
-  return resolve(process.cwd(), 'node_modules');
+async function resolvePackageDir(pkg: string): Promise<string> {
+  const { createRequire } = await import('node:module');
+  const { dirname } = await import('node:path');
+  const requireFn = createRequire(import.meta.url);
+  return dirname(requireFn.resolve(`${pkg}/package.json`));
 }
 
 async function getWasmPath(filename: string, basePath?: string): Promise<string | Uint8Array> {
@@ -39,7 +31,6 @@ async function getWasmPath(filename: string, basePath?: string): Promise<string 
     return basePath ? `${basePath}/${filename}` : `/tree-sitter/${filename}`;
   }
 
-  // Node.js: read from node_modules or custom path
   const { readFile } = await import('node:fs/promises');
   const { resolve } = await import('node:path');
 
@@ -47,16 +38,13 @@ async function getWasmPath(filename: string, basePath?: string): Promise<string 
     return new Uint8Array(await readFile(resolve(basePath, filename)));
   }
 
-  // Try tree-sitter-wasms package first, then web-tree-sitter for core runtime
   if (filename === 'tree-sitter.wasm') {
-    const nm = await findNodeModulesFor('web-tree-sitter');
-    const wasmPath = resolve(nm, 'web-tree-sitter/tree-sitter.wasm');
-    return new Uint8Array(await readFile(wasmPath));
+    const pkgDir = await resolvePackageDir('web-tree-sitter');
+    return new Uint8Array(await readFile(resolve(pkgDir, 'tree-sitter.wasm')));
   }
 
-  const nm = await findNodeModulesFor('tree-sitter-wasms');
-  const wasmPath = resolve(nm, `tree-sitter-wasms/out/${filename}`);
-  return new Uint8Array(await readFile(wasmPath));
+  const pkgDir = await resolvePackageDir('tree-sitter-wasms');
+  return new Uint8Array(await readFile(resolve(pkgDir, 'out', filename)));
 }
 
 async function ensureInit(basePath?: string): Promise<void> {

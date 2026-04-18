@@ -83,6 +83,10 @@ jobs:
       - name: Lint (affected)
         run: npx nx affected --target=lint
 
+      - name: Lint dead code (knip, warn-only)
+        run: pnpm lint:dead
+        continue-on-error: true
+
       - name: Typecheck (all)
         run: npx nx run-many --target=typecheck
 
