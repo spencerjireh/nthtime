@@ -16,5 +16,10 @@
   "dependencies": {
     "@nthtime/shared": "workspace:*",
     "web-tree-sitter": "^0.24.7"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "express": "^5.2.1",
+    "tree-sitter-wasms": "^0.1.13"
   }
 }
