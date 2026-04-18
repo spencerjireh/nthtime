@@ -1,0 +1,46 @@
+{
+  "title": "useLocalStorage<T>",
+  "prompt": "Persist a piece of state to `localStorage`.\n\n**Requirements:**\n1. Import `useState` and `useEffect` from `react`.\n2. Export a generic hook `useLocalStorage<T>(key: string, initial: T): readonly [T, (next: T) => void]`.\n3. On first render, seed state from `localStorage.getItem(key)` (parsed as JSON) or fall back to `initial`.\n4. Use `useEffect([key, value])` to write `JSON.stringify(value)` back whenever the value changes.\n5. Wrap `JSON.parse` in try/catch so corrupt data falls back to `initial`.",
+  "difficulty": "intermediate",
+  "tags": ["custom-hooks", "localStorage", "generics"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "useLocalStorage.ts",
+      "content": "import { useEffect, useState } from 'react';\n\nexport function useLocalStorage<T>(\n  key: string,\n  initial: T,\n): readonly [T, (next: T) => void] {\n  const [value, setValue] = useState<T>(() => {\n    if (typeof window === 'undefined') return initial;\n    const raw = window.localStorage.getItem(key);\n    if (raw === null) return initial;\n    try {\n      return JSON.parse(raw) as T;\n    } catch {\n      return initial;\n    }\n  });\n\n  useEffect(() => {\n    try {\n      window.localStorage.setItem(key, JSON.stringify(value));\n    } catch {\n      // ignore quota errors\n    }\n  }, [key, value]);\n\n  return [value, setValue] as const;\n}\n"
+    }
+  ],
+  "hints": [
+    "Use the lazy `useState(() => ...)` initialiser so the read only happens once.",
+    "Guard against `window` being undefined so the hook doesn't explode during SSR.",
+    "Catching JSON parse/stringify errors keeps the hook resilient to corrupt entries and quota issues."
+  ],
+  "assertions": {
+    "perFile": {
+      "useLocalStorage.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useLocalStorage",
+          "description": "Define useLocalStorage"
+        },
+        {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Initialise state lazily from localStorage"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Persist on change"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

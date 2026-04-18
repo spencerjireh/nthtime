@@ -1,0 +1,45 @@
+{
+  "title": "useDebounce<T>",
+  "prompt": "Return a value that only updates after the input stops changing for a while.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`.\n2. Export `useDebounce<T>(value: T, delayMs: number): T`.\n3. Internally store a state `debounced` (seeded with `value`).\n4. On every render, schedule `setDebounced(value)` with `setTimeout(..., delayMs)`; clear the timeout on cleanup.\n\nConsumers call `useDebounce(search, 300)` to stabilise an input before hitting the network.",
+  "difficulty": "intermediate",
+  "tags": ["custom-hooks", "debounce", "useEffect"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "useDebounce.ts",
+      "content": "import { useEffect, useState } from 'react';\n\nexport function useDebounce<T>(value: T, delayMs: number): T {\n  const [debounced, setDebounced] = useState(value);\n\n  useEffect(() => {\n    const id = setTimeout(() => setDebounced(value), delayMs);\n    return () => clearTimeout(id);\n  }, [value, delayMs]);\n\n  return debounced;\n}\n"
+    }
+  ],
+  "hints": [
+    "Always clear the pending timer in the cleanup function -- otherwise stale updates overwrite newer ones.",
+    "Dependencies `[value, delayMs]` cover both fast typing and dynamic delays."
+  ],
+  "assertions": {
+    "perFile": {
+      "useDebounce.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useDebounce",
+          "description": "Define useDebounce"
+        },
+        {
+          "type": "methodCall",
+          "method": "setTimeout",
+          "description": "Schedule the deferred update"
+        },
+        {
+          "type": "methodCall",
+          "method": "clearTimeout",
+          "description": "Clear the pending timeout on cleanup"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "title": "useToggle",
+  "prompt": "Build a typed `useToggle` hook that encapsulates a boolean flag.\n\n**Requirements:**\n1. Import `useCallback` and `useState` from `react`.\n2. Export `useToggle(initial = false): readonly [boolean, () => void, (next: boolean) => void]` returning:\n   - the current value\n   - a `toggle` function (flips the value)\n   - a `set` function (forces the value)\n3. Stabilise both callbacks with `useCallback` so consumers can safely pass them to memoised children.",
+  "difficulty": "beginner",
+  "tags": ["custom-hooks", "useState", "useCallback"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "useToggle.ts",
+      "content": "import { useCallback, useState } from 'react';\n\nexport function useToggle(\n  initial = false,\n): readonly [boolean, () => void, (next: boolean) => void] {\n  const [value, setValue] = useState(initial);\n  const toggle = useCallback(() => setValue((v) => !v), []);\n  const set = useCallback((next: boolean) => setValue(next), []);\n  return [value, toggle, set] as const;\n}\n"
+    }
+  ],
+  "hints": [
+    "Prefer the functional form inside the callback: `setValue((v) => !v)` avoids stale closures.",
+    "`as const` on the returned tuple preserves the exact tuple type for destructuring."
+  ],
+  "assertions": {
+    "perFile": {
+      "useToggle.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useCallback", "useState"],
+          "description": "Import useState and useCallback"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useToggle",
+          "description": "Define the useToggle hook"
+        },
+        {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Use useState to track the flag"
+        },
+        {
+          "type": "methodCall",
+          "method": "useCallback",
+          "description": "Stabilise the returned callbacks"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

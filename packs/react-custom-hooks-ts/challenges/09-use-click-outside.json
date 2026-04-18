@@ -1,0 +1,47 @@
+{
+  "title": "useClickOutside",
+  "prompt": "Fire a callback when the user clicks anywhere outside a referenced element.\n\n**Requirements:**\n1. Import `useEffect`, `useRef`, and `RefObject` from `react`.\n2. Export a generic hook:\n   ```ts\n   useClickOutside<T extends HTMLElement>(\n     ref: RefObject<T | null>,\n     handler: (e: MouseEvent) => void,\n   ): void\n   ```\n3. Subscribe to `mousedown` on `document` inside `useEffect`.\n4. If the click's target is outside `ref.current`, call the handler.\n5. Clean up the listener on unmount or when deps change.",
+  "difficulty": "advanced",
+  "tags": ["custom-hooks", "refs", "generics"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "useClickOutside.ts",
+      "content": "import { useEffect, RefObject } from 'react';\n\nexport function useClickOutside<T extends HTMLElement>(\n  ref: RefObject<T | null>,\n  handler: (e: MouseEvent) => void,\n): void {\n  useEffect(() => {\n    const onMouseDown = (e: MouseEvent) => {\n      if (!ref.current) return;\n      if (ref.current.contains(e.target as Node)) return;\n      handler(e);\n    };\n    document.addEventListener('mousedown', onMouseDown);\n    return () => document.removeEventListener('mousedown', onMouseDown);\n  }, [ref, handler]);\n}\n"
+    }
+  ],
+  "hints": [
+    "`Node.contains(other)` is the idiomatic inside-check.",
+    "Using `mousedown` (not `click`) lets the hook fire before focus moves."
+  ],
+  "assertions": {
+    "perFile": {
+      "useClickOutside.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "RefObject"],
+          "description": "Import useEffect and RefObject"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useClickOutside",
+          "description": "Define useClickOutside"
+        },
+        {
+          "type": "methodCall",
+          "method": "addEventListener",
+          "object": "document",
+          "description": "Subscribe to mousedown on document"
+        },
+        {
+          "type": "methodCall",
+          "method": "removeEventListener",
+          "object": "document",
+          "description": "Clean up the listener"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
