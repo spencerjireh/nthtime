@@ -2,8 +2,9 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     ".": {
-      "entry": ["tools/*.ts"],
-      "project": ["tools/**/*.ts"]
+      "entry": ["tools/*.ts", "packs/**/*.test.{ts,tsx}"],
+      "project": ["tools/**/*.ts", "packs/**/*.test.{ts,tsx}"],
+      "ignoreDependencies": ["express", "@types/express"]
     },
     "apps/web": {
       "entry": [
