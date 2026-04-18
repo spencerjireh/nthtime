@@ -3,6 +3,7 @@ plugins {
     id("org.springframework.boot") version "3.5.11"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.diffplug.spotless") version "8.2.1"
+    id("ca.cutterslade.analyze") version "2.0.0"
 }
 
 group = "com.spencerjireh"
@@ -63,4 +64,10 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<ca.cutterslade.gradle.analyze.AnalyzeDependenciesTask>().configureEach {
+    warnUsedUndeclared = true
+    warnUnusedDeclared = true
+    warnSuperfluous = true
 }
