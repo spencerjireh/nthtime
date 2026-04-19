@@ -1,0 +1,58 @@
+{
+  "title": "Fix a Flaky Async Test",
+  "prompt": "A common antipattern is sprinkling `setTimeout`/`sleep` into tests to wait for async UI. Replace it with deterministic fake timers + `act`.\n\n**Requirements:**\n1. In `Banner.test.tsx`, import `render`, `screen`, `act` from `@testing-library/react` and `Banner` from `./Banner`.\n2. Inside `it('shows banner after delay', async () => { ... })`:\n   - `vi.useFakeTimers();`\n   - `render(<Banner ms={500} />);`\n   - Assert intermediate: `expect(screen.getByText('waiting')).toBeDefined();`.\n   - Advance the timer past Banner's setTimeout inside `act`: `await act(async () => { await vi.advanceTimersByTimeAsync(500); });`.\n   - Assert final: `expect(screen.getByText('ready')).toBeDefined();`.\n   - Restore: `vi.useRealTimers();`.",
+  "difficulty": "advanced",
+  "tags": ["RTL", "fake timers", "waitFor"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "Banner.tsx",
+      "content": "import { useEffect, useState } from 'react';\n\nexport function Banner({ ms }: { ms: number }) {\n  const [ready, setReady] = useState(false);\n  useEffect(() => {\n    const id = setTimeout(() => setReady(true), ms);\n    return () => clearTimeout(id);\n  }, [ms]);\n  return ready ? <p>ready</p> : <p>waiting</p>;\n}\n"
+    },
+    {
+      "path": "Banner.test.tsx",
+      "content": "import { render, screen, act } from '@testing-library/react';\nimport { Banner } from './Banner';\n\ndescribe('Banner', () => {\n  it('shows banner after delay', async () => {\n    vi.useFakeTimers();\n    render(<Banner ms={500} />);\n    expect(screen.getByText('waiting')).toBeDefined();\n    await act(async () => {\n      await vi.advanceTimersByTimeAsync(500);\n    });\n    expect(screen.getByText('ready')).toBeDefined();\n    vi.useRealTimers();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "Real `sleep`s in tests are flaky on slow CI -- prefer fake timers + `advanceTimersByTimeAsync` to control time deterministically.",
+    "`vi.advanceTimersByTimeAsync` flushes both timers and pending microtasks, so React state updates land before your next assertion.",
+    "Always restore real timers at the end of a test so unrelated suites aren't affected."
+  ],
+  "assertions": {
+    "perFile": {
+      "Banner.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/react",
+          "specifiers": ["render", "screen", "act"],
+          "description": "Import render, screen, act"
+        },
+        {
+          "type": "methodCall",
+          "object": "vi",
+          "method": "useFakeTimers",
+          "description": "Switch to fake timers"
+        },
+        {
+          "type": "methodCall",
+          "method": "act",
+          "description": "Wrap timer advance in act"
+        },
+        {
+          "type": "methodCall",
+          "object": "vi",
+          "method": "advanceTimersByTimeAsync",
+          "description": "Advance timers by exact delay"
+        },
+        {
+          "type": "methodCall",
+          "object": "vi",
+          "method": "useRealTimers",
+          "description": "Restore real timers"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

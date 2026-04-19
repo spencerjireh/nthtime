@@ -1,0 +1,59 @@
+{
+  "title": "Fill, Submit, Assert",
+  "prompt": "Test a form by typing into the input, clicking submit, and asserting the `onSubmit` callback received the right value.\n\n**Requirements:**\n1. In `LoginForm.test.tsx`, import `render`, `screen` from `@testing-library/react`, `userEvent` (default) from `@testing-library/user-event`, and `LoginForm` from `./LoginForm`.\n2. Inside `it('submits typed value', async () => { ... })`:\n   - `const onSubmit = vi.fn();`\n   - `const user = userEvent.setup();`\n   - `render(<LoginForm onSubmit={onSubmit} />);`\n   - `await user.type(screen.getByLabelText('email'), 'a@b.co');`\n   - `await user.click(screen.getByRole('button', { name: 'submit' }));`\n   - Assert `expect(onSubmit).toHaveBeenCalledWith('a@b.co');`.",
+  "difficulty": "beginner",
+  "tags": ["RTL", "user-event", "forms"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "LoginForm.tsx",
+      "content": "import { FormEvent, useState } from 'react';\n\nexport function LoginForm({ onSubmit }: { onSubmit: (email: string) => void }) {\n  const [email, setEmail] = useState('');\n  const handle = (e: FormEvent<HTMLFormElement>) => {\n    e.preventDefault();\n    onSubmit(email);\n  };\n  return (\n    <form onSubmit={handle}>\n      <label htmlFor=\"email\">email</label>\n      <input id=\"email\" value={email} onChange={(e) => setEmail(e.target.value)} />\n      <button type=\"submit\">submit</button>\n    </form>\n  );\n}\n"
+    },
+    {
+      "path": "LoginForm.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport { LoginForm } from './LoginForm';\n\ndescribe('LoginForm', () => {\n  it('submits typed value', async () => {\n    const onSubmit = vi.fn();\n    const user = userEvent.setup();\n    render(<LoginForm onSubmit={onSubmit} />);\n    await user.type(screen.getByLabelText('email'), 'a@b.co');\n    await user.click(screen.getByRole('button', { name: 'submit' }));\n    expect(onSubmit).toHaveBeenCalledWith('a@b.co');\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "`getByLabelText` is the accessible way to find an input -- it follows the `<label htmlFor>` link.",
+    "`vi.fn()` is vitest's stub. After actions, assert with `toHaveBeenCalledWith(...)`.",
+    "`user.type` simulates real keystrokes and fires `change` for each character."
+  ],
+  "assertions": {
+    "perFile": {
+      "LoginForm.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/react",
+          "specifiers": ["render", "screen"],
+          "description": "Import render, screen"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/user-event",
+          "specifiers": ["userEvent"],
+          "description": "Import userEvent default"
+        },
+        {
+          "type": "methodCall",
+          "object": "vi",
+          "method": "fn",
+          "description": "Create vi.fn() spy"
+        },
+        {
+          "type": "methodCall",
+          "object": "user",
+          "method": "type",
+          "description": "Call user.type(...)"
+        },
+        {
+          "type": "methodCall",
+          "object": "user",
+          "method": "click",
+          "description": "Call user.click(...)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

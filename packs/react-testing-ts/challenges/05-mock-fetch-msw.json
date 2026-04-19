@@ -1,0 +1,64 @@
+{
+  "title": "Mock fetch with MSW",
+  "prompt": "Replace ad-hoc `vi.fn()` mocks with a real MSW (Mock Service Worker) handler. MSW intercepts at the network layer so your component sees a normal `fetch` response.\n\n**Requirements:**\n1. In `Todos.test.tsx`, import `render`, `screen` from `@testing-library/react`, `setupServer` from `msw/node`, `http` and `HttpResponse` from `msw`, and `Todos` from `./Todos`.\n2. Create a server: `const server = setupServer(http.get('/api/todos', () => HttpResponse.json([{ id: 1, title: 'milk' }])));`\n3. Wire lifecycle: `beforeAll(() => server.listen())`, `afterEach(() => server.resetHandlers())`, `afterAll(() => server.close())`.\n4. Inside `it('renders todos from MSW handler', ...)`, render `<Todos />` and `expect(await screen.findByText('milk')).toBeDefined()`.",
+  "difficulty": "intermediate",
+  "tags": ["msw", "fetch", "RTL"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "Todos.tsx",
+      "content": "import { useEffect, useState } from 'react';\n\ntype Todo = { id: number; title: string };\n\nexport function Todos() {\n  const [todos, setTodos] = useState<Todo[]>([]);\n  useEffect(() => {\n    fetch('/api/todos')\n      .then((r) => r.json())\n      .then((list: Todo[]) => setTodos(list));\n  }, []);\n  return (\n    <ul>\n      {todos.map((t) => (\n        <li key={t.id}>{t.title}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    },
+    {
+      "path": "Todos.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport { setupServer } from 'msw/node';\nimport { http, HttpResponse } from 'msw';\nimport { Todos } from './Todos';\n\nconst server = setupServer(\n  http.get('/api/todos', () => HttpResponse.json([{ id: 1, title: 'milk' }]))\n);\n\nbeforeAll(() => server.listen());\nafterEach(() => server.resetHandlers());\nafterAll(() => server.close());\n\ndescribe('Todos', () => {\n  it('renders todos from MSW handler', async () => {\n    render(<Todos />);\n    expect(await screen.findByText('milk')).toBeDefined();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "MSW v2 uses `http.get`/`http.post` and the `HttpResponse` helper -- v1 syntax (`rest.get`, `res(ctx.json(...))`) won't work.",
+    "`setupServer` is the Node-side equivalent of `setupWorker` -- intercepts `fetch` before it leaves the process.",
+    "Always reset handlers between tests to keep them isolated."
+  ],
+  "assertions": {
+    "perFile": {
+      "Todos.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "msw/node",
+          "specifiers": ["setupServer"],
+          "description": "Import setupServer from msw/node"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "msw",
+          "specifiers": ["http", "HttpResponse"],
+          "description": "Import http and HttpResponse"
+        },
+        {
+          "type": "methodCall",
+          "method": "setupServer",
+          "description": "Call setupServer(...)"
+        },
+        {
+          "type": "methodCall",
+          "object": "http",
+          "method": "get",
+          "description": "Define http.get handler"
+        },
+        {
+          "type": "methodCall",
+          "object": "server",
+          "method": "listen",
+          "description": "Start server in beforeAll"
+        },
+        {
+          "type": "methodCall",
+          "object": "server",
+          "method": "close",
+          "description": "Close server in afterAll"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

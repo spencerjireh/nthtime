@@ -1,0 +1,47 @@
+{
+  "title": "Replace getByTestId with Accessible Queries",
+  "prompt": "Tests that hunt by `data-testid` brittle and disconnect from how users interact with the page. Rewrite a test using `getByRole`, `getByLabelText`, and `getByText`.\n\n**Requirements:**\n1. In `Card.test.tsx`, import `render`, `screen` from `@testing-library/react`, `userEvent` (default), and `Card` from `./Card`.\n2. Inside `it('uses accessible queries', async () => { ... })`:\n   - `const user = userEvent.setup();`\n   - `render(<Card />);`\n   - Assert the heading: `expect(screen.getByRole('heading', { name: 'Profile' })).toBeDefined();`.\n   - Type into the bio: `await user.type(screen.getByLabelText('bio'), 'hi');`.\n   - Submit via accessible button: `await user.click(screen.getByRole('button', { name: 'save' }));`.\n   - Assert toast: `expect(screen.getByText('saved')).toBeDefined();`.",
+  "difficulty": "beginner",
+  "tags": ["RTL", "a11y", "queries"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "Card.tsx",
+      "content": "import { useState } from 'react';\n\nexport function Card() {\n  const [bio, setBio] = useState('');\n  const [saved, setSaved] = useState(false);\n  return (\n    <section>\n      <h2>Profile</h2>\n      <label htmlFor=\"bio\">bio</label>\n      <input id=\"bio\" value={bio} onChange={(e) => setBio(e.target.value)} />\n      <button onClick={() => setSaved(true)}>save</button>\n      {saved ? <p>saved</p> : null}\n    </section>\n  );\n}\n"
+    },
+    {
+      "path": "Card.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport { Card } from './Card';\n\ndescribe('Card', () => {\n  it('uses accessible queries', async () => {\n    const user = userEvent.setup();\n    render(<Card />);\n    expect(screen.getByRole('heading', { name: 'Profile' })).toBeDefined();\n    await user.type(screen.getByLabelText('bio'), 'hi');\n    await user.click(screen.getByRole('button', { name: 'save' }));\n    expect(screen.getByText('saved')).toBeDefined();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "RTL's recommended priority: `getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByTestId` (last resort).",
+    "`getByRole('heading', { name })` lets you target an `<h2>` by its visible text without coupling to the tag.",
+    "Inputs with `<label htmlFor>` show up via `getByLabelText` -- this also exercises the same a11y wiring real users rely on."
+  ],
+  "assertions": {
+    "perFile": {
+      "Card.test.tsx": [
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "getByRole",
+          "description": "Use screen.getByRole"
+        },
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "getByLabelText",
+          "description": "Use screen.getByLabelText"
+        },
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "getByText",
+          "description": "Use screen.getByText for the toast"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
