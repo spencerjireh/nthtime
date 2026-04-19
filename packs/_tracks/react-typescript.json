@@ -1,14 +1,17 @@
 {
   "slug": "react-typescript",
   "title": "React with TypeScript",
-  "description": "Type-safe React from hooks through composition -- typing, advanced hooks, custom hooks, and component patterns.",
-  "longDescription": "## React with TypeScript\n\nA curriculum for building type-safe React applications. Starts from the fundamentals pack, drills down into how to type React components and hooks, then moves through advanced hooks, custom hook authoring, and the composition patterns that make React libraries reusable.\n\n### Topics covered\n\n- Typing components, children, events, refs, generics, and polymorphic `as` props\n- `useReducer`, `useLayoutEffect`, `useTransition`, `useDeferredValue`, `useId`, `useImperativeHandle`, `useSyncExternalStore`\n- Custom hooks: toggles, local storage, debounce, fetch, click-outside, controllable state\n- Patterns: compound components, render props, HOCs, slot, provider, prop getters, state machines, hook factories, pub/sub",
+  "description": "Type-safe React from hooks through architecture -- typing, advanced hooks, custom hooks, patterns, forms, data fetching, and performance.",
+  "longDescription": "## React with TypeScript\n\nA curriculum for building type-safe React applications. Starts from the fundamentals pack, drills down into how to type React components and hooks, then moves through advanced hooks, custom hook authoring, the composition patterns that make React libraries reusable, then on to forms, data fetching, and performance.\n\n### Topics covered\n\n- Typing components, children, events, refs, generics, and polymorphic `as` props\n- `useReducer`, `useLayoutEffect`, `useTransition`, `useDeferredValue`, `useId`, `useImperativeHandle`, `useSyncExternalStore`\n- Custom hooks: toggles, local storage, debounce, fetch, click-outside, controllable state\n- Patterns: compound components, render props, HOCs, slot, provider, prop getters, state machines, hook factories, pub/sub\n- Forms: vanilla controlled inputs, useReducer-driven forms, async validation, react-hook-form + Zod, multi-step wizards, file upload\n- Data: native fetch with race-condition fixes and AbortController, Zod-validated responses, TanStack Query for queries, mutations, optimistic updates, dependent and infinite queries, prefetch, and React 19 use() + Suspense\n- Performance: Profiler, React.memo, useMemo, useCallback, split context, composition over memo, stable keys, react-window virtualization, React.lazy, startTransition",
   "tags": ["react", "typescript", "frontend"],
   "packSlugs": [
     "react-fundamentals",
     "react-ts-typing",
     "react-hooks-advanced-ts",
     "react-custom-hooks-ts",
-    "react-patterns-ts"
+    "react-patterns-ts",
+    "react-forms-ts",
+    "react-data-ts",
+    "react-performance-ts"
   ]
 }
