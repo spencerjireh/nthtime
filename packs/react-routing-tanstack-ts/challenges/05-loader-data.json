@@ -1,0 +1,46 @@
+{
+  "title": "Route Loader + useLoaderData",
+  "prompt": "Move data fetching into the route's `loader` so the component renders with data already in hand.\n\n**Requirements:**\n1. In `router.tsx`, import the usual TanStack Router primitives + `useLoaderData`.\n2. Define and export `async function fetchTodo(id: number): Promise<{ id: number; title: string }> { const r = await fetch('/api/todos/' + id); return r.json(); }`.\n3. Define `todoRoute = createRoute({ getParentRoute: () => rootRoute, path: '/todos/$id', parseParams: (p) => ({ id: Number(p.id) }), loader: ({ params }) => fetchTodo(params.id), component: TodoView })`.\n4. Inside `TodoView`, read the loader's value with `const todo = useLoaderData({ from: todoRoute.id });` and render `<p>{todo.title}</p>`.\n5. Export `App` + `makeRouter`.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-router", "loader", "useLoaderData"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  useLoaderData,\n  createMemoryHistory,\n} from '@tanstack/react-router';\n\nexport const rootRoute = createRootRoute({ component: () => <Outlet /> });\n\nexport async function fetchTodo(id: number): Promise<{ id: number; title: string }> {\n  const r = await fetch('/api/todos/' + id);\n  return r.json();\n}\n\nexport function TodoView() {\n  const todo = useLoaderData({ from: todoRoute.id });\n  return <p>{todo.title}</p>;\n}\n\nexport const todoRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/todos/$id',\n  parseParams: (p: { id: string }) => ({ id: Number(p.id) }),\n  loader: ({ params }) => fetchTodo(params.id),\n  component: TodoView,\n});\n\nconst routeTree = rootRoute.addChildren([todoRoute]);\n\nexport function makeRouter(initialEntries: string[] = ['/todos/1']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`loader` runs before the route mounts -- the component never sees an undefined state.",
+    "`useLoaderData({ from: route.id })` is typed against the loader's return.",
+    "Loader receives `{ params, search, abortController }` -- consume what you need destructured."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": ["createRootRoute", "createRoute", "createRouter", "Outlet", "RouterProvider", "useLoaderData", "createMemoryHistory"],
+          "description": "Import TanStack Router primitives + useLoaderData"
+        },
+        {
+          "type": "methodCall",
+          "method": "useLoaderData",
+          "description": "Read loader data via useLoaderData"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "fetchTodo",
+          "description": "Export fetchTodo"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TodoView",
+          "description": "Export TodoView"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

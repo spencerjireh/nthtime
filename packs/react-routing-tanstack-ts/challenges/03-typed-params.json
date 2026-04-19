@@ -1,0 +1,46 @@
+{
+  "title": "Typed Path Params",
+  "prompt": "Add a `/users/$id` route that parses the `$id` param as a number, then read it via `useParams`.\n\n**Requirements:**\n1. In `router.tsx`, import the usual TanStack Router primitives + `useParams`.\n2. Define:\n   - `rootRoute = createRootRoute({ component: () => <Outlet /> })`\n   - `userRoute = createRoute({ getParentRoute: () => rootRoute, path: '/users/$id', parseParams: (p) => ({ id: Number(p.id) }), component: UserView })`.\n3. Define and export `function UserView()` that calls `const { id } = useParams({ from: userRoute.id })` and renders `<p>user: {id}</p>`. The hook returns `{ id: number }` (not string) thanks to `parseParams`.\n4. Export `App` and `makeRouter(initialEntries)` like the previous challenges.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-router", "params", "parseParams"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  useParams,\n  createMemoryHistory,\n} from '@tanstack/react-router';\n\nexport const rootRoute = createRootRoute({ component: () => <Outlet /> });\n\nexport function UserView() {\n  const { id } = useParams({ from: userRoute.id });\n  return <p>user: {id}</p>;\n}\n\nexport const userRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/users/$id',\n  parseParams: (p: { id: string }) => ({ id: Number(p.id) }),\n  component: UserView,\n});\n\nconst routeTree = rootRoute.addChildren([userRoute]);\n\nexport function makeRouter(initialEntries: string[] = ['/users/42']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`parseParams` runs once when the URL matches and stores the typed result in `params`.",
+    "`useParams({ from: route.id })` is the typed reader -- it knows the schema for that route.",
+    "`$id` in the path is TanStack's path-param syntax (where React Router would write `:id`)."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": ["createRootRoute", "createRoute", "createRouter", "Outlet", "RouterProvider", "useParams", "createMemoryHistory"],
+          "description": "Import TanStack Router primitives + useParams"
+        },
+        {
+          "type": "methodCall",
+          "method": "useParams",
+          "description": "Read params via useParams"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "UserView",
+          "description": "Export UserView"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "App",
+          "description": "Export App"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

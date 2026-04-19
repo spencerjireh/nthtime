@@ -1,0 +1,48 @@
+{
+  "title": "Search Params Validated by Zod",
+  "prompt": "Use a Zod schema to validate `?page=&q=` search params; consume them via `useSearch` with full type inference.\n\n**Requirements:**\n1. In `router.tsx`, import TanStack Router primitives + `useSearch`, plus `z` from `zod`.\n2. Define `const SearchSchema = z.object({ page: z.number().int().min(1).default(1), q: z.string().default('') });`.\n3. Define `searchRoute = createRoute({ getParentRoute: () => rootRoute, path: '/search', validateSearch: (raw) => SearchSchema.parse(raw), component: SearchView })`.\n4. Inside `SearchView`, call `const { page, q } = useSearch({ from: searchRoute.id })` and render `<p>page: {page}</p><p>q: {q}</p>`.\n5. Export `App` + `makeRouter`.",
+  "difficulty": "advanced",
+  "tags": ["tanstack-router", "search", "zod"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  useSearch,\n  createMemoryHistory,\n} from '@tanstack/react-router';\nimport { z } from 'zod';\n\nexport const rootRoute = createRootRoute({ component: () => <Outlet /> });\n\nconst SearchSchema = z.object({\n  page: z.number().int().min(1).default(1),\n  q: z.string().default(''),\n});\n\nexport function SearchView() {\n  const { page, q } = useSearch({ from: searchRoute.id });\n  return (\n    <>\n      <p>page: {page}</p>\n      <p>q: {q}</p>\n    </>\n  );\n}\n\nexport const searchRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/search',\n  validateSearch: (raw: Record<string, unknown>) => SearchSchema.parse(raw),\n  component: SearchView,\n});\n\nconst routeTree = rootRoute.addChildren([searchRoute]);\n\nexport function makeRouter(initialEntries: string[] = ['/search']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`validateSearch` is the parser/coercer -- raw query strings come in, typed values go out.",
+    "Pair `validateSearch` with `useSearch({ from: route.id })` so the consumer is fully typed.",
+    "Defaults inside the schema fill in values when the URL omits them."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": ["createRootRoute", "createRoute", "createRouter", "Outlet", "RouterProvider", "useSearch", "createMemoryHistory"],
+          "description": "Import TanStack Router primitives + useSearch"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "zod",
+          "specifiers": ["z"],
+          "description": "Import z from zod"
+        },
+        {
+          "type": "methodCall",
+          "method": "useSearch",
+          "description": "Read search via useSearch"
+        },
+        {
+          "type": "methodCall",
+          "object": "z",
+          "method": "object",
+          "description": "Define schema with z.object"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "title": "TanStack Router: Two Routes",
+  "prompt": "Create a router with a root layout, a home route, and an about route. Use TanStack Router's code-based API.\n\n**Requirements:**\n1. In `router.tsx`, import `createRootRoute`, `createRoute`, `createRouter`, `Outlet`, `RouterProvider`, `Link`, `createMemoryHistory` from `@tanstack/react-router`.\n2. Define and export `rootRoute` via `createRootRoute({ component: () => <Outlet /> })`.\n3. Define and export `indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: () => <p>home</p> })`.\n4. Define and export `aboutRoute = createRoute({ getParentRoute: () => rootRoute, path: '/about', component: () => <p>about</p> })`.\n5. Build the route tree and create the router:\n   - `const routeTree = rootRoute.addChildren([indexRoute, aboutRoute]);`\n   - `export function makeRouter(initialEntries: string[] = ['/']) { return createRouter({ routeTree, history: createMemoryHistory({ initialEntries }) }); }`\n6. Export a function component `App({ initialEntries }: { initialEntries?: string[] })` that renders `<RouterProvider router={makeRouter(initialEntries)} />`.",
+  "difficulty": "beginner",
+  "tags": ["tanstack-router", "createRouter", "routes"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  createMemoryHistory,\n} from '@tanstack/react-router';\n\nexport const rootRoute = createRootRoute({\n  component: () => <Outlet />,\n});\n\nexport const indexRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/',\n  component: () => <p>home</p>,\n});\n\nexport const aboutRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/about',\n  component: () => <p>about</p>,\n});\n\nconst routeTree = rootRoute.addChildren([indexRoute, aboutRoute]);\n\nexport function makeRouter(initialEntries: string[] = ['/']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "TanStack Router's code-based API builds a tree from `createRoute` siblings -- each child sets `getParentRoute` to the parent.",
+    "The root route's `component` must render `<Outlet />` so child routes have somewhere to mount.",
+    "`createMemoryHistory` is the test-friendly history -- you control the initial path without touching `window.location`."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": [
+            "createRootRoute",
+            "createRoute",
+            "createRouter",
+            "Outlet",
+            "RouterProvider",
+            "createMemoryHistory"
+          ],
+          "description": "Import TanStack Router primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "createRootRoute",
+          "description": "Define rootRoute via createRootRoute"
+        },
+        {
+          "type": "methodCall",
+          "method": "createRoute",
+          "description": "Define child routes via createRoute"
+        },
+        {
+          "type": "methodCall",
+          "method": "createRouter",
+          "description": "Build router via createRouter"
+        },
+        {
+          "type": "methodCall",
+          "method": "createMemoryHistory",
+          "description": "Use memory history"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "App",
+          "description": "Export App component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Per-Route errorComponent",
+  "prompt": "Catch loader errors locally with `errorComponent` so the rest of the app keeps working.\n\n**Requirements:**\n1. In `router.tsx`, import the usual TanStack Router primitives.\n2. Define:\n   - `rootRoute = createRootRoute({ component: () => <Outlet /> })`\n   - `flakyRoute = createRoute({ getParentRoute: () => rootRoute, path: '/flaky', loader: () => { throw new Error('boom'); }, errorComponent: ({ error }) => <p>err: {(error as Error).message}</p>, component: () => <p>flaky-ok</p> })`\n3. Export `App` + `makeRouter`. Default `initialEntries` to `['/flaky']`.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-router", "errorComponent"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  createMemoryHistory,\n} from '@tanstack/react-router';\n\nexport const rootRoute = createRootRoute({ component: () => <Outlet /> });\n\nexport const flakyRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/flaky',\n  loader: () => {\n    throw new Error('boom');\n  },\n  errorComponent: ({ error }) => <p>err: {(error as Error).message}</p>,\n  component: () => <p>flaky-ok</p>,\n});\n\nconst routeTree = rootRoute.addChildren([flakyRoute]);\n\nexport function makeRouter(initialEntries: string[] = ['/flaky']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "When the loader throws, `errorComponent` renders instead of `component` -- with the error passed as a prop.",
+    "A root-level `errorComponent` is your last resort -- per-route is more granular.",
+    "TanStack Router's `ErrorComponent` helper formats errors nicely in dev; in tests, render whatever your design system needs."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": ["createRootRoute", "createRoute", "createRouter", "Outlet", "RouterProvider", "createMemoryHistory"],
+          "description": "Import TanStack Router primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "createRoute",
+          "description": "Use createRoute"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "App",
+          "description": "Export App"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
