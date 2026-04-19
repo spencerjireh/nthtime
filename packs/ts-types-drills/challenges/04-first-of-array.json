@@ -1,0 +1,38 @@
+{
+  "title": "First<T>",
+  "prompt": "Get the first element type of a tuple, or `never` if the tuple is empty.\n\n**Requirements:**\n- Declare and export `First<T>` where `T` is a readonly tuple.\n- Return the element type at index 0, or `never` for `[]`.\n\n**Example:**\n```ts\ntype A = First<[3, 2, 1]>;   // => 3\ntype B = First<[]>;           // => never\n```",
+  "difficulty": "beginner",
+  "tags": ["types", "tuples", "conditional-types"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "type-utils.ts",
+      "content": "// Type-level assertion helpers for ts-types-drills.\n// Adapted from type-challenges (https://github.com/type-challenges/type-challenges) — MIT.\n\nexport type Expect<T extends true> = T;\n\nexport type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2\n  ? true\n  : false;\n\nexport type NotEqual<X, Y> = Equal<X, Y> extends true ? false : true;\n\nexport type NotAny<T> = [T] extends [never] ? false : 0 extends 1 & T ? false : true;\n"
+    },
+    {
+      "path": "solution.ts",
+      "content": "import type { Expect, Equal } from './type-utils.js';\n\nexport type First<T extends readonly unknown[]> = T extends readonly [] ? never : T[0];\n\ntype cases = [\n  Expect<Equal<First<[3, 2, 1]>, 3>>,\n  Expect<Equal<First<['a', 'b']>, 'a'>>,\n  Expect<Equal<First<[]>, never>>,\n];\n\nexport type { cases };\n"
+    }
+  ],
+  "hints": [
+    "Guard against the empty tuple using a conditional: `T extends readonly [] ? never : ...`.",
+    "When the tuple is non-empty, `T[0]` yields the first element type."
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"First\"))",
+          "description": "Declare a type alias First"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(conditional_type)",
+          "description": "Use a conditional type"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

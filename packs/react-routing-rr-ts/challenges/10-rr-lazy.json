@@ -1,0 +1,41 @@
+{
+  "title": "Route-Level lazy: import()",
+  "prompt": "Code-split a route via React Router's route-level `lazy` field. The route's component, loader, and action all live in a separate module.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `type RouteObject` from `react-router`.\n2. Define and export `routes: RouteObject[]`:\n   - `{ path: '/', element: <p>home</p> }`\n   - `{ path: '/heavy', lazy: async () => ({ element: <p>heavy</p> }) }`\n3. Export `router = createBrowserRouter(routes)` and `App` as before.",
+  "difficulty": "intermediate",
+  "tags": ["react-router", "lazy", "code-splitting"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  type RouteObject,\n} from 'react-router';\n\nexport const routes: RouteObject[] = [\n  { path: '/', element: <p>home</p> },\n  { path: '/heavy', lazy: async () => ({ element: <p>heavy</p> }) },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "Route-level `lazy` returns a partial `RouteObject` -- you can include `Component`, `loader`, `action`, etc.",
+    "In production, prefer `lazy: () => import('./HeavyRoute')` so bundlers create a separate chunk.",
+    "RR shows the parent layout (or pending UI if configured) while the lazy chunk resolves."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "RouteObject"],
+          "description": "Import RR primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "createBrowserRouter",
+          "description": "Call createBrowserRouter"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "routes",
+          "description": "Export routes"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

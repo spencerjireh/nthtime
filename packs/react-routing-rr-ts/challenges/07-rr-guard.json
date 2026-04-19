@@ -1,0 +1,41 @@
+{
+  "title": "Auth Guard via Loader Redirect",
+  "prompt": "Protect a `/profile` route by throwing a `redirect` from its loader when the user isn't authenticated.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `redirect`, `type RouteObject` from `react-router`.\n2. Define a small auth helper:\n   - `let isAuthed = false;`\n   - `export function setAuthed(v: boolean) { isAuthed = v; }`\n3. Routes:\n   - `{ path: '/login', element: <p>please log in</p> }`\n   - `{ path: '/profile', loader: () => { if (!isAuthed) throw redirect('/login'); return null; }, element: <p>welcome</p> }`\n4. Export `routes`, `router`, `App`.",
+  "difficulty": "intermediate",
+  "tags": ["react-router", "loader", "redirect", "guard"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  redirect,\n  type RouteObject,\n} from 'react-router';\n\nlet isAuthed = false;\nexport function setAuthed(v: boolean) {\n  isAuthed = v;\n}\n\nexport const routes: RouteObject[] = [\n  { path: '/login', element: <p>please log in</p> },\n  {\n    path: '/profile',\n    loader: () => {\n      if (!isAuthed) throw redirect('/login');\n      return null;\n    },\n    element: <p>welcome</p>,\n  },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "Loaders can throw `redirect(to)` to short-circuit and navigate the user elsewhere.",
+    "Auth state should live in your auth provider/store -- a module-level flag is just for testing.",
+    "Returning `null` from a loader is fine when the route doesn't need any data."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "redirect", "RouteObject"],
+          "description": "Import RR primitives + redirect"
+        },
+        {
+          "type": "methodCall",
+          "method": "redirect",
+          "description": "Throw redirect(to)"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "setAuthed",
+          "description": "Export setAuthed helper"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

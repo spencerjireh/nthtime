@@ -1,0 +1,40 @@
+{
+  "title": "Prop Getters",
+  "prompt": "Expose a composable prop getter so consumers can merge their own handlers with your logic.\n\n**Requirements:**\n1. Import `useState`, `useCallback` from `react`.\n2. Export a hook `useToggleButton()` that returns `{ pressed: boolean; getButtonProps }` where:\n   - `pressed` is the current state\n   - `getButtonProps(userProps?: { onClick?: React.MouseEventHandler<HTMLButtonElement> }) => { 'aria-pressed': boolean; onClick: React.MouseEventHandler<HTMLButtonElement> }`\n3. Inside `getButtonProps`, return an object that merges the caller's `onClick` by calling the caller's handler first, then toggling `pressed`.\n4. Export a function component `ToggleButton({ children })` that calls the hook and spreads `getButtonProps()` onto a `<button>`.\n\nThis is Downshift's pattern: callers can add their own handlers without re-implementing the library's logic.",
+  "difficulty": "advanced",
+  "tags": ["prop-getters", "composition", "accessibility"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "ToggleButton.tsx",
+      "content": "import { useState, useCallback, MouseEventHandler, ReactNode } from 'react';\n\nexport function useToggleButton() {\n  const [pressed, setPressed] = useState(false);\n\n  const getButtonProps = useCallback(\n    (userProps?: { onClick?: MouseEventHandler<HTMLButtonElement> }) => ({\n      'aria-pressed': pressed,\n      onClick: (e: React.MouseEvent<HTMLButtonElement>) => {\n        userProps?.onClick?.(e);\n        if (!e.defaultPrevented) {\n          setPressed((p) => !p);\n        }\n      },\n    }),\n    [pressed],\n  );\n\n  return { pressed, getButtonProps } as const;\n}\n\nexport function ToggleButton({ children }: { children: ReactNode }) {\n  const { pressed, getButtonProps } = useToggleButton();\n  return <button {...getButtonProps()}>{pressed ? 'on' : 'off'} -- {children}</button>;\n}\n"
+    }
+  ],
+  "hints": [
+    "Call the user's handler BEFORE your own so they can `e.preventDefault()` to suppress the toggle.",
+    "Return the merged object -- consumers spread it onto their element with `{...getButtonProps()}`."
+  ],
+  "assertions": {
+    "perFile": {
+      "ToggleButton.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "useCallback"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useToggleButton",
+          "description": "Define useToggleButton"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "ToggleButton",
+          "description": "Define ToggleButton"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

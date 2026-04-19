@@ -1,0 +1,38 @@
+{
+  "title": "MyAwaited<T>",
+  "prompt": "Recursively unwrap the value type of a `Promise<...>`.\n\n**Requirements:**\n- Declare and export `MyAwaited<T>`.\n- If `T` is `Promise<U>`, recurse into `U`.\n- Otherwise return `T` unchanged.\n\n**Example:**\n```ts\ntype A = MyAwaited<Promise<string>>;              // => string\ntype B = MyAwaited<Promise<Promise<number>>>;     // => number\n```",
+  "difficulty": "intermediate",
+  "tags": ["types", "conditional-types", "infer"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "type-utils.ts",
+      "content": "// Type-level assertion helpers for ts-types-drills.\n// Adapted from type-challenges (https://github.com/type-challenges/type-challenges) — MIT.\n\nexport type Expect<T extends true> = T;\n\nexport type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2\n  ? true\n  : false;\n\nexport type NotEqual<X, Y> = Equal<X, Y> extends true ? false : true;\n\nexport type NotAny<T> = [T] extends [never] ? false : 0 extends 1 & T ? false : true;\n"
+    },
+    {
+      "path": "solution.ts",
+      "content": "import type { Expect, Equal } from './type-utils.js';\n\nexport type MyAwaited<T> = T extends Promise<infer U> ? MyAwaited<U> : T;\n\ntype cases = [\n  Expect<Equal<MyAwaited<Promise<string>>, string>>,\n  Expect<Equal<MyAwaited<Promise<Promise<number>>>, number>>,\n  Expect<Equal<MyAwaited<boolean>, boolean>>,\n];\n\nexport type { cases };\n"
+    }
+  ],
+  "hints": [
+    "Use `infer U` to capture the inner type of `Promise<U>`.",
+    "Recurse: call `MyAwaited<U>` in the true branch."
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"MyAwaited\"))",
+          "description": "Declare a type alias MyAwaited"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(infer_type)",
+          "description": "Use `infer` to capture the inner promise value"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

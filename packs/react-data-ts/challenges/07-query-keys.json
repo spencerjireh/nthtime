@@ -1,0 +1,42 @@
+{
+  "title": "Query Key Factory",
+  "prompt": "Centralize query keys behind a typed factory so invalidation can target whole branches.\n\n**Requirements:**\n1. Define and export an object `todoKeys` with three readonly keys:\n   - `all: () => ['todos'] as const`\n   - `lists: () => [...todoKeys.all(), 'list'] as const`\n   - `detail: (id: number) => [...todoKeys.all(), 'detail', id] as const`\n2. Define and export `type TodoKeys = { all: ReturnType<typeof todoKeys.all>; lists: ReturnType<typeof todoKeys.lists>; detail: ReturnType<typeof todoKeys.detail> }`.\n3. Export a function `useTodos()` (typed `() => UseQueryResult<Todo[]>`) that wraps `useQuery({ queryKey: todoKeys.lists(), queryFn: fetchTodos })`. Define `Todo` and `fetchTodos` in the same file.\n4. Import `useQuery` and `UseQueryResult` from `@tanstack/react-query`.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-query", "query-keys", "typescript"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "queries.ts",
+      "content": "import { useQuery, UseQueryResult } from '@tanstack/react-query';\n\nexport type Todo = { id: number; title: string; done: boolean };\n\nexport const todoKeys = {\n  all: () => ['todos'] as const,\n  lists: () => [...todoKeys.all(), 'list'] as const,\n  detail: (id: number) => [...todoKeys.all(), 'detail', id] as const,\n};\n\nexport type TodoKeys = {\n  all: ReturnType<typeof todoKeys.all>;\n  lists: ReturnType<typeof todoKeys.lists>;\n  detail: ReturnType<typeof todoKeys.detail>;\n};\n\nexport async function fetchTodos(): Promise<Todo[]> {\n  const r = await fetch('/api/todos');\n  return r.json() as Promise<Todo[]>;\n}\n\nexport function useTodos(): UseQueryResult<Todo[]> {\n  return useQuery({\n    queryKey: todoKeys.lists(),\n    queryFn: fetchTodos,\n  });\n}\n"
+    }
+  ],
+  "hints": [
+    "`as const` on each return narrows the array literals to readonly tuples -- without it, TS widens them to `string[]` and you lose precision.",
+    "Spreading `todoKeys.all()` inside `lists()` and `detail()` means invalidating `['todos']` invalidates the whole branch.",
+    "Centralizing the factory is what lets the rest of the app reuse keys without copy-pasting strings."
+  ],
+  "assertions": {
+    "perFile": {
+      "queries.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-query",
+          "specifiers": ["useQuery", "UseQueryResult"],
+          "description": "Import useQuery and UseQueryResult"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "todoKeys",
+          "kind": "const",
+          "description": "Define todoKeys factory"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useTodos",
+          "description": "Define useTodos hook"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

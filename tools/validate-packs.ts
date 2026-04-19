@@ -8,6 +8,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ── Types for pack JSON files ────────────────────────────────────────────────
 
+interface PackManifestSource {
+  name: string;
+  url: string;
+  license: string;
+}
+
 interface PackManifest {
   name: string;
   slug: string;
@@ -18,6 +24,7 @@ interface PackManifest {
   author: string;
   tags: string[];
   prerequisites?: string[];
+  sources?: PackManifestSource[];
   challenges: string[];
 }
 
@@ -65,6 +72,26 @@ function validatePackManifest(manifest: PackManifest, packDir: string): string[]
           errors.push(fail(`Invalid prerequisite slug: "${slug}"`));
         }
       }
+    }
+  }
+
+  // Validate sources (optional attribution metadata)
+  if (manifest.sources !== undefined) {
+    if (!Array.isArray(manifest.sources)) {
+      errors.push(fail('"sources" must be an array'));
+    } else {
+      manifest.sources.forEach((src, idx) => {
+        if (!src || typeof src !== 'object') {
+          errors.push(fail(`sources[${idx}] must be an object`));
+          return;
+        }
+        if (!src.name || typeof src.name !== 'string')
+          errors.push(fail(`sources[${idx}].name missing or invalid`));
+        if (!src.url || typeof src.url !== 'string')
+          errors.push(fail(`sources[${idx}].url missing or invalid`));
+        if (!src.license || typeof src.license !== 'string')
+          errors.push(fail(`sources[${idx}].license missing or invalid`));
+      });
     }
   }
 

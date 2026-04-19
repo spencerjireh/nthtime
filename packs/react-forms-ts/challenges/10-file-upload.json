@@ -1,0 +1,54 @@
+{
+  "title": "Typed File Input + Preview",
+  "prompt": "Build an avatar uploader with a typed file input and an image preview.\n\n**Requirements:**\n1. Import `useEffect`, `useState`, and `ChangeEvent` from `react`.\n2. Export a function component `AvatarUpload({ onChange }: { onChange?: (file: File | null) => void })`.\n3. Inside:\n   - Hold `file` state typed `File | null`.\n   - Hold `previewUrl` state typed `string | null`.\n   - When `file` changes, call `URL.createObjectURL(file)` to set `previewUrl` and call the optional `onChange(file)` prop. In the effect cleanup, call `URL.revokeObjectURL(previewUrl)` to release the blob.\n4. The `onChange` of `<input type=\"file\" accept=\"image/*\">` accepts `ChangeEvent<HTMLInputElement>` and reads `e.target.files?.[0] ?? null`.\n5. Render the input plus, when `previewUrl` is non-null, an `<img src={previewUrl} alt=\"preview\" />`.",
+  "difficulty": "intermediate",
+  "tags": ["forms", "file-upload", "useEffect", "events"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "AvatarUpload.tsx",
+      "content": "import { useEffect, useState, ChangeEvent } from 'react';\n\nexport function AvatarUpload({ onChange }: { onChange?: (file: File | null) => void }) {\n  const [file, setFile] = useState<File | null>(null);\n  const [previewUrl, setPreviewUrl] = useState<string | null>(null);\n\n  useEffect(() => {\n    if (!file) {\n      setPreviewUrl(null);\n      return;\n    }\n    const url = URL.createObjectURL(file);\n    setPreviewUrl(url);\n    return () => URL.revokeObjectURL(url);\n  }, [file]);\n\n  const onPick = (e: ChangeEvent<HTMLInputElement>) => {\n    const next = e.target.files?.[0] ?? null;\n    setFile(next);\n    onChange?.(next);\n  };\n\n  return (\n    <div>\n      <input type=\"file\" accept=\"image/*\" onChange={onPick} />\n      {previewUrl ? <img src={previewUrl} alt=\"preview\" /> : null}\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`e.target.files` is a `FileList | null`; index `[0]` and fall back to `null`.",
+    "Always revoke the object URL in the cleanup -- otherwise the blob lingers in memory.",
+    "Drive the preview from a `useEffect` keyed on `file` so the URL is created exactly once per pick."
+  ],
+  "assertions": {
+    "perFile": {
+      "AvatarUpload.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState", "ChangeEvent"],
+          "description": "Import useEffect, useState, ChangeEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "AvatarUpload",
+          "description": "Define AvatarUpload"
+        },
+        {
+          "type": "methodCall",
+          "object": "URL",
+          "method": "createObjectURL",
+          "description": "Call URL.createObjectURL"
+        },
+        {
+          "type": "methodCall",
+          "object": "URL",
+          "method": "revokeObjectURL",
+          "description": "Call URL.revokeObjectURL in cleanup"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["type", "accept", "onChange"],
+          "description": "Render a file input"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

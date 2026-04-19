@@ -1,0 +1,40 @@
+{
+  "title": "useTransition: Non-urgent Filter",
+  "prompt": "Keep the input responsive while filtering a heavy list.\n\n**Requirements:**\n1. Import `useState` and `useTransition` from `react`.\n2. Export a function component `SearchableList({ items })` with prop `items: string[]`.\n3. Track two pieces of state:\n   - `query` (what the user is typing)\n   - `results` (filtered items)\n4. Call `useTransition()` to get `[isPending, startTransition]`.\n5. On each keystroke, update `query` immediately, then call `startTransition(() => setResults(items.filter(...)))`.\n6. Render the input, a `{isPending ? 'filtering...' : null}` marker, and a `<ul>` of results.",
+  "difficulty": "intermediate",
+  "tags": ["useTransition", "concurrent", "performance"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "SearchableList.tsx",
+      "content": "import { useState, useTransition } from 'react';\n\nexport function SearchableList({ items }: { items: string[] }) {\n  const [query, setQuery] = useState('');\n  const [results, setResults] = useState<string[]>(items);\n  const [isPending, startTransition] = useTransition();\n\n  function handleChange(value: string) {\n    setQuery(value);\n    startTransition(() => {\n      const next = items.filter((item) => item.toLowerCase().includes(value.toLowerCase()));\n      setResults(next);\n    });\n  }\n\n  return (\n    <div>\n      <input value={query} onChange={(e) => handleChange(e.target.value)} />\n      {isPending ? <span data-testid=\"pending\">filtering...</span> : null}\n      <ul>\n        {results.map((r) => (\n          <li key={r}>{r}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`useTransition` marks state updates inside `startTransition` as low priority -- React can interrupt them.",
+    "Keep the input update (`setQuery`) urgent; wrap only the filtered result update."
+  ],
+  "assertions": {
+    "perFile": {
+      "SearchableList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "useTransition"],
+          "description": "Import useTransition"
+        },
+        {
+          "type": "methodCall",
+          "method": "useTransition",
+          "description": "Call useTransition"
+        },
+        {
+          "type": "methodCall",
+          "method": "startTransition",
+          "description": "Wrap the filter update in startTransition"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

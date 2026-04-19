@@ -1,0 +1,45 @@
+{
+  "title": "useState: Inference vs Annotation",
+  "prompt": "Demonstrate when to let `useState` infer and when to annotate it explicitly.\n\n**Requirements:**\n1. Export a function component `LoginForm` with two pieces of state:\n   - `email: string` using `useState('')` (inferred as `string`).\n   - `user: User | null` using `useState<User | null>(null)` (annotated because `null` alone would be inferred).\n2. Render an input that binds `email` and a button labelled `\"Sign in\"`.\n3. On click, the button calls `setUser({ id: '1', email })`.\n4. When `user` is non-null, render `<p>Signed in as {user.email}</p>`.\n\nAlso export a `User` type with `id: string` and `email: string`.",
+  "difficulty": "beginner",
+  "tags": ["useState", "inference", "generics"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "LoginForm.tsx",
+      "content": "import { useState } from 'react';\n\nexport type User = {\n  id: string;\n  email: string;\n};\n\nexport function LoginForm() {\n  const [email, setEmail] = useState('');\n  const [user, setUser] = useState<User | null>(null);\n\n  return (\n    <div>\n      <input\n        value={email}\n        onChange={(e) => setEmail(e.target.value)}\n      />\n      <button onClick={() => setUser({ id: '1', email })}>Sign in</button>\n      {user ? <p>Signed in as {user.email}</p> : null}\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`useState('')` infers `string`. No annotation needed.",
+    "`useState(null)` infers `null` -- too narrow. Use `useState<User | null>(null)` so `setUser(...)` can accept a User."
+  ],
+  "assertions": {
+    "perFile": {
+      "LoginForm.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState"],
+          "description": "Import useState from react"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"User\"))",
+          "description": "Declare a `User` type alias"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "LoginForm",
+          "description": "Define LoginForm"
+        },
+        {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState (at least once)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

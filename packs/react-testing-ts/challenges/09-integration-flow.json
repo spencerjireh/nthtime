@@ -1,0 +1,64 @@
+{
+  "title": "Integration Flow: Search -> List -> Detail",
+  "prompt": "Test a small flow end-to-end inside the component tree: type a query, see results, click a result, see detail. Use MSW for both endpoints.\n\n**Requirements:**\n1. In `App.test.tsx`, import `render`, `screen` from `@testing-library/react`, `userEvent` (default), `setupServer` from `msw/node`, `http`, `HttpResponse` from `msw`, and `App` from `./App`.\n2. Set up MSW with two handlers:\n   - `http.get('/api/search', () => HttpResponse.json([{ id: 1, name: 'Ada' }]))`\n   - `http.get('/api/users/1', () => HttpResponse.json({ id: 1, name: 'Ada', bio: 'pioneer' }))`\n3. Wire `beforeAll/afterEach/afterAll` lifecycle.\n4. Inside `it('search -> list -> detail', async () => { ... })`:\n   - `const user = userEvent.setup();`\n   - `render(<App />);`\n   - `await user.type(screen.getByLabelText('search'), 'a');`\n   - Click result: `await user.click(await screen.findByRole('button', { name: 'Ada' }));`.\n   - Assert detail: `expect(await screen.findByText('pioneer')).toBeDefined();`.",
+  "difficulty": "advanced",
+  "tags": ["msw", "integration", "user-event"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "App.tsx",
+      "content": "import { useState } from 'react';\n\ntype Hit = { id: number; name: string };\ntype User = { id: number; name: string; bio: string };\n\nexport function App() {\n  const [q, setQ] = useState('');\n  const [hits, setHits] = useState<Hit[]>([]);\n  const [detail, setDetail] = useState<User | null>(null);\n\n  const onChange = async (next: string) => {\n    setQ(next);\n    if (next.length === 0) {\n      setHits([]);\n      return;\n    }\n    const r = await fetch('/api/search?q=' + encodeURIComponent(next));\n    setHits(await r.json());\n  };\n\n  const open = async (id: number) => {\n    const r = await fetch('/api/users/' + id);\n    setDetail(await r.json());\n  };\n\n  return (\n    <main>\n      <label htmlFor=\"search\">search</label>\n      <input id=\"search\" value={q} onChange={(e) => onChange(e.target.value)} />\n      <ul>\n        {hits.map((h) => (\n          <li key={h.id}>\n            <button onClick={() => open(h.id)}>{h.name}</button>\n          </li>\n        ))}\n      </ul>\n      {detail ? (\n        <article>\n          <h2>{detail.name}</h2>\n          <p>{detail.bio}</p>\n        </article>\n      ) : null}\n    </main>\n  );\n}\n"
+    },
+    {
+      "path": "App.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport { setupServer } from 'msw/node';\nimport { http, HttpResponse } from 'msw';\nimport { App } from './App';\n\nconst server = setupServer(\n  http.get('/api/search', () => HttpResponse.json([{ id: 1, name: 'Ada' }])),\n  http.get('/api/users/1', () => HttpResponse.json({ id: 1, name: 'Ada', bio: 'pioneer' }))\n);\n\nbeforeAll(() => server.listen());\nafterEach(() => server.resetHandlers());\nafterAll(() => server.close());\n\ndescribe('App', () => {\n  it('search -> list -> detail', async () => {\n    const user = userEvent.setup();\n    render(<App />);\n    await user.type(screen.getByLabelText('search'), 'a');\n    await user.click(await screen.findByRole('button', { name: 'Ada' }));\n    expect(await screen.findByText('pioneer')).toBeDefined();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "Integration tests prove pieces fit together. Don't mock components -- only the network.",
+    "Mix `findByRole` (for things appearing) with `getByRole`/`getByLabelText` (for things already there).",
+    "MSW lets you keep the same handlers for unit AND integration tests."
+  ],
+  "assertions": {
+    "perFile": {
+      "App.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "msw/node",
+          "specifiers": ["setupServer"],
+          "description": "Import setupServer"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "msw",
+          "specifiers": ["http", "HttpResponse"],
+          "description": "Import http + HttpResponse"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/user-event",
+          "specifiers": ["userEvent"],
+          "description": "Import userEvent default"
+        },
+        {
+          "type": "methodCall",
+          "method": "setupServer",
+          "description": "Call setupServer"
+        },
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "findByRole",
+          "description": "Use screen.findByRole for the result button"
+        },
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "findByText",
+          "description": "Use screen.findByText for the bio"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

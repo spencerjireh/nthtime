@@ -1,0 +1,29 @@
+{
+  "name": "TypeScript Type Drills",
+  "slug": "ts-types-drills",
+  "description": "Reimplement built-in utility types from scratch. Each drill asks you to write a single utility type and verifies it against curated test cases.",
+  "language": "typescript",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["typescript", "types", "utility-types"],
+  "prerequisites": [],
+  "sources": [
+    {
+      "name": "type-challenges",
+      "url": "https://github.com/type-challenges/type-challenges",
+      "license": "MIT"
+    }
+  ],
+  "challenges": [
+    "challenges/01-pick-own.json",
+    "challenges/02-readonly-own.json",
+    "challenges/03-tuple-to-object.json",
+    "challenges/04-first-of-array.json",
+    "challenges/05-length-of-tuple.json",
+    "challenges/06-exclude-own.json",
+    "challenges/07-awaited-own.json",
+    "challenges/08-if-type.json",
+    "challenges/09-concat-tuples.json",
+    "challenges/10-includes-type.json"
+  ]
+}

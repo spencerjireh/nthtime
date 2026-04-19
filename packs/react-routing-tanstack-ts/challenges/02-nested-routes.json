@@ -1,0 +1,46 @@
+{
+  "title": "Nested Layout + Outlet",
+  "prompt": "Build a `/dashboard` layout with two child routes that share the same shell.\n\n**Requirements:**\n1. In `router.tsx`, import the same TanStack Router primitives as before (plus `Outlet`).\n2. Define:\n   - `rootRoute = createRootRoute({ component: () => <Outlet /> })`\n   - `dashboardRoute = createRoute({ getParentRoute: () => rootRoute, path: '/dashboard', component: () => <section><h2>shell</h2><Outlet /></section> })`\n   - `dashboardIndexRoute = createRoute({ getParentRoute: () => dashboardRoute, path: '/', component: () => <p>overview</p> })`\n   - `settingsRoute = createRoute({ getParentRoute: () => dashboardRoute, path: 'settings', component: () => <p>settings</p> })`\n3. Build the tree: `rootRoute.addChildren([dashboardRoute.addChildren([dashboardIndexRoute, settingsRoute])])`.\n4. Export `App` as in challenge 1, plus the `makeRouter(initialEntries)` helper.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-router", "Outlet", "nested"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  createMemoryHistory,\n} from '@tanstack/react-router';\n\nexport const rootRoute = createRootRoute({ component: () => <Outlet /> });\n\nexport const dashboardRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/dashboard',\n  component: () => (\n    <section>\n      <h2>shell</h2>\n      <Outlet />\n    </section>\n  ),\n});\n\nexport const dashboardIndexRoute = createRoute({\n  getParentRoute: () => dashboardRoute,\n  path: '/',\n  component: () => <p>overview</p>,\n});\n\nexport const settingsRoute = createRoute({\n  getParentRoute: () => dashboardRoute,\n  path: 'settings',\n  component: () => <p>settings</p>,\n});\n\nconst routeTree = rootRoute.addChildren([\n  dashboardRoute.addChildren([dashboardIndexRoute, settingsRoute]),\n]);\n\nexport function makeRouter(initialEntries: string[] = ['/dashboard']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "Each `<Outlet />` inside a route component is where its children mount -- nest them to nest layouts.",
+    "Children are wired via `getParentRoute`, then the tree is composed with chained `.addChildren([...])` calls.",
+    "An index child uses `path: '/'` so the URL `/dashboard` resolves to `dashboard + dashboardIndex`."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": ["createRootRoute", "createRoute", "createRouter", "Outlet", "RouterProvider", "createMemoryHistory"],
+          "description": "Import TanStack Router primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "createRoute",
+          "description": "Define routes via createRoute"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Outlet",
+          "description": "Mount nested children with <Outlet />"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "App",
+          "description": "Export App component"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

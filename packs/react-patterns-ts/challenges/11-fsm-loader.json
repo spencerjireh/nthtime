@@ -1,0 +1,46 @@
+{
+  "title": "Finite State Machine: Loader",
+  "prompt": "Model loading as an explicit state machine so impossible states are unrepresentable.\n\n**Requirements:**\n1. Import `useReducer`, `Dispatch` from `react`.\n2. Define `LoaderState` as a discriminated union:\n   - `{ status: 'idle' }`\n   - `{ status: 'loading' }`\n   - `{ status: 'success'; data: string }`\n   - `{ status: 'error'; error: string }`\n3. Define `LoaderAction`:\n   - `{ type: 'fetch' }`\n   - `{ type: 'resolved'; data: string }`\n   - `{ type: 'rejected'; error: string }`\n   - `{ type: 'reset' }`\n4. Write a pure `loaderReducer(state, action)` that only allows valid transitions (e.g., `fetch` is ignored when already `loading`).\n5. Export `useLoader(): readonly [LoaderState, Dispatch<LoaderAction>]`.\n\nIllegal states like `{ status: 'success'; error: '...' }` can't be constructed because they aren't part of the union.",
+  "difficulty": "advanced",
+  "tags": ["state-machine", "reducers", "types"],
+  "timeEstimateSeconds": 600,
+  "files": [
+    {
+      "path": "useLoader.ts",
+      "content": "import { useReducer, Dispatch } from 'react';\n\nexport type LoaderState =\n  | { status: 'idle' }\n  | { status: 'loading' }\n  | { status: 'success'; data: string }\n  | { status: 'error'; error: string };\n\nexport type LoaderAction =\n  | { type: 'fetch' }\n  | { type: 'resolved'; data: string }\n  | { type: 'rejected'; error: string }\n  | { type: 'reset' };\n\nexport function loaderReducer(state: LoaderState, action: LoaderAction): LoaderState {\n  switch (action.type) {\n    case 'fetch':\n      if (state.status === 'loading') return state;\n      return { status: 'loading' };\n    case 'resolved':\n      if (state.status !== 'loading') return state;\n      return { status: 'success', data: action.data };\n    case 'rejected':\n      if (state.status !== 'loading') return state;\n      return { status: 'error', error: action.error };\n    case 'reset':\n      return { status: 'idle' };\n  }\n}\n\nexport function useLoader(): readonly [LoaderState, Dispatch<LoaderAction>] {\n  const [state, dispatch] = useReducer(loaderReducer, { status: 'idle' } as LoaderState);\n  return [state, dispatch] as const;\n}\n"
+    }
+  ],
+  "hints": [
+    "Guards inside each branch reject illegal transitions -- e.g., `resolved` is ignored outside `loading`.",
+    "A discriminated union keeps payloads per state narrow -- `error` cannot coexist with `data`.",
+    "Returning the current state from an illegal action is a 'no-op' that saves you from buggy mid-flight updates."
+  ],
+  "assertions": {
+    "perFile": {
+      "useLoader.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useReducer", "Dispatch"],
+          "description": "Import useReducer and Dispatch"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "loaderReducer",
+          "description": "Define loaderReducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useLoader",
+          "description": "Define useLoader"
+        },
+        {
+          "type": "methodCall",
+          "method": "useReducer",
+          "description": "Use useReducer for the state machine"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

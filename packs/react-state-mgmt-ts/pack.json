@@ -1,0 +1,45 @@
+{
+  "name": "React State Management with TypeScript",
+  "slug": "react-state-mgmt-ts",
+  "description": "From context fundamentals to Zustand and Redux Toolkit (incl. RTK Query) to URL-as-state -- when to reach for which tool, with type-safe patterns throughout.",
+  "language": "typescript",
+  "framework": "react",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["react", "state-management", "zustand", "redux", "typescript"],
+  "prerequisites": ["react-routing-rr-ts"],
+  "sources": [
+    {
+      "name": "Zustand docs",
+      "url": "https://zustand-demo.pmnd.rs/",
+      "license": "MIT"
+    },
+    {
+      "name": "Redux Toolkit docs",
+      "url": "https://redux-toolkit.js.org/",
+      "license": "MIT"
+    },
+    {
+      "name": "Fullstack Open -- Part 6 (Advanced state management)",
+      "url": "https://fullstackopen.com/en/part6",
+      "license": "CC BY-NC-SA 3.0"
+    },
+    {
+      "name": "developerway.com (Where to put state)",
+      "url": "https://www.developerway.com/",
+      "license": "Copyright Nadia Makarevich (inspired)"
+    }
+  ],
+  "challenges": [
+    "challenges/01-context-value-stable.json",
+    "challenges/02-split-state-dispatch.json",
+    "challenges/03-zustand-basic-store.json",
+    "challenges/04-zustand-selector-memo.json",
+    "challenges/05-zustand-slices.json",
+    "challenges/06-rtk-slice.json",
+    "challenges/07-rtk-async-thunk.json",
+    "challenges/08-rtk-query-basic.json",
+    "challenges/09-url-as-state.json",
+    "challenges/10-local-vs-global.json"
+  ]
+}

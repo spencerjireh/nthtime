@@ -1,0 +1,41 @@
+{
+  "title": "useParams Typed via Generic",
+  "prompt": "Read a path param with `useParams` and the generic to make it typed.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `useParams`, `type RouteObject` from `react-router`.\n2. Define and export `function UserView()` that calls `const { id } = useParams<{ id: string }>()` and renders `<p>user: {id}</p>`.\n3. Export `routes: RouteObject[] = [{ path: '/users/:id', element: <UserView /> }]`.\n4. Export `router` + `App` like the previous challenges.",
+  "difficulty": "beginner",
+  "tags": ["react-router", "useParams"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  useParams,\n  type RouteObject,\n} from 'react-router';\n\nexport function UserView() {\n  const { id } = useParams<{ id: string }>();\n  return <p>user: {id}</p>;\n}\n\nexport const routes: RouteObject[] = [\n  { path: '/users/:id', element: <UserView /> },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`useParams<T>()` returns `Partial<T>` with all params as strings -- coerce as needed.",
+    "Path-param syntax is `:name` (where TanStack uses `$name`).",
+    "If you need numeric IDs, parse them in the consuming component or in a route loader."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "useParams", "RouteObject"],
+          "description": "Import RR primitives + useParams"
+        },
+        {
+          "type": "methodCall",
+          "method": "useParams",
+          "description": "Call useParams"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "UserView",
+          "description": "Export UserView"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

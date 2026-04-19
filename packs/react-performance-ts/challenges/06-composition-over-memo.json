@@ -1,0 +1,51 @@
+{
+  "title": "Composition over memo()",
+  "prompt": "Some re-renders go away by passing children as a prop -- without `memo`. The expensive subtree is created in a different parent that doesn't change.\n\n**Requirements:**\n1. Import `useState`, `ChangeEvent`, `ReactNode` from `react`.\n2. Define and export a function component `Slow({ label }: { label: string })` -- this stands in for an expensive subtree (a single `<p>{label}</p>` is enough).\n3. Define and export `Shell({ children }: { children: ReactNode })`. Inside:\n   - Hold `text` in `useState('')`.\n   - Render an `<input>` for `text` and `<div>{children}</div>`.\n4. Export a function component `App()` that renders `<Shell><Slow label=\"heavy\" /></Shell>`. Because `<Slow>` is created inside `App` (not inside `Shell`), it does not re-render when `Shell`'s `text` state changes.",
+  "difficulty": "intermediate",
+  "tags": ["composition", "rerender", "performance"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "App.tsx",
+      "content": "import { useState, ChangeEvent, ReactNode } from 'react';\n\nexport function Slow({ label }: { label: string }) {\n  return <p>{label}</p>;\n}\n\nexport function Shell({ children }: { children: ReactNode }) {\n  const [text, setText] = useState<string>('');\n  return (\n    <div>\n      <input\n        value={text}\n        onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}\n      />\n      <div>{children}</div>\n    </div>\n  );\n}\n\nexport function App() {\n  return (\n    <Shell>\n      <Slow label=\"heavy\" />\n    </Shell>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "The slow child is created in `App`'s render -- `App` doesn't re-render when `Shell`'s state changes.",
+    "Children are just props -- if the prop reference stays the same, the child reconciles and skips its render entirely.",
+    "Reach for composition before reaching for `memo`. `memo` adds bookkeeping; composition removes the work."
+  ],
+  "assertions": {
+    "perFile": {
+      "App.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "ChangeEvent", "ReactNode"],
+          "description": "Import useState, ChangeEvent, ReactNode"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Slow",
+          "description": "Define Slow"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Shell",
+          "description": "Define Shell"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "App",
+          "description": "Define App"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Shell",
+          "description": "App composes Shell with Slow as children"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

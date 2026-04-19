@@ -1,0 +1,22 @@
+{
+  "slug": "react-typescript",
+  "title": "React with TypeScript",
+  "description": "Type-safe React end to end -- typing, advanced hooks, custom hooks, patterns, forms, data fetching, performance, testing, routing, state mgmt, and architecture.",
+  "longDescription": "## React with TypeScript\n\nThe full-curriculum React track. Starts from fundamentals, drills down into how to type React components and hooks, moves through advanced hooks, custom hook authoring, the composition patterns that make React libraries reusable, then forms, data fetching, performance, testing, routing (TanStack Router and React Router v7), state management (Zustand, Redux Toolkit, RTK Query), and finally production-grade architecture.\n\n### Topics covered\n\n- Typing components, children, events, refs, generics, and polymorphic `as` props\n- `useReducer`, `useLayoutEffect`, `useTransition`, `useDeferredValue`, `useId`, `useImperativeHandle`, `useSyncExternalStore`\n- Custom hooks: toggles, local storage, debounce, fetch, click-outside, controllable state\n- Patterns: compound components, render props, HOCs, slot, provider, prop getters, state machines, hook factories, pub/sub\n- Forms: vanilla controlled inputs, useReducer-driven forms, async validation, react-hook-form + Zod, multi-step wizards, file upload\n- Data: native fetch with race-condition fixes and AbortController, Zod-validated responses, TanStack Query for queries, mutations, optimistic updates, dependent and infinite queries, prefetch, and React 19 use() + Suspense\n- Performance: Profiler, React.memo, useMemo, useCallback, split context, composition over memo, stable keys, react-window virtualization, React.lazy, startTransition\n- Testing: React Testing Library + user-event, MSW for fetch, custom render with providers, accessible queries, custom-hook tests with renderHook, error boundary tests, typed MSW handlers via Zod, fake-timer patterns\n- Routing (TanStack Router): code-based router, nested layouts, typed path params, Zod-validated search, route loaders, programmatic navigation, beforeLoad guards, notFound/error/pending UI\n- Routing (React Router v7): createBrowserRouter, nested routes with Outlet, useParams + useSearchParams, route loaders + actions with Form, loader-based redirects, splat 404s, useNavigate, route-level lazy\n- State management: memoized context value, split state/dispatch contexts, Zustand stores + selectors + slice creators, Redux Toolkit createSlice + createAsyncThunk + RTK Query, URL-as-state, local-vs-global placement\n- Architecture: feature modules, error and Suspense boundaries, typed API layer, env validation, barrel exports, public-API encapsulation, provider composition, route-level code-splitting, shared UI kit",
+  "tags": ["react", "typescript", "frontend"],
+  "packSlugs": [
+    "react-fundamentals",
+    "react-ts-typing",
+    "react-hooks-advanced-ts",
+    "react-custom-hooks-ts",
+    "react-patterns-ts",
+    "react-forms-ts",
+    "react-data-ts",
+    "react-performance-ts",
+    "react-testing-ts",
+    "react-routing-tanstack-ts",
+    "react-routing-rr-ts",
+    "react-state-mgmt-ts",
+    "react-architecture-ts"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "title": "HOC: withAuth",
+  "prompt": "Write a typed higher-order component that gates its child on an auth check.\n\n**Requirements:**\n1. Import `ComponentType`, `ReactNode` from `react`.\n2. Export `type AuthUser = { id: string; name: string }`.\n3. Export `withAuth<P extends object>(Component: ComponentType<P & { user: AuthUser }>, options: { fallback: ReactNode; getUser: () => AuthUser | null }): ComponentType<P>` that:\n   - returns a new component accepting only `P`\n   - calls `options.getUser()`\n   - if the result is `null`, renders `options.fallback`\n   - otherwise renders `<Component {...props} user={user} />`.\n\nThis composes auth as a cross-cutting concern without modifying the wrapped component.",
+  "difficulty": "advanced",
+  "tags": ["hoc", "generics", "auth"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "withAuth.tsx",
+      "content": "import { ComponentType, ReactNode } from 'react';\n\nexport type AuthUser = { id: string; name: string };\n\nexport type WithAuthOptions = {\n  fallback: ReactNode;\n  getUser: () => AuthUser | null;\n};\n\nexport function withAuth<P extends object>(\n  Component: ComponentType<P & { user: AuthUser }>,\n  options: WithAuthOptions,\n): ComponentType<P> {\n  function Wrapped(props: P) {\n    const user = options.getUser();\n    if (user === null) return <>{options.fallback}</>;\n    return <Component {...(props as P)} user={user} />;\n  }\n  Wrapped.displayName = `withAuth(${Component.displayName ?? Component.name ?? 'Component'})`;\n  return Wrapped;\n}\n"
+    }
+  ],
+  "hints": [
+    "Constrain `P extends object` so the spread is safe.",
+    "Set `displayName` on the wrapper for better React DevTools output."
+  ],
+  "assertions": {
+    "perFile": {
+      "withAuth.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["ComponentType", "ReactNode"],
+          "description": "Import ComponentType and ReactNode"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "withAuth",
+          "description": "Define the withAuth HOC"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

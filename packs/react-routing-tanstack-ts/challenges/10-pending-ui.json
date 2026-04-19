@@ -1,0 +1,41 @@
+{
+  "title": "pendingComponent While Loader Runs",
+  "prompt": "Show a `pendingComponent` while a slow loader resolves. Use `pendingMs: 0` to flush the pending UI immediately.\n\n**Requirements:**\n1. In `router.tsx`, import the usual TanStack Router primitives.\n2. Routes:\n   - `rootRoute = createRootRoute({ component: () => <Outlet /> })`\n   - `slowRoute = createRoute({ getParentRoute: () => rootRoute, path: '/slow', pendingMs: 0, pendingComponent: () => <p>loading</p>, loader: () => new Promise<{ value: string }>((resolve) => setTimeout(() => resolve({ value: 'done' }), 50)), component: SlowView })`\n3. Inside `SlowView`, read the loader value via `useLoaderData({ from: slowRoute.id })` and render `<p>{data.value}</p>`.\n4. Export `App` + `makeRouter`. Import `useLoaderData` too.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-router", "pendingComponent", "loader"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  useLoaderData,\n  createMemoryHistory,\n} from '@tanstack/react-router';\n\nexport const rootRoute = createRootRoute({ component: () => <Outlet /> });\n\nexport function SlowView() {\n  const data = useLoaderData({ from: slowRoute.id });\n  return <p>{data.value}</p>;\n}\n\nexport const slowRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/slow',\n  pendingMs: 0,\n  pendingComponent: () => <p>loading</p>,\n  loader: () =>\n    new Promise<{ value: string }>((resolve) => setTimeout(() => resolve({ value: 'done' }), 50)),\n  component: SlowView,\n});\n\nconst routeTree = rootRoute.addChildren([slowRoute]);\n\nexport function makeRouter(initialEntries: string[] = ['/slow']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`pendingMs` is the threshold before pending UI shows -- set to 0 to render it immediately.",
+    "`pendingMinMs` (not used here) sets the minimum time the pending UI stays visible to avoid flicker.",
+    "Pending UI appears between navigation and loader completion -- use it for skeletons/spinners."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": ["createRootRoute", "createRoute", "createRouter", "Outlet", "RouterProvider", "useLoaderData", "createMemoryHistory"],
+          "description": "Import TanStack Router primitives + useLoaderData"
+        },
+        {
+          "type": "methodCall",
+          "method": "useLoaderData",
+          "description": "Read loader data via useLoaderData"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "SlowView",
+          "description": "Export SlowView"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "title": "Class ErrorBoundary",
+  "prompt": "Class components are still the only way to write an error boundary. Build a typed `<ErrorBoundary>` with a fallback prop.\n\n**Requirements:**\n1. In `ErrorBoundary.tsx`, import `Component`, `ReactNode` from `react`.\n2. Define and export `class ErrorBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { hasError: boolean }>`:\n   - `state = { hasError: false };`\n   - `static getDerivedStateFromError(): { hasError: true } { return { hasError: true }; }`\n   - `render(): ReactNode { return this.state.hasError ? this.props.fallback : this.props.children; }`",
+  "difficulty": "intermediate",
+  "tags": ["error-boundary", "class-component"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "ErrorBoundary.tsx",
+      "content": "import { Component, ReactNode } from 'react';\n\ntype Props = { fallback: ReactNode; children: ReactNode };\ntype State = { hasError: boolean };\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { hasError: false };\n\n  static getDerivedStateFromError(): { hasError: true } {\n    return { hasError: true };\n  }\n\n  render(): ReactNode {\n    return this.state.hasError ? this.props.fallback : this.props.children;\n  }\n}\n"
+    }
+  ],
+  "hints": [
+    "`getDerivedStateFromError` is a static method that runs when a child throws during render -- return new state.",
+    "`componentDidCatch(error, info)` is the place to log to your error tracker; this challenge doesn't need it.",
+    "Hooks can't catch errors -- the boundary must be a class. Wrap it in your component once and forget about it."
+  ],
+  "assertions": {
+    "perFile": {
+      "ErrorBoundary.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["Component", "ReactNode"],
+          "description": "Import Component + ReactNode"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ErrorBoundary",
+          "description": "Export ErrorBoundary class"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "title": "Test the Error Boundary Fallback",
+  "prompt": "When a child throws during render, an `<ErrorBoundary>` should catch it and show its fallback. Write a test that triggers the throw and asserts the fallback UI.\n\n**Requirements:**\n1. In `Boundary.test.tsx`, import `render`, `screen` from `@testing-library/react`, `ErrorBoundary` from `./ErrorBoundary`, and `Boom` from `./Boom`.\n2. In `beforeAll`, silence React's expected `console.error` noise: `vi.spyOn(console, 'error').mockImplementation(() => undefined);`. In `afterAll`, restore: `vi.restoreAllMocks();`.\n3. Inside `it('renders fallback when child throws', () => { ... })`:\n   - `render(<ErrorBoundary fallback={<p>boom-fallback</p>}><Boom /></ErrorBoundary>);`\n   - Assert `expect(screen.getByText('boom-fallback')).toBeDefined();`.",
+  "difficulty": "intermediate",
+  "tags": ["RTL", "ErrorBoundary"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "ErrorBoundary.tsx",
+      "content": "import { Component, ReactNode } from 'react';\n\ntype Props = { fallback: ReactNode; children: ReactNode };\ntype State = { hasError: boolean };\n\nexport class ErrorBoundary extends Component<Props, State> {\n  state: State = { hasError: false };\n  static getDerivedStateFromError(): State {\n    return { hasError: true };\n  }\n  render(): ReactNode {\n    return this.state.hasError ? this.props.fallback : this.props.children;\n  }\n}\n"
+    },
+    {
+      "path": "Boom.tsx",
+      "content": "export function Boom(): never {\n  throw new Error('boom');\n}\n"
+    },
+    {
+      "path": "Boundary.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport { ErrorBoundary } from './ErrorBoundary';\nimport { Boom } from './Boom';\n\nbeforeAll(() => {\n  vi.spyOn(console, 'error').mockImplementation(() => undefined);\n});\nafterAll(() => {\n  vi.restoreAllMocks();\n});\n\ndescribe('ErrorBoundary', () => {\n  it('renders fallback when child throws', () => {\n    render(\n      <ErrorBoundary fallback={<p>boom-fallback</p>}>\n        <Boom />\n      </ErrorBoundary>\n    );\n    expect(screen.getByText('boom-fallback')).toBeDefined();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "React logs the caught error via `console.error` even when the boundary handles it -- silence the noise so test output stays readable.",
+    "`getDerivedStateFromError` is the lifecycle that turns the throw into fallback state.",
+    "Stub `console.error` in `beforeAll`, restore in `afterAll` -- otherwise other suites lose their logs."
+  ],
+  "assertions": {
+    "perFile": {
+      "Boundary.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "./ErrorBoundary",
+          "specifiers": ["ErrorBoundary"],
+          "description": "Import ErrorBoundary"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "./Boom",
+          "specifiers": ["Boom"],
+          "description": "Import Boom"
+        },
+        {
+          "type": "methodCall",
+          "object": "vi",
+          "method": "spyOn",
+          "description": "Silence console.error with vi.spyOn"
+        },
+        {
+          "type": "jsxElement",
+          "name": "ErrorBoundary",
+          "description": "Render <ErrorBoundary>"
+        },
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "getByText",
+          "description": "Assert fallback via screen.getByText"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "title": "Compound Component: Tabs",
+  "prompt": "Build a `Tabs` component using the compound-component pattern.\n\n**Requirements:**\n1. Import `createContext`, `useContext`, `useState`, `ReactNode` from `react`.\n2. Create an internal `TabsContext` with `{ active: string; setActive: (id: string) => void }`.\n3. Export three components:\n   - `Tabs({ defaultActive, children })` -- manages state and renders a provider.\n   - `TabList({ children })` -- renders `<div role=\"tablist\">{children}</div>`.\n   - `TabPanel({ id, children })` -- renders `{children}` only when `active === id`.\n   - `TabTrigger({ id, children })` -- a button that sets the active tab on click.\n4. Callers compose like this:\n   ```tsx\n   <Tabs defaultActive=\"a\">\n     <TabList>\n       <TabTrigger id=\"a\">A</TabTrigger>\n       <TabTrigger id=\"b\">B</TabTrigger>\n     </TabList>\n     <TabPanel id=\"a\">A content</TabPanel>\n     <TabPanel id=\"b\">B content</TabPanel>\n   </Tabs>\n   ```",
+  "difficulty": "intermediate",
+  "tags": ["compound-components", "context", "composition"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "Tabs.tsx",
+      "content": "import { createContext, useContext, useState, ReactNode } from 'react';\n\ntype TabsContextValue = {\n  active: string;\n  setActive: (id: string) => void;\n};\n\nconst TabsContext = createContext<TabsContextValue | null>(null);\n\nfunction useTabsContext(): TabsContextValue {\n  const ctx = useContext(TabsContext);\n  if (!ctx) throw new Error('Tabs subparts must be used inside <Tabs>');\n  return ctx;\n}\n\nexport function Tabs({ defaultActive, children }: { defaultActive: string; children: ReactNode }) {\n  const [active, setActive] = useState(defaultActive);\n  return <TabsContext.Provider value={{ active, setActive }}>{children}</TabsContext.Provider>;\n}\n\nexport function TabList({ children }: { children: ReactNode }) {\n  return <div role=\"tablist\">{children}</div>;\n}\n\nexport function TabTrigger({ id, children }: { id: string; children: ReactNode }) {\n  const { active, setActive } = useTabsContext();\n  return (\n    <button role=\"tab\" aria-selected={active === id} onClick={() => setActive(id)}>\n      {children}\n    </button>\n  );\n}\n\nexport function TabPanel({ id, children }: { id: string; children: ReactNode }) {\n  const { active } = useTabsContext();\n  if (active !== id) return null;\n  return <div role=\"tabpanel\">{children}</div>;\n}\n"
+    }
+  ],
+  "hints": [
+    "A single shared context is enough -- each subcomponent reads what it needs.",
+    "Throw in `useTabsContext` so misuse is surfaced at the call site.",
+    "Use `aria-selected` on triggers to keep the pattern accessible."
+  ],
+  "assertions": {
+    "perFile": {
+      "Tabs.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["createContext", "useContext", "useState", "ReactNode"],
+          "description": "Import the required React APIs"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Tabs",
+          "description": "Define Tabs"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TabList",
+          "description": "Define TabList"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TabTrigger",
+          "description": "Define TabTrigger"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TabPanel",
+          "description": "Define TabPanel"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

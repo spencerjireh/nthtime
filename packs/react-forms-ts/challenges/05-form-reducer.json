@@ -1,0 +1,46 @@
+{
+  "title": "Multi-Field Form via useReducer",
+  "prompt": "Manage a multi-field signup form with `useReducer` so every update flows through one place.\n\n**Requirements:**\n1. Import `useReducer`, `ChangeEvent`, and `FormEvent` from `react`.\n2. Define and export:\n   - `type SignupState = { email: string; password: string; confirm: string }`.\n   - `type SignupAction = { type: 'change'; field: keyof SignupState; value: string } | { type: 'reset' }`.\n3. Define a reducer `signupReducer(state: SignupState, action: SignupAction): SignupState` that handles both action types.\n4. Export a function component `SignupForm({ onSubmit }: { onSubmit: (state: SignupState) => void })`. Use `useReducer(signupReducer, { email: '', password: '', confirm: '' })`.\n5. Render three controlled `<input>`s plus a submit button. Each input dispatches `{ type: 'change', field, value }`. The form's `onSubmit` calls the prop with the current state.",
+  "difficulty": "intermediate",
+  "tags": ["forms", "useReducer", "events"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "SignupForm.tsx",
+      "content": "import { useReducer, ChangeEvent, FormEvent } from 'react';\n\nexport type SignupState = { email: string; password: string; confirm: string };\n\nexport type SignupAction =\n  | { type: 'change'; field: keyof SignupState; value: string }\n  | { type: 'reset' };\n\nconst initial: SignupState = { email: '', password: '', confirm: '' };\n\nexport function signupReducer(state: SignupState, action: SignupAction): SignupState {\n  switch (action.type) {\n    case 'change':\n      return { ...state, [action.field]: action.value };\n    case 'reset':\n      return initial;\n  }\n}\n\nexport function SignupForm({ onSubmit }: { onSubmit: (state: SignupState) => void }) {\n  const [state, dispatch] = useReducer(signupReducer, initial);\n\n  const change = (field: keyof SignupState) => (e: ChangeEvent<HTMLInputElement>) => {\n    dispatch({ type: 'change', field, value: e.target.value });\n  };\n\n  const submit = (e: FormEvent<HTMLFormElement>) => {\n    e.preventDefault();\n    onSubmit(state);\n  };\n\n  return (\n    <form onSubmit={submit}>\n      <input placeholder=\"email\" value={state.email} onChange={change('email')} />\n      <input placeholder=\"password\" type=\"password\" value={state.password} onChange={change('password')} />\n      <input placeholder=\"confirm\" type=\"password\" value={state.confirm} onChange={change('confirm')} />\n      <button type=\"submit\">Sign up</button>\n    </form>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "An action union (`{ type: 'change', field, value } | { type: 'reset' }`) gives the reducer a closed set of moves to handle.",
+    "A curried `change(field)` returns a typed `ChangeEvent` handler so all three inputs share one helper.",
+    "Spreading state and using a computed key -- `{ ...state, [action.field]: action.value }` -- keeps the reducer free of per-field branches."
+  ],
+  "assertions": {
+    "perFile": {
+      "SignupForm.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useReducer", "ChangeEvent", "FormEvent"],
+          "description": "Import useReducer, ChangeEvent, FormEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "signupReducer",
+          "description": "Define signupReducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "SignupForm",
+          "description": "Define SignupForm"
+        },
+        {
+          "type": "methodCall",
+          "method": "useReducer",
+          "description": "Call useReducer"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

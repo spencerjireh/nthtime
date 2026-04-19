@@ -1,0 +1,45 @@
+{
+  "title": "Hook Factory: Parametrised Hooks",
+  "prompt": "Write a function that returns a custom hook bound to a specific store shape.\n\n**Requirements:**\n1. Import `useEffect`, `useState` from `react`.\n2. Define and export a generic factory:\n   ```ts\n   createResourceHook<T>(loader: () => Promise<T>): () => {\n     data: T | null;\n     loading: boolean;\n     error: Error | null;\n   };\n   ```\n3. The factory returns a hook that:\n   - tracks `data`, `loading`, and `error` state\n   - on mount, sets `loading = true`, calls `loader()`, then populates `data` / `error`\n   - cleans up by tracking a `cancelled` flag so stale promise resolutions don't update unmounted components.\n\nConsumers get a purpose-built hook: `const useUser = createResourceHook(fetchUser); const { data } = useUser();`.",
+  "difficulty": "advanced",
+  "tags": ["hook-factory", "composition", "generics"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "createResourceHook.ts",
+      "content": "import { useEffect, useState } from 'react';\n\nexport function createResourceHook<T>(loader: () => Promise<T>) {\n  return function useResource() {\n    const [data, setData] = useState<T | null>(null);\n    const [loading, setLoading] = useState(true);\n    const [error, setError] = useState<Error | null>(null);\n\n    useEffect(() => {\n      let cancelled = false;\n      setLoading(true);\n      loader()\n        .then((result) => {\n          if (cancelled) return;\n          setData(result);\n          setLoading(false);\n        })\n        .catch((err: unknown) => {\n          if (cancelled) return;\n          setError(err instanceof Error ? err : new Error(String(err)));\n          setLoading(false);\n        });\n      return () => {\n        cancelled = true;\n      };\n    }, []);\n\n    return { data, loading, error };\n  };\n}\n"
+    }
+  ],
+  "hints": [
+    "A hook factory is just a function that returns a function -- the returned function must itself be a valid hook (call hooks unconditionally at the top level).",
+    "`cancelled` guards against setting state after unmount -- React 18's strict mode will catch stale updates."
+  ],
+  "assertions": {
+    "perFile": {
+      "createResourceHook.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "createResourceHook",
+          "description": "Define the factory"
+        },
+        {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Track data, loading, and error"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Load on mount"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

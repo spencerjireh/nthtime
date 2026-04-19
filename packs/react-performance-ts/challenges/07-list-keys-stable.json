@@ -1,0 +1,42 @@
+{
+  "title": "Stable Keys for Lists",
+  "prompt": "Replace index keys with stable IDs so list reconciliation reuses children correctly across reorderings.\n\n**Requirements:**\n1. Import `useState`, `ChangeEvent` from `react`.\n2. Define and export `type Item = { id: string; label: string }`.\n3. Export a function component `EditableList({ items: initial }: { items: Item[] })`. Inside:\n   - Hold `items` in `useState<Item[]>(initial)`.\n   - Render a `<ul>` of `<li key={i.id}><input value={i.label} onChange={...}/></li>` -- key off `i.id`, NOT the index.\n   - When the input changes, update `items` immutably -- map and replace the matching `id`.\n   - Render a `Reverse` button that calls `setItems(prev => [...prev].reverse())`.",
+  "difficulty": "beginner",
+  "tags": ["lists", "keys", "reconciliation"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "EditableList.tsx",
+      "content": "import { useState, ChangeEvent } from 'react';\n\nexport type Item = { id: string; label: string };\n\nexport function EditableList({ items: initial }: { items: Item[] }) {\n  const [items, setItems] = useState<Item[]>(initial);\n\n  const updateLabel = (id: string) => (e: ChangeEvent<HTMLInputElement>) => {\n    const next = e.target.value;\n    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, label: next } : i)));\n  };\n\n  return (\n    <div>\n      <ul>\n        {items.map((i) => (\n          <li key={i.id}>\n            <input value={i.label} onChange={updateLabel(i.id)} />\n          </li>\n        ))}\n      </ul>\n      <button type=\"button\" onClick={() => setItems((prev) => [...prev].reverse())}>\n        Reverse\n      </button>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Index keys break when the order changes -- React reuses the wrong DOM node and inputs jump or lose focus.",
+    "A stable `id` makes reconciliation behave like a database upsert keyed by id.",
+    "Always update arrays immutably -- mutating in place hides updates from React."
+  ],
+  "assertions": {
+    "perFile": {
+      "EditableList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "ChangeEvent"],
+          "description": "Import useState and ChangeEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "EditableList",
+          "description": "Define EditableList"
+        },
+        {
+          "type": "jsxElement",
+          "name": "li",
+          "props": ["key"],
+          "description": "Render <li key={...}>"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

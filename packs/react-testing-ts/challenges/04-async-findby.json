@@ -1,0 +1,47 @@
+{
+  "title": "Async findBy for Loading -> Loaded",
+  "prompt": "Test a component that fetches on mount: assert the loading state appears, then await the loaded text with `findByText`.\n\n**Requirements:**\n1. In `User.test.tsx`, import `render`, `screen` from `@testing-library/react` and `User` from `./User`.\n2. Inside `it('shows loaded user after fetch', async () => { ... })`:\n   - Mock `globalThis.fetch` with `vi.fn().mockResolvedValue({ json: async () => ({ name: 'Ada' }) } as unknown as Response);`.\n   - `render(<User id={1} />);`\n   - Assert loading: `expect(screen.getByText('loading')).toBeDefined();`.\n   - Assert loaded: `expect(await screen.findByText('Ada')).toBeDefined();`.",
+  "difficulty": "intermediate",
+  "tags": ["RTL", "async", "findBy"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "User.tsx",
+      "content": "import { useEffect, useState } from 'react';\n\nexport function User({ id }: { id: number }) {\n  const [name, setName] = useState<string | null>(null);\n  useEffect(() => {\n    fetch(`/api/users/${id}`)\n      .then((r) => r.json())\n      .then((u: { name: string }) => setName(u.name));\n  }, [id]);\n  if (!name) return <p>loading</p>;\n  return <p>{name}</p>;\n}\n"
+    },
+    {
+      "path": "User.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport { User } from './User';\n\ndescribe('User', () => {\n  it('shows loaded user after fetch', async () => {\n    globalThis.fetch = vi.fn().mockResolvedValue({\n      json: async () => ({ name: 'Ada' }),\n    } as unknown as Response);\n\n    render(<User id={1} />);\n    expect(screen.getByText('loading')).toBeDefined();\n    expect(await screen.findByText('Ada')).toBeDefined();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "`findBy*` returns a Promise and retries until found or the default 1000ms timeout elapses.",
+    "Use `getBy*` for assertions about state already in the DOM, `findBy*` for things that will appear.",
+    "Mock `fetch` before `render` so the component sees the mocked version on its first effect."
+  ],
+  "assertions": {
+    "perFile": {
+      "User.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/react",
+          "specifiers": ["render", "screen"],
+          "description": "Import render, screen"
+        },
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "getByText",
+          "description": "Assert loading via screen.getByText"
+        },
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "findByText",
+          "description": "Await screen.findByText for loaded UI"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

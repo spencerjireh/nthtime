@@ -1,0 +1,46 @@
+{
+  "title": "Hook Call Order: Unconditional Hooks",
+  "prompt": "React relies on hooks being called in the same order on every render -- conditional hooks break that contract.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`.\n2. Export a function component `Greeting({ visible, name })` with props `visible: boolean` and `name: string`.\n3. Declare ALL hooks at the top level, unconditionally.\n4. Track a `greeting` state derived from `name`.\n5. Use `useEffect([name])` to set `greeting` to `Hello, ${name}`.\n6. Do the conditional rendering AFTER the hooks: when `!visible`, return `null`; otherwise render `<p>{greeting}</p>`.\n\nThis pattern avoids the `Rendered fewer hooks than expected` runtime error.",
+  "difficulty": "beginner",
+  "tags": ["rules-of-hooks", "debugging", "call-order"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "Greeting.tsx",
+      "content": "import { useEffect, useState } from 'react';\n\nexport type GreetingProps = {\n  visible: boolean;\n  name: string;\n};\n\nexport function Greeting({ visible, name }: GreetingProps) {\n  const [greeting, setGreeting] = useState('');\n\n  useEffect(() => {\n    setGreeting(`Hello, ${name}`);\n  }, [name]);\n\n  if (!visible) {\n    return null;\n  }\n\n  return <p>{greeting}</p>;\n}\n"
+    }
+  ],
+  "hints": [
+    "Every `useState`, `useEffect`, `useReducer` call must happen on every render in the same order.",
+    "Do early returns AFTER the hooks are declared, not before.",
+    "If some logic is only needed sometimes, conditionally branch inside the hook callback -- not the call site."
+  ],
+  "assertions": {
+    "perFile": {
+      "Greeting.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Greeting",
+          "description": "Define Greeting"
+        },
+        {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState at the top level"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Call useEffect at the top level"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

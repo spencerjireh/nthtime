@@ -1,0 +1,41 @@
+{
+  "title": "Children as Config: Menu",
+  "prompt": "Iterate over `Children` to read the configuration your component needs.\n\n**Requirements:**\n1. Import `Children`, `isValidElement`, `ReactNode` from `react`.\n2. Export `MenuItem({ label, onSelect })` with `label: string` and `onSelect: () => void`. The implementation can render `null` -- it's configuration, not display.\n3. Export `Menu({ children })` that:\n   - Walks `Children.toArray(children)`\n   - Keeps only elements where `isValidElement(el) && el.type === MenuItem`\n   - Renders a `<ul>` with one `<li><button onClick={item.props.onSelect}>{item.props.label}</button></li>` per item.\n\nCallers describe the menu declaratively with `<Menu><MenuItem label=\"a\" onSelect={...} /></Menu>`; your component interprets the children.",
+  "difficulty": "advanced",
+  "tags": ["children", "isValidElement", "config"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "Menu.tsx",
+      "content": "import { Children, isValidElement, ReactNode } from 'react';\n\nexport type MenuItemProps = {\n  label: string;\n  onSelect: () => void;\n};\n\nexport function MenuItem(_: MenuItemProps) {\n  return null;\n}\n\nexport function Menu({ children }: { children: ReactNode }) {\n  const items = Children.toArray(children).filter(\n    (child): child is React.ReactElement<MenuItemProps> =>\n      isValidElement(child) && child.type === MenuItem,\n  );\n\n  return (\n    <ul>\n      {items.map((item, idx) => (\n        <li key={idx}>\n          <button onClick={item.props.onSelect}>{item.props.label}</button>\n        </li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`Children.toArray(children)` handles strings, fragments, and nulls uniformly.",
+    "Use a type guard in `filter` so the result is narrowed to `ReactElement<MenuItemProps>`.",
+    "Comparing `child.type === MenuItem` is safer than string checks -- the identity match is unambiguous."
+  ],
+  "assertions": {
+    "perFile": {
+      "Menu.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["Children", "isValidElement", "ReactNode"],
+          "description": "Import Children utilities"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Menu",
+          "description": "Define Menu"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "MenuItem",
+          "description": "Define MenuItem"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Zustand: Slice Creators",
+  "prompt": "Split a single store into composable slice creators so different concerns live in different files.\n\n**Requirements:**\n1. In `store.ts`, import `create` and `StateCreator` from `zustand`.\n2. Define two slices and a combined type:\n   - `type CountSlice = { count: number; inc: () => void };`\n   - `type UserSlice = { user: string | null; setUser: (u: string | null) => void };`\n   - `type Store = CountSlice & UserSlice;`\n3. Export `const createCountSlice: StateCreator<Store, [], [], CountSlice> = (set) => ({ count: 0, inc: () => set((s) => ({ count: s.count + 1 })) });`.\n4. Export `const createUserSlice: StateCreator<Store, [], [], UserSlice> = (set) => ({ user: null, setUser: (u) => set({ user: u }) });`.\n5. Export `const useStore = create<Store>()((...args) => ({ ...createCountSlice(...args), ...createUserSlice(...args) }));`.",
+  "difficulty": "advanced",
+  "tags": ["zustand", "slices", "StateCreator"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "store.ts",
+      "content": "import { create, StateCreator } from 'zustand';\n\nexport type CountSlice = { count: number; inc: () => void };\nexport type UserSlice = { user: string | null; setUser: (u: string | null) => void };\nexport type Store = CountSlice & UserSlice;\n\nexport const createCountSlice: StateCreator<Store, [], [], CountSlice> = (set) => ({\n  count: 0,\n  inc: () => set((s) => ({ count: s.count + 1 })),\n});\n\nexport const createUserSlice: StateCreator<Store, [], [], UserSlice> = (set) => ({\n  user: null,\n  setUser: (u) => set({ user: u }),\n});\n\nexport const useStore = create<Store>()((...args) => ({\n  ...createCountSlice(...args),\n  ...createUserSlice(...args),\n}));\n"
+    }
+  ],
+  "hints": [
+    "`StateCreator<Store, [], [], Slice>` is the typed factory: full store shape, middlewares, then this slice's piece.",
+    "Combining slices with `(...args) => ({ ...sliceA(...args), ...sliceB(...args) })` is the canonical pattern.",
+    "Each slice can read the full store via the second `get()` arg if needed -- no central reducer required."
+  ],
+  "assertions": {
+    "perFile": {
+      "store.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "zustand",
+          "specifiers": ["create", "StateCreator"],
+          "description": "Import create + StateCreator"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "createCountSlice",
+          "description": "Export createCountSlice"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "createUserSlice",
+          "description": "Export createUserSlice"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useStore",
+          "description": "Export useStore"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

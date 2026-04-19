@@ -1,0 +1,58 @@
+{
+  "title": "Zustand: Basic Counter Store",
+  "prompt": "Create a tiny Zustand store and consume it from a component.\n\n**Requirements:**\n1. In `store.ts`, import `create` from `zustand`.\n2. Define a typed store:\n   - `type CounterState = { count: number; inc: () => void; dec: () => void };`\n   - `export const useCounterStore = create<CounterState>()((set) => ({ count: 0, inc: () => set((s) => ({ count: s.count + 1 })), dec: () => set((s) => ({ count: s.count - 1 })) }));`\n3. In `Counter.tsx`, import `useCounterStore` and export `function Counter()` that reads `count`, `inc`, `dec` from the store and renders `<p>count: {count}</p><button onClick={inc}>+</button><button onClick={dec}>-</button>`.",
+  "difficulty": "beginner",
+  "tags": ["zustand", "store"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "store.ts",
+      "content": "import { create } from 'zustand';\n\ntype CounterState = {\n  count: number;\n  inc: () => void;\n  dec: () => void;\n};\n\nexport const useCounterStore = create<CounterState>()((set) => ({\n  count: 0,\n  inc: () => set((s) => ({ count: s.count + 1 })),\n  dec: () => set((s) => ({ count: s.count - 1 })),\n}));\n"
+    },
+    {
+      "path": "Counter.tsx",
+      "content": "import { useCounterStore } from './store';\n\nexport function Counter() {\n  const count = useCounterStore((s) => s.count);\n  const inc = useCounterStore((s) => s.inc);\n  const dec = useCounterStore((s) => s.dec);\n  return (\n    <>\n      <p>count: {count}</p>\n      <button onClick={inc}>+</button>\n      <button onClick={dec}>-</button>\n    </>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`create<State>()(setter)` is the typed Zustand entry point in v5 -- the empty `()` lets TS chain middlewares.",
+    "Subscribing with a selector (`s => s.count`) only re-renders when that slice changes.",
+    "Action functions live on the store -- no separate dispatch needed."
+  ],
+  "assertions": {
+    "perFile": {
+      "store.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "zustand",
+          "specifiers": ["create"],
+          "description": "Import create from zustand"
+        },
+        {
+          "type": "methodCall",
+          "method": "create",
+          "description": "Call create<State>()(...)"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useCounterStore",
+          "description": "Export useCounterStore"
+        }
+      ],
+      "Counter.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "./store",
+          "specifiers": ["useCounterStore"],
+          "description": "Import the store"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Counter",
+          "description": "Export Counter"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

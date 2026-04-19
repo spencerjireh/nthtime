@@ -1,0 +1,35 @@
+{
+  "name": "React + TypeScript: Typing",
+  "slug": "react-ts-typing",
+  "description": "Type React idiomatically -- props, children, events, refs, generics, and polymorphic components.",
+  "language": "typescript",
+  "framework": "react",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["react", "typescript", "types", "generics"],
+  "prerequisites": ["react-fundamentals"],
+  "sources": [
+    {
+      "name": "React TypeScript Cheatsheet",
+      "url": "https://react-typescript-cheatsheet.netlify.app/",
+      "license": "MIT"
+    },
+    {
+      "name": "react.dev",
+      "url": "https://react.dev/learn/typescript",
+      "license": "CC BY 4.0"
+    }
+  ],
+  "challenges": [
+    "challenges/01-typed-props.json",
+    "challenges/02-children-variants.json",
+    "challenges/03-event-handlers.json",
+    "challenges/04-typed-usestate.json",
+    "challenges/05-typed-useref.json",
+    "challenges/06-ref-as-prop.json",
+    "challenges/07-discriminated-props.json",
+    "challenges/08-generic-list.json",
+    "challenges/09-polymorphic-as.json",
+    "challenges/10-context-typing.json"
+  ]
+}

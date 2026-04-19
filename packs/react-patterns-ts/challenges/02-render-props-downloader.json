@@ -1,0 +1,35 @@
+{
+  "title": "Render Props: Downloader",
+  "prompt": "Expose state via a function-as-children (render props).\n\n**Requirements:**\n1. Import `useState`, `ReactNode` from `react`.\n2. Define `DownloaderState = { progress: number; start: () => void; done: boolean }`.\n3. Export `Downloader({ children })` where `children: (state: DownloaderState) => ReactNode`.\n4. Internally track `progress` and `done`. `start()` simulates work by setting progress to 100 and `done` to true.\n5. Call `children(state)` and return it directly.\n\nConsumers decide the visual representation; the component owns the state machine.",
+  "difficulty": "intermediate",
+  "tags": ["render-props", "children-as-function", "composition"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "Downloader.tsx",
+      "content": "import { useState, ReactNode } from 'react';\n\nexport type DownloaderState = {\n  progress: number;\n  done: boolean;\n  start: () => void;\n};\n\nexport type DownloaderProps = {\n  children: (state: DownloaderState) => ReactNode;\n};\n\nexport function Downloader({ children }: DownloaderProps) {\n  const [progress, setProgress] = useState(0);\n  const [done, setDone] = useState(false);\n\n  const start = () => {\n    setProgress(100);\n    setDone(true);\n  };\n\n  return <>{children({ progress, done, start })}</>;\n}\n"
+    }
+  ],
+  "hints": [
+    "Type children as a function: `(state: DownloaderState) => ReactNode`.",
+    "Return the invocation inside a fragment so the component itself has no JSX structure to constrain the caller."
+  ],
+  "assertions": {
+    "perFile": {
+      "Downloader.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "ReactNode"],
+          "description": "Import React APIs"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Downloader",
+          "description": "Define Downloader"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

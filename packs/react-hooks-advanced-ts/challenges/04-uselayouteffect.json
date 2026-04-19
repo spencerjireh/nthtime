@@ -1,0 +1,40 @@
+{
+  "title": "useLayoutEffect: Measure Before Paint",
+  "prompt": "Measure a DOM node synchronously so the UI never flashes with a stale dimension.\n\n**Requirements:**\n1. Import `useLayoutEffect`, `useRef`, and `useState` from `react`.\n2. Export a function component `Measurable({ children })` that:\n   - declares `const boxRef = useRef<HTMLDivElement>(null)`\n   - tracks `width` state with `useState(0)`\n   - uses `useLayoutEffect` to read `boxRef.current?.offsetWidth` after layout and set `width`\n   - renders `<div ref={boxRef}>{children}</div>` and `<p data-testid=\"width\">{width}</p>`\n3. Using `useLayoutEffect` (rather than `useEffect`) guarantees the measurement is taken before the browser paints.",
+  "difficulty": "intermediate",
+  "tags": ["useLayoutEffect", "measurement", "paint"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "Measurable.tsx",
+      "content": "import { useLayoutEffect, useRef, useState, ReactNode } from 'react';\n\nexport function Measurable({ children }: { children: ReactNode }) {\n  const boxRef = useRef<HTMLDivElement>(null);\n  const [width, setWidth] = useState(0);\n\n  useLayoutEffect(() => {\n    if (boxRef.current) {\n      setWidth(boxRef.current.offsetWidth);\n    }\n  }, []);\n\n  return (\n    <>\n      <div ref={boxRef}>{children}</div>\n      <p data-testid=\"width\">{width}</p>\n    </>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`useLayoutEffect` runs synchronously after React flushes DOM mutations but before the browser paints.",
+    "Prefer `useEffect` when you don't need a synchronous measurement -- it's non-blocking."
+  ],
+  "assertions": {
+    "perFile": {
+      "Measurable.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useLayoutEffect", "useRef", "useState"],
+          "description": "Import the required hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Measurable",
+          "description": "Define Measurable"
+        },
+        {
+          "type": "methodCall",
+          "method": "useLayoutEffect",
+          "description": "Call useLayoutEffect"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Splat + errorElement (404)",
+  "prompt": "Catch unknown URLs with a splat route AND surface route-level errors via `errorElement`.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `useRouteError`, `type RouteObject` from `react-router`.\n2. Define and export `function RouteError()` that calls `const err = useRouteError() as Error` and renders `<p>err: {err.message}</p>`.\n3. Routes:\n   - `{ path: '/', element: <p>home</p> }`\n   - `{ path: '*', element: <p>not-found</p> }`\n   - `{ path: '/boom', loader: () => { throw new Error('kapow'); }, element: <p>boom-ok</p>, errorElement: <RouteError /> }`\n4. Export `routes`, `router`, `App`.",
+  "difficulty": "beginner",
+  "tags": ["react-router", "splat", "errorElement"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  useRouteError,\n  type RouteObject,\n} from 'react-router';\n\nexport function RouteError() {\n  const err = useRouteError() as Error;\n  return <p>err: {err.message}</p>;\n}\n\nexport const routes: RouteObject[] = [\n  { path: '/', element: <p>home</p> },\n  { path: '*', element: <p>not-found</p> },\n  {\n    path: '/boom',\n    loader: () => {\n      throw new Error('kapow');\n    },\n    element: <p>boom-ok</p>,\n    errorElement: <RouteError />,\n  },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`path: '*'` matches any URL that no other route matched -- the catch-all 404.",
+    "`errorElement` renders when the matched route's loader/action throws (or the component throws).",
+    "`useRouteError()` returns the thrown value -- cast to `Error` for typed access."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "useRouteError", "RouteObject"],
+          "description": "Import RR error primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "useRouteError",
+          "description": "Call useRouteError"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "RouteError",
+          "description": "Export RouteError"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

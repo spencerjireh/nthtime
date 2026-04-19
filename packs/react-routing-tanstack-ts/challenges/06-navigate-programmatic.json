@@ -1,0 +1,41 @@
+{
+  "title": "Programmatic useNavigate",
+  "prompt": "Wire a button that programmatically navigates to another route via `useNavigate`.\n\n**Requirements:**\n1. In `router.tsx`, import the usual TanStack Router primitives + `useNavigate`.\n2. Routes:\n   - `rootRoute = createRootRoute({ component: () => <Outlet /> })`\n   - `homeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: HomeView })`\n   - `aboutRoute = createRoute({ getParentRoute: () => rootRoute, path: '/about', component: () => <p>about</p> })`\n3. Inside `HomeView`:\n   - `const navigate = useNavigate();`\n   - Render a button with `onClick={() => navigate({ to: '/about' })}` whose text is `go`.\n4. Export `App` and `makeRouter`.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-router", "useNavigate"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  useNavigate,\n  createMemoryHistory,\n} from '@tanstack/react-router';\n\nexport const rootRoute = createRootRoute({ component: () => <Outlet /> });\n\nexport function HomeView() {\n  const navigate = useNavigate();\n  return <button onClick={() => navigate({ to: '/about' })}>go</button>;\n}\n\nexport const homeRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/',\n  component: HomeView,\n});\n\nexport const aboutRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/about',\n  component: () => <p>about</p>,\n});\n\nconst routeTree = rootRoute.addChildren([homeRoute, aboutRoute]);\n\nexport function makeRouter(initialEntries: string[] = ['/']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`useNavigate()` returns a function -- call it with `{ to, params, search, replace? }`.",
+    "For typed navigation across the whole app, prefer `useNavigate` + an explicit `to` string over `<Link>`'s shorthand when you need to interleave logic.",
+    "`navigate({ to: '/about' })` is equivalent to clicking `<Link to=\"/about\" />` -- both push onto history."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": ["createRootRoute", "createRoute", "createRouter", "Outlet", "RouterProvider", "useNavigate", "createMemoryHistory"],
+          "description": "Import TanStack Router primitives + useNavigate"
+        },
+        {
+          "type": "methodCall",
+          "method": "useNavigate",
+          "description": "Call useNavigate"
+        },
+        {
+          "type": "methodCall",
+          "method": "navigate",
+          "description": "Call navigate({ to })"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

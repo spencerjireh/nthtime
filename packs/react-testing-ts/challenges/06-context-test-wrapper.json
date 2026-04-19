@@ -1,0 +1,72 @@
+{
+  "title": "Custom render() with Provider",
+  "prompt": "When components depend on a context (theme, auth, query client...), every test would have to wrap them. Build a custom `renderWithTheme` that does it once.\n\n**Requirements:**\n1. In `test-utils.tsx`, import `render`, `RenderOptions` from `@testing-library/react`, and `ThemeProvider` from `./ThemeProvider`.\n2. Export a function `renderWithTheme(ui: React.ReactElement, options?: RenderOptions)` that wraps `ui` in `<ThemeProvider value=\"dark\">` and forwards all options to `render`.\n3. In `Themed.test.tsx`, import `screen` from `@testing-library/react`, `renderWithTheme` from `./test-utils`, and `Themed` from `./Themed`.\n4. Inside `it('renders with provided theme', () => { ... })`, call `renderWithTheme(<Themed />)` and assert `expect(screen.getByText('theme: dark')).toBeDefined()`.",
+  "difficulty": "intermediate",
+  "tags": ["RTL", "context", "test-utils"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "ThemeProvider.tsx",
+      "content": "import { createContext, ReactNode, useContext } from 'react';\n\nconst ThemeContext = createContext<'light' | 'dark'>('light');\n\nexport function ThemeProvider({ value, children }: { value: 'light' | 'dark'; children: ReactNode }) {\n  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;\n}\n\nexport function useTheme() {\n  return useContext(ThemeContext);\n}\n"
+    },
+    {
+      "path": "Themed.tsx",
+      "content": "import { useTheme } from './ThemeProvider';\n\nexport function Themed() {\n  const theme = useTheme();\n  return <p>theme: {theme}</p>;\n}\n"
+    },
+    {
+      "path": "test-utils.tsx",
+      "content": "import { render, RenderOptions } from '@testing-library/react';\nimport React, { ReactElement } from 'react';\nimport { ThemeProvider } from './ThemeProvider';\n\nexport function renderWithTheme(ui: ReactElement, options?: RenderOptions) {\n  return render(<ThemeProvider value=\"dark\">{ui}</ThemeProvider>, options);\n}\n"
+    },
+    {
+      "path": "Themed.test.tsx",
+      "content": "import { screen } from '@testing-library/react';\nimport { renderWithTheme } from './test-utils';\nimport { Themed } from './Themed';\n\ndescribe('Themed', () => {\n  it('renders with provided theme', () => {\n    renderWithTheme(<Themed />);\n    expect(screen.getByText('theme: dark')).toBeDefined();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "A custom render is just `(ui, options) => render(wrapper(ui), options)`. Re-exporting `screen` etc. from your utils file is also a common idiom.",
+    "Always forward `options` so callers can still use `container`, `wrapper`, `baseElement`, etc.",
+    "Tests under the wrapper consume context through their normal `useContext` calls -- no test-time API needed."
+  ],
+  "assertions": {
+    "perFile": {
+      "test-utils.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/react",
+          "specifiers": ["render", "RenderOptions"],
+          "description": "Import render + RenderOptions"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "./ThemeProvider",
+          "specifiers": ["ThemeProvider"],
+          "description": "Import ThemeProvider"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "renderWithTheme",
+          "description": "Export renderWithTheme"
+        },
+        {
+          "type": "jsxElement",
+          "name": "ThemeProvider",
+          "description": "Render with ThemeProvider wrapper"
+        }
+      ],
+      "Themed.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "./test-utils",
+          "specifiers": ["renderWithTheme"],
+          "description": "Import renderWithTheme"
+        },
+        {
+          "type": "methodCall",
+          "method": "renderWithTheme",
+          "description": "Call renderWithTheme"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

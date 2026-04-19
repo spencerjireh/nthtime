@@ -1,0 +1,45 @@
+{
+  "title": "usePrevious<T>",
+  "prompt": "Track a value's previous render with a ref.\n\n**Requirements:**\n1. Import `useEffect` and `useRef` from `react`.\n2. Export `usePrevious<T>(value: T): T | undefined`.\n3. Declare `const ref = useRef<T | undefined>(undefined);`.\n4. Capture the current value into the ref inside `useEffect([value])`.\n5. Return `ref.current` -- that's the value from the PREVIOUS render.\n\nReturning the ref before the effect fires is the key trick: effects run after render, so `ref.current` still holds the previous commit's value.",
+  "difficulty": "intermediate",
+  "tags": ["custom-hooks", "useRef", "useEffect"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "usePrevious.ts",
+      "content": "import { useEffect, useRef } from 'react';\n\nexport function usePrevious<T>(value: T): T | undefined {\n  const ref = useRef<T | undefined>(undefined);\n  useEffect(() => {\n    ref.current = value;\n  }, [value]);\n  return ref.current;\n}\n"
+    }
+  ],
+  "hints": [
+    "Returning the ref value BEFORE the effect runs is the whole trick -- the effect then writes for next render.",
+    "On the first render, the returned value is `undefined` -- reflect that in the return type."
+  ],
+  "assertions": {
+    "perFile": {
+      "usePrevious.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useRef"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "usePrevious",
+          "description": "Define usePrevious"
+        },
+        {
+          "type": "methodCall",
+          "method": "useRef",
+          "description": "Declare the ref"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Update the ref after each commit"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -5,6 +5,12 @@ export interface FileEntry {
   readonly content: string;
 }
 
+export interface PackSource {
+  readonly name: string;
+  readonly url: string;
+  readonly license: string;
+}
+
 export interface Pack {
   readonly name: string;
   readonly slug: string;
@@ -15,5 +21,6 @@ export interface Pack {
   readonly author: string;
   readonly tags: readonly string[];
   readonly prerequisites?: readonly string[];
+  readonly sources?: readonly PackSource[];
   readonly challenges: readonly Challenge[];
 }

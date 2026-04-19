@@ -1,0 +1,51 @@
+{
+  "title": "Split State and Dispatch into Two Contexts",
+  "prompt": "Components that only call `dispatch` shouldn't re-render when state changes. Split state and dispatch into separate contexts.\n\n**Requirements:**\n1. In `Counter.tsx`, import `createContext`, `useContext`, `useReducer`, `Dispatch`, `ReactNode` from `react`.\n2. Define:\n   - `type State = { count: number };`\n   - `type Action = { type: 'inc' } | { type: 'dec' };`\n   - `const reducer = (s: State, a: Action): State => { switch (a.type) { case 'inc': return { count: s.count + 1 }; case 'dec': return { count: s.count - 1 }; } };`\n3. Define and export two contexts:\n   - `const StateCtx = createContext<State | null>(null);`\n   - `const DispatchCtx = createContext<Dispatch<Action> | null>(null);`\n4. Export `function CounterProvider({ children }: { children: ReactNode })` that:\n   - `const [state, dispatch] = useReducer(reducer, { count: 0 });`\n   - Wraps children with `<StateCtx.Provider value={state}><DispatchCtx.Provider value={dispatch}>{children}</DispatchCtx.Provider></StateCtx.Provider>`.\n5. Export `useCounterState()` and `useCounterDispatch()` hooks that throw when called outside the provider.",
+  "difficulty": "intermediate",
+  "tags": ["context", "useReducer", "performance"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "Counter.tsx",
+      "content": "import { createContext, Dispatch, ReactNode, useContext, useReducer } from 'react';\n\ntype State = { count: number };\ntype Action = { type: 'inc' } | { type: 'dec' };\n\nconst reducer = (s: State, a: Action): State => {\n  switch (a.type) {\n    case 'inc':\n      return { count: s.count + 1 };\n    case 'dec':\n      return { count: s.count - 1 };\n  }\n};\n\nconst StateCtx = createContext<State | null>(null);\nconst DispatchCtx = createContext<Dispatch<Action> | null>(null);\n\nexport function CounterProvider({ children }: { children: ReactNode }) {\n  const [state, dispatch] = useReducer(reducer, { count: 0 });\n  return (\n    <StateCtx.Provider value={state}>\n      <DispatchCtx.Provider value={dispatch}>{children}</DispatchCtx.Provider>\n    </StateCtx.Provider>\n  );\n}\n\nexport function useCounterState(): State {\n  const ctx = useContext(StateCtx);\n  if (!ctx) throw new Error('useCounterState outside provider');\n  return ctx;\n}\n\nexport function useCounterDispatch(): Dispatch<Action> {\n  const ctx = useContext(DispatchCtx);\n  if (!ctx) throw new Error('useCounterDispatch outside provider');\n  return ctx;\n}\n"
+    }
+  ],
+  "hints": [
+    "Two contexts is one of the cheapest ways to limit re-renders without external libraries.",
+    "Components that only need `dispatch` (e.g., buttons) won't re-render when `state` changes.",
+    "`Dispatch<Action>` is reference-stable across renders -- safe to put behind context."
+  ],
+  "assertions": {
+    "perFile": {
+      "Counter.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["createContext", "Dispatch", "ReactNode", "useContext", "useReducer"],
+          "description": "Import reducer + context primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "useReducer",
+          "description": "Use useReducer"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "CounterProvider",
+          "description": "Export CounterProvider"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useCounterState",
+          "description": "Export useCounterState"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useCounterDispatch",
+          "description": "Export useCounterDispatch"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "title": "Typed Event Handlers",
+  "prompt": "Write typed change handlers for an input, select, and textarea.\n\n**Requirements:**\n1. Import `ChangeEvent` from `react`.\n2. Define a `FormState` type with `name: string`, `role: string`, and `bio: string`.\n3. Export a function component `ProfileForm({ state, onChange })` with:\n   - `state: FormState`\n   - `onChange: (next: FormState) => void`\n4. Render:\n   - `<input data-field=\"name\" value={state.name}>` with `onChange: (e: ChangeEvent<HTMLInputElement>) => ...`\n   - `<select data-field=\"role\" value={state.role}>` with options `\"admin\" | \"user\"` and `onChange: (e: ChangeEvent<HTMLSelectElement>) => ...`\n   - `<textarea data-field=\"bio\" value={state.bio}>` with `onChange: (e: ChangeEvent<HTMLTextAreaElement>) => ...`\n5. Each handler must update the corresponding field and call `onChange(next)`.",
+  "difficulty": "beginner",
+  "tags": ["events", "forms", "typescript"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "ProfileForm.tsx",
+      "content": "import { ChangeEvent } from 'react';\n\nexport type FormState = {\n  name: string;\n  role: string;\n  bio: string;\n};\n\nexport type ProfileFormProps = {\n  state: FormState;\n  onChange: (next: FormState) => void;\n};\n\nexport function ProfileForm({ state, onChange }: ProfileFormProps) {\n  const handleName = (e: ChangeEvent<HTMLInputElement>) =>\n    onChange({ ...state, name: e.target.value });\n  const handleRole = (e: ChangeEvent<HTMLSelectElement>) =>\n    onChange({ ...state, role: e.target.value });\n  const handleBio = (e: ChangeEvent<HTMLTextAreaElement>) =>\n    onChange({ ...state, bio: e.target.value });\n\n  return (\n    <form>\n      <input data-field=\"name\" value={state.name} onChange={handleName} />\n      <select data-field=\"role\" value={state.role} onChange={handleRole}>\n        <option value=\"admin\">admin</option>\n        <option value=\"user\">user</option>\n      </select>\n      <textarea data-field=\"bio\" value={state.bio} onChange={handleBio} />\n    </form>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`ChangeEvent<HTMLInputElement>` -- the element type is the generic parameter.",
+    "Spread existing state then override the changed field: `{ ...state, name: e.target.value }`.",
+    "Separate handlers per element keep each type narrowly scoped."
+  ],
+  "assertions": {
+    "perFile": {
+      "ProfileForm.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["ChangeEvent"],
+          "description": "Import ChangeEvent from react"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "ProfileForm",
+          "description": "Define ProfileForm"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["value", "onChange"],
+          "description": "Render an input with value and onChange"
+        },
+        {
+          "type": "jsxElement",
+          "name": "select",
+          "props": ["value", "onChange"],
+          "description": "Render a select with value and onChange"
+        },
+        {
+          "type": "jsxElement",
+          "name": "textarea",
+          "props": ["value", "onChange"],
+          "description": "Render a textarea with value and onChange"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

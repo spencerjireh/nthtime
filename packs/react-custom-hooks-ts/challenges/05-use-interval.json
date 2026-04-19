@@ -1,0 +1,45 @@
+{
+  "title": "useInterval: Declarative setInterval",
+  "prompt": "Wrap `setInterval` so the callback can change without restarting the timer.\n\n**Requirements:**\n1. Import `useEffect` and `useRef` from `react`.\n2. Export `useInterval(callback: () => void, delayMs: number | null): void`.\n3. Keep the latest callback in a ref; update it inside `useEffect([callback])`.\n4. Start the interval inside `useEffect([delayMs])`; when `delayMs` is `null`, don't start one.\n5. On cleanup, clear the interval.\n\nStoring the callback in a ref means consumers can pass a fresh closure without restarting the timer on every render.",
+  "difficulty": "intermediate",
+  "tags": ["custom-hooks", "setInterval", "refs"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "useInterval.ts",
+      "content": "import { useEffect, useRef } from 'react';\n\nexport function useInterval(callback: () => void, delayMs: number | null): void {\n  const savedCallback = useRef(callback);\n\n  useEffect(() => {\n    savedCallback.current = callback;\n  }, [callback]);\n\n  useEffect(() => {\n    if (delayMs === null) return;\n    const id = setInterval(() => savedCallback.current(), delayMs);\n    return () => clearInterval(id);\n  }, [delayMs]);\n}\n"
+    }
+  ],
+  "hints": [
+    "Two effects: one syncs the callback ref, the other manages the timer.",
+    "Returning early when `delayMs === null` lets consumers pause the interval."
+  ],
+  "assertions": {
+    "perFile": {
+      "useInterval.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useRef"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useInterval",
+          "description": "Define useInterval"
+        },
+        {
+          "type": "methodCall",
+          "method": "setInterval",
+          "description": "Start the interval"
+        },
+        {
+          "type": "methodCall",
+          "method": "clearInterval",
+          "description": "Stop the interval on cleanup"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

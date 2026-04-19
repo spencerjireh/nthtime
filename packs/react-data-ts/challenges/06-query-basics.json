@@ -1,0 +1,41 @@
+{
+  "title": "TanStack Query: useQuery basics",
+  "prompt": "Replace the manual fetch + state with `useQuery` from TanStack Query.\n\n**Requirements:**\n1. Import `useQuery` from `@tanstack/react-query`.\n2. Define and export `type Todo = { id: number; title: string; done: boolean }`.\n3. Export an async helper `fetchTodos(): Promise<Todo[]>` that calls `fetch('/api/todos')` and returns `r.json() as Promise<Todo[]>`.\n4. Export a function component `TodoList` that calls `useQuery({ queryKey: ['todos'], queryFn: fetchTodos })`.\n5. Render:\n   - `<p>loading</p>` when `isLoading` is true.\n   - `<p>error</p>` when `isError` is true.\n   - Otherwise, a `<ul>` of titles from `data`.",
+  "difficulty": "beginner",
+  "tags": ["tanstack-query", "useQuery", "data-fetching"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "TodoList.tsx",
+      "content": "import { useQuery } from '@tanstack/react-query';\n\nexport type Todo = { id: number; title: string; done: boolean };\n\nexport async function fetchTodos(): Promise<Todo[]> {\n  const r = await fetch('/api/todos');\n  return r.json() as Promise<Todo[]>;\n}\n\nexport function TodoList() {\n  const { data, isLoading, isError } = useQuery({\n    queryKey: ['todos'],\n    queryFn: fetchTodos,\n  });\n\n  if (isLoading) return <p>loading</p>;\n  if (isError) return <p>error</p>;\n  return (\n    <ul>\n      {data?.map((t) => (\n        <li key={t.id}>{t.title}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`useQuery` needs both a `queryKey` (for caching) and a `queryFn` (for fetching).",
+    "TanStack returns `isLoading`, `isError`, and `data` -- you don't manage state yourself.",
+    "`data?.map(...)` is safe even before the first fetch resolves -- `data` is `undefined` until success."
+  ],
+  "assertions": {
+    "perFile": {
+      "TodoList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-query",
+          "specifiers": ["useQuery"],
+          "description": "Import useQuery"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TodoList",
+          "description": "Define TodoList"
+        },
+        {
+          "type": "methodCall",
+          "method": "useQuery",
+          "description": "Call useQuery"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

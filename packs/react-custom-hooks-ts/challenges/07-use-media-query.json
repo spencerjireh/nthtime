@@ -1,0 +1,41 @@
+{
+  "title": "useMediaQuery",
+  "prompt": "Subscribe to a CSS media query and return whether it currently matches.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`.\n2. Export `useMediaQuery(query: string): boolean`.\n3. Initialise state from `window.matchMedia(query).matches` (guarded for SSR).\n4. In `useEffect([query])`, subscribe via `addEventListener('change', handler)` on the `MediaQueryList`; update state on change.\n5. Return the unsubscribe function from the effect.",
+  "difficulty": "intermediate",
+  "tags": ["custom-hooks", "matchMedia", "responsive"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "useMediaQuery.ts",
+      "content": "import { useEffect, useState } from 'react';\n\nexport function useMediaQuery(query: string): boolean {\n  const [matches, setMatches] = useState<boolean>(() => {\n    if (typeof window === 'undefined') return false;\n    return window.matchMedia(query).matches;\n  });\n\n  useEffect(() => {\n    if (typeof window === 'undefined') return;\n    const mql = window.matchMedia(query);\n    const onChange = (e: MediaQueryListEvent) => setMatches(e.matches);\n    setMatches(mql.matches);\n    mql.addEventListener('change', onChange);\n    return () => mql.removeEventListener('change', onChange);\n  }, [query]);\n\n  return matches;\n}\n"
+    }
+  ],
+  "hints": [
+    "Read the initial state lazily -- `useState(() => ...)` -- to avoid re-reading on every render.",
+    "Re-sync inside the effect in case the initial snapshot was taken before the layout settled."
+  ],
+  "assertions": {
+    "perFile": {
+      "useMediaQuery.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useMediaQuery",
+          "description": "Define useMediaQuery"
+        },
+        {
+          "type": "methodCall",
+          "method": "matchMedia",
+          "object": "window",
+          "description": "Read the media query list via window.matchMedia"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

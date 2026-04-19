@@ -1,0 +1,56 @@
+{
+  "title": "Multi-Step Wizard with Persisted RHF State",
+  "prompt": "Build a two-step wizard whose values persist across steps using a single RHF form.\n\n**Requirements:**\n1. Import `useForm`, `FormProvider`, `useFormContext` from `react-hook-form` and `useState` from `react`.\n2. Define and export `type WizardInputs = { name: string; email: string; tier: 'free' | 'pro' }`.\n3. Export a function component `Wizard({ onSubmit }: { onSubmit: (data: WizardInputs) => void })`. Inside:\n   - Hold `step` in `useState<1 | 2>(1)`.\n   - Create a single form via `useForm<WizardInputs>({ defaultValues: { name: '', email: '', tier: 'free' } })` and wrap children in `<FormProvider {...methods}>`.\n   - When `step === 1`, render `<StepOne onNext={() => setStep(2)} />`.\n   - When `step === 2`, render `<StepTwo onBack={() => setStep(1)} onSubmit={methods.handleSubmit(onSubmit)} />`.\n4. Export `StepOne({ onNext }: { onNext: () => void })`. It pulls `register` from `useFormContext<WizardInputs>()`, renders inputs for `name` and `email`, and a `Next` button that calls `onNext`.\n5. Export `StepTwo({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => void })`. It pulls `register` from context, renders a `tier` `<select>`, and `Back` / `Submit` buttons.",
+  "difficulty": "advanced",
+  "tags": ["forms", "react-hook-form", "wizard", "FormProvider"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "Wizard.tsx",
+      "content": "import { useState } from 'react';\nimport { useForm, FormProvider, useFormContext } from 'react-hook-form';\n\nexport type WizardInputs = { name: string; email: string; tier: 'free' | 'pro' };\n\nexport function Wizard({ onSubmit }: { onSubmit: (data: WizardInputs) => void }) {\n  const [step, setStep] = useState<1 | 2>(1);\n  const methods = useForm<WizardInputs>({\n    defaultValues: { name: '', email: '', tier: 'free' },\n  });\n\n  return (\n    <FormProvider {...methods}>\n      {step === 1 ? (\n        <StepOne onNext={() => setStep(2)} />\n      ) : (\n        <StepTwo onBack={() => setStep(1)} onSubmit={methods.handleSubmit(onSubmit)} />\n      )}\n    </FormProvider>\n  );\n}\n\nexport function StepOne({ onNext }: { onNext: () => void }) {\n  const { register } = useFormContext<WizardInputs>();\n  return (\n    <div>\n      <input placeholder=\"name\" {...register('name')} />\n      <input placeholder=\"email\" {...register('email')} />\n      <button type=\"button\" onClick={onNext}>\n        Next\n      </button>\n    </div>\n  );\n}\n\nexport function StepTwo({\n  onBack,\n  onSubmit,\n}: {\n  onBack: () => void;\n  onSubmit: () => void;\n}) {\n  const { register } = useFormContext<WizardInputs>();\n  return (\n    <div>\n      <select {...register('tier')}>\n        <option value=\"free\">Free</option>\n        <option value=\"pro\">Pro</option>\n      </select>\n      <button type=\"button\" onClick={onBack}>\n        Back\n      </button>\n      <button type=\"button\" onClick={onSubmit}>\n        Submit\n      </button>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "One `useForm` instance hoisted to `Wizard` is what makes step values survive navigation.",
+    "`FormProvider` + `useFormContext<WizardInputs>()` lets each step register its own fields without prop-drilling `register`.",
+    "Don't unmount the form across steps -- conditionally render step bodies inside the provider."
+  ],
+  "assertions": {
+    "perFile": {
+      "Wizard.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-hook-form",
+          "specifiers": ["useForm", "FormProvider", "useFormContext"],
+          "description": "Import useForm, FormProvider, useFormContext"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Wizard",
+          "description": "Define Wizard"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "StepOne",
+          "description": "Define StepOne"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "StepTwo",
+          "description": "Define StepTwo"
+        },
+        {
+          "type": "methodCall",
+          "method": "useForm",
+          "description": "Call useForm"
+        },
+        {
+          "type": "methodCall",
+          "method": "useFormContext",
+          "description": "Call useFormContext"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

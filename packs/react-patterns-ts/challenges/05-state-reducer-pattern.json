@@ -1,0 +1,45 @@
+{
+  "title": "State Reducer: Custom Logic Injection",
+  "prompt": "Let consumers override default state transitions by passing their own reducer.\n\n**Requirements:**\n1. Import `useReducer`, `Dispatch` from `react`.\n2. Define and export:\n   - `CounterState = { count: number }`\n   - `CounterAction = { type: 'inc' } | { type: 'dec' }`\n   - `defaultReducer(state, action)` implementing `inc`/`dec` by ±1.\n3. Export `useCounter(overrideReducer?: (state: CounterState, action: CounterAction, defaultNext: CounterState) => CounterState): readonly [CounterState, Dispatch<CounterAction>]`.\n4. Inside `useCounter`, build a combined reducer that first computes `defaultNext = defaultReducer(state, action)` and then runs the override if provided: `overrideReducer(state, action, defaultNext) ?? defaultNext`.\n5. `useReducer` is called with the combined reducer.\n\nConsumers can block decrements below zero, cap at 10, log, etc., without forking the component.",
+  "difficulty": "advanced",
+  "tags": ["state-reducer", "inversion-of-control", "composition"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "useCounter.ts",
+      "content": "import { useReducer, Dispatch } from 'react';\n\nexport type CounterState = { count: number };\nexport type CounterAction = { type: 'inc' } | { type: 'dec' };\n\nexport function defaultReducer(state: CounterState, action: CounterAction): CounterState {\n  switch (action.type) {\n    case 'inc':\n      return { count: state.count + 1 };\n    case 'dec':\n      return { count: state.count - 1 };\n  }\n}\n\nexport type OverrideReducer = (\n  state: CounterState,\n  action: CounterAction,\n  defaultNext: CounterState,\n) => CounterState;\n\nexport function useCounter(\n  overrideReducer?: OverrideReducer,\n): readonly [CounterState, Dispatch<CounterAction>] {\n  const reducer = (state: CounterState, action: CounterAction): CounterState => {\n    const defaultNext = defaultReducer(state, action);\n    return overrideReducer ? overrideReducer(state, action, defaultNext) : defaultNext;\n  };\n\n  const [state, dispatch] = useReducer(reducer, { count: 0 });\n  return [state, dispatch] as const;\n}\n"
+    }
+  ],
+  "hints": [
+    "Always compute the default first -- override callbacks get it for free.",
+    "Return `defaultNext` as the fallback when override is omitted -- keeps the baseline intact."
+  ],
+  "assertions": {
+    "perFile": {
+      "useCounter.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useReducer", "Dispatch"],
+          "description": "Import useReducer and Dispatch"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "defaultReducer",
+          "description": "Define the default reducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useCounter",
+          "description": "Define the useCounter hook"
+        },
+        {
+          "type": "methodCall",
+          "method": "useReducer",
+          "description": "Use useReducer with the combined reducer"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

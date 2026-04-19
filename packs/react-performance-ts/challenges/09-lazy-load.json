@@ -1,0 +1,51 @@
+{
+  "title": "React.lazy + Suspense",
+  "prompt": "Code-split a component behind `React.lazy` and gate it with `<Suspense>`.\n\n**Requirements:**\n1. Import `lazy`, `Suspense`, `useState` from `react`.\n2. Export a default-exported component called `Heavy` from a separate file (you'll write only `App.tsx` here -- pretend `./HeavyView` exists).\n3. Define and export the lazy reference: `export const HeavyView = lazy(() => import('./HeavyView'))`.\n4. Export a function component `App()`. Inside:\n   - Hold `show` in `useState(false)`.\n   - Render a button that toggles `show`.\n   - When `show`, render `<Suspense fallback={<p>loading</p>}><HeavyView /></Suspense>`.",
+  "difficulty": "beginner",
+  "tags": ["code-splitting", "lazy", "Suspense"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "App.tsx",
+      "content": "import { lazy, Suspense, useState } from 'react';\n\nexport const HeavyView = lazy(() => import('./HeavyView'));\n\nexport function App() {\n  const [show, setShow] = useState<boolean>(false);\n  return (\n    <div>\n      <button onClick={() => setShow((s) => !s)}>{show ? 'hide' : 'show'}</button>\n      {show ? (\n        <Suspense fallback={<p>loading</p>}>\n          <HeavyView />\n        </Suspense>\n      ) : null}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "HeavyView.tsx",
+      "content": "export default function HeavyView() {\n  return <p>heavy content</p>;\n}\n"
+    }
+  ],
+  "hints": [
+    "`lazy(() => import('./X'))` returns a deferred component -- React doesn't load the chunk until the JSX is mounted.",
+    "Always pair `lazy` with `Suspense` somewhere above it -- the tree throws while the chunk loads.",
+    "Default-export the lazy module's component; named exports need a small helper."
+  ],
+  "assertions": {
+    "perFile": {
+      "App.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["lazy", "Suspense", "useState"],
+          "description": "Import lazy, Suspense, useState"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "App",
+          "description": "Define App"
+        },
+        {
+          "type": "methodCall",
+          "method": "lazy",
+          "description": "Call lazy(() => import(...))"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Suspense",
+          "props": ["fallback"],
+          "description": "Render <Suspense fallback>"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

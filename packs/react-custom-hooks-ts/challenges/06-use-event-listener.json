@@ -1,0 +1,47 @@
+{
+  "title": "useEventListener: Typed DOM Listener",
+  "prompt": "Attach a typed DOM listener with automatic cleanup.\n\n**Requirements:**\n1. Import `useEffect` and `useRef` from `react`.\n2. Export a generic hook:\n   ```ts\n   useEventListener<K extends keyof WindowEventMap>(\n     event: K,\n     handler: (e: WindowEventMap[K]) => void,\n   ): void\n   ```\n3. Store the handler in a ref so changing it doesn't restart the subscription.\n4. Inside `useEffect([event])`:\n   - register `window.addEventListener(event, (e) => handlerRef.current(e))`\n   - return a cleanup that calls `removeEventListener`.",
+  "difficulty": "intermediate",
+  "tags": ["custom-hooks", "DOM", "generics"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "useEventListener.ts",
+      "content": "import { useEffect, useRef } from 'react';\n\nexport function useEventListener<K extends keyof WindowEventMap>(\n  event: K,\n  handler: (e: WindowEventMap[K]) => void,\n): void {\n  const handlerRef = useRef(handler);\n\n  useEffect(() => {\n    handlerRef.current = handler;\n  }, [handler]);\n\n  useEffect(() => {\n    const listener = (e: WindowEventMap[K]) => handlerRef.current(e);\n    window.addEventListener(event, listener);\n    return () => window.removeEventListener(event, listener);\n  }, [event]);\n}\n"
+    }
+  ],
+  "hints": [
+    "Constraining the generic to `keyof WindowEventMap` unlocks correct event types per name.",
+    "Refs keep the latest closure without tearing down the listener."
+  ],
+  "assertions": {
+    "perFile": {
+      "useEventListener.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useRef"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useEventListener",
+          "description": "Define useEventListener"
+        },
+        {
+          "type": "methodCall",
+          "method": "addEventListener",
+          "object": "window",
+          "description": "Register the listener on window"
+        },
+        {
+          "type": "methodCall",
+          "method": "removeEventListener",
+          "object": "window",
+          "description": "Unsubscribe on cleanup"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "URL as State (useSearchParams Filter)",
+  "prompt": "Some state belongs in the URL: filters, pagination, search. The browser handles back/forward, sharing, and bookmarking for free.\n\n**Requirements:**\n1. In `Filter.tsx`, import `useSearchParams` from `react-router`.\n2. Export `function FilterList({ items }: { items: string[] })`:\n   - `const [params, setParams] = useSearchParams();`\n   - `const q = params.get('q') ?? '';`\n   - `const filtered = items.filter((i) => i.includes(q));`\n   - Render an input bound to `q` (`<input aria-label=\"q\" value={q} onChange={(e) => setParams({ q: e.target.value })} />`) and a `<ul>` of filtered items.",
+  "difficulty": "intermediate",
+  "tags": ["url-state", "react-router", "useSearchParams"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "Filter.tsx",
+      "content": "import { useSearchParams } from 'react-router';\n\nexport function FilterList({ items }: { items: string[] }) {\n  const [params, setParams] = useSearchParams();\n  const q = params.get('q') ?? '';\n  const filtered = items.filter((i) => i.includes(q));\n  return (\n    <>\n      <input aria-label=\"q\" value={q} onChange={(e) => setParams({ q: e.target.value })} />\n      <ul>\n        {filtered.map((i) => (\n          <li key={i}>{i}</li>\n        ))}\n      </ul>\n    </>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Filter, sort, and pagination state belong in the URL -- so refresh, back-button, and shared links all work.",
+    "`useSearchParams` gives you a controlled `URLSearchParams` + a setter; treat it like `useState` of `string`.",
+    "Don't duplicate URL state into local component state -- the URL IS the state."
+  ],
+  "assertions": {
+    "perFile": {
+      "Filter.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["useSearchParams"],
+          "description": "Import useSearchParams"
+        },
+        {
+          "type": "methodCall",
+          "method": "useSearchParams",
+          "description": "Call useSearchParams"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "FilterList",
+          "description": "Export FilterList"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

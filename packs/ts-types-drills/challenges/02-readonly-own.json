@@ -1,0 +1,38 @@
+{
+  "title": "MyReadonly<T>",
+  "prompt": "Reimplement the built-in `Readonly<T>` utility type.\n\n**Requirements:**\n- Declare and export `MyReadonly<T>` so every property of `T` becomes `readonly`.\n\n**Example:**\n```ts\ntype A = MyReadonly<{ a: number; b: string }>;\n// => { readonly a: number; readonly b: string }\n```",
+  "difficulty": "beginner",
+  "tags": ["types", "mapped-types", "readonly"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "type-utils.ts",
+      "content": "// Type-level assertion helpers for ts-types-drills.\n// Adapted from type-challenges (https://github.com/type-challenges/type-challenges) — MIT.\n\nexport type Expect<T extends true> = T;\n\nexport type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2\n  ? true\n  : false;\n\nexport type NotEqual<X, Y> = Equal<X, Y> extends true ? false : true;\n\nexport type NotAny<T> = [T] extends [never] ? false : 0 extends 1 & T ? false : true;\n"
+    },
+    {
+      "path": "solution.ts",
+      "content": "import type { Expect, Equal } from './type-utils.js';\n\nexport type MyReadonly<T> = { readonly [P in keyof T]: T[P] };\n\ntype cases = [\n  Expect<Equal<MyReadonly<{ a: number }>, { readonly a: number }>>,\n  Expect<\n    Equal<MyReadonly<{ a: number; b: string }>, { readonly a: number; readonly b: string }>\n  >,\n];\n\nexport type { cases };\n"
+    }
+  ],
+  "hints": [
+    "Use a mapped type that iterates over `keyof T`.",
+    "Prefix each mapped key with the `readonly` modifier."
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"MyReadonly\"))",
+          "description": "Declare a type alias MyReadonly"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(mapped_type_clause)",
+          "description": "Use a mapped type clause `[P in keyof T]`"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

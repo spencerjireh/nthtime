@@ -1,0 +1,41 @@
+{
+  "title": "useFetch<T>: Loading / Error / Data",
+  "prompt": "A minimal typed `useFetch` hook with a three-state model.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`.\n2. Define and export a `FetchState<T>` type as a discriminated union:\n   - `{ status: 'idle' }` (initial -- never returned once fetch starts)\n   - `{ status: 'loading' }`\n   - `{ status: 'success'; data: T }`\n   - `{ status: 'error'; error: Error }`\n3. Export `useFetch<T>(url: string): FetchState<T>`.\n4. Inside `useEffect([url])`:\n   - set state to `{ status: 'loading' }`\n   - create an `AbortController` and abort on cleanup\n   - call `fetch(url, { signal })`, parse JSON, and set `{ status: 'success', data }` on success\n   - set `{ status: 'error', error }` on failure (except on AbortError).",
+  "difficulty": "advanced",
+  "tags": ["custom-hooks", "fetch", "abort-controller"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "useFetch.ts",
+      "content": "import { useEffect, useState } from 'react';\n\nexport type FetchState<T> =\n  | { status: 'idle' }\n  | { status: 'loading' }\n  | { status: 'success'; data: T }\n  | { status: 'error'; error: Error };\n\nexport function useFetch<T>(url: string): FetchState<T> {\n  const [state, setState] = useState<FetchState<T>>({ status: 'idle' });\n\n  useEffect(() => {\n    const controller = new AbortController();\n    setState({ status: 'loading' });\n\n    fetch(url, { signal: controller.signal })\n      .then(async (response) => {\n        if (!response.ok) throw new Error(`HTTP ${response.status}`);\n        const data = (await response.json()) as T;\n        setState({ status: 'success', data });\n      })\n      .catch((err: unknown) => {\n        if (err instanceof Error && err.name === 'AbortError') return;\n        setState({ status: 'error', error: err instanceof Error ? err : new Error(String(err)) });\n      });\n\n    return () => controller.abort();\n  }, [url]);\n\n  return state;\n}\n"
+    }
+  ],
+  "hints": [
+    "Always model the three-state model with a discriminated union so consumers must handle every branch.",
+    "AbortController + signal cancels in-flight fetches when `url` changes or the component unmounts.",
+    "Ignore AbortError in the catch branch so stale cancellations don't show as errors."
+  ],
+  "assertions": {
+    "perFile": {
+      "useFetch.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useFetch",
+          "description": "Define useFetch"
+        },
+        {
+          "type": "methodCall",
+          "method": "fetch",
+          "description": "Call fetch"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

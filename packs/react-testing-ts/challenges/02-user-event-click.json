@@ -1,0 +1,53 @@
+{
+  "title": "userEvent.click Triggers State",
+  "prompt": "Use `@testing-library/user-event` to click a button and assert the resulting state change.\n\n**Requirements:**\n1. In `Counter.test.tsx`, import `render`, `screen` from `@testing-library/react` and `userEvent` (default) from `@testing-library/user-event`.\n2. Inside `it('increments on click', async () => { ... })`:\n   - `const user = userEvent.setup();`\n   - `render(<Counter />);`\n   - `await user.click(screen.getByRole('button', { name: 'increment' }));`\n   - Assert `expect(screen.getByText('count: 1')).toBeDefined();`.",
+  "difficulty": "beginner",
+  "tags": ["RTL", "user-event"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "Counter.tsx",
+      "content": "import { useState } from 'react';\n\nexport function Counter() {\n  const [n, setN] = useState(0);\n  return (\n    <div>\n      <p>count: {n}</p>\n      <button onClick={() => setN((c) => c + 1)}>increment</button>\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "Counter.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport { Counter } from './Counter';\n\ndescribe('Counter', () => {\n  it('increments on click', async () => {\n    const user = userEvent.setup();\n    render(<Counter />);\n    await user.click(screen.getByRole('button', { name: 'increment' }));\n    expect(screen.getByText('count: 1')).toBeDefined();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "`userEvent.setup()` returns an instance whose methods are all `await`able -- always await them.",
+    "`getByRole('button', { name: ... })` is the canonical way to find an interactive element by its accessible name.",
+    "Don't reach for `fireEvent` -- `userEvent` simulates the full event sequence (focus, pointer, keyboard) more faithfully."
+  ],
+  "assertions": {
+    "perFile": {
+      "Counter.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/react",
+          "specifiers": ["render", "screen"],
+          "description": "Import render, screen"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/user-event",
+          "specifiers": ["userEvent"],
+          "description": "Import userEvent default"
+        },
+        {
+          "type": "methodCall",
+          "object": "userEvent",
+          "method": "setup",
+          "description": "Call userEvent.setup()"
+        },
+        {
+          "type": "methodCall",
+          "object": "user",
+          "method": "click",
+          "description": "Call user.click(...)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

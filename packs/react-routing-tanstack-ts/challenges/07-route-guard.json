@@ -1,0 +1,41 @@
+{
+  "title": "Route Guard via beforeLoad redirect",
+  "prompt": "Protect a `/profile` route by checking auth in `beforeLoad`. Throw a `redirect` to `/login` when not authenticated.\n\n**Requirements:**\n1. In `router.tsx`, import the usual TanStack Router primitives + `redirect`.\n2. Define a small auth helper outside any component:\n   - `let isAuthed = false;`\n   - `export function setAuthed(v: boolean) { isAuthed = v; }`\n3. Routes:\n   - `rootRoute = createRootRoute({ component: () => <Outlet /> })`\n   - `loginRoute = createRoute({ getParentRoute: () => rootRoute, path: '/login', component: () => <p>please log in</p> })`\n   - `profileRoute = createRoute({ getParentRoute: () => rootRoute, path: '/profile', beforeLoad: () => { if (!isAuthed) throw redirect({ to: '/login' }); }, component: () => <p>welcome</p> })`\n4. Export `App` + `makeRouter`.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-router", "guard", "redirect"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createRootRoute,\n  createRoute,\n  createRouter,\n  Outlet,\n  RouterProvider,\n  redirect,\n  createMemoryHistory,\n} from '@tanstack/react-router';\n\nlet isAuthed = false;\nexport function setAuthed(v: boolean) {\n  isAuthed = v;\n}\n\nexport const rootRoute = createRootRoute({ component: () => <Outlet /> });\n\nexport const loginRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/login',\n  component: () => <p>please log in</p>,\n});\n\nexport const profileRoute = createRoute({\n  getParentRoute: () => rootRoute,\n  path: '/profile',\n  beforeLoad: () => {\n    if (!isAuthed) throw redirect({ to: '/login' });\n  },\n  component: () => <p>welcome</p>,\n});\n\nconst routeTree = rootRoute.addChildren([loginRoute, profileRoute]);\n\nexport function makeRouter(initialEntries: string[] = ['/profile']) {\n  return createRouter({\n    routeTree,\n    history: createMemoryHistory({ initialEntries }),\n  });\n}\n\nexport function App({ initialEntries }: { initialEntries?: string[] }) {\n  return <RouterProvider router={makeRouter(initialEntries)} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`beforeLoad` runs before the loader -- use it for auth/role checks before any data work happens.",
+    "Throwing `redirect({ to })` short-circuits the navigation and steers the browser to a different route.",
+    "The auth check can read from any external store -- here a module-level flag for testability."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-router",
+          "specifiers": ["createRootRoute", "createRoute", "createRouter", "Outlet", "RouterProvider", "redirect", "createMemoryHistory"],
+          "description": "Import TanStack Router primitives + redirect"
+        },
+        {
+          "type": "methodCall",
+          "method": "redirect",
+          "description": "Throw redirect({ to })"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "setAuthed",
+          "description": "Export setAuthed helper"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "title": "Typed Props: Button",
+  "prompt": "Type a `Button` component's props.\n\n**Requirements:**\n1. Define a `ButtonProps` type with:\n   - `label: string`\n   - `onClick: () => void`\n   - optional `disabled?: boolean`\n2. Export a function component `Button` that accepts `ButtonProps` and renders a `<button>`.\n3. The button's `disabled` attribute must reflect the prop; the `onClick` must be wired to the native click handler.",
+  "difficulty": "beginner",
+  "tags": ["props", "typescript", "components"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "Button.tsx",
+      "content": "export type ButtonProps = {\n  label: string;\n  onClick: () => void;\n  disabled?: boolean;\n};\n\nexport function Button({ label, onClick, disabled }: ButtonProps) {\n  return (\n    <button onClick={onClick} disabled={disabled}>\n      {label}\n    </button>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Declare `type ButtonProps = { ... }` (or an interface) with `label`, `onClick`, `disabled?`.",
+    "Destructure props in the component signature: `function Button({ label, onClick, disabled }: ButtonProps)`.",
+    "Wire `onClick={onClick}` and `disabled={disabled}` on the `<button>`."
+  ],
+  "assertions": {
+    "perFile": {
+      "Button.tsx": [
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"ButtonProps\"))",
+          "description": "Declare a type `ButtonProps`",
+          "hint": "`export type ButtonProps = { label: string; onClick: () => void; disabled?: boolean }`"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Button",
+          "description": "Define a function component named Button"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Button",
+          "isDefault": false,
+          "description": "Export the Button component"
+        },
+        {
+          "type": "jsxElement",
+          "name": "button",
+          "props": ["onClick", "disabled"],
+          "description": "Render a <button> with onClick and disabled props"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

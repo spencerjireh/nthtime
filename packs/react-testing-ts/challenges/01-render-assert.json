@@ -1,0 +1,52 @@
+{
+  "title": "First RTL Render + getByText",
+  "prompt": "Write your first React Testing Library test. Render the given `Greeting` component and assert that the greeting text appears in the DOM.\n\n**Requirements:**\n1. In `Greeting.test.tsx`, import `render` and `screen` from `@testing-library/react` and `Greeting` from `./Greeting`.\n2. Inside `describe('Greeting', () => { ... })` add a single `it('renders the name', () => { ... })`.\n3. Inside the `it`, call `render(<Greeting name=\"Ada\" />)` and assert `expect(screen.getByText('Hello, Ada!')).toBeDefined()`.",
+  "difficulty": "beginner",
+  "tags": ["RTL", "render", "screen"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "Greeting.tsx",
+      "content": "export function Greeting({ name }: { name: string }) {\n  return <p>Hello, {name}!</p>;\n}\n"
+    },
+    {
+      "path": "Greeting.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport { Greeting } from './Greeting';\n\ndescribe('Greeting', () => {\n  it('renders the name', () => {\n    render(<Greeting name=\"Ada\" />);\n    expect(screen.getByText('Hello, Ada!')).toBeDefined();\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "`render` mounts JSX into a jsdom container; `screen` is the global query namespace tied to that container.",
+    "`getByText` throws if not found -- exactly what you want for an assertion.",
+    "RTL test files can use vitest globals (`describe`, `it`, `expect`) without imports thanks to the test config."
+  ],
+  "assertions": {
+    "perFile": {
+      "Greeting.test.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/react",
+          "specifiers": ["render", "screen"],
+          "description": "Import render and screen"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "./Greeting",
+          "specifiers": ["Greeting"],
+          "description": "Import Greeting"
+        },
+        {
+          "type": "methodCall",
+          "method": "render",
+          "description": "Call render(...)"
+        },
+        {
+          "type": "methodCall",
+          "object": "screen",
+          "method": "getByText",
+          "description": "Call screen.getByText(...)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

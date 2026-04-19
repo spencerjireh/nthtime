@@ -8,6 +8,10 @@
   "author": "nthtime",
   "tags": ["frontend", "hooks", "components"],
   "prerequisites": [],
+  "sources": [
+    { "name": "react.dev", "url": "https://react.dev/learn", "license": "CC BY 4.0" },
+    { "name": "Fullstack Open Part 1", "url": "https://fullstackopen.com/en/part1", "license": "CC BY-NC-SA 3.0" }
+  ],
   "challenges": [
     "challenges/01-counter.json",
     "challenges/02-props-display.json",

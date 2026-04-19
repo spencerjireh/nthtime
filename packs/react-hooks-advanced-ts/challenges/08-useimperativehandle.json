@@ -1,0 +1,41 @@
+{
+  "title": "useImperativeHandle: Expose focus()",
+  "prompt": "Expose a narrow imperative API from a child component.\n\n**Requirements:**\n1. Import `useImperativeHandle`, `useRef`, and `Ref` from `react`.\n2. Define and export `FancyInputHandle = { focus: () => void }`.\n3. Export `FancyInput({ ref })` which:\n   - accepts `ref?: Ref<FancyInputHandle>` (React 19 ref-as-prop)\n   - declares `const inputRef = useRef<HTMLInputElement>(null);`\n   - renders a plain `<input ref={inputRef} />`\n   - calls `useImperativeHandle(ref, () => ({ focus: () => inputRef.current?.focus() }), []);`\n\nParents can now call `fancyRef.current?.focus()` without exposing the full DOM node.",
+  "difficulty": "advanced",
+  "tags": ["useImperativeHandle", "ref", "encapsulation"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "FancyInput.tsx",
+      "content": "import { useImperativeHandle, useRef, Ref } from 'react';\n\nexport type FancyInputHandle = {\n  focus: () => void;\n};\n\nexport function FancyInput({ ref }: { ref?: Ref<FancyInputHandle> }) {\n  const inputRef = useRef<HTMLInputElement>(null);\n\n  useImperativeHandle(\n    ref,\n    () => ({\n      focus: () => {\n        inputRef.current?.focus();\n      },\n    }),\n    [],\n  );\n\n  return <input ref={inputRef} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "Expose only the verbs callers need -- never leak the whole DOM node.",
+    "The factory runs on every render; pass a dependency array to control when the handle refreshes.",
+    "`Ref<T>` accepts both ref objects and callback refs."
+  ],
+  "assertions": {
+    "perFile": {
+      "FancyInput.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useImperativeHandle", "useRef", "Ref"],
+          "description": "Import the required hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "FancyInput",
+          "description": "Define FancyInput"
+        },
+        {
+          "type": "methodCall",
+          "method": "useImperativeHandle",
+          "description": "Call useImperativeHandle"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

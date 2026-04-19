@@ -1,0 +1,40 @@
+{
+  "title": "MyPick<T, K>",
+  "prompt": "Reimplement the built-in `Pick<T, K>` utility type.\n\n**Requirements:**\n- Declare and export `MyPick<T, K>` so `K` can only be keys of `T`.\n- `MyPick<T, K>` should produce a new object type containing only the properties of `T` whose keys are in `K`.\n\n**Example:**\n```ts\ntype A = MyPick<{ a: number; b: string }, 'a'>;\n// => { a: number }\n```\n\nYou can use the `Expect<Equal<..., ...>>` helpers in `type-utils.ts` to validate your type.",
+  "difficulty": "beginner",
+  "tags": ["types", "mapped-types", "keyof"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "type-utils.ts",
+      "content": "// Type-level assertion helpers for ts-types-drills.\n// Adapted from type-challenges (https://github.com/type-challenges/type-challenges) — MIT.\n\nexport type Expect<T extends true> = T;\n\nexport type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2\n  ? true\n  : false;\n\nexport type NotEqual<X, Y> = Equal<X, Y> extends true ? false : true;\n\nexport type NotAny<T> = [T] extends [never] ? false : 0 extends 1 & T ? false : true;\n"
+    },
+    {
+      "path": "solution.ts",
+      "content": "import type { Expect, Equal } from './type-utils.js';\n\nexport type MyPick<T, K extends keyof T> = { [P in K]: T[P] };\n\ntype cases = [\n  Expect<Equal<MyPick<{ a: number; b: string }, 'a'>, { a: number }>>,\n  Expect<\n    Equal<\n      MyPick<{ a: number; b: string; c: boolean }, 'a' | 'c'>,\n      { a: number; c: boolean }\n    >\n  >,\n];\n\nexport type { cases };\n"
+    }
+  ],
+  "hints": [
+    "Constrain K to `keyof T` so only valid keys are allowed.",
+    "Use a mapped type: `{ [P in K]: T[P] }`."
+  ],
+  "assertions": {
+    "perFile": {
+      "solution.ts": [
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"MyPick\"))",
+          "description": "Declare a type alias MyPick",
+          "hint": "Use `export type MyPick<T, K extends keyof T> = ...`"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(mapped_type_clause)",
+          "description": "Use a mapped type clause `[P in K]`",
+          "hint": "`{ [P in K]: T[P] }` is a mapped type."
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

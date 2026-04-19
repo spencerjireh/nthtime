@@ -1,0 +1,46 @@
+{
+  "title": "Route action + Form",
+  "prompt": "Mutations belong in route `action`s -- declarative, typed, and they trigger revalidation automatically.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `Form`, `useActionData`, `type ActionFunctionArgs`, `type RouteObject` from `react-router`.\n2. Define and export `async function noteAction({ request }: ActionFunctionArgs): Promise<{ saved: string }> { const fd = await request.formData(); return { saved: String(fd.get('text')) }; }`.\n3. Define and export `function NoteView()`:\n   - `const data = useActionData() as { saved: string } | undefined;`\n   - Render `<Form method=\"post\"><input name=\"text\" /><button type=\"submit\">save</button></Form>` plus, when `data`, `<p>saved: {data.saved}</p>`.\n4. Export `routes: RouteObject[] = [{ path: '/notes', action: noteAction, element: <NoteView /> }]`.\n5. Export `router` + `App`.",
+  "difficulty": "advanced",
+  "tags": ["react-router", "action", "Form"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  Form,\n  useActionData,\n  type ActionFunctionArgs,\n  type RouteObject,\n} from 'react-router';\n\nexport async function noteAction({ request }: ActionFunctionArgs): Promise<{ saved: string }> {\n  const fd = await request.formData();\n  return { saved: String(fd.get('text')) };\n}\n\nexport function NoteView() {\n  const data = useActionData() as { saved: string } | undefined;\n  return (\n    <>\n      <Form method=\"post\">\n        <label htmlFor=\"text\">text</label>\n        <input id=\"text\" name=\"text\" />\n        <button type=\"submit\">save</button>\n      </Form>\n      {data ? <p>saved: {data.saved}</p> : null}\n    </>\n  );\n}\n\nexport const routes: RouteObject[] = [\n  { path: '/notes', action: noteAction, element: <NoteView /> },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`<Form method=\"post\">` posts to the matched route's `action` -- no event handler needed.",
+    "`useActionData` returns the most recent action result; null/undefined before any submission.",
+    "After an action runs, RR revalidates loaders automatically -- mutations stay in sync."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "Form", "useActionData", "ActionFunctionArgs", "RouteObject"],
+          "description": "Import RR action primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "useActionData",
+          "description": "Call useActionData"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Form",
+          "description": "Render <Form method=\"post\">"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "noteAction",
+          "description": "Export noteAction"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

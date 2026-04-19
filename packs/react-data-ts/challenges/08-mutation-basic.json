@@ -1,0 +1,41 @@
+{
+  "title": "useMutation: typed POST",
+  "prompt": "Use `useMutation` to send a typed POST request.\n\n**Requirements:**\n1. Import `useMutation` from `@tanstack/react-query` and `useState`, `ChangeEvent`, `FormEvent` from `react`.\n2. Define and export `type NewTodo = { title: string }` and `type Todo = { id: number; title: string; done: boolean }`.\n3. Define and export `addTodo(input: NewTodo): Promise<Todo>` -- POSTs to `/api/todos` with JSON body and returns parsed response.\n4. Export a function component `AddTodo({ onCreated }: { onCreated?: (t: Todo) => void })`. Inside:\n   - `useState` for the input value.\n   - `useMutation({ mutationFn: addTodo, onSuccess: (t) => onCreated?.(t) })`.\n   - On submit, call `mutation.mutate({ title })`. While `mutation.isPending`, disable the submit button.\n5. Render a form with the input and a button.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-query", "useMutation", "POST"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "AddTodo.tsx",
+      "content": "import { useState, ChangeEvent, FormEvent } from 'react';\nimport { useMutation } from '@tanstack/react-query';\n\nexport type NewTodo = { title: string };\nexport type Todo = { id: number; title: string; done: boolean };\n\nexport async function addTodo(input: NewTodo): Promise<Todo> {\n  const r = await fetch('/api/todos', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(input),\n  });\n  return r.json() as Promise<Todo>;\n}\n\nexport function AddTodo({ onCreated }: { onCreated?: (t: Todo) => void }) {\n  const [title, setTitle] = useState('');\n\n  const mutation = useMutation({\n    mutationFn: addTodo,\n    onSuccess: (t) => onCreated?.(t),\n  });\n\n  const submit = (e: FormEvent<HTMLFormElement>) => {\n    e.preventDefault();\n    if (!title) return;\n    mutation.mutate({ title });\n    setTitle('');\n  };\n\n  return (\n    <form onSubmit={submit}>\n      <input\n        value={title}\n        onChange={(e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}\n      />\n      <button type=\"submit\" disabled={mutation.isPending}>\n        {mutation.isPending ? 'Saving...' : 'Add'}\n      </button>\n    </form>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`useMutation`'s `mutationFn` should be typed `(input: NewTodo) => Promise<Todo>` so callers get inference for free.",
+    "`mutation.isPending` is true between `mutate()` and the resolution -- bind it to disable the submit button.",
+    "Use `onSuccess` (not `await mutate(...)`) to react to the result -- it's the supported callback path."
+  ],
+  "assertions": {
+    "perFile": {
+      "AddTodo.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-query",
+          "specifiers": ["useMutation"],
+          "description": "Import useMutation"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "AddTodo",
+          "description": "Define AddTodo"
+        },
+        {
+          "type": "methodCall",
+          "method": "useMutation",
+          "description": "Call useMutation"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

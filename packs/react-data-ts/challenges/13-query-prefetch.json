@@ -1,0 +1,48 @@
+{
+  "title": "Prefetch on Hover",
+  "prompt": "Prefetch a detail query when the user hovers a link, so the navigation feels instant.\n\n**Requirements:**\n1. Import `useQueryClient` from `@tanstack/react-query`.\n2. Define and export `type Article = { id: number; title: string; body: string }`.\n3. Define and export `fetchArticle(id: number): Promise<Article>` -- GET `/api/articles/<id>`.\n4. Export a function component `ArticleLink({ id, label }: { id: number; label: string })` that renders an `<a>` whose `onMouseEnter` calls `queryClient.prefetchQuery({ queryKey: ['article', id], queryFn: () => fetchArticle(id) })`.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-query", "prefetch", "hover"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "ArticleLink.tsx",
+      "content": "import { useQueryClient } from '@tanstack/react-query';\n\nexport type Article = { id: number; title: string; body: string };\n\nexport async function fetchArticle(id: number): Promise<Article> {\n  const r = await fetch(`/api/articles/${id}`);\n  return r.json() as Promise<Article>;\n}\n\nexport function ArticleLink({ id, label }: { id: number; label: string }) {\n  const queryClient = useQueryClient();\n\n  const prefetch = () => {\n    queryClient.prefetchQuery({\n      queryKey: ['article', id],\n      queryFn: () => fetchArticle(id),\n    });\n  };\n\n  return (\n    <a href={`/articles/${id}`} onMouseEnter={prefetch} onFocus={prefetch}>\n      {label}\n    </a>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`prefetchQuery` warms the cache without subscribing -- the next `useQuery` reads from cache instantly.",
+    "Mirror `onMouseEnter` with `onFocus` so keyboard users get the same prefetch.",
+    "Use the same `queryKey` shape as the destination's `useQuery` -- otherwise the prefetched data won't be picked up."
+  ],
+  "assertions": {
+    "perFile": {
+      "ArticleLink.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-query",
+          "specifiers": ["useQueryClient"],
+          "description": "Import useQueryClient"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "ArticleLink",
+          "description": "Define ArticleLink"
+        },
+        {
+          "type": "methodCall",
+          "object": "queryClient",
+          "method": "prefetchQuery",
+          "description": "Call queryClient.prefetchQuery"
+        },
+        {
+          "type": "jsxElement",
+          "name": "a",
+          "props": ["href", "onMouseEnter"],
+          "description": "Render an <a> with onMouseEnter"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

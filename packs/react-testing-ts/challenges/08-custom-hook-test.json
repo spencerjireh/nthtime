@@ -1,0 +1,51 @@
+{
+  "title": "renderHook for a Custom Hook",
+  "prompt": "Test a custom hook in isolation with `renderHook` and `act`, without mounting any component.\n\n**Requirements:**\n1. In `useToggle.test.ts`, import `renderHook`, `act` from `@testing-library/react` and `useToggle` from `./useToggle`.\n2. Inside `it('toggles between true and false', () => { ... })`:\n   - `const { result } = renderHook(() => useToggle(false));`\n   - Assert initial: `expect(result.current[0]).toBe(false);`.\n   - Call toggle inside `act`: `act(() => { result.current[1](); });`.\n   - Assert flipped: `expect(result.current[0]).toBe(true);`.",
+  "difficulty": "intermediate",
+  "tags": ["RTL", "renderHook", "custom hooks"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "useToggle.ts",
+      "content": "import { useCallback, useState } from 'react';\n\nexport function useToggle(initial: boolean = false): [boolean, () => void] {\n  const [on, setOn] = useState<boolean>(initial);\n  const toggle = useCallback(() => setOn((v) => !v), []);\n  return [on, toggle];\n}\n"
+    },
+    {
+      "path": "useToggle.test.ts",
+      "content": "import { renderHook, act } from '@testing-library/react';\nimport { useToggle } from './useToggle';\n\ndescribe('useToggle', () => {\n  it('toggles between true and false', () => {\n    const { result } = renderHook(() => useToggle(false));\n    expect(result.current[0]).toBe(false);\n    act(() => {\n      result.current[1]();\n    });\n    expect(result.current[0]).toBe(true);\n  });\n});\n"
+    }
+  ],
+  "hints": [
+    "`renderHook` returns a `result` ref-like object whose `current` is the latest hook return value.",
+    "Wrap any setter call that triggers a re-render in `act` to flush state updates synchronously in the test.",
+    "Hooks tested this way don't need a wrapper unless they read context."
+  ],
+  "assertions": {
+    "perFile": {
+      "useToggle.test.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "@testing-library/react",
+          "specifiers": ["renderHook", "act"],
+          "description": "Import renderHook + act"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "./useToggle",
+          "specifiers": ["useToggle"],
+          "description": "Import useToggle"
+        },
+        {
+          "type": "methodCall",
+          "method": "renderHook",
+          "description": "Call renderHook(...)"
+        },
+        {
+          "type": "methodCall",
+          "method": "act",
+          "description": "Call act(...)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

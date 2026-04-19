@@ -1,0 +1,54 @@
+{
+  "title": "Typed Response with Zod",
+  "prompt": "Validate an API response at runtime with Zod and infer the TypeScript type from the schema.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`, and `z` from `zod`.\n2. Define and export `userSchema = z.object({ id: z.number(), name: z.string(), email: z.string().email() })`.\n3. Define and export `type User = z.infer<typeof userSchema>`.\n4. Export an async helper `fetchUser(url: string): Promise<User>` that calls `fetch(url)`, parses JSON, and returns `userSchema.parse(json)`.\n5. Export a function component `UserCard({ url }: { url: string })`. Hold `user: User | null` state, call `fetchUser` in `useEffect([url])`, and render the user's name when loaded.",
+  "difficulty": "intermediate",
+  "tags": ["fetch", "zod", "validation", "typescript"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "User.tsx",
+      "content": "import { useEffect, useState } from 'react';\nimport { z } from 'zod';\n\nexport const userSchema = z.object({\n  id: z.number(),\n  name: z.string(),\n  email: z.string().email(),\n});\n\nexport type User = z.infer<typeof userSchema>;\n\nexport async function fetchUser(url: string): Promise<User> {\n  const res = await fetch(url);\n  const json = await res.json();\n  return userSchema.parse(json);\n}\n\nexport function UserCard({ url }: { url: string }) {\n  const [user, setUser] = useState<User | null>(null);\n\n  useEffect(() => {\n    let cancelled = false;\n    fetchUser(url).then((u) => {\n      if (!cancelled) setUser(u);\n    });\n    return () => {\n      cancelled = true;\n    };\n  }, [url]);\n\n  if (!user) return <p>loading</p>;\n  return <p>{user.name}</p>;\n}\n"
+    }
+  ],
+  "hints": [
+    "`z.infer<typeof userSchema>` derives the TS type so you write the shape exactly once.",
+    "`schema.parse(json)` throws on mismatch -- pair it with a try/catch in the effect if you want a friendly error.",
+    "Validating the shape at runtime turns `unknown` JSON into a fully-typed `User` you can pass through the rest of the app."
+  ],
+  "assertions": {
+    "perFile": {
+      "User.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import useEffect and useState"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "zod",
+          "specifiers": ["z"],
+          "description": "Import z from zod"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "fetchUser",
+          "async": true,
+          "description": "Define async fetchUser"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "UserCard",
+          "description": "Define UserCard"
+        },
+        {
+          "type": "methodCall",
+          "object": "userSchema",
+          "method": "parse",
+          "description": "Call userSchema.parse on the JSON"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

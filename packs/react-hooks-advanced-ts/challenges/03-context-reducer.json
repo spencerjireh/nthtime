@@ -1,0 +1,51 @@
+{
+  "title": "Context + Reducer",
+  "prompt": "Expose a reducer through context so any descendant can read and dispatch.\n\n**Requirements:**\n1. Import `createContext`, `useContext`, `useReducer`, and `ReactNode` from `react`.\n2. Define a todo reducer:\n   - `Todo = { id: number; text: string; done: boolean }`\n   - `TodoAction = { type: 'add'; text: string } | { type: 'toggle'; id: number }`\n   - `todosReducer(state: Todo[], action: TodoAction): Todo[]`\n3. Create and export a `TodosProvider({ children })` that:\n   - runs `useReducer(todosReducer, [])`\n   - exposes two separate contexts: one for the `todos` array, one for the `dispatch` function\n4. Export two hooks:\n   - `useTodos(): Todo[]`\n   - `useTodosDispatch(): (action: TodoAction) => void`\n5. Both hooks must throw if called outside the provider.",
+  "difficulty": "intermediate",
+  "tags": ["context", "useReducer", "composition"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "todos.tsx",
+      "content": "import { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';\n\nexport type Todo = { id: number; text: string; done: boolean };\n\nexport type TodoAction =\n  | { type: 'add'; text: string }\n  | { type: 'toggle'; id: number };\n\nexport function todosReducer(state: Todo[], action: TodoAction): Todo[] {\n  switch (action.type) {\n    case 'add':\n      return [...state, { id: state.length + 1, text: action.text, done: false }];\n    case 'toggle':\n      return state.map((t) => (t.id === action.id ? { ...t, done: !t.done } : t));\n  }\n}\n\nconst TodosContext = createContext<Todo[] | null>(null);\nconst TodosDispatchContext = createContext<Dispatch<TodoAction> | null>(null);\n\nexport function TodosProvider({ children }: { children: ReactNode }) {\n  const [todos, dispatch] = useReducer(todosReducer, []);\n  return (\n    <TodosContext.Provider value={todos}>\n      <TodosDispatchContext.Provider value={dispatch}>{children}</TodosDispatchContext.Provider>\n    </TodosContext.Provider>\n  );\n}\n\nexport function useTodos(): Todo[] {\n  const todos = useContext(TodosContext);\n  if (todos === null) throw new Error('useTodos must be used inside <TodosProvider>');\n  return todos;\n}\n\nexport function useTodosDispatch(): Dispatch<TodoAction> {\n  const dispatch = useContext(TodosDispatchContext);\n  if (dispatch === null) throw new Error('useTodosDispatch must be used inside <TodosProvider>');\n  return dispatch;\n}\n"
+    }
+  ],
+  "hints": [
+    "Split state and dispatch into two contexts so components that only dispatch don't re-render when state changes.",
+    "`Dispatch<TodoAction>` is React's typed dispatch helper.",
+    "Throw inside hooks when the context value is still `null` -- consumers learn at the site of misuse."
+  ],
+  "assertions": {
+    "perFile": {
+      "todos.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["createContext", "useContext", "useReducer", "ReactNode"],
+          "description": "Import the required hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "todosReducer",
+          "description": "Define the reducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TodosProvider",
+          "description": "Define the provider"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useTodos",
+          "description": "Define useTodos"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useTodosDispatch",
+          "description": "Define useTodosDispatch"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

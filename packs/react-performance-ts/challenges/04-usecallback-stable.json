@@ -1,0 +1,41 @@
+{
+  "title": "Stable Callback for a Memoized Child",
+  "prompt": "Use `useCallback` so a memoized child receives the same function reference across parent re-renders.\n\n**Requirements:**\n1. Import `memo`, `useCallback`, `useState` from `react`.\n2. Define and export a memoized component:\n   ```tsx\n   export const ItemButton = memo(function ItemButton({ id, onPick }: { id: number; onPick: (id: number) => void }) {\n     return <button onClick={() => onPick(id)}>item {id}</button>;\n   });\n   ```\n3. Export a function component `Picker({ onPicked }: { onPicked: (id: number) => void })`. Inside:\n   - Hold `tick` in `useState(0)`.\n   - Compute `handlePick = useCallback((id: number) => onPicked(id), [onPicked])`.\n   - Render a `tick` button that increments `tick` and three `<ItemButton id={n} onPick={handlePick} />` children.",
+  "difficulty": "intermediate",
+  "tags": ["useCallback", "memo", "rerender"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "Picker.tsx",
+      "content": "import { memo, useCallback, useState } from 'react';\n\nexport const ItemButton = memo(function ItemButton({\n  id,\n  onPick,\n}: {\n  id: number;\n  onPick: (id: number) => void;\n}) {\n  return <button onClick={() => onPick(id)}>item {id}</button>;\n});\n\nexport function Picker({ onPicked }: { onPicked: (id: number) => void }) {\n  const [tick, setTick] = useState<number>(0);\n  const handlePick = useCallback((id: number) => onPicked(id), [onPicked]);\n\n  return (\n    <div>\n      <button onClick={() => setTick((t) => t + 1)}>tick={tick}</button>\n      <ItemButton id={1} onPick={handlePick} />\n      <ItemButton id={2} onPick={handlePick} />\n      <ItemButton id={3} onPick={handlePick} />\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`useCallback` only matters when the function is passed to a memoized child or used as an effect/memo dep.",
+    "Without it, a new closure is created every render and `memo`'s shallow compare fails on `onPick`.",
+    "Include the upstream prop (`onPicked`) in the deps so the closure stays correct if the parent prop changes."
+  ],
+  "assertions": {
+    "perFile": {
+      "Picker.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["memo", "useCallback", "useState"],
+          "description": "Import memo, useCallback, useState"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Picker",
+          "description": "Define Picker"
+        },
+        {
+          "type": "methodCall",
+          "method": "useCallback",
+          "description": "Call useCallback"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

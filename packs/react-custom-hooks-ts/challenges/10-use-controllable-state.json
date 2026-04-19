@@ -1,0 +1,46 @@
+{
+  "title": "useControllableState<T>",
+  "prompt": "Design a hook that supports both controlled and uncontrolled modes.\n\n**Requirements:**\n1. Import `useCallback` and `useState` from `react`.\n2. Define and export:\n   ```ts\n   type UseControllableStateOptions<T> = {\n     value?: T;\n     defaultValue: T;\n     onChange?: (next: T) => void;\n   };\n\n   useControllableState<T>(opts: UseControllableStateOptions<T>): readonly [T, (next: T) => void];\n   ```\n3. If `opts.value` is defined, treat the hook as controlled -- return `opts.value` and call `onChange(next)` from the setter.\n4. Otherwise, store an internal `useState(opts.defaultValue)`; setter updates local state AND calls `onChange`.\n\nThis is the standard pattern behind controlled/uncontrolled inputs, dialogs, and disclosures.",
+  "difficulty": "advanced",
+  "tags": ["custom-hooks", "controlled", "composition"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "useControllableState.ts",
+      "content": "import { useCallback, useState } from 'react';\n\nexport type UseControllableStateOptions<T> = {\n  value?: T;\n  defaultValue: T;\n  onChange?: (next: T) => void;\n};\n\nexport function useControllableState<T>(\n  opts: UseControllableStateOptions<T>,\n): readonly [T, (next: T) => void] {\n  const [internal, setInternal] = useState<T>(opts.defaultValue);\n  const isControlled = opts.value !== undefined;\n  const value = isControlled ? (opts.value as T) : internal;\n\n  const setValue = useCallback(\n    (next: T) => {\n      if (!isControlled) {\n        setInternal(next);\n      }\n      opts.onChange?.(next);\n    },\n    [isControlled, opts],\n  );\n\n  return [value, setValue] as const;\n}\n"
+    }
+  ],
+  "hints": [
+    "`isControlled` is a single derivation of `opts.value !== undefined`.",
+    "In controlled mode, skip internal writes -- the parent is the source of truth.",
+    "Always fire `onChange` so consumers see every change regardless of mode."
+  ],
+  "assertions": {
+    "perFile": {
+      "useControllableState.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useCallback", "useState"],
+          "description": "Import hooks"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "useControllableState",
+          "description": "Define useControllableState"
+        },
+        {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Allocate internal state for uncontrolled mode"
+        },
+        {
+          "type": "methodCall",
+          "method": "useCallback",
+          "description": "Stabilise the setter"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

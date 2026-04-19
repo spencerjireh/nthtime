@@ -1,0 +1,46 @@
+{
+  "title": "Children as ReactNode",
+  "prompt": "Accept arbitrary JSX children with the correct type.\n\n**Requirements:**\n1. Import `ReactNode` from `react`.\n2. Define `PanelProps` with `title: string` and `children: ReactNode`.\n3. Export a function component `Panel` that renders:\n   - an `<h2>` containing the title\n   - a `<div>` containing `{children}`\n\nReaders should be able to pass strings, numbers, fragments, arrays, or JSX elements through `children`.",
+  "difficulty": "beginner",
+  "tags": ["props", "children", "ReactNode"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "Panel.tsx",
+      "content": "import { ReactNode } from 'react';\n\nexport type PanelProps = {\n  title: string;\n  children: ReactNode;\n};\n\nexport function Panel({ title, children }: PanelProps) {\n  return (\n    <section>\n      <h2>{title}</h2>\n      <div>{children}</div>\n    </section>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`ReactNode` is the broadest children type -- it accepts strings, numbers, fragments, arrays, and elements.",
+    "Prefer `ReactNode` over `ReactElement` unless you specifically require a single React element."
+  ],
+  "assertions": {
+    "perFile": {
+      "Panel.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["ReactNode"],
+          "description": "Import ReactNode from react"
+        },
+        {
+          "type": "sexpression",
+          "pattern": "(type_alias_declaration name: (type_identifier) @name (#eq? @name \"PanelProps\"))",
+          "description": "Declare a type `PanelProps`"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Panel",
+          "description": "Define the Panel component"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Panel",
+          "isDefault": false,
+          "description": "Export Panel"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

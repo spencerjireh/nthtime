@@ -1,0 +1,46 @@
+{
+  "title": "Route loader + useLoaderData",
+  "prompt": "Move data fetching into a route's `loader` function and consume it via `useLoaderData`.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `useLoaderData`, `type RouteObject`, `type LoaderFunctionArgs` from `react-router`.\n2. Define and export `async function todoLoader({ params }: LoaderFunctionArgs): Promise<{ id: number; title: string }> { const r = await fetch('/api/todos/' + params.id); return r.json(); }`.\n3. Define and export `function TodoView()` that reads `const todo = useLoaderData() as { id: number; title: string }` and renders `<p>{todo.title}</p>`.\n4. Export `routes: RouteObject[] = [{ path: '/todos/:id', loader: todoLoader, element: <TodoView /> }]`.\n5. Export `router` + `App`.",
+  "difficulty": "intermediate",
+  "tags": ["react-router", "loader", "useLoaderData"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  useLoaderData,\n  type LoaderFunctionArgs,\n  type RouteObject,\n} from 'react-router';\n\nexport async function todoLoader({\n  params,\n}: LoaderFunctionArgs): Promise<{ id: number; title: string }> {\n  const r = await fetch('/api/todos/' + params.id);\n  return r.json();\n}\n\nexport function TodoView() {\n  const todo = useLoaderData() as { id: number; title: string };\n  return <p>{todo.title}</p>;\n}\n\nexport const routes: RouteObject[] = [\n  { path: '/todos/:id', loader: todoLoader, element: <TodoView /> },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "Loaders run before the matched route renders; the component starts with data already in hand.",
+    "`useLoaderData` returns `unknown` -- cast it (or use the typed `route module` API) to your loader's return type.",
+    "Loaders receive `{ request, params, context }` -- use `params` for path params, `request` for headers/url."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "useLoaderData", "LoaderFunctionArgs", "RouteObject"],
+          "description": "Import RR loader primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "useLoaderData",
+          "description": "Call useLoaderData"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "todoLoader",
+          "description": "Export todoLoader"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TodoView",
+          "description": "Export TodoView"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "useSearchParams Read + Write",
+  "prompt": "Read `?q=` from the URL and update it via `useSearchParams`.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `useSearchParams`, `type RouteObject` from `react-router`.\n2. Define and export `function SearchView()`:\n   - `const [params, setParams] = useSearchParams();`\n   - `const q = params.get('q') ?? '';`\n   - Render `<input value={q} onChange={(e) => setParams({ q: e.target.value })} />` and `<p>q: {q}</p>`.\n3. Export `routes: RouteObject[] = [{ path: '/search', element: <SearchView /> }]`.\n4. Export `router` + `App`.",
+  "difficulty": "intermediate",
+  "tags": ["react-router", "useSearchParams"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  useSearchParams,\n  type RouteObject,\n} from 'react-router';\n\nexport function SearchView() {\n  const [params, setParams] = useSearchParams();\n  const q = params.get('q') ?? '';\n  return (\n    <>\n      <input aria-label=\"q\" value={q} onChange={(e) => setParams({ q: e.target.value })} />\n      <p>q: {q}</p>\n    </>\n  );\n}\n\nexport const routes: RouteObject[] = [{ path: '/search', element: <SearchView /> }];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`useSearchParams` is the React Router equivalent of `URLSearchParams` reactivity.",
+    "`setParams` accepts an object, a function, or a `URLSearchParams` -- it shallow-replaces the search.",
+    "Read defaults via nullish coalescing (`?? ''`) since `.get()` returns `null` when missing."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "useSearchParams", "RouteObject"],
+          "description": "Import RR primitives + useSearchParams"
+        },
+        {
+          "type": "methodCall",
+          "method": "useSearchParams",
+          "description": "Call useSearchParams"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "SearchView",
+          "description": "Export SearchView"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "title": "useReducer Counter",
+  "prompt": "Migrate a counter from `useState` to a typed `useReducer`.\n\n**Requirements:**\n1. Import `useReducer` from `react`.\n2. Define a discriminated `CounterAction` union: `{ type: 'inc' } | { type: 'dec' } | { type: 'reset' }`.\n3. Write a pure `counterReducer(state: number, action: CounterAction): number` that handles every branch.\n4. Export a function component `Counter` that:\n   - uses `useReducer(counterReducer, 0)`\n   - renders the count\n   - renders three buttons labelled `+`, `-`, and `Reset` that dispatch the matching action.",
+  "difficulty": "intermediate",
+  "tags": ["useReducer", "reducers", "actions"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "Counter.tsx",
+      "content": "import { useReducer } from 'react';\n\nexport type CounterAction = { type: 'inc' } | { type: 'dec' } | { type: 'reset' };\n\nexport function counterReducer(state: number, action: CounterAction): number {\n  switch (action.type) {\n    case 'inc':\n      return state + 1;\n    case 'dec':\n      return state - 1;\n    case 'reset':\n      return 0;\n  }\n}\n\nexport function Counter() {\n  const [count, dispatch] = useReducer(counterReducer, 0);\n  return (\n    <div>\n      <p>count: {count}</p>\n      <button onClick={() => dispatch({ type: 'inc' })}>+</button>\n      <button onClick={() => dispatch({ type: 'dec' })}>-</button>\n      <button onClick={() => dispatch({ type: 'reset' })}>Reset</button>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Discriminated unions let `switch (action.type)` narrow each branch automatically.",
+    "A pure reducer takes `(state, action)` and returns the next state -- no side effects.",
+    "`useReducer(reducer, initialState)` returns `[state, dispatch]` tuples."
+  ],
+  "assertions": {
+    "perFile": {
+      "Counter.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useReducer"],
+          "description": "Import useReducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "counterReducer",
+          "description": "Define the reducer"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Counter",
+          "description": "Define Counter"
+        },
+        {
+          "type": "methodCall",
+          "method": "useReducer",
+          "description": "Call useReducer with the reducer and initial state"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

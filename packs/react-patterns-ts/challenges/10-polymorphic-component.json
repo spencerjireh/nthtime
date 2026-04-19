@@ -1,0 +1,41 @@
+{
+  "title": "Polymorphic + Ref-forwarding Component",
+  "prompt": "Combine the `as` polymorphic pattern with React 19's ref-as-prop to let callers render as any element and attach their own ref.\n\n**Requirements:**\n1. Import `Ref`, `ReactNode` from `react`.\n2. Define `TextProps`:\n   - `as?: 'p' | 'span' | 'div'` (default `'p'`)\n   - `children: ReactNode`\n   - `ref?: Ref<HTMLElement>`\n3. Export a function component `Text({ as = 'p', children, ref })` that:\n   - Stores the tag in a capitalised local: `const Tag = as;`\n   - Forwards the ref: `<Tag ref={ref as Ref<HTMLElement>}>{children}</Tag>`.\n\nCallers can do `<Text as=\"span\" ref={mySpanRef}>hi</Text>`.",
+  "difficulty": "advanced",
+  "tags": ["polymorphic", "ref", "react-19"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "Text.tsx",
+      "content": "import { Ref, ReactNode } from 'react';\n\nexport type TextProps = {\n  as?: 'p' | 'span' | 'div';\n  children: ReactNode;\n  ref?: Ref<HTMLElement>;\n};\n\nexport function Text({ as = 'p', children, ref }: TextProps) {\n  const Tag = as;\n  return <Tag ref={ref as Ref<HTMLElement>}>{children}</Tag>;\n}\n"
+    }
+  ],
+  "hints": [
+    "Polymorphic `as` only works when rendering via a capitalised binding in JSX.",
+    "`Ref<HTMLElement>` is the safest supertype when the caller might choose any of the allowed tags."
+  ],
+  "assertions": {
+    "perFile": {
+      "Text.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["Ref", "ReactNode"],
+          "description": "Import Ref and ReactNode"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Text",
+          "description": "Define Text"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "Tag",
+          "kind": "const",
+          "description": "Capture the tag in a capitalised local binding"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
