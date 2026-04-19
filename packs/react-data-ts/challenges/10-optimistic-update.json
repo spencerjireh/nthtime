@@ -1,0 +1,48 @@
+{
+  "title": "Optimistic Update with Rollback",
+  "prompt": "Toggle a todo's `done` flag optimistically, rolling back when the server rejects.\n\n**Requirements:**\n1. Import `useMutation`, `useQuery`, `useQueryClient` from `@tanstack/react-query`.\n2. Define and export `type Todo = { id: number; title: string; done: boolean }`.\n3. Export `fetchTodos(): Promise<Todo[]>` (GET `/api/todos`) and `toggleTodo(id: number): Promise<Todo>` (PATCH `/api/todos/<id>`).\n4. Export a function component `TodoToggleList()`. Inside:\n   - `useQueryClient()` and `useQuery({ queryKey: ['todos'], queryFn: fetchTodos })`.\n   - `useMutation({ mutationFn: toggleTodo, onMutate, onError, onSettled })`:\n     - `onMutate(id)` cancels the in-flight query, snapshots the previous list, optimistically flips `done` for the matching todo, and returns `{ previous }`.\n     - `onError(_err, _id, ctx)` restores `ctx.previous` via `setQueryData`.\n     - `onSettled` invalidates `['todos']`.\n5. Render each todo with a checkbox; clicking the checkbox calls `mutation.mutate(todo.id)`.",
+  "difficulty": "advanced",
+  "tags": ["tanstack-query", "optimistic-update", "rollback"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "TodoToggleList.tsx",
+      "content": "import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';\n\nexport type Todo = { id: number; title: string; done: boolean };\n\nexport async function fetchTodos(): Promise<Todo[]> {\n  const r = await fetch('/api/todos');\n  return r.json() as Promise<Todo[]>;\n}\n\nexport async function toggleTodo(id: number): Promise<Todo> {\n  const r = await fetch(`/api/todos/${id}`, { method: 'PATCH' });\n  if (!r.ok) throw new Error('toggle failed');\n  return r.json() as Promise<Todo>;\n}\n\nexport function TodoToggleList() {\n  const queryClient = useQueryClient();\n\n  const { data: todos } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });\n\n  const mutation = useMutation({\n    mutationFn: toggleTodo,\n    onMutate: async (id: number) => {\n      await queryClient.cancelQueries({ queryKey: ['todos'] });\n      const previous = queryClient.getQueryData<Todo[]>(['todos']);\n      queryClient.setQueryData<Todo[]>(['todos'], (old) =>\n        (old ?? []).map((t) => (t.id === id ? { ...t, done: !t.done } : t)),\n      );\n      return { previous };\n    },\n    onError: (_err, _id, ctx) => {\n      if (ctx?.previous) queryClient.setQueryData(['todos'], ctx.previous);\n    },\n    onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),\n  });\n\n  return (\n    <ul>\n      {todos?.map((t) => (\n        <li key={t.id}>\n          <label>\n            <input\n              type=\"checkbox\"\n              checked={t.done}\n              onChange={() => mutation.mutate(t.id)}\n            />\n            {t.title}\n          </label>\n        </li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Always call `cancelQueries` first so a slow in-flight refetch can't overwrite your optimistic state.",
+    "Snapshot in `onMutate` and return it -- TanStack passes that value to `onError` as `ctx`.",
+    "Invalidate in `onSettled` (success or error) so the eventual server-truth flushes the optimistic value."
+  ],
+  "assertions": {
+    "perFile": {
+      "TodoToggleList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-query",
+          "specifiers": ["useMutation", "useQuery", "useQueryClient"],
+          "description": "Import useMutation, useQuery, useQueryClient"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TodoToggleList",
+          "description": "Define TodoToggleList"
+        },
+        {
+          "type": "methodCall",
+          "object": "queryClient",
+          "method": "cancelQueries",
+          "description": "Call queryClient.cancelQueries in onMutate"
+        },
+        {
+          "type": "methodCall",
+          "object": "queryClient",
+          "method": "setQueryData",
+          "description": "Call queryClient.setQueryData for optimistic update"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

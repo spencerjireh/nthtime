@@ -1,0 +1,47 @@
+{
+  "title": "Cancel Fetch with AbortController",
+  "prompt": "Use `AbortController` to cancel the in-flight request when the component unmounts or the URL changes.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`.\n2. Define and export `type Item = { id: number; name: string }`.\n3. Export a function component `Items({ url }: { url: string })`.\n4. Use `useState<Item[]>([])` for items.\n5. In `useEffect([url])`:\n   - Create `const controller = new AbortController()`.\n   - Call `fetch(url, { signal: controller.signal })`.\n   - Parse JSON and call `setItems(data)` on success.\n   - In `.catch`, ignore `AbortError` (`err.name === 'AbortError'`).\n   - Cleanup calls `controller.abort()`.\n6. Render a `<ul>` of items.",
+  "difficulty": "intermediate",
+  "tags": ["fetch", "AbortController", "useEffect"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "Items.tsx",
+      "content": "import { useEffect, useState } from 'react';\n\nexport type Item = { id: number; name: string };\n\nexport function Items({ url }: { url: string }) {\n  const [items, setItems] = useState<Item[]>([]);\n\n  useEffect(() => {\n    const controller = new AbortController();\n    fetch(url, { signal: controller.signal })\n      .then((r) => r.json() as Promise<Item[]>)\n      .then((data) => setItems(data))\n      .catch((err: unknown) => {\n        if (err instanceof Error && err.name === 'AbortError') return;\n        throw err;\n      });\n\n    return () => controller.abort();\n  }, [url]);\n\n  return (\n    <ul>\n      {items.map((i) => (\n        <li key={i.id}>{i.name}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`controller.abort()` makes the in-flight `fetch` reject with `AbortError` -- swallow it in `.catch`.",
+    "Pass `signal` from `controller.signal` -- not the controller itself.",
+    "Re-throw non-Abort errors so genuine failures still surface."
+  ],
+  "assertions": {
+    "perFile": {
+      "Items.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import useEffect and useState"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Items",
+          "description": "Define Items"
+        },
+        {
+          "type": "methodCall",
+          "method": "fetch",
+          "description": "Call fetch"
+        },
+        {
+          "type": "methodCall",
+          "object": "controller",
+          "method": "abort",
+          "description": "Call controller.abort in cleanup"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "title": "Mutate + Invalidate",
+  "prompt": "After a successful mutation, invalidate a query so the list refetches.\n\n**Requirements:**\n1. Import `useMutation`, `useQuery`, `useQueryClient` from `@tanstack/react-query` and `useState`, `ChangeEvent`, `FormEvent` from `react`.\n2. Define and export `type Todo = { id: number; title: string }` and `type NewTodo = { title: string }`.\n3. Export `fetchTodos(): Promise<Todo[]>` and `addTodo(input: NewTodo): Promise<Todo>` -- both call `/api/todos` (GET / POST).\n4. Export a function component `TodoBoard()`. Inside:\n   - Call `const queryClient = useQueryClient()`.\n   - `useQuery({ queryKey: ['todos'], queryFn: fetchTodos })` for the list.\n   - `useMutation({ mutationFn: addTodo, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }) })`.\n5. Render the list (titles) plus an input + button that calls `mutation.mutate({ title })`.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-query", "invalidation", "useQueryClient"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "TodoBoard.tsx",
+      "content": "import { useState, ChangeEvent, FormEvent } from 'react';\nimport { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';\n\nexport type Todo = { id: number; title: string };\nexport type NewTodo = { title: string };\n\nexport async function fetchTodos(): Promise<Todo[]> {\n  const r = await fetch('/api/todos');\n  return r.json() as Promise<Todo[]>;\n}\n\nexport async function addTodo(input: NewTodo): Promise<Todo> {\n  const r = await fetch('/api/todos', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(input),\n  });\n  return r.json() as Promise<Todo>;\n}\n\nexport function TodoBoard() {\n  const queryClient = useQueryClient();\n  const [title, setTitle] = useState('');\n\n  const { data } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });\n\n  const mutation = useMutation({\n    mutationFn: addTodo,\n    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),\n  });\n\n  const submit = (e: FormEvent<HTMLFormElement>) => {\n    e.preventDefault();\n    if (!title) return;\n    mutation.mutate({ title });\n    setTitle('');\n  };\n\n  return (\n    <div>\n      <ul>\n        {data?.map((t) => (\n          <li key={t.id}>{t.title}</li>\n        ))}\n      </ul>\n      <form onSubmit={submit}>\n        <input\n          value={title}\n          onChange={(e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}\n        />\n        <button type=\"submit\">Add</button>\n      </form>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`queryClient.invalidateQueries({ queryKey: [...] })` is what triggers a refetch -- without it, the list still shows stale data.",
+    "Use the same key shape on both sides -- the invalidation matches by prefix.",
+    "Don't manually call `refetch()` -- invalidation lets every component using that key re-sync at once."
+  ],
+  "assertions": {
+    "perFile": {
+      "TodoBoard.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-query",
+          "specifiers": ["useMutation", "useQuery", "useQueryClient"],
+          "description": "Import useMutation, useQuery, useQueryClient"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "TodoBoard",
+          "description": "Define TodoBoard"
+        },
+        {
+          "type": "methodCall",
+          "object": "queryClient",
+          "method": "invalidateQueries",
+          "description": "Call queryClient.invalidateQueries on success"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

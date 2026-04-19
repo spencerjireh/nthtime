@@ -1,0 +1,41 @@
+{
+  "title": "Dependent Queries via `enabled`",
+  "prompt": "Fetch a user, then fetch their posts only once you know the user id.\n\n**Requirements:**\n1. Import `useQuery` from `@tanstack/react-query`.\n2. Define and export `type User = { id: number; name: string }` and `type Post = { id: number; userId: number; title: string }`.\n3. Define and export `fetchUser(): Promise<User>` (GET `/api/me`) and `fetchPosts(userId: number): Promise<Post[]>` (GET `/api/users/<id>/posts`).\n4. Export a function component `UserPosts()`. Inside:\n   - `const userQuery = useQuery({ queryKey: ['me'], queryFn: fetchUser })`.\n   - `const userId = userQuery.data?.id`.\n   - `const postsQuery = useQuery({ queryKey: ['posts', userId], queryFn: () => fetchPosts(userId!), enabled: !!userId })`.\n5. Render `loading user` while `userQuery.isLoading`. Then render the user's name and either `loading posts` or a `<ul>` of post titles.",
+  "difficulty": "intermediate",
+  "tags": ["tanstack-query", "dependent-queries", "enabled"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "UserPosts.tsx",
+      "content": "import { useQuery } from '@tanstack/react-query';\n\nexport type User = { id: number; name: string };\nexport type Post = { id: number; userId: number; title: string };\n\nexport async function fetchUser(): Promise<User> {\n  const r = await fetch('/api/me');\n  return r.json() as Promise<User>;\n}\n\nexport async function fetchPosts(userId: number): Promise<Post[]> {\n  const r = await fetch(`/api/users/${userId}/posts`);\n  return r.json() as Promise<Post[]>;\n}\n\nexport function UserPosts() {\n  const userQuery = useQuery({ queryKey: ['me'], queryFn: fetchUser });\n  const userId = userQuery.data?.id;\n\n  const postsQuery = useQuery({\n    queryKey: ['posts', userId],\n    queryFn: () => fetchPosts(userId!),\n    enabled: !!userId,\n  });\n\n  if (userQuery.isLoading) return <p>loading user</p>;\n\n  return (\n    <div>\n      <h2>{userQuery.data?.name}</h2>\n      {postsQuery.isLoading ? (\n        <p>loading posts</p>\n      ) : (\n        <ul>\n          {postsQuery.data?.map((p) => (\n            <li key={p.id}>{p.title}</li>\n          ))}\n        </ul>\n      )}\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`enabled: !!userId` is what stops the second query from firing before the first resolves.",
+    "Include the dependency in the second `queryKey` -- once `userId` changes, TanStack treats it as a new query.",
+    "It's safe to use `userId!` inside `queryFn` because `enabled` guarantees it's defined when the function runs."
+  ],
+  "assertions": {
+    "perFile": {
+      "UserPosts.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-query",
+          "specifiers": ["useQuery"],
+          "description": "Import useQuery"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "UserPosts",
+          "description": "Define UserPosts"
+        },
+        {
+          "type": "methodCall",
+          "method": "useQuery",
+          "description": "Call useQuery (twice)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Loading / Error / Data States",
+  "prompt": "Render a fetch flow as a discriminated union so callers must handle every branch.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`.\n2. Define and export:\n   - `type Article = { id: number; title: string }`.\n   - `type AsyncState<T> = { status: 'idle' } | { status: 'loading' } | { status: 'success'; data: T } | { status: 'error'; error: Error }`.\n3. Export a function component `ArticleList({ url }: { url: string })`. Use `useState<AsyncState<Article[]>>({ status: 'idle' })`.\n4. In `useEffect([url])`:\n   - Set state to `{ status: 'loading' }`.\n   - Call `fetch(url)` and parse JSON. On success, set `{ status: 'success', data }`. On failure, set `{ status: 'error', error }`.\n5. Render a different sub-tree per status: `loading...`, `error: <message>`, or a `<ul>` of titles. Show nothing for `idle`.",
+  "difficulty": "beginner",
+  "tags": ["fetch", "discriminated-union", "loading-states"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "ArticleList.tsx",
+      "content": "import { useEffect, useState } from 'react';\n\nexport type Article = { id: number; title: string };\n\nexport type AsyncState<T> =\n  | { status: 'idle' }\n  | { status: 'loading' }\n  | { status: 'success'; data: T }\n  | { status: 'error'; error: Error };\n\nexport function ArticleList({ url }: { url: string }) {\n  const [state, setState] = useState<AsyncState<Article[]>>({ status: 'idle' });\n\n  useEffect(() => {\n    let cancelled = false;\n    setState({ status: 'loading' });\n    fetch(url)\n      .then((r) => r.json() as Promise<Article[]>)\n      .then((data) => {\n        if (!cancelled) setState({ status: 'success', data });\n      })\n      .catch((err: unknown) => {\n        if (cancelled) return;\n        setState({\n          status: 'error',\n          error: err instanceof Error ? err : new Error(String(err)),\n        });\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [url]);\n\n  if (state.status === 'idle') return null;\n  if (state.status === 'loading') return <p>loading...</p>;\n  if (state.status === 'error') return <p>error: {state.error.message}</p>;\n  return (\n    <ul>\n      {state.data.map((a) => (\n        <li key={a.id}>{a.title}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Modeling the four states as a discriminated union forces the renderer to handle each branch -- TS will complain if you skip one.",
+    "Don't keep separate `loading`, `error`, `data` booleans -- they create impossible states (loading + error?).",
+    "Always map non-Error throwables (`unknown`) to a real `Error` so consumers can read `.message` without ceremony."
+  ],
+  "assertions": {
+    "perFile": {
+      "ArticleList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import useEffect and useState"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "ArticleList",
+          "description": "Define ArticleList"
+        },
+        {
+          "type": "methodCall",
+          "method": "fetch",
+          "description": "Call fetch"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

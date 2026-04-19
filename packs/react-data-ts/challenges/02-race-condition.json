@@ -1,0 +1,41 @@
+{
+  "title": "Fix the Race Condition",
+  "prompt": "A search component re-fetches every time the query changes. The slowest in-flight response wins -- causing stale results to overwrite fresh ones. Fix the race using a per-effect `cancelled` flag.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`.\n2. Define and export `type Result = { id: number; label: string }`.\n3. Export a function component `SearchResults({ search, query }: { search: (q: string) => Promise<Result[]>; query: string })`.\n4. Use `useState<Result[]>([])` for results.\n5. In `useEffect([query, search])`:\n   - Define a `cancelled = false` flag.\n   - Call `search(query)`. When the promise resolves, only call `setResults(data)` if `!cancelled`.\n   - Cleanup sets `cancelled = true`.\n6. Render an `<ol>` of `<li>` per result.",
+  "difficulty": "intermediate",
+  "tags": ["fetch", "race-condition", "useEffect"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "SearchResults.tsx",
+      "content": "import { useEffect, useState } from 'react';\n\nexport type Result = { id: number; label: string };\n\nexport function SearchResults({\n  search,\n  query,\n}: {\n  search: (q: string) => Promise<Result[]>;\n  query: string;\n}) {\n  const [results, setResults] = useState<Result[]>([]);\n\n  useEffect(() => {\n    let cancelled = false;\n    search(query).then((data) => {\n      if (!cancelled) setResults(data);\n    });\n    return () => {\n      cancelled = true;\n    };\n  }, [query, search]);\n\n  return (\n    <ol>\n      {results.map((r) => (\n        <li key={r.id}>{r.label}</li>\n      ))}\n    </ol>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Each render of `useEffect` gets its own closure -- a `cancelled` flag captured per effect run is enough to discard the stale response.",
+    "Cleanup runs *before* the next effect runs, which is exactly when you want to flip `cancelled = true`.",
+    "Don't reach for AbortController here -- it's a different fix and the next challenge."
+  ],
+  "assertions": {
+    "perFile": {
+      "SearchResults.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import useEffect and useState"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "SearchResults",
+          "description": "Define SearchResults"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Call useEffect"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

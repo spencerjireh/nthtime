@@ -1,0 +1,41 @@
+{
+  "title": "useInfiniteQuery: Pagination",
+  "prompt": "Build a paginated list with `useInfiniteQuery` and a `Load more` button.\n\n**Requirements:**\n1. Import `useInfiniteQuery` from `@tanstack/react-query`.\n2. Define and export `type Page = { items: { id: number; title: string }[]; nextCursor: number | null }`.\n3. Define and export `fetchPage({ pageParam = 0 }: { pageParam?: number }): Promise<Page>` -- calls `fetch('/api/items?cursor=<pageParam>')` and returns the JSON.\n4. Export a function component `InfiniteList()`. Inside:\n   - `useInfiniteQuery({ queryKey: ['items'], queryFn: fetchPage, initialPageParam: 0, getNextPageParam: (last) => last.nextCursor })`.\n   - Flatten `data?.pages.flatMap(p => p.items)` for rendering.\n5. Render the items as `<li>` and a `<button>Load more</button>` that calls `fetchNextPage` -- disable it when `!hasNextPage || isFetchingNextPage`.",
+  "difficulty": "advanced",
+  "tags": ["tanstack-query", "useInfiniteQuery", "pagination"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "InfiniteList.tsx",
+      "content": "import { useInfiniteQuery } from '@tanstack/react-query';\n\nexport type Page = {\n  items: { id: number; title: string }[];\n  nextCursor: number | null;\n};\n\nexport async function fetchPage({\n  pageParam = 0,\n}: {\n  pageParam?: number;\n}): Promise<Page> {\n  const r = await fetch(`/api/items?cursor=${pageParam}`);\n  return r.json() as Promise<Page>;\n}\n\nexport function InfiniteList() {\n  const {\n    data,\n    fetchNextPage,\n    hasNextPage,\n    isFetchingNextPage,\n  } = useInfiniteQuery({\n    queryKey: ['items'],\n    queryFn: fetchPage,\n    initialPageParam: 0,\n    getNextPageParam: (last) => last.nextCursor,\n  });\n\n  const items = data?.pages.flatMap((p) => p.items) ?? [];\n\n  return (\n    <div>\n      <ul>\n        {items.map((i) => (\n          <li key={i.id}>{i.title}</li>\n        ))}\n      </ul>\n      <button\n        type=\"button\"\n        onClick={() => fetchNextPage()}\n        disabled={!hasNextPage || isFetchingNextPage}\n      >\n        {isFetchingNextPage ? 'Loading...' : 'Load more'}\n      </button>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`getNextPageParam(last)` is what makes pagination work -- return `null`/`undefined` to stop.",
+    "`data.pages` is an array of pages; `flatMap` flattens them into a single render list.",
+    "Disable the button on `!hasNextPage` AND `isFetchingNextPage` so users can't double-fire."
+  ],
+  "assertions": {
+    "perFile": {
+      "InfiniteList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "@tanstack/react-query",
+          "specifiers": ["useInfiniteQuery"],
+          "description": "Import useInfiniteQuery"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "InfiniteList",
+          "description": "Define InfiniteList"
+        },
+        {
+          "type": "methodCall",
+          "method": "useInfiniteQuery",
+          "description": "Call useInfiniteQuery"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

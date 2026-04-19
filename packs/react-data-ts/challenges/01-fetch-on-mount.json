@@ -1,0 +1,46 @@
+{
+  "title": "Fetch on Mount",
+  "prompt": "Build a typed component that fetches a list once on mount and renders it.\n\n**Requirements:**\n1. Import `useEffect` and `useState` from `react`.\n2. Define and export `type Post = { id: number; title: string }`.\n3. Export a function component `PostList({ url }: { url: string })`.\n4. Inside, hold `posts` in `useState<Post[]>([])` and run a `useEffect` that depends on `[url]`:\n   - Define a `cancelled` flag, set to `false`.\n   - Call `fetch(url)`, parse JSON, and -- only if `!cancelled` -- call `setPosts(data)`.\n   - In the effect cleanup, set `cancelled = true`.\n5. Render a `<ul>` of `<li>` per post, each showing the title.",
+  "difficulty": "beginner",
+  "tags": ["fetch", "useEffect", "data-fetching"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "PostList.tsx",
+      "content": "import { useEffect, useState } from 'react';\n\nexport type Post = { id: number; title: string };\n\nexport function PostList({ url }: { url: string }) {\n  const [posts, setPosts] = useState<Post[]>([]);\n\n  useEffect(() => {\n    let cancelled = false;\n    fetch(url)\n      .then((r) => r.json() as Promise<Post[]>)\n      .then((data) => {\n        if (!cancelled) setPosts(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [url]);\n\n  return (\n    <ul>\n      {posts.map((p) => (\n        <li key={p.id}>{p.title}</li>\n      ))}\n    </ul>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "A simple boolean closure (`let cancelled = false`) is enough to discard responses that arrive after unmount.",
+    "Always cast `r.json()` to your typed promise -- there's no runtime check, but it documents intent.",
+    "Stable `key={p.id}` on each `<li>` keeps the list reconciliation fast and bug-free."
+  ],
+  "assertions": {
+    "perFile": {
+      "PostList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState"],
+          "description": "Import useEffect and useState"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "PostList",
+          "description": "Define PostList"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Call useEffect"
+        },
+        {
+          "type": "methodCall",
+          "method": "fetch",
+          "description": "Call fetch"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
