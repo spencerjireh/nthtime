@@ -1,0 +1,41 @@
+{
+  "title": "Nested Routes + Outlet",
+  "prompt": "Compose nested routes that share a parent layout via `<Outlet />`.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `Outlet`, `type RouteObject` from `react-router`.\n2. Define and export `function DashboardLayout()` rendering `<section><h2>shell</h2><Outlet /></section>`.\n3. Export `routes: RouteObject[] = [{ path: '/dashboard', element: <DashboardLayout />, children: [{ index: true, element: <p>overview</p> }, { path: 'settings', element: <p>settings</p> }] }]`.\n4. Export `router = createBrowserRouter(routes)` and `App` like the previous challenge.",
+  "difficulty": "intermediate",
+  "tags": ["react-router", "Outlet", "nested"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  Outlet,\n  type RouteObject,\n} from 'react-router';\n\nexport function DashboardLayout() {\n  return (\n    <section>\n      <h2>shell</h2>\n      <Outlet />\n    </section>\n  );\n}\n\nexport const routes: RouteObject[] = [\n  {\n    path: '/dashboard',\n    element: <DashboardLayout />,\n    children: [\n      { index: true, element: <p>overview</p> },\n      { path: 'settings', element: <p>settings</p> },\n    ],\n  },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`children` on a parent route describes nested routes; the parent renders its own JSX + `<Outlet />` for the child.",
+    "`{ index: true }` is how you mark the default child for the parent path.",
+    "Children's `path` is relative -- no leading slash needed."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "Outlet", "RouteObject"],
+          "description": "Import RR primitives + Outlet"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Outlet",
+          "description": "Render <Outlet /> in DashboardLayout"
+        },
+        {
+          "type": "methodCall",
+          "method": "createBrowserRouter",
+          "description": "Call createBrowserRouter"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

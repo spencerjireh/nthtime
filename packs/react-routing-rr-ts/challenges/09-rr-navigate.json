@@ -1,0 +1,41 @@
+{
+  "title": "Programmatic useNavigate",
+  "prompt": "Use `useNavigate` to send the user to a new route on a button click.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `useNavigate`, `type RouteObject` from `react-router`.\n2. Define and export `function HomeView()`:\n   - `const navigate = useNavigate();`\n   - Render `<button onClick={() => navigate('/about')}>go</button>`.\n3. Routes:\n   - `{ path: '/', element: <HomeView /> }`\n   - `{ path: '/about', element: <p>about</p> }`\n4. Export `routes`, `router`, `App`.",
+  "difficulty": "beginner",
+  "tags": ["react-router", "useNavigate"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  useNavigate,\n  type RouteObject,\n} from 'react-router';\n\nexport function HomeView() {\n  const navigate = useNavigate();\n  return <button onClick={() => navigate('/about')}>go</button>;\n}\n\nexport const routes: RouteObject[] = [\n  { path: '/', element: <HomeView /> },\n  { path: '/about', element: <p>about</p> },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "`useNavigate()` returns a function -- call it with a string `to` or an options object.",
+    "Pass `{ replace: true }` as the second arg to replace history rather than push.",
+    "Programmatic navigate is the right tool for post-action redirects (e.g., after a form save)."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "useNavigate", "RouteObject"],
+          "description": "Import RR primitives + useNavigate"
+        },
+        {
+          "type": "methodCall",
+          "method": "useNavigate",
+          "description": "Call useNavigate"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "HomeView",
+          "description": "Export HomeView"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "title": "createBrowserRouter + Two Routes",
+  "prompt": "Create a router with two routes using React Router v7's data router.\n\n**Requirements:**\n1. In `router.tsx`, import `createBrowserRouter`, `RouterProvider`, `RouteObject` from `react-router`.\n2. Define and export a `routes` array typed `RouteObject[]`:\n   - `{ path: '/', element: <p>home</p> }`\n   - `{ path: '/about', element: <p>about</p> }`\n3. Export `const router = createBrowserRouter(routes);`.\n4. Export a function component `App()` that renders `<RouterProvider router={router} />`.",
+  "difficulty": "beginner",
+  "tags": ["react-router", "createBrowserRouter"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "router.tsx",
+      "content": "import {\n  createBrowserRouter,\n  RouterProvider,\n  type RouteObject,\n} from 'react-router';\n\nexport const routes: RouteObject[] = [\n  { path: '/', element: <p>home</p> },\n  { path: '/about', element: <p>about</p> },\n];\n\nexport const router = createBrowserRouter(routes);\n\nexport function App() {\n  return <RouterProvider router={router} />;\n}\n"
+    }
+  ],
+  "hints": [
+    "v7 unifies `react-router` and `react-router-dom` -- import everything from `react-router`.",
+    "`RouteObject` lets you describe routes as data instead of JSX -- the recommended modern API.",
+    "For tests, you'd swap `createBrowserRouter` for `createMemoryRouter(routes, { initialEntries })`."
+  ],
+  "assertions": {
+    "perFile": {
+      "router.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-router",
+          "specifiers": ["createBrowserRouter", "RouterProvider", "RouteObject"],
+          "description": "Import createBrowserRouter, RouterProvider, RouteObject"
+        },
+        {
+          "type": "methodCall",
+          "method": "createBrowserRouter",
+          "description": "Call createBrowserRouter(routes)"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "App",
+          "description": "Export App"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "routes",
+          "description": "Export routes"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
