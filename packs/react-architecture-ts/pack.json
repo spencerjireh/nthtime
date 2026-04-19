@@ -1,0 +1,40 @@
+{
+  "name": "React Architecture with TypeScript",
+  "slug": "react-architecture-ts",
+  "description": "Production-grade structure for React apps: feature modules, error and Suspense boundaries, typed API layer, env config, barrel exports, public-API surfaces, provider composition, route-level code-splitting, and a shared UI kit. Inspired by bulletproof-react.",
+  "language": "typescript",
+  "framework": "react",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["react", "architecture", "typescript"],
+  "prerequisites": ["react-state-mgmt-ts"],
+  "sources": [
+    {
+      "name": "bulletproof-react (Alan Alickovic)",
+      "url": "https://github.com/alan2207/bulletproof-react",
+      "license": "MIT"
+    },
+    {
+      "name": "react.dev",
+      "url": "https://react.dev/",
+      "license": "MIT (docs)"
+    },
+    {
+      "name": "developerway.com",
+      "url": "https://www.developerway.com/",
+      "license": "Copyright Nadia Makarevich (inspired)"
+    }
+  ],
+  "challenges": [
+    "challenges/01-feature-module.json",
+    "challenges/02-error-boundary.json",
+    "challenges/03-suspense-boundary.json",
+    "challenges/04-api-layer.json",
+    "challenges/05-env-config.json",
+    "challenges/06-barrel-exports.json",
+    "challenges/07-public-api.json",
+    "challenges/08-provider-composition.json",
+    "challenges/09-route-level-codesplit.json",
+    "challenges/10-shared-ui-kit.json"
+  ]
+}

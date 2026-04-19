@@ -1,0 +1,52 @@
+{
+  "title": "Shared UI Kit (ui/Button)",
+  "prompt": "Pull primitive components into a `ui/` folder so feature code can compose them without copy/pasting styles or markup.\n\n**Requirements:**\n1. In `ui/Button.tsx`, import `ButtonHTMLAttributes` from `react`.\n2. Define `type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'ghost' };`.\n3. Export `function Button({ variant = 'primary', ...rest }: ButtonProps)` that renders `<button data-variant={variant} {...rest} />`.\n4. In `ui/index.ts`, re-export `Button` so callers do `import { Button } from '@/ui'`.",
+  "difficulty": "beginner",
+  "tags": ["architecture", "ui-kit", "primitives"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "ui/Button.tsx",
+      "content": "import { ButtonHTMLAttributes } from 'react';\n\nexport type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {\n  variant?: 'primary' | 'ghost';\n};\n\nexport function Button({ variant = 'primary', ...rest }: ButtonProps) {\n  return <button data-variant={variant} {...rest} />;\n}\n"
+    },
+    {
+      "path": "ui/index.ts",
+      "content": "export { Button } from './Button';\nexport type { ButtonProps } from './Button';\n"
+    }
+  ],
+  "hints": [
+    "Spreading the rest of `ButtonHTMLAttributes` makes your `Button` a drop-in replacement for the native element.",
+    "`variant` is the only design-system-specific prop -- forward everything else.",
+    "Co-locate the type with the component, then re-export both from the barrel."
+  ],
+  "assertions": {
+    "perFile": {
+      "ui/Button.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["ButtonHTMLAttributes"],
+          "description": "Import ButtonHTMLAttributes"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Button",
+          "description": "Export Button"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ButtonProps",
+          "description": "Export ButtonProps type"
+        }
+      ],
+      "ui/index.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "Button",
+          "description": "Re-export Button"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

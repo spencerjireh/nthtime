@@ -1,0 +1,80 @@
+{
+  "title": "Feature Module Structure",
+  "prompt": "Co-locate a feature's component, hook, and types in a single folder. Compose them in a public `index.ts` so the rest of the app imports `from './todos'`.\n\n**Requirements:**\n1. In `todos/types.ts`, export `type Todo = { id: number; title: string; done: boolean };`.\n2. In `todos/useTodos.ts`, import `useState` from `react` and `Todo` from `./types`. Export `function useTodos()` that returns `{ todos: Todo[]; add: (t: Todo) => void }` (with a `useState<Todo[]>([])` and `add = (t) => setTodos([...todos, t])`).\n3. In `todos/TodoList.tsx`, import `useTodos` from `./useTodos`. Export `function TodoList()` that renders the list of todos as `<ul><li>{title}</li></ul>` and a `<button onClick={() => add({ id: Date.now(), title: 'new', done: false })}>add</button>`.\n4. In `todos/index.ts`, re-export `TodoList`, `useTodos`, and `Todo` (the public API).",
+  "difficulty": "beginner",
+  "tags": ["architecture", "feature-module", "co-location"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "todos/types.ts",
+      "content": "export type Todo = { id: number; title: string; done: boolean };\n"
+    },
+    {
+      "path": "todos/useTodos.ts",
+      "content": "import { useState } from 'react';\nimport type { Todo } from './types';\n\nexport function useTodos() {\n  const [todos, setTodos] = useState<Todo[]>([]);\n  const add = (t: Todo) => setTodos((prev) => [...prev, t]);\n  return { todos, add };\n}\n"
+    },
+    {
+      "path": "todos/TodoList.tsx",
+      "content": "import { useTodos } from './useTodos';\n\nexport function TodoList() {\n  const { todos, add } = useTodos();\n  return (\n    <>\n      <button onClick={() => add({ id: Date.now(), title: 'new', done: false })}>add</button>\n      <ul>\n        {todos.map((t) => (\n          <li key={t.id}>{t.title}</li>\n        ))}\n      </ul>\n    </>\n  );\n}\n"
+    },
+    {
+      "path": "todos/index.ts",
+      "content": "export { TodoList } from './TodoList';\nexport { useTodos } from './useTodos';\nexport type { Todo } from './types';\n"
+    }
+  ],
+  "hints": [
+    "Co-location turns a feature into a self-contained unit -- you can move it between projects.",
+    "Public surface lives in `index.ts`; internal files can be reorganized without breaking imports outside the folder.",
+    "Inside the feature, use relative paths (`./types`); outside, use the feature's barrel (`from '@/features/todos'`)."
+  ],
+  "assertions": {
+    "perFile": {
+      "todos/types.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "Todo",
+          "description": "Export Todo type"
+        }
+      ],
+      "todos/useTodos.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "./types",
+          "specifiers": ["Todo"],
+          "description": "Import Todo type"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useTodos",
+          "description": "Export useTodos"
+        }
+      ],
+      "todos/TodoList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "./useTodos",
+          "specifiers": ["useTodos"],
+          "description": "Import useTodos"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "TodoList",
+          "description": "Export TodoList"
+        }
+      ],
+      "todos/index.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "TodoList",
+          "description": "Re-export TodoList"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useTodos",
+          "description": "Re-export useTodos"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

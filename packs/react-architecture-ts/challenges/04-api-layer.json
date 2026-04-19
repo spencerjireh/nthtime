@@ -1,0 +1,45 @@
+{
+  "title": "Typed API Layer",
+  "prompt": "Centralize fetch in one typed module so every call site has the same error handling and headers.\n\n**Requirements:**\n1. In `apiClient.ts`, define and export `class ApiError extends Error { constructor(public status: number, message: string) { super(message); } }`.\n2. Export `async function apiGet<T>(url: string): Promise<T>`:\n   - `const r = await fetch(url, { headers: { 'content-type': 'application/json' } });`\n   - `if (!r.ok) throw new ApiError(r.status, r.statusText);`\n   - `return (await r.json()) as T;`\n3. Export `async function apiPost<TReq, TRes>(url: string, body: TReq): Promise<TRes>` that POSTs `JSON.stringify(body)` and returns the parsed response (same error handling).",
+  "difficulty": "intermediate",
+  "tags": ["architecture", "api-layer", "typed-fetch"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "apiClient.ts",
+      "content": "export class ApiError extends Error {\n  constructor(public status: number, message: string) {\n    super(message);\n  }\n}\n\nexport async function apiGet<T>(url: string): Promise<T> {\n  const r = await fetch(url, { headers: { 'content-type': 'application/json' } });\n  if (!r.ok) throw new ApiError(r.status, r.statusText);\n  return (await r.json()) as T;\n}\n\nexport async function apiPost<TReq, TRes>(url: string, body: TReq): Promise<TRes> {\n  const r = await fetch(url, {\n    method: 'POST',\n    headers: { 'content-type': 'application/json' },\n    body: JSON.stringify(body),\n  });\n  if (!r.ok) throw new ApiError(r.status, r.statusText);\n  return (await r.json()) as TRes;\n}\n"
+    }
+  ],
+  "hints": [
+    "Centralizing here means auth headers, base URL, error handling, and tracing all live in one place.",
+    "`<T>` lets each call site pin the response shape without repeating cast logic.",
+    "A typed `ApiError` makes catch blocks easier -- check `instanceof ApiError` then read `status`."
+  ],
+  "assertions": {
+    "perFile": {
+      "apiClient.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "ApiError",
+          "description": "Export ApiError"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "apiGet",
+          "description": "Export apiGet"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "apiPost",
+          "description": "Export apiPost"
+        },
+        {
+          "type": "methodCall",
+          "method": "fetch",
+          "description": "Call fetch internally"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

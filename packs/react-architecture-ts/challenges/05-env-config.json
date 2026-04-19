@@ -1,0 +1,47 @@
+{
+  "title": "Typed Env Config (Zod)",
+  "prompt": "Centralize env-var reads behind a single typed object so missing values fail loudly at startup.\n\n**Requirements:**\n1. In `env.ts`, import `z` from `zod`.\n2. Define `const EnvSchema = z.object({ API_URL: z.string().url(), FEATURE_FLAG_AUTH: z.coerce.boolean().default(false) });`.\n3. Define and export `function loadEnv(raw: Record<string, string | undefined>): z.infer<typeof EnvSchema> { return EnvSchema.parse(raw); }`.\n4. Define and export `type Env = z.infer<typeof EnvSchema>;`.",
+  "difficulty": "intermediate",
+  "tags": ["architecture", "env", "zod"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "env.ts",
+      "content": "import { z } from 'zod';\n\nconst EnvSchema = z.object({\n  API_URL: z.string().url(),\n  FEATURE_FLAG_AUTH: z.coerce.boolean().default(false),\n});\n\nexport type Env = z.infer<typeof EnvSchema>;\n\nexport function loadEnv(raw: Record<string, string | undefined>): Env {\n  return EnvSchema.parse(raw);\n}\n"
+    }
+  ],
+  "hints": [
+    "`z.coerce.boolean()` lets `'true'`/`'false'` strings flow through naturally.",
+    "Calling `loadEnv(process.env)` once at startup means every component can rely on `Env`'s shape.",
+    "Zod's parse throws on missing values -- you'd rather know at boot than after deploy."
+  ],
+  "assertions": {
+    "perFile": {
+      "env.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "zod",
+          "specifiers": ["z"],
+          "description": "Import z"
+        },
+        {
+          "type": "methodCall",
+          "object": "z",
+          "method": "object",
+          "description": "Define schema with z.object"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "loadEnv",
+          "description": "Export loadEnv"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Env",
+          "description": "Export Env type"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

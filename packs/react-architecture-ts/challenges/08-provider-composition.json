@@ -1,0 +1,47 @@
+{
+  "title": "Compose N Providers Cleanly",
+  "prompt": "Apps end up nested four or five providers deep. Wrap that mess in a single `<AppProviders>` that composes them with `reduce`.\n\n**Requirements:**\n1. In `Providers.tsx`, import `ComponentType`, `ReactNode` from `react`.\n2. Define and export `function compose(providers: ComponentType<{ children: ReactNode }>[]) { return ({ children }: { children: ReactNode }) => providers.reduceRight((acc, P) => <P>{acc}</P>, children); }`.\n3. Define and export two trivial providers:\n   - `function ThemeProvider({ children }: { children: ReactNode }) { return <div data-theme=\"dark\">{children}</div>; }`\n   - `function I18nProvider({ children }: { children: ReactNode }) { return <div lang=\"en\">{children}</div>; }`\n4. Define and export `const AppProviders = compose([ThemeProvider, I18nProvider]);`.",
+  "difficulty": "intermediate",
+  "tags": ["architecture", "providers", "composition"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "Providers.tsx",
+      "content": "import { ComponentType, ReactNode } from 'react';\n\nexport function compose(providers: ComponentType<{ children: ReactNode }>[]) {\n  return ({ children }: { children: ReactNode }) =>\n    providers.reduceRight((acc, P) => <P>{acc}</P>, children as ReactNode);\n}\n\nexport function ThemeProvider({ children }: { children: ReactNode }) {\n  return <div data-theme=\"dark\">{children}</div>;\n}\n\nexport function I18nProvider({ children }: { children: ReactNode }) {\n  return <div lang=\"en\">{children}</div>;\n}\n\nexport const AppProviders = compose([ThemeProvider, I18nProvider]);\n"
+    }
+  ],
+  "hints": [
+    "`reduceRight` is what you want -- the LAST provider in the array ends up innermost.",
+    "Each provider takes `{ children }`; `compose` doesn't care about props beyond that.",
+    "Add new providers by appending to the array -- no more JSX nesting tower."
+  ],
+  "assertions": {
+    "perFile": {
+      "Providers.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["ComponentType", "ReactNode"],
+          "description": "Import ComponentType + ReactNode"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "compose",
+          "description": "Export compose"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "AppProviders",
+          "description": "Export AppProviders"
+        },
+        {
+          "type": "methodCall",
+          "object": "providers",
+          "method": "reduceRight",
+          "description": "Use reduceRight"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

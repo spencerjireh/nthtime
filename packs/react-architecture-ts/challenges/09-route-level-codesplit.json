@@ -1,0 +1,47 @@
+{
+  "title": "Route-Level Code-Splitting",
+  "prompt": "Lazy-load top-level routes so each page is its own bundle chunk. Wrap the lazy components in a single `<Suspense>` at the router level.\n\n**Requirements:**\n1. In `App.tsx`, import `lazy`, `Suspense` from `react`.\n2. Define lazy route components:\n   - `const Home = lazy(async () => ({ default: () => <p>home</p> }));`\n   - `const Settings = lazy(async () => ({ default: () => <p>settings</p> }));`\n3. Export `function App({ page }: { page: 'home' | 'settings' })` that renders `<Suspense fallback={<p>loading</p>}>{page === 'home' ? <Home /> : <Settings />}</Suspense>`.",
+  "difficulty": "intermediate",
+  "tags": ["code-splitting", "lazy", "Suspense"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "App.tsx",
+      "content": "import { lazy, Suspense } from 'react';\n\nconst Home = lazy(async () => ({ default: () => <p>home</p> }));\nconst Settings = lazy(async () => ({ default: () => <p>settings</p> }));\n\nexport function App({ page }: { page: 'home' | 'settings' }) {\n  return (\n    <Suspense fallback={<p>loading</p>}>\n      {page === 'home' ? <Home /> : <Settings />}\n    </Suspense>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Real `lazy(() => import('./X'))` triggers a code-split chunk in your bundler.",
+    "One `<Suspense>` per route grouping is plenty -- no need for one per lazy component.",
+    "Pair with React Router's `lazy: () => import(...)` for fully data-aware splitting."
+  ],
+  "assertions": {
+    "perFile": {
+      "App.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["lazy", "Suspense"],
+          "description": "Import lazy + Suspense"
+        },
+        {
+          "type": "methodCall",
+          "method": "lazy",
+          "description": "Call lazy() for route components"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Suspense",
+          "props": ["fallback"],
+          "description": "Render <Suspense fallback>"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "App",
+          "description": "Export App"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "title": "Barrel Exports (index.ts Re-exports)",
+  "prompt": "A barrel file is an `index.ts` that re-exports a folder's public surface so imports look like `from '@/lib/format'` instead of `'@/lib/format/date.ts'`.\n\n**Requirements:**\n1. In `format/date.ts`, export `function formatDate(d: Date): string { return d.toISOString().slice(0, 10); }`.\n2. In `format/currency.ts`, export `function formatUSD(n: number): string { return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' }); }`.\n3. In `format/index.ts`, re-export both: `export { formatDate } from './date';` and `export { formatUSD } from './currency';`.",
+  "difficulty": "beginner",
+  "tags": ["architecture", "barrel"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "format/date.ts",
+      "content": "export function formatDate(d: Date): string {\n  return d.toISOString().slice(0, 10);\n}\n"
+    },
+    {
+      "path": "format/currency.ts",
+      "content": "export function formatUSD(n: number): string {\n  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });\n}\n"
+    },
+    {
+      "path": "format/index.ts",
+      "content": "export { formatDate } from './date';\nexport { formatUSD } from './currency';\n"
+    }
+  ],
+  "hints": [
+    "Barrels keep callers from depending on internal file paths -- you can rename `date.ts` without breaking imports.",
+    "Use `export { X } from './file'` for named re-exports; `export * from './file'` for everything (less precise).",
+    "Avoid barrels for very large folders -- they can defeat tree-shaking. Per-feature barrels are fine."
+  ],
+  "assertions": {
+    "perFile": {
+      "format/date.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "formatDate",
+          "description": "Export formatDate"
+        }
+      ],
+      "format/currency.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "formatUSD",
+          "description": "Export formatUSD"
+        }
+      ],
+      "format/index.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "formatDate",
+          "description": "Re-export formatDate"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "formatUSD",
+          "description": "Re-export formatUSD"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

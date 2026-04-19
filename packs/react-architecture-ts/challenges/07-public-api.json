@@ -1,0 +1,58 @@
+{
+  "title": "Public API: Hide Internals Behind index.ts",
+  "prompt": "A feature should expose only what callers need. Internal helpers stay private; the `index.ts` lists the public surface and nothing else.\n\n**Requirements:**\n1. In `cart/_helpers.ts` (underscore = private), export `function applyTax(subtotal: number, rate: number): number { return subtotal * (1 + rate); }`.\n2. In `cart/Cart.ts`, import `applyTax` from `./_helpers` and export `function totalWithTax(items: number[], rate: number): number { return applyTax(items.reduce((a, b) => a + b, 0), rate); }`.\n3. In `cart/index.ts`, re-export ONLY `totalWithTax` from `./Cart` (do NOT re-export `applyTax`). The public API is one function.",
+  "difficulty": "intermediate",
+  "tags": ["architecture", "public-api", "encapsulation"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "cart/_helpers.ts",
+      "content": "export function applyTax(subtotal: number, rate: number): number {\n  return subtotal * (1 + rate);\n}\n"
+    },
+    {
+      "path": "cart/Cart.ts",
+      "content": "import { applyTax } from './_helpers';\n\nexport function totalWithTax(items: number[], rate: number): number {\n  return applyTax(items.reduce((a, b) => a + b, 0), rate);\n}\n"
+    },
+    {
+      "path": "cart/index.ts",
+      "content": "export { totalWithTax } from './Cart';\n"
+    }
+  ],
+  "hints": [
+    "`_helpers` (underscore prefix) is a convention signaling 'do not import directly from outside this folder'.",
+    "ESLint can enforce this with `import/no-internal-modules` -- the convention plus a lint rule = real privacy.",
+    "Keep public APIs small. Easy to add later, painful to remove."
+  ],
+  "assertions": {
+    "perFile": {
+      "cart/_helpers.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "applyTax",
+          "description": "Export applyTax (internal)"
+        }
+      ],
+      "cart/Cart.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "./_helpers",
+          "specifiers": ["applyTax"],
+          "description": "Import internal helper"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "totalWithTax",
+          "description": "Export totalWithTax"
+        }
+      ],
+      "cart/index.ts": [
+        {
+          "type": "exportDeclaration",
+          "name": "totalWithTax",
+          "description": "Re-export only totalWithTax"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

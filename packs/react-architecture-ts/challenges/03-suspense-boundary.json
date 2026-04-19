@@ -1,0 +1,47 @@
+{
+  "title": "Nested Suspense Boundaries",
+  "prompt": "Place a `<Suspense>` close to the data so siblings stay interactive while the slow part loads.\n\n**Requirements:**\n1. In `Page.tsx`, import `lazy`, `Suspense` from `react`.\n2. Define `const Slow = lazy(async () => ({ default: () => <p>slow-data</p> }))`.\n3. Export `function Page()` that renders:\n   - A header `<header>fast</header>` (always visible).\n   - `<Suspense fallback={<p>loading slow</p>}><Slow /></Suspense>` (suspends independently).\n   - A footer `<footer>fast</footer>`.",
+  "difficulty": "intermediate",
+  "tags": ["Suspense", "boundaries", "lazy"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "Page.tsx",
+      "content": "import { lazy, Suspense } from 'react';\n\nconst Slow = lazy(async () => ({ default: () => <p>slow-data</p> }));\n\nexport function Page() {\n  return (\n    <>\n      <header>fast</header>\n      <Suspense fallback={<p>loading slow</p>}>\n        <Slow />\n      </Suspense>\n      <footer>fast</footer>\n    </>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Each `<Suspense>` boundary is its own waterfall point -- nest them around what's slow.",
+    "Header and footer here are NOT inside the boundary, so they show immediately.",
+    "Default `lazy` returns -> nested object with `default` -- that's the React.lazy contract."
+  ],
+  "assertions": {
+    "perFile": {
+      "Page.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["lazy", "Suspense"],
+          "description": "Import lazy + Suspense"
+        },
+        {
+          "type": "methodCall",
+          "method": "lazy",
+          "description": "Call lazy()"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Suspense",
+          "props": ["fallback"],
+          "description": "Render <Suspense fallback>"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Page",
+          "description": "Export Page"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
