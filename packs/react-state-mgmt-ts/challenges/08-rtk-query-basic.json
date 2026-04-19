@@ -1,0 +1,69 @@
+{
+  "title": "RTK Query: createApi for getTodos",
+  "prompt": "Use `createApi` to define a typed query endpoint -- the auto-generated hook handles cache, fetching state, and refetching for free.\n\n**Requirements:**\n1. In `api.ts`, import `createApi`, `fetchBaseQuery` from `@reduxjs/toolkit/query/react`.\n2. Define and export:\n   - `type Todo = { id: number; title: string };`\n   - `export const todosApi = createApi({ reducerPath: 'todosApi', baseQuery: fetchBaseQuery({ baseUrl: '/api/' }), endpoints: (builder) => ({ getTodos: builder.query<Todo[], void>({ query: () => 'todos' }) }) });`\n   - `export const { useGetTodosQuery } = todosApi;`\n3. In `store.ts`, import `configureStore` from `@reduxjs/toolkit` and `todosApi` from `./api`. Export `store = configureStore({ reducer: { [todosApi.reducerPath]: todosApi.reducer }, middleware: (gdm) => gdm().concat(todosApi.middleware) })`.",
+  "difficulty": "intermediate",
+  "tags": ["rtk-query", "createApi"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "api.ts",
+      "content": "import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';\n\nexport type Todo = { id: number; title: string };\n\nexport const todosApi = createApi({\n  reducerPath: 'todosApi',\n  baseQuery: fetchBaseQuery({ baseUrl: '/api/' }),\n  endpoints: (builder) => ({\n    getTodos: builder.query<Todo[], void>({\n      query: () => 'todos',\n    }),\n  }),\n});\n\nexport const { useGetTodosQuery } = todosApi;\n"
+    },
+    {
+      "path": "store.ts",
+      "content": "import { configureStore } from '@reduxjs/toolkit';\nimport { todosApi } from './api';\n\nexport const store = configureStore({\n  reducer: {\n    [todosApi.reducerPath]: todosApi.reducer,\n  },\n  middleware: (gdm) => gdm().concat(todosApi.middleware),\n});\n\nexport type RootState = ReturnType<typeof store.getState>;\nexport type AppDispatch = typeof store.dispatch;\n"
+    }
+  ],
+  "hints": [
+    "`baseQuery: fetchBaseQuery({ baseUrl })` is RTK Query's built-in fetch wrapper -- swap for a custom one if you need auth headers.",
+    "`endpoints` returns an object whose keys become hook names: `getTodos` -> `useGetTodosQuery`.",
+    "Don't forget to add `api.middleware` -- otherwise caching/invalidation won't work."
+  ],
+  "assertions": {
+    "perFile": {
+      "api.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "@reduxjs/toolkit/query/react",
+          "specifiers": ["createApi", "fetchBaseQuery"],
+          "description": "Import RTK Query primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "createApi",
+          "description": "Call createApi"
+        },
+        {
+          "type": "methodCall",
+          "method": "fetchBaseQuery",
+          "description": "Call fetchBaseQuery"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "todosApi",
+          "description": "Export todosApi"
+        }
+      ],
+      "store.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "@reduxjs/toolkit",
+          "specifiers": ["configureStore"],
+          "description": "Import configureStore"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "./api",
+          "specifiers": ["todosApi"],
+          "description": "Import todosApi"
+        },
+        {
+          "type": "methodCall",
+          "method": "configureStore",
+          "description": "Call configureStore"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

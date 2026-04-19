@@ -1,0 +1,51 @@
+{
+  "title": "Stable Context Value via useMemo",
+  "prompt": "Plain context re-renders consumers whenever the parent re-renders -- because `value={...}` is a new object each time. Memoize it.\n\n**Requirements:**\n1. In `Theme.tsx`, import `createContext`, `useContext`, `useMemo`, `useState`, `ReactNode` from `react`.\n2. Define a typed shape:\n   - `type ThemeContextValue = { theme: 'light' | 'dark'; toggle: () => void };`\n   - `const ThemeContext = createContext<ThemeContextValue | null>(null);`\n3. Export `function ThemeProvider({ children }: { children: ReactNode })`:\n   - `const [theme, setTheme] = useState<'light' | 'dark'>('light');`\n   - `const value = useMemo<ThemeContextValue>(() => ({ theme, toggle: () => setTheme((t) => t === 'light' ? 'dark' : 'light') }), [theme]);`\n   - Return `<ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>`.\n4. Export `function useTheme(): ThemeContextValue { const ctx = useContext(ThemeContext); if (!ctx) throw new Error('useTheme outside provider'); return ctx; }`.",
+  "difficulty": "intermediate",
+  "tags": ["context", "useMemo", "performance"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "Theme.tsx",
+      "content": "import { createContext, ReactNode, useContext, useMemo, useState } from 'react';\n\ntype ThemeContextValue = { theme: 'light' | 'dark'; toggle: () => void };\n\nconst ThemeContext = createContext<ThemeContextValue | null>(null);\n\nexport function ThemeProvider({ children }: { children: ReactNode }) {\n  const [theme, setTheme] = useState<'light' | 'dark'>('light');\n  const value = useMemo<ThemeContextValue>(\n    () => ({\n      theme,\n      toggle: () => setTheme((t) => (t === 'light' ? 'dark' : 'light')),\n    }),\n    [theme],\n  );\n  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;\n}\n\nexport function useTheme(): ThemeContextValue {\n  const ctx = useContext(ThemeContext);\n  if (!ctx) throw new Error('useTheme outside provider');\n  return ctx;\n}\n"
+    }
+  ],
+  "hints": [
+    "Without `useMemo`, every render of `ThemeProvider` makes a new object -- consumers see a new value and re-render too.",
+    "`useMemo` with a dependency array of `[theme]` ensures the object identity is stable while `theme` doesn't change.",
+    "Throwing in `useTheme` when context is null gives consumers a non-null type -- no defensive `?.` everywhere."
+  ],
+  "assertions": {
+    "perFile": {
+      "Theme.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["createContext", "ReactNode", "useContext", "useMemo", "useState"],
+          "description": "Import context + memo primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "createContext",
+          "description": "Call createContext"
+        },
+        {
+          "type": "methodCall",
+          "method": "useMemo",
+          "description": "Memoize the context value"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "ThemeProvider",
+          "description": "Export ThemeProvider"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useTheme",
+          "description": "Export useTheme"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

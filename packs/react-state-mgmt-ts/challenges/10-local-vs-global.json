@@ -1,0 +1,75 @@
+{
+  "title": "Local vs Global: Place State Where It Belongs",
+  "prompt": "Two pieces of state with very different scopes. Modal open/close is local to the consumer; the auth user is shared everywhere. Place each correctly.\n\n**Requirements:**\n1. In `auth.ts`, import `create` from `zustand`. Define and export `type AuthUser = { id: number; name: string };` and `export const useAuthStore = create<{ user: AuthUser | null; setUser: (u: AuthUser | null) => void }>()((set) => ({ user: null, setUser: (u) => set({ user: u }) }));`. The auth user is global because every screen needs it.\n2. In `Modal.tsx`, import `useState` from `react`. Define and export `function Modal()` that:\n   - Uses LOCAL `useState<boolean>(false)` for `open`.\n   - Renders `<button onClick={() => setOpen(true)}>open</button>` and, when `open`, `<dialog open><p>hi</p><button onClick={() => setOpen(false)}>close</button></dialog>`.\n3. In `Header.tsx`, import `useAuthStore` and export `function Header()` that reads `const user = useAuthStore((s) => s.user)` and renders `<header>{user ? <p>signed in: {user.name}</p> : <p>guest</p>}</header>`.",
+  "difficulty": "beginner",
+  "tags": ["state-placement", "useState", "zustand"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "auth.ts",
+      "content": "import { create } from 'zustand';\n\nexport type AuthUser = { id: number; name: string };\n\nexport const useAuthStore = create<{\n  user: AuthUser | null;\n  setUser: (u: AuthUser | null) => void;\n}>()((set) => ({\n  user: null,\n  setUser: (u) => set({ user: u }),\n}));\n"
+    },
+    {
+      "path": "Modal.tsx",
+      "content": "import { useState } from 'react';\n\nexport function Modal() {\n  const [open, setOpen] = useState<boolean>(false);\n  return (\n    <>\n      <button onClick={() => setOpen(true)}>open</button>\n      {open ? (\n        <dialog open>\n          <p>hi</p>\n          <button onClick={() => setOpen(false)}>close</button>\n        </dialog>\n      ) : null}\n    </>\n  );\n}\n"
+    },
+    {
+      "path": "Header.tsx",
+      "content": "import { useAuthStore } from './auth';\n\nexport function Header() {\n  const user = useAuthStore((s) => s.user);\n  return <header>{user ? <p>signed in: {user.name}</p> : <p>guest</p>}</header>;\n}\n"
+    }
+  ],
+  "hints": [
+    "Default to local `useState`. Only lift state when more than one component needs it AND they aren't naturally co-located.",
+    "Auth, theme, current user -- almost always global. Modal toggles, hover state, form drafts -- almost always local.",
+    "If you're not sure, start local; refactor to global only when you actually need it elsewhere."
+  ],
+  "assertions": {
+    "perFile": {
+      "auth.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "zustand",
+          "specifiers": ["create"],
+          "description": "Import create"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "useAuthStore",
+          "description": "Export useAuthStore"
+        }
+      ],
+      "Modal.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState"],
+          "description": "Import useState"
+        },
+        {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Use local useState"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Modal",
+          "description": "Export Modal"
+        }
+      ],
+      "Header.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "./auth",
+          "specifiers": ["useAuthStore"],
+          "description": "Import useAuthStore from auth module"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "Header",
+          "description": "Export Header"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

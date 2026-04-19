@@ -1,0 +1,51 @@
+{
+  "title": "RTK: createAsyncThunk for Fetch",
+  "prompt": "Use `createAsyncThunk` to model an async fetch with `pending`/`fulfilled`/`rejected` cases on a slice.\n\n**Requirements:**\n1. In `store.ts`, import `createSlice`, `createAsyncThunk`, `configureStore` from `@reduxjs/toolkit`.\n2. Define and export:\n   - `type User = { id: number; name: string };`\n   - `type UsersState = { items: User[]; status: 'idle' | 'loading' | 'success' | 'error' };`\n   - `export const fetchUsers = createAsyncThunk<User[], void>('users/fetch', async () => { const r = await fetch('/api/users'); return r.json() as Promise<User[]>; });`\n3. Define `usersSlice` with `initialState: { items: [], status: 'idle' } as UsersState` and `extraReducers: (builder) => { builder.addCase(fetchUsers.pending, (s) => { s.status = 'loading'; }); builder.addCase(fetchUsers.fulfilled, (s, a) => { s.status = 'success'; s.items = a.payload; }); builder.addCase(fetchUsers.rejected, (s) => { s.status = 'error'; }); }`.\n4. Export `store = configureStore({ reducer: { users: usersSlice.reducer } })`, plus `RootState` and `AppDispatch` types.",
+  "difficulty": "advanced",
+  "tags": ["rtk", "createAsyncThunk"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "store.ts",
+      "content": "import { createSlice, createAsyncThunk, configureStore } from '@reduxjs/toolkit';\n\nexport type User = { id: number; name: string };\nexport type UsersState = { items: User[]; status: 'idle' | 'loading' | 'success' | 'error' };\n\nexport const fetchUsers = createAsyncThunk<User[], void>(\n  'users/fetch',\n  async () => {\n    const r = await fetch('/api/users');\n    return r.json() as Promise<User[]>;\n  },\n);\n\nconst usersSlice = createSlice({\n  name: 'users',\n  initialState: { items: [], status: 'idle' } as UsersState,\n  reducers: {},\n  extraReducers: (builder) => {\n    builder.addCase(fetchUsers.pending, (s) => {\n      s.status = 'loading';\n    });\n    builder.addCase(fetchUsers.fulfilled, (s, a) => {\n      s.status = 'success';\n      s.items = a.payload;\n    });\n    builder.addCase(fetchUsers.rejected, (s) => {\n      s.status = 'error';\n    });\n  },\n});\n\nexport const store = configureStore({\n  reducer: { users: usersSlice.reducer },\n});\n\nexport type RootState = ReturnType<typeof store.getState>;\nexport type AppDispatch = typeof store.dispatch;\n"
+    }
+  ],
+  "hints": [
+    "`createAsyncThunk<Returned, Arg>` is the typed entry; `pending`, `fulfilled`, `rejected` action creators come for free.",
+    "Use `extraReducers` (not `reducers`) for action types your slice doesn't own.",
+    "The status string union is more honest than booleans -- error and loading are mutually exclusive."
+  ],
+  "assertions": {
+    "perFile": {
+      "store.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "@reduxjs/toolkit",
+          "specifiers": ["createSlice", "createAsyncThunk", "configureStore"],
+          "description": "Import RTK primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "createAsyncThunk",
+          "description": "Call createAsyncThunk"
+        },
+        {
+          "type": "methodCall",
+          "method": "createSlice",
+          "description": "Call createSlice"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "fetchUsers",
+          "description": "Export fetchUsers thunk"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "store",
+          "description": "Export store"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

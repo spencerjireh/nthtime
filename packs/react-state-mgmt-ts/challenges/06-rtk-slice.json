@@ -1,0 +1,68 @@
+{
+  "title": "Redux Toolkit: createSlice for Todos",
+  "prompt": "Use `createSlice` to define a typed todos reducer with `add` and `toggle` actions; wire it into `configureStore` and consume from React via `useSelector`/`useDispatch`.\n\n**Requirements:**\n1. In `store.ts`, import `createSlice`, `configureStore`, `PayloadAction` from `@reduxjs/toolkit`.\n2. Define and export:\n   - `type Todo = { id: number; title: string; done: boolean };`\n   - `const todosSlice = createSlice({ name: 'todos', initialState: [] as Todo[], reducers: { add: (state, action: PayloadAction<Todo>) => { state.push(action.payload); }, toggle: (state, action: PayloadAction<number>) => { const t = state.find((x) => x.id === action.payload); if (t) t.done = !t.done; } } });`\n   - `export const { add, toggle } = todosSlice.actions;`\n   - `export const store = configureStore({ reducer: { todos: todosSlice.reducer } });`\n   - `export type RootState = ReturnType<typeof store.getState>;`\n   - `export type AppDispatch = typeof store.dispatch;`\n3. In `TodoList.tsx`, import `useSelector`, `useDispatch` from `react-redux`, plus your store types and actions. Export `function TodoList()` that renders the list (use `useSelector((s: RootState) => s.todos)`).",
+  "difficulty": "intermediate",
+  "tags": ["rtk", "createSlice", "useSelector"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "store.ts",
+      "content": "import { createSlice, configureStore, PayloadAction } from '@reduxjs/toolkit';\n\nexport type Todo = { id: number; title: string; done: boolean };\n\nconst todosSlice = createSlice({\n  name: 'todos',\n  initialState: [] as Todo[],\n  reducers: {\n    add: (state, action: PayloadAction<Todo>) => {\n      state.push(action.payload);\n    },\n    toggle: (state, action: PayloadAction<number>) => {\n      const t = state.find((x) => x.id === action.payload);\n      if (t) t.done = !t.done;\n    },\n  },\n});\n\nexport const { add, toggle } = todosSlice.actions;\n\nexport const store = configureStore({\n  reducer: { todos: todosSlice.reducer },\n});\n\nexport type RootState = ReturnType<typeof store.getState>;\nexport type AppDispatch = typeof store.dispatch;\n"
+    },
+    {
+      "path": "TodoList.tsx",
+      "content": "import { useDispatch, useSelector } from 'react-redux';\nimport { add, AppDispatch, RootState, toggle } from './store';\n\nexport function TodoList() {\n  const todos = useSelector((s: RootState) => s.todos);\n  const dispatch = useDispatch<AppDispatch>();\n  return (\n    <>\n      <button onClick={() => dispatch(add({ id: Date.now(), title: 'new', done: false }))}>add</button>\n      <ul>\n        {todos.map((t) => (\n          <li key={t.id}>\n            <button onClick={() => dispatch(toggle(t.id))}>{t.done ? 'x' : 'o'}</button>\n            <span>{t.title}</span>\n          </li>\n        ))}\n      </ul>\n    </>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "RTK uses Immer under the hood -- mutate `state` directly inside reducers.",
+    "`PayloadAction<T>` types the action payload at the reducer site.",
+    "Always export `RootState` + `AppDispatch` types from the file that creates the store -- they're the typed selectors/dispatchers."
+  ],
+  "assertions": {
+    "perFile": {
+      "store.ts": [
+        {
+          "type": "importDeclaration",
+          "source": "@reduxjs/toolkit",
+          "specifiers": ["createSlice", "configureStore", "PayloadAction"],
+          "description": "Import RTK primitives"
+        },
+        {
+          "type": "methodCall",
+          "method": "createSlice",
+          "description": "Call createSlice"
+        },
+        {
+          "type": "methodCall",
+          "method": "configureStore",
+          "description": "Call configureStore"
+        },
+        {
+          "type": "exportDeclaration",
+          "name": "store",
+          "description": "Export store"
+        }
+      ],
+      "TodoList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-redux",
+          "specifiers": ["useDispatch", "useSelector"],
+          "description": "Import react-redux hooks"
+        },
+        {
+          "type": "methodCall",
+          "method": "useSelector",
+          "description": "Call useSelector"
+        },
+        {
+          "type": "methodCall",
+          "method": "useDispatch",
+          "description": "Call useDispatch"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
