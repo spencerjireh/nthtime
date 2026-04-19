@@ -1,0 +1,46 @@
+{
+  "title": "startTransition for a Heavy Filter",
+  "prompt": "Wrap a non-urgent state update in `startTransition` so typing stays responsive even with a heavy downstream filter.\n\n**Requirements:**\n1. Import `useState`, `useTransition`, `ChangeEvent` from `react'`.\n2. Define and export `type Row = { id: number; label: string }`.\n3. Export a function component `LiveFilter({ rows }: { rows: Row[] })`. Inside:\n   - Hold `query` (typed input value) and `deferredQuery` (filter input) -- both `useState<string>('')`.\n   - Call `const [isPending, startTransition] = useTransition()`.\n   - The `<input>`'s `onChange` updates `query` immediately and wraps `setDeferredQuery(e.target.value)` in `startTransition(() => ...)`.\n   - Render `<p>{isPending ? 'updating...' : 'idle'}</p>`.\n   - Render the filtered rows as `<li>` (filter on `deferredQuery`).",
+  "difficulty": "intermediate",
+  "tags": ["useTransition", "startTransition", "performance"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "LiveFilter.tsx",
+      "content": "import { useState, useTransition, ChangeEvent } from 'react';\n\nexport type Row = { id: number; label: string };\n\nexport function LiveFilter({ rows }: { rows: Row[] }) {\n  const [query, setQuery] = useState<string>('');\n  const [deferredQuery, setDeferredQuery] = useState<string>('');\n  const [isPending, startTransition] = useTransition();\n\n  const onChange = (e: ChangeEvent<HTMLInputElement>) => {\n    const next = e.target.value;\n    setQuery(next);\n    startTransition(() => {\n      setDeferredQuery(next);\n    });\n  };\n\n  const visible = rows.filter((r) => r.label.includes(deferredQuery));\n\n  return (\n    <div>\n      <input value={query} onChange={onChange} />\n      <p>{isPending ? 'updating...' : 'idle'}</p>\n      <ul>\n        {visible.map((r) => (\n          <li key={r.id}>{r.label}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Two states: the urgent input value, and the deferred filter value. The input always reflects the latest keystroke.",
+    "`startTransition` marks the wrapped update as non-urgent -- React can interrupt it for keystrokes.",
+    "`isPending` is your hook into showing a loading spinner without blocking input."
+  ],
+  "assertions": {
+    "perFile": {
+      "LiveFilter.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "useTransition", "ChangeEvent"],
+          "description": "Import useState, useTransition, ChangeEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "LiveFilter",
+          "description": "Define LiveFilter"
+        },
+        {
+          "type": "methodCall",
+          "method": "useTransition",
+          "description": "Call useTransition"
+        },
+        {
+          "type": "methodCall",
+          "method": "startTransition",
+          "description": "Call startTransition(...)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

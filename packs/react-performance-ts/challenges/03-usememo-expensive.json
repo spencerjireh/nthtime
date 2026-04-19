@@ -1,0 +1,41 @@
+{
+  "title": "useMemo for an Expensive Computation",
+  "prompt": "Cache a heavy computation across renders so it only runs when its inputs change.\n\n**Requirements:**\n1. Import `useMemo`, `useState`, `ChangeEvent` from `react`.\n2. Define and export `expensiveSort(items: string[]): string[]` -- a deliberately costly sort (use the array's `.slice().sort()` to avoid in-place mutation; treat the function itself as the unit of expense).\n3. Export a function component `SortedList({ items }: { items: string[] })`. Inside:\n   - Hold `filter` in `useState<string>('')`.\n   - Compute `sorted = useMemo(() => expensiveSort(items), [items])` -- only depends on `items`.\n   - Compute `visible = useMemo(() => sorted.filter(s => s.includes(filter)), [sorted, filter])`.\n   - Render an `<input>` for filter and a `<ul>` of `visible`.",
+  "difficulty": "intermediate",
+  "tags": ["useMemo", "memoization", "performance"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "SortedList.tsx",
+      "content": "import { useMemo, useState, ChangeEvent } from 'react';\n\nexport function expensiveSort(items: string[]): string[] {\n  return items.slice().sort();\n}\n\nexport function SortedList({ items }: { items: string[] }) {\n  const [filter, setFilter] = useState<string>('');\n\n  const sorted = useMemo(() => expensiveSort(items), [items]);\n  const visible = useMemo(\n    () => sorted.filter((s) => s.includes(filter)),\n    [sorted, filter],\n  );\n\n  return (\n    <div>\n      <input\n        value={filter}\n        onChange={(e: ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}\n      />\n      <ul>\n        {visible.map((v) => (\n          <li key={v}>{v}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Order matters: sort once per `items` change, then filter on top -- two memos compose cleanly.",
+    "Don't include `filter` in the sort's deps -- the filter doesn't affect the sort order.",
+    "Avoid `useMemo` for trivially cheap work -- it has its own bookkeeping cost."
+  ],
+  "assertions": {
+    "perFile": {
+      "SortedList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useMemo", "useState", "ChangeEvent"],
+          "description": "Import useMemo, useState, ChangeEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "SortedList",
+          "description": "Define SortedList"
+        },
+        {
+          "type": "methodCall",
+          "method": "useMemo",
+          "description": "Call useMemo"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

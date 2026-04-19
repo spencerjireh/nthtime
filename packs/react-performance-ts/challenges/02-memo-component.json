@@ -1,0 +1,47 @@
+{
+  "title": "React.memo a Leaf",
+  "prompt": "Wrap a leaf component in `React.memo` so it skips re-renders when its props are referentially stable.\n\n**Requirements:**\n1. Import `memo` and `useState` from `react`.\n2. Define and export `type RowProps = { label: string; onClick: () => void }`.\n3. Define and export a memoized component: `export const Row = memo(function Row({ label, onClick }: RowProps) { return <button onClick={onClick}>{label}</button>; });`.\n4. Export a function component `Parent({ onClick }: { onClick: () => void })`. Inside:\n   - Hold `tick` in `useState(0)`.\n   - Render a button that calls `setTick(t => t + 1)` and a `<Row label=\"item\" onClick={onClick} />`.\n5. The `onClick` passed to `Row` must come from `Parent`'s props (stable across renders) so `Row` actually skips re-renders when `tick` changes.",
+  "difficulty": "beginner",
+  "tags": ["memo", "rerender", "performance"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "Row.tsx",
+      "content": "import { memo, useState } from 'react';\n\nexport type RowProps = { label: string; onClick: () => void };\n\nexport const Row = memo(function Row({ label, onClick }: RowProps) {\n  return <button onClick={onClick}>{label}</button>;\n});\n\nexport function Parent({ onClick }: { onClick: () => void }) {\n  const [tick, setTick] = useState<number>(0);\n  return (\n    <div>\n      <button onClick={() => setTick((t) => t + 1)}>tick={tick}</button>\n      <Row label=\"item\" onClick={onClick} />\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`memo` does a shallow prop compare -- a new function reference on every render defeats it.",
+    "Pass props that are *referentially stable* (props from the parent, not freshly-created objects/functions).",
+    "`memo(function Name(...))` keeps the displayed name in DevTools."
+  ],
+  "assertions": {
+    "perFile": {
+      "Row.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["memo", "useState"],
+          "description": "Import memo and useState"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "Row",
+          "kind": "const",
+          "description": "Declare const Row = memo(...)"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Parent",
+          "description": "Define Parent"
+        },
+        {
+          "type": "methodCall",
+          "method": "memo",
+          "description": "Call memo(...)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "title": "Virtualize a Long List with react-window",
+  "prompt": "Render only the visible rows of a 10k-row list using `FixedSizeList` from `react-window`.\n\n**Requirements:**\n1. Import `FixedSizeList`, `ListChildComponentProps` from `react-window`.\n2. Define and export `type Row = { id: number; label: string }`.\n3. Export a function component `BigList({ rows }: { rows: Row[] })`.\n4. Inside, define a `Item` row component typed `({ index, style }: ListChildComponentProps) => JSX.Element` that returns a `<div style={style}>{rows[index].label}</div>`.\n5. Render `<FixedSizeList height={400} width={300} itemSize={32} itemCount={rows.length}>{Item}</FixedSizeList>`.",
+  "difficulty": "advanced",
+  "tags": ["virtualization", "react-window", "performance"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "BigList.tsx",
+      "content": "import { FixedSizeList, ListChildComponentProps } from 'react-window';\n\nexport type Row = { id: number; label: string };\n\nexport function BigList({ rows }: { rows: Row[] }) {\n  const Item = ({ index, style }: ListChildComponentProps) => (\n    <div style={style} data-index={index}>\n      {rows[index].label}\n    </div>\n  );\n\n  return (\n    <FixedSizeList\n      height={400}\n      width={300}\n      itemSize={32}\n      itemCount={rows.length}\n    >\n      {Item}\n    </FixedSizeList>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Virtualization renders only what's visible; a 10k-row plain `<ul>` would freeze the page.",
+    "The row component is invoked by `FixedSizeList` with `{ index, style }` -- always spread `style` so absolute positioning works.",
+    "`itemSize` is the row height in px; `height` is the viewport. The library mounts ~`Math.ceil(height / itemSize)` rows."
+  ],
+  "assertions": {
+    "perFile": {
+      "BigList.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-window",
+          "specifiers": ["FixedSizeList", "ListChildComponentProps"],
+          "description": "Import FixedSizeList and ListChildComponentProps"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "BigList",
+          "description": "Define BigList"
+        },
+        {
+          "type": "jsxElement",
+          "name": "FixedSizeList",
+          "props": ["height", "width", "itemSize", "itemCount"],
+          "description": "Render FixedSizeList with required sizing props"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

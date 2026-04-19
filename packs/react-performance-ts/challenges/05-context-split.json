@@ -1,0 +1,53 @@
+{
+  "title": "Split Context to Avoid Re-renders",
+  "prompt": "Splitting state and dispatch into two separate contexts means components that only need dispatch don't re-render when state changes.\n\n**Requirements:**\n1. Import `createContext`, `useContext`, `useState`, `useCallback`, `Dispatch`, `SetStateAction`, `ReactNode` from `react`.\n2. Define and export two contexts:\n   - `export const CountStateContext = createContext<number>(0)`\n   - `export const CountDispatchContext = createContext<Dispatch<SetStateAction<number>>>(() => {})`\n3. Export a function component `CountProvider({ children }: { children: ReactNode })` that wraps children in both providers (state outer, dispatch inner).\n4. Export hooks `useCountState()` and `useCountDispatch()` that read from each context.\n5. Export a leaf `IncrementButton()` that calls `useCountDispatch()` -- not `useCountState()` -- and renders a button that calls `setCount(c => c + 1)`.",
+  "difficulty": "intermediate",
+  "tags": ["context", "performance", "rerender"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "CountContext.tsx",
+      "content": "import {\n  createContext,\n  useContext,\n  useState,\n  Dispatch,\n  SetStateAction,\n  ReactNode,\n} from 'react';\n\nexport const CountStateContext = createContext<number>(0);\nexport const CountDispatchContext = createContext<Dispatch<SetStateAction<number>>>(\n  () => {},\n);\n\nexport function CountProvider({ children }: { children: ReactNode }) {\n  const [count, setCount] = useState<number>(0);\n  return (\n    <CountStateContext.Provider value={count}>\n      <CountDispatchContext.Provider value={setCount}>\n        {children}\n      </CountDispatchContext.Provider>\n    </CountStateContext.Provider>\n  );\n}\n\nexport function useCountState() {\n  return useContext(CountStateContext);\n}\n\nexport function useCountDispatch() {\n  return useContext(CountDispatchContext);\n}\n\nexport function IncrementButton() {\n  const setCount = useCountDispatch();\n  return <button onClick={() => setCount((c) => c + 1)}>+1</button>;\n}\n"
+    }
+  ],
+  "hints": [
+    "A single context with `{ count, setCount }` re-renders every consumer when count changes -- even ones that only use `setCount`.",
+    "Two contexts let dispatch-only consumers stay subscribed to a stable value.",
+    "`Dispatch<SetStateAction<T>>` is the precise type of `setCount`."
+  ],
+  "assertions": {
+    "perFile": {
+      "CountContext.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["createContext", "useContext", "useState"],
+          "description": "Import createContext, useContext, useState"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "CountStateContext",
+          "kind": "const",
+          "description": "Declare CountStateContext"
+        },
+        {
+          "type": "variableDeclaration",
+          "name": "CountDispatchContext",
+          "kind": "const",
+          "description": "Declare CountDispatchContext"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "CountProvider",
+          "description": "Define CountProvider"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "IncrementButton",
+          "description": "Define IncrementButton"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

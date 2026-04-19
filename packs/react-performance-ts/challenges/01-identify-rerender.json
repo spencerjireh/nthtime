@@ -1,0 +1,42 @@
+{
+  "title": "Profile Re-renders",
+  "prompt": "Wrap a tree in `<Profiler>` to count actual commits.\n\n**Requirements:**\n1. Import `Profiler`, `useState`, `ProfilerOnRenderCallback` from `react`.\n2. Define and export `type RenderLog = { id: string; phase: 'mount' | 'update' | 'nested-update'; actualDuration: number }`.\n3. Export a function component `MeasuredCounter({ onRender }: { onRender: (log: RenderLog) => void })`.\n4. Inside, hold a `count` via `useState(0)` and define `handleRender: ProfilerOnRenderCallback` that calls `onRender({ id, phase, actualDuration })`.\n5. Render `<Profiler id=\"counter\" onRender={handleRender}><button onClick={() => setCount(c => c + 1)}>{count}</button></Profiler>`.",
+  "difficulty": "beginner",
+  "tags": ["profiler", "renders", "diagnostics"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "MeasuredCounter.tsx",
+      "content": "import { Profiler, useState, ProfilerOnRenderCallback } from 'react';\n\nexport type RenderLog = {\n  id: string;\n  phase: 'mount' | 'update' | 'nested-update';\n  actualDuration: number;\n};\n\nexport function MeasuredCounter({ onRender }: { onRender: (log: RenderLog) => void }) {\n  const [count, setCount] = useState<number>(0);\n\n  const handleRender: ProfilerOnRenderCallback = (id, phase, actualDuration) => {\n    onRender({ id, phase, actualDuration });\n  };\n\n  return (\n    <Profiler id=\"counter\" onRender={handleRender}>\n      <button onClick={() => setCount((c) => c + 1)}>{count}</button>\n    </Profiler>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`Profiler` is built-in -- no devtools required to count commits in tests.",
+    "The `onRender` callback's signature is `(id, phase, actualDuration, baseDuration, startTime, commitTime)` -- type it via `ProfilerOnRenderCallback` instead of writing it out.",
+    "Each commit -- mount, update, nested-update -- fires once per Profiler boundary."
+  ],
+  "assertions": {
+    "perFile": {
+      "MeasuredCounter.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["Profiler", "useState", "ProfilerOnRenderCallback"],
+          "description": "Import Profiler, useState, ProfilerOnRenderCallback"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "MeasuredCounter",
+          "description": "Define MeasuredCounter"
+        },
+        {
+          "type": "jsxElement",
+          "name": "Profiler",
+          "props": ["id", "onRender"],
+          "description": "Render <Profiler id onRender>"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
