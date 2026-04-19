@@ -1,0 +1,47 @@
+{
+  "title": "Controlled Input",
+  "prompt": "Build a controlled text input.\n\n**Requirements:**\n1. Import `useState` and `ChangeEvent` from `react`.\n2. Export a function component named `Greeting`.\n3. Inside the component:\n   - Hold the input value in `useState<string>('')`.\n   - The `onChange` handler must accept `ChangeEvent<HTMLInputElement>` and call `setName(e.target.value)`.\n4. Render:\n   - An `<input>` whose `value` is bound to state and `onChange` to the handler.\n   - A `<p>` showing `Hello, {name}!` when `name` is non-empty, otherwise `Hello, stranger!`.",
+  "difficulty": "beginner",
+  "tags": ["controlled-input", "useState", "events"],
+  "timeEstimateSeconds": 300,
+  "files": [
+    {
+      "path": "Greeting.tsx",
+      "content": "import { useState, ChangeEvent } from 'react';\n\nexport function Greeting() {\n  const [name, setName] = useState<string>('');\n\n  const onChange = (e: ChangeEvent<HTMLInputElement>) => {\n    setName(e.target.value);\n  };\n\n  return (\n    <div>\n      <input value={name} onChange={onChange} />\n      <p>{name ? `Hello, ${name}!` : 'Hello, stranger!'}</p>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`ChangeEvent<HTMLInputElement>` is what `<input onChange>` receives -- the value lives at `e.target.value`.",
+    "A controlled input is one where React owns the value: bind `value` AND `onChange` together.",
+    "Use a ternary to switch the greeting; don't store the rendered text in state."
+  ],
+  "assertions": {
+    "perFile": {
+      "Greeting.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "ChangeEvent"],
+          "description": "Import useState and ChangeEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Greeting",
+          "description": "Define Greeting"
+        },
+        {
+          "type": "methodCall",
+          "method": "useState",
+          "description": "Call useState"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["value", "onChange"],
+          "description": "Render a controlled input bound to value + onChange"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

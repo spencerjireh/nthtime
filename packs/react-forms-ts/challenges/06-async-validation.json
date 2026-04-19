@@ -1,0 +1,51 @@
+{
+  "title": "Debounced Async Username Check",
+  "prompt": "Validate that a username is available, debouncing the request and ignoring stale results.\n\n**Requirements:**\n1. Import `useEffect`, `useState`, and `ChangeEvent` from `react`.\n2. Define and export `type CheckState = 'idle' | 'checking' | 'available' | 'taken'`.\n3. Export a function component `UsernameCheck({ check }: { check: (name: string, signal: AbortSignal) => Promise<boolean> })` -- `check` resolves to `true` if the name is available.\n4. Inside the component:\n   - Hold `name: string` and `state: CheckState`.\n   - When `name.length < 3`, state must be `'idle'`.\n   - Otherwise, after a 300ms debounce, set state to `'checking'`, call `check(name, signal)` with an `AbortController` signal, and update state to `'available'` or `'taken'`. Cancel the previous timer and abort on cleanup.\n5. Render an `<input>` and a status `<p>` whose text is the current state.",
+  "difficulty": "intermediate",
+  "tags": ["forms", "async", "debounce", "AbortController"],
+  "timeEstimateSeconds": 540,
+  "files": [
+    {
+      "path": "UsernameCheck.tsx",
+      "content": "import { useEffect, useState, ChangeEvent } from 'react';\n\nexport type CheckState = 'idle' | 'checking' | 'available' | 'taken';\n\nexport function UsernameCheck({\n  check,\n}: {\n  check: (name: string, signal: AbortSignal) => Promise<boolean>;\n}) {\n  const [name, setName] = useState<string>('');\n  const [state, setState] = useState<CheckState>('idle');\n\n  useEffect(() => {\n    if (name.length < 3) {\n      setState('idle');\n      return;\n    }\n\n    const controller = new AbortController();\n    const timer = setTimeout(async () => {\n      setState('checking');\n      try {\n        const ok = await check(name, controller.signal);\n        if (!controller.signal.aborted) setState(ok ? 'available' : 'taken');\n      } catch (err) {\n        if (err instanceof Error && err.name === 'AbortError') return;\n      }\n    }, 300);\n\n    return () => {\n      clearTimeout(timer);\n      controller.abort();\n    };\n  }, [name, check]);\n\n  return (\n    <div>\n      <input\n        value={name}\n        onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}\n      />\n      <p>{state}</p>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`setTimeout` returns the debounce handle; clearing it on cleanup is what makes the debounce work.",
+    "Pair the debounce with an `AbortController` so a slow response from a stale name can never overwrite the latest one.",
+    "Short-circuit when `name.length < 3` so you don't fire the network for partial input."
+  ],
+  "assertions": {
+    "perFile": {
+      "UsernameCheck.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useEffect", "useState", "ChangeEvent"],
+          "description": "Import useEffect, useState, ChangeEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "UsernameCheck",
+          "description": "Define UsernameCheck"
+        },
+        {
+          "type": "methodCall",
+          "method": "useEffect",
+          "description": "Call useEffect"
+        },
+        {
+          "type": "methodCall",
+          "method": "setTimeout",
+          "description": "Call setTimeout for debouncing"
+        },
+        {
+          "type": "methodCall",
+          "method": "clearTimeout",
+          "description": "Call clearTimeout in cleanup"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

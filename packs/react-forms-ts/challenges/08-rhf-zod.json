@@ -1,0 +1,53 @@
+{
+  "title": "react-hook-form + Zod resolver",
+  "prompt": "Replace per-field validation rules with a Zod schema, and infer the form type from the schema.\n\n**Requirements:**\n1. Import `useForm` from `react-hook-form`, `zodResolver` from `@hookform/resolvers/zod`, and `z` from `zod`.\n2. Define and export a `signupSchema` using `z.object({...})`:\n   - `email`: `z.string().email('Invalid email')`\n   - `password`: `z.string().min(8, 'Min 8 characters')`\n3. Define and export `type SignupInputs = z.infer<typeof signupSchema>`.\n4. Export a function component `SignupForm({ onSubmit }: { onSubmit: (data: SignupInputs) => void })`.\n5. Inside, call `useForm<SignupInputs>({ resolver: zodResolver(signupSchema) })`.\n6. Render two inputs (`email` and `password`) using `register`, surface errors via `<p role=\"alert\">`, and a submit button.",
+  "difficulty": "intermediate",
+  "tags": ["forms", "react-hook-form", "zod", "schema"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "SignupForm.tsx",
+      "content": "import { useForm } from 'react-hook-form';\nimport { zodResolver } from '@hookform/resolvers/zod';\nimport { z } from 'zod';\n\nexport const signupSchema = z.object({\n  email: z.string().email('Invalid email'),\n  password: z.string().min(8, 'Min 8 characters'),\n});\n\nexport type SignupInputs = z.infer<typeof signupSchema>;\n\nexport function SignupForm({ onSubmit }: { onSubmit: (data: SignupInputs) => void }) {\n  const {\n    register,\n    handleSubmit,\n    formState: { errors },\n  } = useForm<SignupInputs>({ resolver: zodResolver(signupSchema) });\n\n  return (\n    <form onSubmit={handleSubmit(onSubmit)}>\n      <input placeholder=\"email\" {...register('email')} />\n      {errors.email ? <p role=\"alert\">{errors.email.message}</p> : null}\n\n      <input placeholder=\"password\" type=\"password\" {...register('password')} />\n      {errors.password ? <p role=\"alert\">{errors.password.message}</p> : null}\n\n      <button type=\"submit\">Sign up</button>\n    </form>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`z.infer<typeof schema>` derives the form's TS type so you only declare validation in one place.",
+    "Pass the schema through `zodResolver` -- it adapts Zod errors into RHF's `errors.<field>.message` shape.",
+    "Don't add `required` again in `register`; the schema already enforces it."
+  ],
+  "assertions": {
+    "perFile": {
+      "SignupForm.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-hook-form",
+          "specifiers": ["useForm"],
+          "description": "Import useForm"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "@hookform/resolvers/zod",
+          "specifiers": ["zodResolver"],
+          "description": "Import zodResolver"
+        },
+        {
+          "type": "importDeclaration",
+          "source": "zod",
+          "specifiers": ["z"],
+          "description": "Import z from zod"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "SignupForm",
+          "description": "Define SignupForm"
+        },
+        {
+          "type": "methodCall",
+          "method": "zodResolver",
+          "description": "Call zodResolver(schema)"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

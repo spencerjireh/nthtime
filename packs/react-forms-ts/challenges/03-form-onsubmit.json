@@ -1,0 +1,48 @@
+{
+  "title": "Form Submit with FormData",
+  "prompt": "Build an uncontrolled form that reads values via `FormData` on submit.\n\n**Requirements:**\n1. Import `FormEvent` from `react`.\n2. Define and export a type `Contact = { name: string; email: string }`.\n3. Export a function component `ContactForm({ onSubmit }: { onSubmit: (contact: Contact) => void })`.\n4. Inside, declare `handleSubmit(e: FormEvent<HTMLFormElement>)`:\n   - Call `e.preventDefault()`.\n   - Build `new FormData(e.currentTarget)` and read `name` and `email` (cast each via `String(...)`).\n   - Call the `onSubmit` prop with the typed `Contact`.\n5. Render a `<form onSubmit={handleSubmit}>` containing two named `<input>` elements (`name=\"name\"`, `name=\"email\"`) and a submit button.",
+  "difficulty": "beginner",
+  "tags": ["forms", "FormData", "events", "uncontrolled"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "ContactForm.tsx",
+      "content": "import { FormEvent } from 'react';\n\nexport type Contact = { name: string; email: string };\n\nexport function ContactForm({ onSubmit }: { onSubmit: (contact: Contact) => void }) {\n  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {\n    e.preventDefault();\n    const data = new FormData(e.currentTarget);\n    onSubmit({\n      name: String(data.get('name') ?? ''),\n      email: String(data.get('email') ?? ''),\n    });\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <input name=\"name\" placeholder=\"Name\" />\n      <input name=\"email\" type=\"email\" placeholder=\"Email\" />\n      <button type=\"submit\">Send</button>\n    </form>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Type the event as `FormEvent<HTMLFormElement>` -- `e.currentTarget` is then the form element.",
+    "`new FormData(e.currentTarget)` works only because each input has a `name` attribute.",
+    "`FormData.get` returns `FormDataEntryValue | null` -- coerce with `String(...)` to land in TS string territory."
+  ],
+  "assertions": {
+    "perFile": {
+      "ContactForm.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["FormEvent"],
+          "description": "Import FormEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "ContactForm",
+          "description": "Define ContactForm"
+        },
+        {
+          "type": "methodCall",
+          "object": "e",
+          "method": "preventDefault",
+          "description": "Call e.preventDefault on the form event"
+        },
+        {
+          "type": "jsxElement",
+          "name": "form",
+          "props": ["onSubmit"],
+          "description": "Render a form with onSubmit"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

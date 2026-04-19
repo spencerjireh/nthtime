@@ -1,0 +1,45 @@
+{
+  "name": "React Forms with TypeScript",
+  "slug": "react-forms-ts",
+  "description": "Vanilla controlled inputs, useReducer-driven forms, async validation, then react-hook-form + Zod for schema-typed forms, multi-step wizards, and typed file uploads.",
+  "language": "typescript",
+  "framework": "react",
+  "version": "1.0.0",
+  "author": "nthtime",
+  "tags": ["react", "forms", "validation", "typescript"],
+  "prerequisites": ["react-patterns-ts"],
+  "sources": [
+    {
+      "name": "React TypeScript Cheatsheet (Forms & Events)",
+      "url": "https://react-typescript-cheatsheet.netlify.app/",
+      "license": "MIT"
+    },
+    {
+      "name": "Fullstack Open Part 2",
+      "url": "https://fullstackopen.com/en/part2",
+      "license": "CC BY-NC-SA 3.0"
+    },
+    {
+      "name": "react-hook-form docs",
+      "url": "https://react-hook-form.com/",
+      "license": "MIT (docs)"
+    },
+    {
+      "name": "Total TypeScript (Matt Pocock) -- Zod tutorial",
+      "url": "https://www.totaltypescript.com/tutorials/zod",
+      "license": "Free tutorial (concepts inspired)"
+    }
+  ],
+  "challenges": [
+    "challenges/01-controlled-input.json",
+    "challenges/02-controlled-select-checkbox.json",
+    "challenges/03-form-onsubmit.json",
+    "challenges/04-field-validation.json",
+    "challenges/05-form-reducer.json",
+    "challenges/06-async-validation.json",
+    "challenges/07-rhf-basic.json",
+    "challenges/08-rhf-zod.json",
+    "challenges/09-multi-step-form.json",
+    "challenges/10-file-upload.json"
+  ]
+}

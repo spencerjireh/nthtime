@@ -1,0 +1,46 @@
+{
+  "title": "react-hook-form: Typed register",
+  "prompt": "Build a typed login form with `react-hook-form`.\n\n**Requirements:**\n1. Import `useForm` and `SubmitHandler` from `react-hook-form`.\n2. Define and export `type LoginInputs = { email: string; password: string }`.\n3. Export a function component `LoginForm({ onSubmit }: { onSubmit: (data: LoginInputs) => void })`.\n4. Inside the component, call `useForm<LoginInputs>()` and destructure `{ register, handleSubmit, formState: { errors } }`.\n5. The submit handler must be typed `SubmitHandler<LoginInputs>` and call the `onSubmit` prop.\n6. Render a `<form onSubmit={handleSubmit(submit)}>` with:\n   - `<input {...register('email', { required: 'Email is required' })} />`\n   - `<input type=\"password\" {...register('password', { required: 'Password is required' })} />`\n   - For each field, render `<p role=\"alert\">{errors.email?.message}</p>` (or password) when an error exists.\n   - A submit button.",
+  "difficulty": "intermediate",
+  "tags": ["forms", "react-hook-form", "typescript"],
+  "timeEstimateSeconds": 480,
+  "files": [
+    {
+      "path": "LoginForm.tsx",
+      "content": "import { useForm, SubmitHandler } from 'react-hook-form';\n\nexport type LoginInputs = { email: string; password: string };\n\nexport function LoginForm({ onSubmit }: { onSubmit: (data: LoginInputs) => void }) {\n  const {\n    register,\n    handleSubmit,\n    formState: { errors },\n  } = useForm<LoginInputs>();\n\n  const submit: SubmitHandler<LoginInputs> = (data) => {\n    onSubmit(data);\n  };\n\n  return (\n    <form onSubmit={handleSubmit(submit)}>\n      <input placeholder=\"email\" {...register('email', { required: 'Email is required' })} />\n      {errors.email ? <p role=\"alert\">{errors.email.message}</p> : null}\n\n      <input placeholder=\"password\" type=\"password\" {...register('password', { required: 'Password is required' })} />\n      {errors.password ? <p role=\"alert\">{errors.password.message}</p> : null}\n\n      <button type=\"submit\">Sign in</button>\n    </form>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Pass the inputs type as a generic to `useForm<LoginInputs>()` so `register('field')` is autocompleted and type-checked.",
+    "`handleSubmit(submit)` already calls `e.preventDefault()` -- don't call it yourself.",
+    "Validation messages live at `errors.<field>?.message`."
+  ],
+  "assertions": {
+    "perFile": {
+      "LoginForm.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react-hook-form",
+          "specifiers": ["useForm", "SubmitHandler"],
+          "description": "Import useForm and SubmitHandler"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "LoginForm",
+          "description": "Define LoginForm"
+        },
+        {
+          "type": "methodCall",
+          "method": "useForm",
+          "description": "Call useForm"
+        },
+        {
+          "type": "methodCall",
+          "method": "register",
+          "description": "Call register for fields"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "title": "Per-Field Validation",
+  "prompt": "Build an email field with on-blur validation.\n\n**Requirements:**\n1. Import `useState`, `ChangeEvent`, and `FocusEvent` from `react`.\n2. Export a function component `EmailField`.\n3. Inside:\n   - `value` state typed `string`, default `''`.\n   - `error` state typed `string | null`, default `null`.\n   - `onChange(e: ChangeEvent<HTMLInputElement>)` updates `value` and clears the error.\n   - `onBlur(e: FocusEvent<HTMLInputElement>)` validates: if `value` does not match the regex `/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/`, set error to `'Invalid email'`; otherwise set error to `null`.\n4. Render an `<input type=\"email\">` bound to value/onChange/onBlur, and a `<p role=\"alert\">{error}</p>` only when `error` is non-null.",
+  "difficulty": "intermediate",
+  "tags": ["forms", "validation", "events"],
+  "timeEstimateSeconds": 420,
+  "files": [
+    {
+      "path": "EmailField.tsx",
+      "content": "import { useState, ChangeEvent, FocusEvent } from 'react';\n\nconst EMAIL_RE = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n\nexport function EmailField() {\n  const [value, setValue] = useState<string>('');\n  const [error, setError] = useState<string | null>(null);\n\n  const onChange = (e: ChangeEvent<HTMLInputElement>) => {\n    setValue(e.target.value);\n    if (error) setError(null);\n  };\n\n  const onBlur = (_e: FocusEvent<HTMLInputElement>) => {\n    setError(EMAIL_RE.test(value) ? null : 'Invalid email');\n  };\n\n  return (\n    <div>\n      <input type=\"email\" value={value} onChange={onChange} onBlur={onBlur} />\n      {error ? <p role=\"alert\">{error}</p> : null}\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "Validate on blur, not on every keystroke -- typing should feel light.",
+    "Clearing the error on next keystroke is what stops the alert from following the user as they correct.",
+    "`role=\"alert\"` is the accessible way to announce a freshly appearing validation message."
+  ],
+  "assertions": {
+    "perFile": {
+      "EmailField.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "ChangeEvent", "FocusEvent"],
+          "description": "Import useState, ChangeEvent, FocusEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "EmailField",
+          "description": "Define EmailField"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["type", "value", "onChange", "onBlur"],
+          "description": "Render a controlled email input with onBlur"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}

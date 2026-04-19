@@ -1,0 +1,48 @@
+{
+  "title": "Controlled Select + Checkbox",
+  "prompt": "Build a small preferences form with a typed `<select>` and a `<input type=\"checkbox\">`.\n\n**Requirements:**\n1. Import `useState` and `ChangeEvent` from `react`.\n2. Define and export a type `Theme = 'light' | 'dark' | 'system'`.\n3. Export a function component `Preferences`. Inside:\n   - `theme` state typed `Theme`, default `'system'`.\n   - `subscribed` state typed `boolean`, default `false`.\n4. Render:\n   - A `<select>` with `value={theme}` and three `<option>` children for the three themes. The `onChange` must accept `ChangeEvent<HTMLSelectElement>` and cast `e.target.value` to `Theme`.\n   - A `<input type=\"checkbox\">` whose `checked` is bound to `subscribed` and `onChange` reads `e.target.checked`.\n   - A `<p>` summary like `theme=dark, subscribed=true`.",
+  "difficulty": "beginner",
+  "tags": ["controlled-input", "select", "checkbox", "typescript"],
+  "timeEstimateSeconds": 360,
+  "files": [
+    {
+      "path": "Preferences.tsx",
+      "content": "import { useState, ChangeEvent } from 'react';\n\nexport type Theme = 'light' | 'dark' | 'system';\n\nexport function Preferences() {\n  const [theme, setTheme] = useState<Theme>('system');\n  const [subscribed, setSubscribed] = useState<boolean>(false);\n\n  const onThemeChange = (e: ChangeEvent<HTMLSelectElement>) => {\n    setTheme(e.target.value as Theme);\n  };\n\n  const onSubscribedChange = (e: ChangeEvent<HTMLInputElement>) => {\n    setSubscribed(e.target.checked);\n  };\n\n  return (\n    <div>\n      <select value={theme} onChange={onThemeChange}>\n        <option value=\"light\">Light</option>\n        <option value=\"dark\">Dark</option>\n        <option value=\"system\">System</option>\n      </select>\n      <label>\n        <input type=\"checkbox\" checked={subscribed} onChange={onSubscribedChange} />\n        Subscribe to newsletter\n      </label>\n      <p>{`theme=${theme}, subscribed=${subscribed}`}</p>\n    </div>\n  );\n}\n"
+    }
+  ],
+  "hints": [
+    "`<select>` fires `ChangeEvent<HTMLSelectElement>`; `<input type=\"checkbox\">` fires `ChangeEvent<HTMLInputElement>` -- use the right element generic.",
+    "Checkboxes use `checked` (boolean), not `value` -- read `e.target.checked`.",
+    "Cast the select value to your union: `e.target.value as Theme`."
+  ],
+  "assertions": {
+    "perFile": {
+      "Preferences.tsx": [
+        {
+          "type": "importDeclaration",
+          "source": "react",
+          "specifiers": ["useState", "ChangeEvent"],
+          "description": "Import useState and ChangeEvent"
+        },
+        {
+          "type": "functionDeclaration",
+          "name": "Preferences",
+          "description": "Define Preferences"
+        },
+        {
+          "type": "jsxElement",
+          "name": "select",
+          "props": ["value", "onChange"],
+          "description": "Render a controlled select"
+        },
+        {
+          "type": "jsxElement",
+          "name": "input",
+          "props": ["type", "checked", "onChange"],
+          "description": "Render a controlled checkbox"
+        }
+      ]
+    },
+    "crossFile": []
+  }
+}
