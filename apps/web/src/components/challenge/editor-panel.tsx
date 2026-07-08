@@ -143,10 +143,16 @@ export function EditorPanel({ statusBarRef, isPeekingSolution = false }: EditorP
 
   const monacoOptions = useMemo(() => {
     const base = autocomplete ? {} : { quickSuggestions: false, suggestOnTriggerCharacters: false };
-    if (isResults) {
-      return { ...base, readOnly: true, glyphMargin: showGlyphMargin };
-    }
-    return { ...base };
+    // readOnly and glyphMargin must be set explicitly in BOTH modes. Monaco's
+    // updateOptions() is a partial merge, so omitting a key leaves the previously
+    // applied value in place. Returning to editing without readOnly:false would
+    // leave the editor stuck read-only after Retry (the Run/Reset UI unfreezes,
+    // but the Monaco instance stays locked).
+    return {
+      ...base,
+      readOnly: isResults,
+      glyphMargin: isResults ? showGlyphMargin : true,
+    };
   }, [autocomplete, isResults, showGlyphMargin]);
 
   const handleMount: OnMount = useCallback(
