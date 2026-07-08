@@ -13,7 +13,11 @@ const { mockKeybindings } = vi.hoisted(() => ({
 // Stub heavy dependencies
 vi.mock('./monaco-wrapper', () => ({
   MonacoWrapper: (props: Record<string, unknown>) => (
-    <div data-testid="monaco-wrapper" data-language={props.language} />
+    <div
+      data-testid="monaco-wrapper"
+      data-language={props.language}
+      data-readonly={String(Boolean((props.options as { readOnly?: boolean })?.readOnly))}
+    />
   ),
 }));
 vi.mock('next-themes', () => ({
@@ -106,6 +110,14 @@ describe('EditorPanel', () => {
     const monaco = screen.getByTestId('monaco-wrapper');
     expect(monaco).toBeInTheDocument();
     expect(monaco).toHaveAttribute('data-language', 'javascript');
+  });
+
+  it('editing mode: editor is explicitly not read-only', () => {
+    // Regression: monacoOptions must set readOnly:false in editing mode, not
+    // omit the key. Monaco's updateOptions() is a partial merge, so omitting it
+    // leaves the editor stuck read-only after returning from results via Retry.
+    renderEditor();
+    expect(screen.getByTestId('monaco-wrapper')).toHaveAttribute('data-readonly', 'false');
   });
 
   it('peek mode: renders SolutionPanel for the active file', () => {
@@ -231,7 +243,9 @@ describe('EditorPanel', () => {
         crossFileResults: [],
       },
     });
-    expect(screen.getByTestId('monaco-wrapper')).toBeInTheDocument();
+    const monaco = screen.getByTestId('monaco-wrapper');
+    expect(monaco).toBeInTheDocument();
+    expect(monaco).toHaveAttribute('data-readonly', 'true');
   });
 
   it('results mode: hides "Create your first file" button', () => {
