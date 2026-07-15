@@ -144,7 +144,7 @@ GitHub OAuth via Spring Security OAuth2 Client + Spring Session JDBC. Browser hi
 Env:
 - Spring Boot: `DB_{HOST,PORT,NAME,USER,PASSWORD}`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `ADMIN_SECRET`, `FRONTEND_URL`
 - Next.js: `SPRING_BOOT_URL` (default `http://api:8080`), `FRONTEND_URL` (default `http://localhost:3000`)
-- Feature flags (`apps/web/src/lib/feature-flags.ts`): `NEXT_PUBLIC_FF_AUTH`, `NEXT_PUBLIC_FF_SOLUTION_VIEW` -- set to `"false"` to disable.
+- Feature flags (`apps/web/src/lib/feature-flags.ts`): `NEXT_PUBLIC_FF_AUTH` is opt-in (default OFF; set to `"true"` to enable sign-in, `/account`, `/author`; gated via `useAuthSession` + `middleware.ts`). `NEXT_PUBLIC_FF_SOLUTION_VIEW` is opt-out (default ON; set to `"false"` to disable). Both are build-time inlined -- changing one needs a rebuild, not a restart.
 
 ### Docker
 
