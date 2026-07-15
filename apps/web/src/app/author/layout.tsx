@@ -1,32 +1,21 @@
-'use client';
+import { notFound } from 'next/navigation';
 
-import { SignInButton } from '@/components/auth/sign-in-button';
-import { useAuthSession } from '@/hooks/use-auth-session';
+import { SignedInGuard } from '@/components/auth/signed-in-guard';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 
 export default function AuthorLayout({ children }: { children: React.ReactNode }) {
-  const { status } = useAuthSession();
-
-  if (status === 'loading') {
-    return (
-      <div className="mx-auto flex max-w-screen-2xl items-center justify-center px-9 py-16 text-muted-foreground">
-        Loading...
-      </div>
-    );
+  // Server-side so a disabled auth flag yields a real 404 rather than a flash of
+  // the sign-in prompt on a route that cannot be signed into.
+  if (!isFeatureEnabled('auth')) {
+    notFound();
   }
 
-  if (status !== 'authenticated') {
-    return (
-      <div className="mx-auto flex max-w-screen-2xl flex-col items-center justify-center gap-4 px-9 py-16 text-center">
-        <h2 className="font-sans text-lg font-semibold text-foreground">
-          Sign in to author packs
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          You need to be signed in to create and edit challenge packs.
-        </p>
-        <SignInButton />
-      </div>
-    );
-  }
-
-  return <>{children}</>;
+  return (
+    <SignedInGuard
+      title="Sign in to author packs"
+      description="You need to be signed in to create and edit challenge packs."
+    >
+      {children}
+    </SignedInGuard>
+  );
 }
