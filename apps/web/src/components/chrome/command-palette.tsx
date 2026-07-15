@@ -14,6 +14,7 @@ import {
   Shuffle,
   Sun,
   Target,
+  UserRound,
 } from 'lucide-react';
 
 import {
@@ -28,7 +29,8 @@ import {
 } from '@/components/ui/command';
 import { useAuthSession } from '@/hooks/use-auth-session';
 import { usePackList } from '@/hooks/use-packs';
-import { authorPacksHref, packHref } from '@/lib/routes';
+import { useSignOut } from '@/hooks/use-sign-out';
+import { accountHref, authorPacksHref, packHref } from '@/lib/routes';
 import { useRecentlyVisited } from '@/hooks/use-recently-visited';
 import { useTrackList } from '@/hooks/use-tracks';
 import { isFeatureEnabled } from '@/lib/feature-flags';
@@ -61,6 +63,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const { setTheme } = useTheme();
   const { status: authStatus } = useAuthSession();
   const authEnabled = isFeatureEnabled('auth');
+  const handleSignOut = useSignOut();
 
   const { tracks } = useTrackList();
   const { packs } = usePackList({});
@@ -235,6 +238,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           {authEnabled && authStatus === 'authenticated' && (
             <>
               <CommandItem
+                value="action account"
+                onSelect={() => runCommand(() => navigateTo(accountHref()))}
+              >
+                <UserRound aria-hidden />
+                <span>Account</span>
+              </CommandItem>
+              <CommandItem
                 value="action author tools"
                 onSelect={() => runCommand(() => navigateTo(authorPacksHref()))}
               >
@@ -243,11 +253,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               </CommandItem>
               <CommandItem
                 value="action sign out"
-                onSelect={() =>
-                  runCommand(() => {
-                    window.location.href = '/api/auth/signout';
-                  })
-                }
+                onSelect={() => runCommand(() => void handleSignOut())}
               >
                 <LogOut aria-hidden />
                 <span>Sign out</span>

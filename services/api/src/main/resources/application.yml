@@ -50,6 +50,21 @@ spring:
 server:
   port: 8080
   forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        # Spring Session would otherwise name this "SESSION". The Next.js proxy,
+        # server-api-client and SecurityConfig.deleteCookies all forward/clear
+        # "JSESSIONID", so the session cookie must carry that name or the browser's
+        # session never reaches this service and every request is anonymous.
+        name: JSESSIONID
+        http-only: true
+        # `secure` is intentionally unset: with forward-headers-strategy above,
+        # Spring derives it from request.isSecure(), so it is false on localhost
+        # and true behind the TLS-terminating proxy in production.
+        # `strict` would drop the cookie on the top-level redirect back from
+        # github.com and break the OAuth callback.
+        same-site: lax
 
 nthtime:
   admin-secret: ${ADMIN_SECRET}

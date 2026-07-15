@@ -39,3 +39,9 @@ export function authorChallengeNewHref(packSlug: string): string {
 export function authorPreviewHref(packSlug: string, challengeSlug: string): string {
   return `/author/packs/${packSlug}/preview/${challengeSlug}`;
 }
+
+// --- Account routes ---
+
+export function accountHref(): string {
+  return '/account';
+}

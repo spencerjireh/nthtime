@@ -1,6 +1,6 @@
 package com.spencerjireh.nthtime.util;
 
-import com.spencerjireh.nthtime.exception.ForbiddenException;
+import com.spencerjireh.nthtime.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -17,7 +17,7 @@ public final class SessionUtils {
 
   public static Long requireUserId(HttpServletRequest request) {
     Long userId = getUserId(request);
-    if (userId == null) throw new ForbiddenException("Not authenticated");
+    if (userId == null) throw new UnauthorizedException("Not authenticated");
     return userId;
   }
 }

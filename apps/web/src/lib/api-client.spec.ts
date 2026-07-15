@@ -9,6 +9,9 @@ import {
   updateAuthorTrack,
   deleteAuthorTrack,
   reorderTrackPacks,
+  signOut,
+  fetchProfile,
+  deleteAccount,
 } from './api-client';
 
 const BASE = '/api/v1';
@@ -218,5 +221,55 @@ describe('track endpoints', () => {
   it('fetchTrack throws on 404', async () => {
     mockFetch(404, { error: 'Track not found' });
     await expect(fetchTrack('bad-slug')).rejects.toThrow('Track not found');
+  });
+});
+
+describe('auth and account endpoints', () => {
+  it('signOut POSTs to /auth/logout with the CSRF header', async () => {
+    const cookieSpy = vi.spyOn(document, 'cookie', 'get').mockReturnValue('XSRF-TOKEN=abc123');
+    const spy = mockFetch(204, null);
+    await signOut();
+
+    const [url, init] = spy.mock.calls[0];
+    expect(url).toBe(`${BASE}/auth/logout`);
+    expect(init?.method).toBe('POST');
+    expect(init?.headers).toEqual(expect.objectContaining({ 'X-XSRF-TOKEN': 'abc123' }));
+    cookieSpy.mockRestore();
+  });
+
+  it('signOut resolves to undefined on 204 rather than parsing an empty body', async () => {
+    mockFetch(204, null);
+    await expect(signOut()).resolves.toBeUndefined();
+  });
+
+  it('fetchProfile sends GET to /me/profile', async () => {
+    const profile = {
+      userId: '1',
+      name: 'Spencer Jireh',
+      provider: 'github',
+      handle: 'spencerjireh',
+      createdAt: '2026-03-15T00:00:00Z',
+    };
+    const spy = mockFetch(200, profile);
+
+    await expect(fetchProfile()).resolves.toEqual(profile);
+    expect(spy.mock.calls[0][0]).toBe(`${BASE}/me/profile`);
+  });
+
+  it('deleteAccount sends DELETE to /me with the CSRF header', async () => {
+    const cookieSpy = vi.spyOn(document, 'cookie', 'get').mockReturnValue('XSRF-TOKEN=abc123');
+    const spy = mockFetch(204, null);
+    await deleteAccount();
+
+    const [url, init] = spy.mock.calls[0];
+    expect(url).toBe(`${BASE}/me`);
+    expect(init?.method).toBe('DELETE');
+    expect(init?.headers).toEqual(expect.objectContaining({ 'X-XSRF-TOKEN': 'abc123' }));
+    cookieSpy.mockRestore();
+  });
+
+  it('deleteAccount surfaces a rate-limit error from the server', async () => {
+    mockFetch(429, { error: 'Rate limit exceeded' });
+    await expect(deleteAccount()).rejects.toThrow('Rate limit exceeded');
   });
 });

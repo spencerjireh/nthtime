@@ -56,7 +56,7 @@ Thumbs.db
 vitest.config.*.timestamp*
 
 # Qodana (local runs)
-services/api/.qodana/
+.qodana/
 
 # Claude Code
 CLAUDE.md

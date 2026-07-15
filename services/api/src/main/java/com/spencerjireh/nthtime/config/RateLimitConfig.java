@@ -37,6 +37,10 @@ public class RateLimitConfig {
           Bucket.builder()
               .addLimit(limit -> limit.capacity(1).refillGreedy(1, Duration.ofMinutes(1)))
               .build();
+      case "account:delete" ->
+          Bucket.builder()
+              .addLimit(limit -> limit.capacity(3).refillGreedy(3, Duration.ofHours(1)))
+              .build();
       default -> throw new IllegalArgumentException("Unknown rate limit: " + operation);
     };
   }

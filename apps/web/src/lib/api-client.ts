@@ -128,6 +128,34 @@ export function fetchSession(): Promise<{
   return request('/auth/session');
 }
 
+export function signOut(): Promise<void> {
+  return request('/auth/logout', { method: 'POST' });
+}
+
+// ---------------------------------------------------------------------------
+// Account
+// ---------------------------------------------------------------------------
+
+// name / email / image are optional: Spring omits nulls, and a GitHub user can
+// have no display name and a hidden email address.
+export interface Profile {
+  userId: string;
+  name?: string;
+  email?: string;
+  image?: string;
+  provider: string;
+  handle: string;
+  createdAt: string;
+}
+
+export function fetchProfile(): Promise<Profile> {
+  return request('/me/profile');
+}
+
+export function deleteAccount(): Promise<void> {
+  return request('/me', { method: 'DELETE' });
+}
+
 // ---------------------------------------------------------------------------
 // Author Packs
 // ---------------------------------------------------------------------------

@@ -31,8 +31,7 @@ public class SecurityConfig {
             csrf ->
                 csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     .csrfTokenRequestHandler(csrfHandler)
-                    .ignoringRequestMatchers(
-                        "/api/admin/**", "/oauth2/**", "/login/**", "/api/auth/logout"))
+                    .ignoringRequestMatchers("/api/admin/**", "/oauth2/**", "/login/**"))
         .cors(cors -> cors.configurationSource(corsSource()))
         .authorizeHttpRequests(
             auth ->
@@ -76,8 +75,12 @@ public class SecurityConfig {
             logout ->
                 logout
                     .logoutUrl("/api/auth/logout")
-                    .logoutSuccessUrl(frontendUrl)
-                    .deleteCookies("JSESSIONID"))
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true)
+                    .deleteCookies("JSESSIONID")
+                    // Logout is called via fetch(), not a browser navigation. A redirect
+                    // would be chased by fetch and swallow the result.
+                    .logoutSuccessHandler((req, res, auth) -> res.setStatus(204)))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
         .exceptionHandling(

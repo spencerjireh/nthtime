@@ -1,6 +1,11 @@
 import { SPRING_BOOT_URL } from '@/lib/spring-boot-proxy';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 
 export async function GET() {
+  if (!isFeatureEnabled('auth')) {
+    return new Response(null, { status: 404 });
+  }
+
   const res = await fetch(`${SPRING_BOOT_URL}/oauth2/authorization/github`, {
     redirect: 'manual',
   });
