@@ -187,7 +187,7 @@ components and pin the proxy path mapping.
 
 | Criteria | Test File | Coverage |
 |----------|-----------|----------|
-| ATHR-03, 04, 05, 06, 07, 21, 22, 23 | `services/api/.../controller/AuthorPackControllerIntegrationTest.java` | Create + slug uniqueness (409), field update, delete-cascade, private-pack visibility, non-owner 403, unauthenticated 401, injected-ownership-field rejection, write rate-limit (429) |
+| ATHR-03, 04, 05, 06, 07, 21, 22, 23 | `services/api/.../controller/AuthorPackControllerIntegrationTest.java` | Create + slug uniqueness (409), field update, delete-cascade, private-pack visibility, non-owner 403, unauthenticated 401, injected ownership fields ignored (owner from session), write rate-limit (429) |
 | ATHR-07, 08, 09, 10, 11, 12, 21 | `services/api/.../controller/AuthorChallengeControllerIntegrationTest.java` | Required-field validation, partial-update preservation, attempt deletion on update, delete-renumbering, reorder, non-owner 403, unauthenticated 401 |
 
 ### Web unit tests (Vitest, jsdom)

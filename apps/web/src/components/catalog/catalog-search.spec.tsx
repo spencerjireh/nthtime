@@ -21,8 +21,7 @@ describe('CatalogSearch', () => {
     const user = userEvent.setup();
     render(<CatalogSearch value="react" onChange={onChange} />);
 
-    const input = screen.getByPlaceholderText(/search packs/i) as HTMLInputElement;
-    expect(input.value).toBe('react');
+    expect(screen.getByPlaceholderText(/search packs/i)).toHaveValue('react');
 
     await user.click(screen.getByRole('button'));
     expect(onChange).toHaveBeenCalledWith('');

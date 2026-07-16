@@ -289,6 +289,8 @@ class AuthorPackControllerIntegrationTest extends AbstractIntegrationTest {
 
     Pack pack = packRepository.findBySlug("inject-test").orElseThrow();
     assertThat(pack.getAuthorUser().getId()).isEqualTo(owner.getId());
+    // The injected primary key is ignored too -- the id is DB-generated, not client-controlled.
+    assertThat(pack.getId()).isNotEqualTo(999999L);
   }
 
   // ATHR-23

@@ -88,8 +88,11 @@ The challenge page hydrates from the API and exercises the Monaco dynamic-import
 Postgres + Spring Boot + seeded data running. Capture it the same way once the stack is up:
 
 ```bash
-pnpm build && (cd apps/web && npx next start -p 3005)   # web
-# with the API + seeded DB also running:
+# Terminal 1 (with the API + seeded DB already running) -- serves in the foreground:
+pnpm build
+(cd apps/web && npx next start -p 3005)
+
+# Terminal 2 -- run Lighthouse against the served page:
 npx lighthouse "http://localhost:3005/packs/express-basics/challenges/hello-world" \
   --preset=desktop --view
 ```
