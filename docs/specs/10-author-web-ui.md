@@ -72,7 +72,7 @@ The author web UI enables authenticated users to create, edit, and manage their 
 ### Dashboard
 
 - [x] **ATHR-01** -- Authenticated users see a "My Packs" dashboard at /author listing their packs with name, language, challenge count, and visibility.
-- [ ] **ATHR-02** -- The author link in the header is only visible to authenticated users.
+- [x] **ATHR-02** -- The author link (the "Author tools" item in the account menu) is only visible to authenticated users.
 
 ### Pack CRUD
 
@@ -92,20 +92,20 @@ The author web UI enables authenticated users to create, edit, and manage their 
 
 ### Challenge Editor
 
-- [ ] **ATHR-13** -- The challenge editor has 4 tabs: Metadata, Solution, Assertions, and Validate.
-- [ ] **ATHR-14** -- The Solution tab provides a Monaco editor for writing reference solution files, backed by its own EditorStore instance.
+- [x] **ATHR-13** -- The challenge editor has 4 tabs: Metadata, Solution, Assertions, and Validate.
+- [x] **ATHR-14** -- The Solution tab provides a Monaco editor for writing reference solution files, backed by its own EditorStore instance.
 - [x] **ATHR-15** -- The Assertions tab provides a JSON editor with a snippet palette offering templates for all 12 assertion types.
-- [ ] **ATHR-16** -- The Validate tab runs the Tree-sitter WASM verification engine client-side against the current solution files and assertions, displaying pass/fail results.
+- [x] **ATHR-16** -- The Validate tab runs the Tree-sitter WASM verification engine client-side against the current solution files and assertions, displaying pass/fail results.
 
 ### Preview
 
-- [ ] **ATHR-17** -- The preview page at /author/[slug]/preview/[order] renders the ChallengeView component with challenge data from the author API.
-- [ ] **ATHR-18** -- Preview mode displays an amber banner distinguishing it from the student view.
+- [x] **ATHR-17** -- The preview page at /author/packs/[slug]/preview/[challengeSlug] renders the ChallengeView component with challenge data from the author API.
+- [x] **ATHR-18** -- Preview mode displays an amber banner distinguishing it from the student view.
 
 ### Export and Import
 
-- [ ] **ATHR-19** -- Pack export generates a ZIP (via fflate) containing pack.json and challenges/*.json in the same format as the `packs/` directory.
-- [ ] **ATHR-20** -- Pack import accepts a ZIP file, auto-detects structure (root/nested/inline), stores data in sessionStorage, and navigates to /author/new?import=1.
+- [x] **ATHR-19** -- Pack export generates a ZIP (via fflate) containing pack.json and challenges/*.json in the same format as the `packs/` directory.
+- [x] **ATHR-20** -- Pack import accepts a ZIP file, auto-detects structure (root/nested/inline), stores data in sessionStorage, and navigates to /author/new?import=1.
 
 ### API Security
 
@@ -195,7 +195,14 @@ components and pin the proxy path mapping.
 | Criteria | Test File | Coverage |
 |----------|-----------|----------|
 | ATHR-01 | `apps/web/src/components/author/author-dashboard.spec.tsx` | Dashboard heading, empty state, pack cards (name/language/visibility/count), loading |
+| ATHR-02 | `apps/web/src/components/auth/user-menu.spec.tsx` | "Author tools" link present when authenticated, absent when not |
+| ATHR-13 | `apps/web/src/components/author/challenge-editor.spec.tsx` | Four tabs (Metadata/Solution/Assertions/Validate); default + switch |
+| ATHR-14 | `apps/web/src/components/author/file-editor-tab.spec.tsx` | Own EditorStore per instance, seeded with the solution files; Monaco mounts for the active file |
 | ATHR-15 | `apps/web/src/components/author/assertion-snippets.spec.ts` | Palette offers all 12 assertion-type templates |
+| ATHR-16 | `apps/web/src/components/author/validation-panel.spec.tsx` | Runs the verifier, renders pass/fail banners and per-assertion rows; guards invalid JSON / empty files (engine correctness covered by `libs/verification`) |
+| ATHR-17, ATHR-18 | `apps/web/src/app/author/packs/[slug]/preview/[challengeSlug]/page.spec.tsx` | Renders ChallengeView with author data; amber "Preview Mode" banner; not-found state |
+| ATHR-19 | `apps/web/src/lib/author/export-pack.spec.ts` | ZIP has pack.json + one file per challenge, ordered, referenceSolution mapped to `files`, slug-named download, round-trips |
+| ATHR-20 | `apps/web/src/lib/author/import-pack.spec.ts` | Auto-detects root/nested/inline structure, applies defaults, errors on missing manifest/challenge file |
 | ATHR-21, ATHR-22 (web slice) | `apps/web/src/app/api/v1/author/packs/route.spec.ts`, `apps/web/src/app/api/v1/author/challenges/[id]/route.spec.ts` | Proxy forwards each method to the correct upstream path; id path segment is URL-encoded |
 
 ## Open Questions
