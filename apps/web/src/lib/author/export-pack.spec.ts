@@ -33,14 +33,16 @@ beforeEach(() => {
   vi.stubGlobal('document', {
     createElement: (tag: string) => (tag === 'a' ? createdAnchor : {}),
   });
-  vi.stubGlobal('URL', {
-    ...URL,
-    createObjectURL: vi.fn(() => 'blob:mock-url'),
-    revokeObjectURL: vi.fn(),
-  });
+  // Stub only the two DOM-only methods, leaving the URL constructor intact (spreading URL into a
+  // plain object would drop `new URL(...)`).
+  URL.createObjectURL = vi.fn(() => 'blob:mock-url') as unknown as typeof URL.createObjectURL;
+  URL.revokeObjectURL = vi.fn() as unknown as typeof URL.revokeObjectURL;
 });
 
 afterEach(() => {
+  // node has no native URL.createObjectURL/revokeObjectURL to restore.
+  delete (URL as { createObjectURL?: unknown }).createObjectURL;
+  delete (URL as { revokeObjectURL?: unknown }).revokeObjectURL;
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
