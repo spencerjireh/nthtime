@@ -27,7 +27,8 @@ public class CacheControlInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
-    if (!"GET".equalsIgnoreCase(request.getMethod())) {
+    String method = request.getMethod();
+    if (!"GET".equalsIgnoreCase(method) && !"HEAD".equalsIgnoreCase(method)) {
       return true;
     }
 

@@ -58,6 +58,22 @@ used:
 The WASM grammars are served with `Cache-Control: public, max-age=31536000, immutable` (see
 `apps/web/next.config.js` `headers()`), so repeat visits and warm CDN edges never refetch them.
 
+## Origin cache headers (verified 2026-07-17)
+
+Checked live against the running stack (`curl -sI` for the immutable asset, `curl -D-` GET for the
+API — a HEAD skips the interceptor and hits Spring Security's default `no-store`, which is why the
+proxy and interceptor now treat HEAD like GET):
+
+| Request | `Cache-Control` |
+|---|---|
+| `/tree-sitter/*.wasm` (Next static) | `public, max-age=31536000, immutable` |
+| `GET /api/packs` anonymous (+ through the `/api/v1/packs` proxy) | `public, s-maxage=300, stale-while-revalidate=60` + `Vary: Cookie` |
+| `GET /api/packs` authenticated | `private, no-store` |
+| `GET /api/cli/*` | `public, s-maxage=300, stale-while-revalidate=60` |
+
+The proxy previously 500'd on any `HEAD` (undici rejects a body on GET/HEAD); that is fixed in
+`spring-boot-proxy.ts` and covered by `spring-boot-proxy.spec.ts`.
+
 ## Lighthouse
 
 ### Landing page (`/landing`) — captured 2026-07-16
@@ -82,10 +98,32 @@ Chrome:
 The landing page is static (no API dependency), so this is a clean measure of the marketing
 entry point: near-instant paint, no blocking, negligible layout shift.
 
-### Challenge page (still to capture — needs the served stack)
+### Challenge page (`/packs/express-basics/challenges/hello-world`) — captured 2026-07-17
 
-The challenge page hydrates from the API and exercises the Monaco dynamic-import path, so it needs
-Postgres + Spring Boot + seeded data running. Capture it the same way once the stack is up:
+Production build (`nx build @nthtime/web`), served via `next start -p 3005` against the live API +
+seeded Postgres, desktop preset, headless Chrome:
+
+| Category | Score |
+|---|---|
+| Performance | 98 |
+| Accessibility | 96 |
+| Best Practices | 96 |
+
+| Web Vital | Value |
+|---|---|
+| First Contentful Paint | 0.2 s |
+| Largest Contentful Paint | 1.0 s |
+| Total Blocking Time | 0 ms |
+| Cumulative Layout Shift | 0 |
+| Speed Index | 1.0 s |
+
+The challenge page hydrates from the API and mounts the editor, yet still matches the landing
+page's Performance score with **0 ms** blocking time -- confirming Monaco, Prettier, and the
+Tree-sitter verifier stay behind their dynamic imports and never enter the initial route bundle.
+(Verification itself was exercised end-to-end in the browser: a solution run parses the files and
+evaluates every per-file and cross-file assertion client-side.)
+
+Reproduce:
 
 ```bash
 # Terminal 1 (with the API + seeded DB already running) -- serves in the foreground:

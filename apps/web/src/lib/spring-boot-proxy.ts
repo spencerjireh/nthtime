@@ -43,10 +43,16 @@ export async function proxyToSpringBoot(req: Request, path: string): Promise<Res
     headers['Content-Type'] = contentType;
   }
 
+  // GET and HEAD requests must not carry a body -- undici rejects even an empty-string body
+  // with "Request with GET/HEAD method cannot have body", which surfaced as a 500 on every
+  // HEAD to a proxied route.
+  const method = req.method.toUpperCase();
+  const hasBody = method !== 'GET' && method !== 'HEAD';
+
   const response = await fetch(targetUrl, {
     method: req.method,
     headers,
-    body: req.method !== 'GET' ? await req.text() : undefined,
+    body: hasBody ? await req.text() : undefined,
     cache: 'no-store',
   });
 

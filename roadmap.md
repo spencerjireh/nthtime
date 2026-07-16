@@ -579,12 +579,12 @@ All three packs pass schema validation and reference solution verification. Seed
   - [x] Spring Boot Sentry (`sentry-spring-boot-starter-jakarta`, DSN-gated in `application.yml`)
 - [x] Set up structured logging:
   - [x] Request logging middleware (Next.js `middleware.ts` emits per-request JSON)
-  - [ ] Verification pipeline logging (client-side, for debugging) (deferred)
+  - [x] Verification pipeline logging (client-side, for debugging) -- gated `console.debug` in `run-verification.ts` (enable via `NEXT_PUBLIC_DEBUG_VERIFY=true` or `localStorage['nthtime:debug-verify']`)
   - [x] Log to stdout (Docker captures) -- Spring Boot logstash JSON format in `application.yml`
 - [~] Performance audit (recorded baseline in `docs/operations/perf-baseline.md`):
   - [x] Verify WASM grammar lazy loading works correctly (per-language dynamic loader)
   - [x] Verify verification pipeline performance (< 100ms target) -- 360/360, avg 1.4ms, 0 over target
-  - [ ] Lighthouse audit for initial page load (procedure documented; needs running stack)
+  - [x] Lighthouse audit for initial page load -- landing 98 / challenge page 98 (desktop, prod build), recorded in `docs/operations/perf-baseline.md`
   - [x] Bundle size analysis (Monaco ~2.4MB, Prettier ~1.6MB, Tree-sitter WASM ~6MB; all code-split)
 - [ ] Production QA (deferred -- needs production environment):
   - [ ] Complete every challenge in all three packs
@@ -601,7 +601,7 @@ All three packs pass schema validation and reference solution verification. Seed
 
 CI/CD pipeline deploys to production automatically on merge to main. All Playwright E2E tests pass. Sentry captures errors. Application loads, authenticates, and serves challenges from the production VPS + Spring Boot + PostgreSQL stack. All three launch packs are seeded and playable. Lighthouse performance score is acceptable for a desktop-only application.
 
-**Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Since completed: Sentry (client/server/edge + source maps + error boundaries), structured logging (Next.js request JSON + Spring Boot logstash), origin cache headers (WASM + catalog API), and a recorded performance baseline (`docs/operations/perf-baseline.md`). Also since completed: Spring-side error tracking (DSN-gated Sentry) and a DB-probing `/api/health` (503 when the database is unreachable). Still deferred (external services / production environment): Cloudflare dashboard setup (documented in `docs/operations/cloudflare-cdn.md`), Lighthouse capture (needs the served stack; Chrome available locally), production QA.
+**Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Since completed: Sentry (client/server/edge + source maps + error boundaries), structured logging (Next.js request JSON + Spring Boot logstash), origin cache headers (WASM + catalog API), and a recorded performance baseline (`docs/operations/perf-baseline.md`). Also since completed: Spring-side error tracking (DSN-gated Sentry), a DB-probing `/api/health` (503 when the database is unreachable), client-side verification-pipeline debug logging, and a Lighthouse capture of both the landing and challenge pages (98/98 desktop, recorded in `docs/operations/perf-baseline.md`). Still deferred (external services / production environment): Cloudflare dashboard setup (documented in `docs/operations/cloudflare-cdn.md`) and full production QA.
 
 ---
 
