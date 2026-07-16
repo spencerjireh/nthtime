@@ -6,6 +6,18 @@ const { withSentryConfig } = require('@sentry/nextjs');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  async headers() {
+    return [
+      {
+        // Tree-sitter WASM grammars (~6 MB) are served from public/ with stable, unhashed
+        // URLs and change only on dependency bumps. Cache them hard so the browser and any CDN
+        // in front never refetch them on repeat visits; a redeploy that changes a grammar would
+        // need a URL/version bump to bust this (grammars are effectively static in practice).
+        source: '/tree-sitter/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+    ];
+  },
   webpack(config, { isServer }) {
     config.experiments = { ...config.experiments, asyncWebAssembly: true };
 
@@ -51,9 +63,10 @@ const nextConfig = {
 };
 
 // Optional bundle analyzer (ANALYZE=true nx build @nthtime/web)
-const withBundleAnalyzer = process.env.ANALYZE === 'true'
-  ? require('@next/bundle-analyzer')({ enabled: true })
-  : (config) => config;
+const withBundleAnalyzer =
+  process.env.ANALYZE === 'true'
+    ? require('@next/bundle-analyzer')({ enabled: true })
+    : (config) => config;
 
 module.exports = withSentryConfig(withBundleAnalyzer(nextConfig), {
   org: process.env.SENTRY_ORG,

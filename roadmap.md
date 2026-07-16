@@ -267,7 +267,7 @@ A signed-in user can hit every Spring Boot endpoint through the repository inter
   - [x] Implement dark/light theme integration with design system
 - [x] Implement file tree sidebar:
   - [x] Tree view component with expand/collapse
-  - [ ] File/folder icons by type (deferred)
+  - [x] File/folder icons by type
   - [x] Inline create file button
   - [x] Inline create folder button
   - [x] Rename (inline edit)
@@ -276,8 +276,8 @@ A signed-in user can hit every Spring Boot endpoint through the repository inter
 - [x] Implement tabbed editor:
   - [x] Tab bar with file names
   - [x] Close tab (with unsaved indicator)
-  - [ ] Tab reordering (drag) (deferred)
-  - [ ] Tab overflow handling (deferred)
+  - [x] Tab reordering (drag)
+  - [x] Tab overflow handling
 - [x] Implement split pane support:
   - [x] Horizontal split (side-by-side files)
   - [x] Resize handle
@@ -301,15 +301,15 @@ A signed-in user can hit every Spring Boot endpoint through the repository inter
 - [x] Implement keyboard shortcuts:
   - [x] Cmd/Ctrl+Enter -- submit (wired in Phase 7)
   - [x] Cmd/Ctrl+S -- save/format
-  - [ ] Shortcuts for tab navigation (deferred)
+  - [x] Shortcuts for tab navigation
 - [x] Implement resizable horizontal split: prompt panel (left) + editor workspace (right)
-- [ ] Write component tests for file tree interactions and tab management (deferred)
+- [x] Write component tests for file tree interactions and tab management
 
 ### Validation Gate
 
 The editor renders with a file tree, supports creating/renaming/deleting files and folders, opens files in tabs, supports split panes, switches between keybinding modes, and shows real-time parse errors from Tree-sitter. Zustand store correctly tracks all editor state.
 
-**Completed:** 2026-02-20 (core editor, tabs, store); 2026-02-21 (file tree CRUD, split panes, vim/emacs, autocomplete, dirty tracking, parse diagnostics added in backfill). Deferred: file/folder icons by type, tab reordering/overflow, tab navigation shortcuts, component tests.
+**Completed:** 2026-02-20 (core editor, tabs, store); 2026-02-21 (file tree CRUD, split panes, vim/emacs, autocomplete, dirty tracking, parse diagnostics added in backfill); file/folder icons by type, tab reordering/overflow, tab-navigation shortcuts, and file-tree/tab component tests landed in later polish (all present in `apps/web/src/components/challenge/`).
 
 ---
 
@@ -558,11 +558,11 @@ All three packs pass schema validation and reference solution verification. Seed
   - [x] `docker-compose.yml` with Next.js service
   - [x] Environment variable configuration (.env.production)
   - [x] Health check endpoint (`/api/health`)
-- [ ] Set up Cloudflare (deferred -- external service):
-  - [ ] DNS configuration
-  - [ ] SSL termination
-  - [ ] CDN caching rules (static assets, WASM grammars)
-  - [ ] Cache headers for challenge data
+- [~] Set up Cloudflare (dashboard steps documented in `docs/operations/cloudflare-cdn.md`):
+  - [ ] DNS configuration (external -- see runbook)
+  - [ ] SSL termination (external -- Full (strict) over Coolify's Let's Encrypt cert)
+  - [ ] CDN caching rules (static assets, WASM grammars) (external -- see runbook)
+  - [x] Cache headers for challenge data (origin: `next.config.js` WASM headers + `CacheControlInterceptor`)
 - [x] Complete GitHub Actions CI/CD pipeline:
   - [x] Validate packs (`pnpm validate` step)
   - [x] Run Vitest (unit/integration)
@@ -572,19 +572,19 @@ All three packs pass schema validation and reference solution verification. Seed
   - [ ] Deploy to VPS (deferred -- needs VPS)
   - [x] Seed test data via `pnpm seed` after Spring Boot starts
   - [x] All tests must pass before deploy (blocking gate)
-- [ ] Set up Sentry error tracking (deferred -- external service):
-  - [ ] Next.js Sentry SDK integration
-  - [ ] Source maps upload
-  - [ ] Error boundary components
-- [ ] Set up structured logging (deferred):
-  - [ ] Request logging middleware
-  - [ ] Verification pipeline logging (client-side, for debugging)
-  - [ ] Log to stdout (Docker captures)
-- [ ] Performance audit (deferred):
-  - [ ] Verify WASM grammar lazy loading works correctly
-  - [ ] Verify verification pipeline performance (< 100ms target)
-  - [ ] Lighthouse audit for initial page load
-  - [ ] Bundle size analysis (Monaco, Tree-sitter, Prettier WASM)
+- [x] Set up Sentry error tracking:
+  - [x] Next.js Sentry SDK integration (`instrumentation*.ts`, `sentry.*.config.ts`)
+  - [x] Source maps upload (`withSentryConfig` in `next.config.js`)
+  - [x] Error boundary components (`app/error.tsx`, `app/global-error.tsx`)
+- [x] Set up structured logging:
+  - [x] Request logging middleware (Next.js `middleware.ts` emits per-request JSON)
+  - [ ] Verification pipeline logging (client-side, for debugging) (deferred)
+  - [x] Log to stdout (Docker captures) -- Spring Boot logstash JSON format in `application.yml`
+- [~] Performance audit (recorded baseline in `docs/operations/perf-baseline.md`):
+  - [x] Verify WASM grammar lazy loading works correctly (per-language dynamic loader)
+  - [x] Verify verification pipeline performance (< 100ms target) -- 360/360, avg 1.4ms, 0 over target
+  - [ ] Lighthouse audit for initial page load (procedure documented; needs running stack)
+  - [x] Bundle size analysis (Monaco ~2.4MB, Prettier ~1.6MB, Tree-sitter WASM ~6MB; all code-split)
 - [ ] Production QA (deferred -- needs production environment):
   - [ ] Complete every challenge in all three packs
   - [ ] Test every feedback level
@@ -600,7 +600,7 @@ All three packs pass schema validation and reference solution verification. Seed
 
 CI/CD pipeline deploys to production automatically on merge to main. All Playwright E2E tests pass. Sentry captures errors. Application loads, authenticates, and serves challenges from the production VPS + Spring Boot + PostgreSQL stack. All three launch packs are seeded and playable. Lighthouse performance score is acceptable for a desktop-only application.
 
-**Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Deferred: Cloudflare, Sentry, structured logging, performance audit, production QA, final cleanup (all require external services or production environment).
+**Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Since completed: Sentry (client/server/edge + source maps + error boundaries), structured logging (Next.js request JSON + Spring Boot logstash), origin cache headers (WASM + catalog API), and a recorded performance baseline (`docs/operations/perf-baseline.md`). Still deferred (external services / production environment): Cloudflare dashboard setup (documented in `docs/operations/cloudflare-cdn.md`), Lighthouse capture, Spring-side error tracking, production QA.
 
 ---
 
