@@ -90,4 +90,28 @@ describe('UserMenu', () => {
 
     expect(mockSignOut).toHaveBeenCalledOnce();
   });
+
+  // ATHR-02 -- the author entry point only exists for authenticated users.
+  it('exposes the Author tools link when authenticated', async () => {
+    const user = userEvent.setup();
+    render(<UserMenu />);
+
+    await user.click(await screen.findByLabelText('Account menu for Spencer Jireh'));
+    // Radix labels the dropdown item role="menuitem"; the author link is the anchor it wraps.
+    const authorItem = await screen.findByText('Author tools');
+    expect(authorItem.closest('a')).toHaveAttribute('href', '/author/packs');
+  });
+
+  // ATHR-02
+  it('hides the Author tools link when unauthenticated', async () => {
+    mockAuthStatus.value = 'unauthenticated';
+    mockProfile.value = null;
+    render(<UserMenu />);
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /sign in with github/i })).toBeInTheDocument(),
+    );
+    // No account menu at all, so no author entry point.
+    expect(screen.queryByText('Author tools')).not.toBeInTheDocument();
+  });
 });
