@@ -576,6 +576,7 @@ All three packs pass schema validation and reference solution verification. Seed
   - [x] Next.js Sentry SDK integration (`instrumentation*.ts`, `sentry.*.config.ts`)
   - [x] Source maps upload (`withSentryConfig` in `next.config.js`)
   - [x] Error boundary components (`app/error.tsx`, `app/global-error.tsx`)
+  - [x] Spring Boot Sentry (`sentry-spring-boot-starter-jakarta`, DSN-gated in `application.yml`)
 - [x] Set up structured logging:
   - [x] Request logging middleware (Next.js `middleware.ts` emits per-request JSON)
   - [ ] Verification pipeline logging (client-side, for debugging) (deferred)
@@ -600,7 +601,7 @@ All three packs pass schema validation and reference solution verification. Seed
 
 CI/CD pipeline deploys to production automatically on merge to main. All Playwright E2E tests pass. Sentry captures errors. Application loads, authenticates, and serves challenges from the production VPS + Spring Boot + PostgreSQL stack. All three launch packs are seeded and playable. Lighthouse performance score is acceptable for a desktop-only application.
 
-**Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Since completed: Sentry (client/server/edge + source maps + error boundaries), structured logging (Next.js request JSON + Spring Boot logstash), origin cache headers (WASM + catalog API), and a recorded performance baseline (`docs/operations/perf-baseline.md`). Still deferred (external services / production environment): Cloudflare dashboard setup (documented in `docs/operations/cloudflare-cdn.md`), Lighthouse capture, Spring-side error tracking, production QA.
+**Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Since completed: Sentry (client/server/edge + source maps + error boundaries), structured logging (Next.js request JSON + Spring Boot logstash), origin cache headers (WASM + catalog API), and a recorded performance baseline (`docs/operations/perf-baseline.md`). Also since completed: Spring-side error tracking (DSN-gated Sentry) and a DB-probing `/api/health` (503 when the database is unreachable). Still deferred (external services / production environment): Cloudflare dashboard setup (documented in `docs/operations/cloudflare-cdn.md`), Lighthouse capture (needs the served stack; Chrome available locally), production QA.
 
 ---
 

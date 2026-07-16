@@ -58,18 +58,38 @@ used:
 The WASM grammars are served with `Cache-Control: public, max-age=31536000, immutable` (see
 `apps/web/next.config.js` `headers()`), so repeat visits and warm CDN edges never refetch them.
 
-## Lighthouse (procedure)
+## Lighthouse
 
-Lighthouse needs the running stack (a challenge page hydrates from the API). Run it against a
-production build once the stack is up, desktop preset:
+### Landing page (`/landing`) — captured 2026-07-16
+
+Production build (`nx build @nthtime/web`), served via `next start`, desktop preset, headless
+Chrome:
+
+| Category | Score |
+|---|---|
+| Performance | 98 |
+| Accessibility | 100 |
+| Best Practices | 96 |
+
+| Web Vital | Value |
+|---|---|
+| First Contentful Paint | 0.2 s |
+| Largest Contentful Paint | 1.0 s |
+| Total Blocking Time | 0 ms |
+| Cumulative Layout Shift | 0.02 |
+| Speed Index | 0.8 s |
+
+The landing page is static (no API dependency), so this is a clean measure of the marketing
+entry point: near-instant paint, no blocking, negligible layout shift.
+
+### Challenge page (still to capture — needs the served stack)
+
+The challenge page hydrates from the API and exercises the Monaco dynamic-import path, so it needs
+Postgres + Spring Boot + seeded data running. Capture it the same way once the stack is up:
 
 ```bash
-pnpm build && pnpm start           # or the docker compose stack
-npx lighthouse http://localhost:3000/landing --preset=desktop --view
-npx lighthouse "http://localhost:3000/packs/express-basics/challenges/hello-world" \
+pnpm build && (cd apps/web && npx next start -p 3005)   # web
+# with the API + seeded DB also running:
+npx lighthouse "http://localhost:3005/packs/express-basics/challenges/hello-world" \
   --preset=desktop --view
 ```
-
-Record the LCP / TBT / CLS and the Performance score here when captured. The landing page is
-static (no API dependency) and is the cleanest first target; challenge pages exercise the Monaco
-dynamic-import path and are the meaningful editor-load measurement.
