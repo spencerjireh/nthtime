@@ -110,7 +110,7 @@ The author web UI enables authenticated users to create, edit, and manage their 
 ### API Security
 
 - [x] **ATHR-21** -- All author API routes return 401 for unauthenticated requests.
-- [ ] **ATHR-22** -- Author API routes only pass allowlisted fields to Spring Boot API endpoints, ignoring injected fields like packId or userId in request bodies.
+- [x] **ATHR-22** -- Author API routes only pass allowlisted fields to Spring Boot API endpoints, ignoring injected fields like packId or userId in request bodies.
 - [x] **ATHR-23** -- Author write operations are rate-limited to 30/min per user.
 
 ## Technical Context
@@ -187,7 +187,7 @@ components and pin the proxy path mapping.
 
 | Criteria | Test File | Coverage |
 |----------|-----------|----------|
-| ATHR-03, 04, 05, 06, 07, 21, 23 | `services/api/.../controller/AuthorPackControllerIntegrationTest.java` | Create + slug uniqueness (409), field update, delete-cascade, private-pack visibility, non-owner 403, unauthenticated 401, write rate-limit (429) |
+| ATHR-03, 04, 05, 06, 07, 21, 22, 23 | `services/api/.../controller/AuthorPackControllerIntegrationTest.java` | Create + slug uniqueness (409), field update, delete-cascade, private-pack visibility, non-owner 403, unauthenticated 401, injected ownership fields ignored (owner from session), write rate-limit (429) |
 | ATHR-07, 08, 09, 10, 11, 12, 21 | `services/api/.../controller/AuthorChallengeControllerIntegrationTest.java` | Required-field validation, partial-update preservation, attempt deletion on update, delete-renumbering, reorder, non-owner 403, unauthenticated 401 |
 
 ### Web unit tests (Vitest, jsdom)

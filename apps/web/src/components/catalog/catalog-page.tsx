@@ -1,12 +1,14 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PackGrid } from './pack-grid';
 import { ContextStrip } from './context-strip';
 import { CatalogSearch } from './catalog-search';
 import { CatalogFilters, type CompletionStatus } from './catalog-filters';
 import { usePackList } from '@/hooks/use-packs';
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 interface CatalogPageProps {
   searchQuery: string;
@@ -30,52 +32,24 @@ export function CatalogPage({
   challengeCount,
 }: CatalogPageProps) {
   const router = useRouter();
-  const selectedTags = useMemo(
-    () => (tags ? tags.split(',').filter(Boolean) : []),
-    [tags],
-  );
+  const selectedTags = useMemo(() => (tags ? tags.split(',').filter(Boolean) : []), [tags]);
 
-  // TODO(user): implement Option A (instant local filter + debounced URL push).
-  //
-  // The `searchQuery` prop still comes from the URL (RSC-controlled). But the
-  // input should feel instant: each keystroke should immediately update the
-  // client-side filter (so PackGrid re-filters in memory) while only the URL
-  // update is debounced, so we don't refire the RSC on every keystroke.
-  //
-  // What to wire:
-  //   1. `const [localSearch, setLocalSearch] = useState(searchQuery)`
-  //   2. Keep localSearch in sync when the URL-provided searchQuery prop
-  //      changes (e.g., back/forward navigation): useEffect on [searchQuery]
-  //      calling setLocalSearch.
-  //   3. Use `localSearch` (not `searchQuery`) as the `searchQuery` filter
-  //      passed into `usePackList({ ..., searchQuery: localSearch })` below
-  //      AND as the `value` of <CatalogSearch />.
-  //   4. Rewrite `handleSearch` so it:
-  //        - calls setLocalSearch(q) synchronously (instant filter)
-  //        - schedules updateParams({ q }) after SEARCH_DEBOUNCE_MS using
-  //          a useRef-held timer; clear the previous timer each call.
-  //   5. Clean up the pending timer on unmount via a useEffect cleanup.
-  //
-  // Approximate 8-line core:
-  //   const [localSearch, setLocalSearch] = useState(searchQuery);
-  //   useEffect(() => setLocalSearch(searchQuery), [searchQuery]);
-  //   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  //   const handleSearch = useCallback((q: string) => {
-  //     setLocalSearch(q);
-  //     if (timerRef.current) clearTimeout(timerRef.current);
-  //     timerRef.current = setTimeout(() => updateParams({ q }), SEARCH_DEBOUNCE_MS);
-  //   }, [updateParams]);
-  //   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
-  //
-  // Then change the `searchQuery: searchQuery` below to `searchQuery: localSearch`
-  // and change the <CatalogSearch value={searchQuery} .../> at the bottom to
-  // value={localSearch}.
+  // Instant, in-memory search: `localSearch` updates on every keystroke and drives filtering
+  // (usePackList filters client-side, so this never refetches). Only the URL push is debounced
+  // (see handleSearch), so the RSC doesn't refire on every keystroke.
+  const [localSearch, setLocalSearch] = useState(searchQuery);
+
+  // Resync when the URL-provided query changes out of band (back/forward nav, cleared params).
+  useEffect(() => {
+    setLocalSearch(searchQuery);
+  }, [searchQuery]);
+
   const { packs, availableTags, isLoading } = usePackList({
     language,
     difficulty,
     tags: selectedTags,
     status,
-    searchQuery,
+    searchQuery: localSearch,
   });
 
   const updateParams = useCallback(
@@ -91,14 +65,26 @@ export function CatalogPage({
     [router, searchQuery, language, difficulty, tags, status],
   );
 
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleSearch = useCallback(
-    (q: string) => updateParams({ q }),
+    (q: string) => {
+      setLocalSearch(q); // instant filter
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+      searchTimerRef.current = setTimeout(() => updateParams({ q }), SEARCH_DEBOUNCE_MS);
+    },
     [updateParams],
   );
 
+  useEffect(
+    () => () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    },
+    [],
+  );
+
   const handleLanguage = useCallback(
-    (lang: string) =>
-      updateParams({ language: lang === '__all' ? '' : lang }),
+    (lang: string) => updateParams({ language: lang === '__all' ? '' : lang }),
     [updateParams],
   );
 
@@ -119,11 +105,7 @@ export function CatalogPage({
 
   return (
     <div className="mx-auto max-w-screen-2xl space-y-6 px-9 py-10">
-      <ContextStrip
-        trackCount={trackCount}
-        packCount={packCount}
-        challengeCount={challengeCount}
-      />
+      <ContextStrip trackCount={trackCount} packCount={packCount} challengeCount={challengeCount} />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <CatalogFilters
@@ -138,11 +120,11 @@ export function CatalogPage({
           onStatusChange={handleStatusChange}
         />
         <div className="w-full sm:max-w-xs">
-          <CatalogSearch value={searchQuery} onChange={handleSearch} />
+          <CatalogSearch value={localSearch} onChange={handleSearch} />
         </div>
       </div>
 
-      <PackGrid packs={packs} isLoading={isLoading} searchQuery={searchQuery} />
+      <PackGrid packs={packs} isLoading={isLoading} searchQuery={localSearch} />
     </div>
   );
 }

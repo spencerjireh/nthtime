@@ -70,6 +70,14 @@ nthtime:
   admin-secret: ${ADMIN_SECRET}
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
 
+# Error tracking. Disabled unless SENTRY_DSN is provided (blank DSN = no-op), matching the
+# frontend's opt-in Sentry configuration.
+sentry:
+  dsn: ${SENTRY_DSN:}
+  environment: ${SENTRY_ENVIRONMENT:production}
+  traces-sample-rate: 0.1
+  send-default-pii: false
+
 logging:
   structured:
     format:

@@ -265,6 +265,34 @@ class AuthorPackControllerIntegrationTest extends AbstractIntegrationTest {
     assertThat(packRepository.findBySlug("owned")).isPresent();
   }
 
+  // ATHR-22
+  @Test
+  void createIgnoresInjectedOwnershipFields() throws Exception {
+    AppUser owner = createUser();
+    AppUser other = createUser();
+
+    // CreatePackRequest has no authorUserId/id fields; Spring's Jackson ignores unknown
+    // properties, and ownership derives from the session -- so an injected owner id must be
+    // ignored and the pack must belong to the caller, not the injected user.
+    mockMvc
+        .perform(
+            post("/api/author/packs")
+                .cookie(sessionCookie(owner.getId(), "owner"))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    String.format(
+                        "{\"name\":\"Injected\",\"slug\":\"inject-test\",\"language\":\"javascript\","
+                            + "\"authorUserId\":%d,\"id\":999999}",
+                        other.getId())))
+        .andExpect(status().isCreated());
+
+    Pack pack = packRepository.findBySlug("inject-test").orElseThrow();
+    assertThat(pack.getAuthorUser().getId()).isEqualTo(owner.getId());
+    // The injected primary key is ignored too -- the id is DB-generated, not client-controlled.
+    assertThat(pack.getId()).isNotEqualTo(999999L);
+  }
+
   // ATHR-23
   @Test
   void authorWritesAreRateLimited() throws Exception {

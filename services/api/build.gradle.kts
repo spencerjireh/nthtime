@@ -52,6 +52,9 @@ dependencies {
 
     // Observability
     implementation("io.micrometer:micrometer-registry-prometheus")
+    // Error tracking. Inert unless SENTRY_DSN is set (see application.yml), mirroring the
+    // frontend's DSN-gated Sentry setup.
+    implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.16.0")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
