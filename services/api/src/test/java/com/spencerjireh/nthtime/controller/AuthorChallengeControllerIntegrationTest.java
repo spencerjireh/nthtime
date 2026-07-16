@@ -244,6 +244,51 @@ class AuthorChallengeControllerIntegrationTest extends AbstractIntegrationTest {
     assertThat(challengeRepository.findById(a.getId()).orElseThrow().getOrder()).isEqualTo(3);
   }
 
+  // ATHR-12
+  @Test
+  void reorderRejectsAnIncompleteChallengeList() throws Exception {
+    AppUser user = createUser();
+    Pack pack = seedPack(user, "pack-h");
+    Challenge a = seedChallenge(pack, "a", 1);
+    Challenge b = seedChallenge(pack, "b", 2);
+    seedChallenge(pack, "c", 3);
+
+    // Only two of the pack's three challenges -> 400, and orders are left untouched.
+    mockMvc
+        .perform(
+            put("/api/author/packs/pack-h/challenges/order")
+                .cookie(sessionCookie(user.getId(), "author-1"))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format("{\"challengeIds\":[\"%d\",\"%d\"]}", b.getId(), a.getId())))
+        .andExpect(status().isBadRequest());
+
+    assertThat(ordersFor(pack.getId())).containsExactly(1, 2, 3);
+  }
+
+  // ATHR-12
+  @Test
+  void reorderRejectsDuplicateChallengeIds() throws Exception {
+    AppUser user = createUser();
+    Pack pack = seedPack(user, "pack-i");
+    Challenge a = seedChallenge(pack, "a", 1);
+    Challenge b = seedChallenge(pack, "b", 2);
+    seedChallenge(pack, "c", 3);
+
+    // Right length, but a duplicated id (c missing) -> 400.
+    mockMvc
+        .perform(
+            put("/api/author/packs/pack-i/challenges/order")
+                .cookie(sessionCookie(user.getId(), "author-1"))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    String.format(
+                        "{\"challengeIds\":[\"%d\",\"%d\",\"%d\"]}",
+                        a.getId(), a.getId(), b.getId())))
+        .andExpect(status().isBadRequest());
+  }
+
   // ATHR-07
   @Test
   void aNonOwnerCannotReadUpdateOrDeleteAChallenge() throws Exception {

@@ -6,12 +6,17 @@ import com.spencerjireh.nthtime.dto.request.UpdateChallengeRequest;
 import com.spencerjireh.nthtime.dto.response.AuthorChallengeDetailResponse;
 import com.spencerjireh.nthtime.entity.Challenge;
 import com.spencerjireh.nthtime.entity.Pack;
+import com.spencerjireh.nthtime.exception.BadRequestException;
 import com.spencerjireh.nthtime.exception.ForbiddenException;
 import com.spencerjireh.nthtime.exception.ResourceNotFoundException;
 import com.spencerjireh.nthtime.repository.AttemptRepository;
 import com.spencerjireh.nthtime.repository.ChallengeRepository;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,12 +135,29 @@ public class AuthorChallengeService {
 
     authorPackService.verifyPackOwnership(packId, userId);
 
+    // The client always sends the pack's full challenge set in the new order (see
+    // challenge-order-list.tsx). Require exactly that -- a unique list whose size matches the
+    // pack's challenge count -- so a partial or duplicated payload can't leave orders with gaps
+    // or collisions.
+    Set<Long> uniqueIds = new HashSet<>(challengeIds);
+    if (uniqueIds.size() != challengeIds.size()) {
+      throw new BadRequestException("Challenge ids must be unique");
+    }
+    if (challengeIds.size() != challengeRepository.countByPackId(packId)) {
+      throw new BadRequestException(
+          "Reorder must include every challenge in the pack exactly once");
+    }
+
+    Map<Long, Challenge> byId =
+        challengeRepository.findAllById(challengeIds).stream()
+            .collect(Collectors.toMap(Challenge::getId, challenge -> challenge));
+
     List<Challenge> ordered = new ArrayList<>(challengeIds.size());
     for (Long challengeId : challengeIds) {
-      Challenge challenge =
-          challengeRepository
-              .findById(challengeId)
-              .orElseThrow(() -> new ResourceNotFoundException("Challenge not found"));
+      Challenge challenge = byId.get(challengeId);
+      if (challenge == null) {
+        throw new ResourceNotFoundException("Challenge not found");
+      }
       if (!challenge.getPack().getId().equals(packId)) {
         throw new ForbiddenException("Challenge does not belong to this pack");
       }
