@@ -54,4 +54,13 @@ class CacheControlInterceptorTest {
 
     assertThat(response.getHeader("Cache-Control")).isNull();
   }
+
+  @Test
+  void headRequestsAreCachedLikeGet() {
+    // CDNs issue HEAD to check freshness, so HEAD must carry the same cache header as GET.
+    MockHttpServletResponse response = handle(new MockHttpServletRequest("HEAD", "/api/packs"));
+
+    assertThat(response.getHeader("Cache-Control")).isEqualTo(CacheControlInterceptor.PUBLIC_CACHE);
+    assertThat(response.getHeader("Vary")).isEqualTo("Cookie");
+  }
 }
