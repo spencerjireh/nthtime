@@ -71,30 +71,30 @@ The author web UI enables authenticated users to create, edit, and manage their 
 
 ### Dashboard
 
-- [ ] **ATHR-01** -- Authenticated users see a "My Packs" dashboard at /author listing their packs with name, language, challenge count, and visibility.
+- [x] **ATHR-01** -- Authenticated users see a "My Packs" dashboard at /author listing their packs with name, language, challenge count, and visibility.
 - [ ] **ATHR-02** -- The author link in the header is only visible to authenticated users.
 
 ### Pack CRUD
 
-- [ ] **ATHR-03** -- Creating a pack requires name, slug, language, and description. Slug uniqueness is validated before creation.
-- [ ] **ATHR-04** -- Updating a pack allows changing name, slug, description, language, framework, version, tags, and visibility.
-- [ ] **ATHR-05** -- Deleting a pack removes the pack and all its challenges from the database.
-- [ ] **ATHR-06** -- Pack visibility can be set to private (author only), unlisted (accessible by URL), or public (visible in catalog).
-- [ ] **ATHR-07** -- Only the pack's author can edit or delete it (ownership verified on every mutation).
+- [x] **ATHR-03** -- Creating a pack requires name, slug, language, and description. Slug uniqueness is validated before creation.
+- [x] **ATHR-04** -- Updating a pack allows changing name, slug, description, language, framework, version, tags, and visibility.
+- [x] **ATHR-05** -- Deleting a pack removes the pack and all its challenges from the database.
+- [x] **ATHR-06** -- Pack visibility can be set to private (author only), unlisted (accessible by URL), or public (visible in catalog).
+- [x] **ATHR-07** -- Only the pack's author can edit or delete it (ownership verified on every mutation).
 
 ### Challenge CRUD
 
-- [ ] **ATHR-08** -- Creating a challenge requires packId, slug, title, prompt, difficulty, and reference solution.
-- [ ] **ATHR-09** -- Updating a challenge accepts partial fields and preserves unmodified values.
-- [ ] **ATHR-10** -- Updating a challenge deletes all existing attempts for that challenge (assertions may have changed).
-- [ ] **ATHR-11** -- Deleting a challenge removes it and renumbers the remaining challenges to maintain sequential order.
-- [ ] **ATHR-12** -- Challenges can be reordered within a pack, updating the order field for all affected challenges.
+- [x] **ATHR-08** -- Creating a challenge requires packId, slug, title, prompt, difficulty, and reference solution.
+- [x] **ATHR-09** -- Updating a challenge accepts partial fields and preserves unmodified values.
+- [x] **ATHR-10** -- Updating a challenge deletes all existing attempts for that challenge (assertions may have changed).
+- [x] **ATHR-11** -- Deleting a challenge removes it and renumbers the remaining challenges to maintain sequential order.
+- [x] **ATHR-12** -- Challenges can be reordered within a pack, updating the order field for all affected challenges.
 
 ### Challenge Editor
 
 - [ ] **ATHR-13** -- The challenge editor has 4 tabs: Metadata, Solution, Assertions, and Validate.
 - [ ] **ATHR-14** -- The Solution tab provides a Monaco editor for writing reference solution files, backed by its own EditorStore instance.
-- [ ] **ATHR-15** -- The Assertions tab provides a JSON editor with a snippet palette offering templates for all 12 assertion types.
+- [x] **ATHR-15** -- The Assertions tab provides a JSON editor with a snippet palette offering templates for all 12 assertion types.
 - [ ] **ATHR-16** -- The Validate tab runs the Tree-sitter WASM verification engine client-side against the current solution files and assertions, displaying pass/fail results.
 
 ### Preview
@@ -109,9 +109,9 @@ The author web UI enables authenticated users to create, edit, and manage their 
 
 ### API Security
 
-- [ ] **ATHR-21** -- All author API routes return 401 for unauthenticated requests.
+- [x] **ATHR-21** -- All author API routes return 401 for unauthenticated requests.
 - [ ] **ATHR-22** -- Author API routes only pass allowlisted fields to Spring Boot API endpoints, ignoring injected fields like packId or userId in request bodies.
-- [ ] **ATHR-23** -- Author write operations are rate-limited to 30/min per user.
+- [x] **ATHR-23** -- Author write operations are rate-limited to 30/min per user.
 
 ## Technical Context
 
@@ -178,12 +178,25 @@ The author web UI enables authenticated users to create, edit, and manage their 
 
 ## Test Coverage
 
-### Unit Tests
+The author routes in `apps/web/src/app/api/v1/author/*` are thin proxies (`proxyToSpringBoot`);
+the ownership, 401, attempt-invalidation, renumbering, and rate-limit rules are enforced in
+Spring Boot, so those are covered by integration tests there. The web tests cover the client
+components and pin the proxy path mapping.
 
-| Criterion | Test File | Test Description |
-|-----------|-----------|-----------------|
-| ATHR-21, ATHR-22 | `apps/web/src/app/api/v1/author/packs/[slug]/route.spec.ts` | Auth checks, field allowlisting, injected field rejection |
-| ATHR-21, ATHR-22 | `apps/web/src/app/api/v1/author/challenges/[id]/route.spec.ts` | Auth checks, field allowlisting |
+### Spring Boot integration tests (Testcontainers, real security filter chain)
+
+| Criteria | Test File | Coverage |
+|----------|-----------|----------|
+| ATHR-03, 04, 05, 06, 07, 21, 23 | `services/api/.../controller/AuthorPackControllerIntegrationTest.java` | Create + slug uniqueness (409), field update, delete-cascade, private-pack visibility, non-owner 403, unauthenticated 401, write rate-limit (429) |
+| ATHR-07, 08, 09, 10, 11, 12, 21 | `services/api/.../controller/AuthorChallengeControllerIntegrationTest.java` | Required-field validation, partial-update preservation, attempt deletion on update, delete-renumbering, reorder, non-owner 403, unauthenticated 401 |
+
+### Web unit tests (Vitest, jsdom)
+
+| Criteria | Test File | Coverage |
+|----------|-----------|----------|
+| ATHR-01 | `apps/web/src/components/author/author-dashboard.spec.tsx` | Dashboard heading, empty state, pack cards (name/language/visibility/count), loading |
+| ATHR-15 | `apps/web/src/components/author/assertion-snippets.spec.ts` | Palette offers all 12 assertion-type templates |
+| ATHR-21, ATHR-22 (web slice) | `apps/web/src/app/api/v1/author/packs/route.spec.ts`, `apps/web/src/app/api/v1/author/challenges/[id]/route.spec.ts` | Proxy forwards each method to the correct upstream path; id path segment is URL-encoded |
 
 ## Open Questions
 

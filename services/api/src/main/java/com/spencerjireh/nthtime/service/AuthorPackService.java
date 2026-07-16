@@ -216,12 +216,11 @@ public class AuthorPackService {
             .orElseThrow(() -> new ResourceNotFoundException("Pack not found"));
     verifyOwnership(pack, userId);
 
-    // Delete all attempts for all challenges in this pack
-    List<Challenge> challenges = challengeRepository.findByPackIdOrderByOrderAsc(packId);
-    for (Challenge challenge : challenges) {
-      attemptRepository.deleteByChallengeId(challenge.getId());
-    }
-
+    // Bulk-delete children without loading them as managed entities. Loading the challenges (as
+    // the previous per-challenge loop did) left them managed in the persistence context still
+    // referencing this pack; when the pack removal flushed, Hibernate saw those references as
+    // pointing at a transient Pack and threw. Deleting by query in FK order avoids that entirely.
+    attemptRepository.deleteByChallengePackId(packId);
     challengeRepository.deleteAllByPackId(packId);
     packRepository.delete(pack);
   }

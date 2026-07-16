@@ -6,11 +6,17 @@ import com.spencerjireh.nthtime.dto.request.UpdateChallengeRequest;
 import com.spencerjireh.nthtime.dto.response.AuthorChallengeDetailResponse;
 import com.spencerjireh.nthtime.entity.Challenge;
 import com.spencerjireh.nthtime.entity.Pack;
+import com.spencerjireh.nthtime.exception.BadRequestException;
 import com.spencerjireh.nthtime.exception.ForbiddenException;
 import com.spencerjireh.nthtime.exception.ResourceNotFoundException;
 import com.spencerjireh.nthtime.repository.AttemptRepository;
 import com.spencerjireh.nthtime.repository.ChallengeRepository;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -129,17 +135,47 @@ public class AuthorChallengeService {
 
     authorPackService.verifyPackOwnership(packId, userId);
 
-    for (int i = 0; i < challengeIds.size(); i++) {
-      Challenge challenge =
-          challengeRepository
-              .findById(challengeIds.get(i))
-              .orElseThrow(() -> new ResourceNotFoundException("Challenge not found"));
+    // The client always sends the pack's full challenge set in the new order (see
+    // challenge-order-list.tsx). Require exactly that -- a unique list whose size matches the
+    // pack's challenge count -- so a partial or duplicated payload can't leave orders with gaps
+    // or collisions.
+    Set<Long> uniqueIds = new HashSet<>(challengeIds);
+    if (uniqueIds.size() != challengeIds.size()) {
+      throw new BadRequestException("Challenge ids must be unique");
+    }
+    if (challengeIds.size() != challengeRepository.countByPackId(packId)) {
+      throw new BadRequestException(
+          "Reorder must include every challenge in the pack exactly once");
+    }
+
+    Map<Long, Challenge> byId =
+        challengeRepository.findAllById(challengeIds).stream()
+            .collect(Collectors.toMap(Challenge::getId, challenge -> challenge));
+
+    List<Challenge> ordered = new ArrayList<>(challengeIds.size());
+    for (Long challengeId : challengeIds) {
+      Challenge challenge = byId.get(challengeId);
+      if (challenge == null) {
+        throw new ResourceNotFoundException("Challenge not found");
+      }
       if (!challenge.getPack().getId().equals(packId)) {
         throw new ForbiddenException("Challenge does not belong to this pack");
       }
-      challenge.setOrder(i + 1);
-      challengeRepository.save(challenge);
+      ordered.add(challenge);
     }
+
+    // Two-phase update to respect the UNIQUE(pack_id, "order") constraint. Assigning final orders
+    // one row at a time collides whenever the new position is still held by another row (e.g. any
+    // reversal). Park every row at a negative sentinel first, flush, then assign the final 1..N so
+    // no intermediate state has two challenges sharing an order value.
+    for (int i = 0; i < ordered.size(); i++) {
+      ordered.get(i).setOrder(-(i + 1));
+    }
+    challengeRepository.saveAllAndFlush(ordered);
+    for (int i = 0; i < ordered.size(); i++) {
+      ordered.get(i).setOrder(i + 1);
+    }
+    challengeRepository.saveAll(ordered);
   }
 
   private AuthorChallengeDetailResponse toDetailResponse(Challenge c) {

@@ -16,6 +16,10 @@ public interface AttemptRepository extends JpaRepository<Attempt, Long> {
   @Modifying
   void deleteByChallengeId(Long challengeId);
 
+  @Modifying
+  @Query("DELETE FROM Attempt a WHERE a.challenge.pack.id = :packId")
+  void deleteByChallengePackId(@Param("packId") Long packId);
+
   @Query(
       "SELECT DISTINCT a.challenge.id FROM Attempt a WHERE a.user.id = :userId AND a.passed = true")
   Set<Long> findPassedChallengeIdsByUserId(@Param("userId") Long userId);
