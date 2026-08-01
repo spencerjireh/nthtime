@@ -558,10 +558,11 @@ All three packs pass schema validation and reference solution verification. Seed
   - [x] `docker-compose.yml` with Next.js service
   - [x] Environment variable configuration (.env.production)
   - [x] Health check endpoint (`/api/health`)
-- [~] Set up Cloudflare (dashboard steps documented in `docs/operations/cloudflare-cdn.md`):
-  - [ ] DNS configuration (external -- see runbook)
-  - [ ] SSL termination (external -- Full (strict) over Coolify's Let's Encrypt cert)
-  - [ ] CDN caching rules (static assets, WASM grammars) (external -- see runbook)
+- [~] Set up Cloudflare (steps + live status in `docs/operations/cloudflare-cdn.md`):
+  - [x] DNS configuration -- `nthtime.spencerjireh.com` proxied via the `*.spencerjireh.com` wildcard
+  - [x] SSL termination -- Full (strict) + Always Use HTTPS, over Coolify's Let's Encrypt cert
+  - [x] CDN caching rules (static assets, WASM grammars) -- Cache Rule applied; `/tree-sitter/*.wasm` verified `cf-cache-status: HIT`
+  - [ ] CDN caching for `/api/cli/*` (pending; catalog `/api/v1/packs` blocked by its `XSRF-TOKEN` cookie -- see runbook)
   - [x] Cache headers for challenge data (origin: `next.config.js` WASM headers + `CacheControlInterceptor`)
 - [x] Complete GitHub Actions CI/CD pipeline:
   - [x] Validate packs (`pnpm validate` step)
@@ -601,7 +602,7 @@ All three packs pass schema validation and reference solution verification. Seed
 
 CI/CD pipeline deploys to production automatically on merge to main. All Playwright E2E tests pass. Sentry captures errors. Application loads, authenticates, and serves challenges from the production VPS + Spring Boot + PostgreSQL stack. All three launch packs are seeded and playable. Lighthouse performance score is acceptable for a desktop-only application.
 
-**Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Since completed: Sentry (client/server/edge + source maps + error boundaries), structured logging (Next.js request JSON + Spring Boot logstash), origin cache headers (WASM + catalog API), and a recorded performance baseline (`docs/operations/perf-baseline.md`). Also since completed: Spring-side error tracking (DSN-gated Sentry), a DB-probing `/api/health` (503 when the database is unreachable), client-side verification-pipeline debug logging, and a Lighthouse capture of both the landing and challenge pages (98/98 desktop, recorded in `docs/operations/perf-baseline.md`). Still deferred (external services / production environment): Cloudflare dashboard setup (documented in `docs/operations/cloudflare-cdn.md`) and full production QA.
+**Partial completion:** 2026-02-20 -- E2E tests (catalog, challenge flow, drafts, settings, navigation), Dockerfile + docker-compose.yml, health endpoint, CI pipeline (pack validation, E2E, Docker build). Since completed: Sentry (client/server/edge + source maps + error boundaries), structured logging (Next.js request JSON + Spring Boot logstash), origin cache headers (WASM + catalog API), and a recorded performance baseline (`docs/operations/perf-baseline.md`). Also since completed: Spring-side error tracking (DSN-gated Sentry), a DB-probing `/api/health` (503 when the database is unreachable), client-side verification-pipeline debug logging, and a Lighthouse capture of both the landing and challenge pages (98/98 desktop, recorded in `docs/operations/perf-baseline.md`). Cloudflare CDN is now partially live: the production zone (`nthtime.spencerjireh.com`) is proxied with TLS strict + Always-HTTPS, and a Cache Rule now edge-caches the immutable static assets -- `/tree-sitter/*.wasm` verified `cf-cache-status: HIT` (the ~6 MB of grammars are offloaded from the origin). Still deferred (external services / production environment): the `/api/cli/*` cache rule and catalog-API edge caching (blocked by the `XSRF-TOKEN` cookie -- see `docs/operations/cloudflare-cdn.md`), and full production QA.
 
 ---
 
