@@ -63,21 +63,30 @@ export default function PrivacyPage() {
         <p>
           We use Sentry to capture client-side and backend errors and basic performance data so we
           can find and fix bugs. This may include technical details about the request and, for
-          signed-in users, an identifier associating the event with your account. It does not
-          include your solution code.
+          signed-in users, an identifier associating the event with your account.
+        </p>
+        <p>
+          Sentry Session Replay is enabled: it records a replay of roughly 10% of sessions, plus any
+          session in which an error occurs, to help us reproduce problems. By default these replays
+          mask on-screen text and form input and block media, so the content you type is obscured in
+          the recording.
         </p>
 
         <h2 className="text-foreground">Data retention and deletion</h2>
         <p>
-          We keep account data for as long as your account exists. You can request deletion of your
-          account and associated data at any time by opening an issue or contacting us via the
-          project repository below. Revoking the nthtime OAuth authorization in your GitHub settings
-          stops any further access to your GitHub data.
+          We keep your account data for as long as your account exists. You can delete your account
+          at any time from your account settings. Deleting your account removes your profile, your
+          linked GitHub sign-in, and your attempts, progress, and settings.
+        </p>
+        <p>
+          Any packs or tracks you published stay publicly visible after deletion, but they are no
+          longer linked to your account and can no longer be edited. Revoking the nthtime OAuth
+          authorization in your GitHub settings stops any further access to your GitHub data.
         </p>
 
         <h2 className="text-foreground">Contact</h2>
         <p>
-          For any privacy question or a deletion request, reach us through the project on{' '}
+          For any privacy question, reach us through the project on{' '}
           <a
             href="https://github.com/spencerjireh/nthtime"
             target="_blank"
