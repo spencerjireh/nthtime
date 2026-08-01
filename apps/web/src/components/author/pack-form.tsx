@@ -58,7 +58,9 @@ export function PackForm({
 }: PackFormProps) {
   const [name, setName] = useState(initial?.name ?? '');
   const [slug, setSlug] = useState(initial?.slug ?? '');
-  const [slugTouched, setSlugTouched] = useState(false);
+  // In edit mode the pack already has a persisted slug -- treat it as "touched" so the
+  // name-derivation effect below never clobbers it with slugify(name) (SPE-278).
+  const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [description, setDescription] = useState(initial?.description ?? '');
   const [language, setLanguage] = useState(initial?.language ?? 'javascript');
   const [framework, setFramework] = useState(initial?.framework ?? '');
