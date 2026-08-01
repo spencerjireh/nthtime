@@ -13,7 +13,7 @@ just needs to respect and extend them.
    (`nthtime.yourdomain.com`) targeting the Coolify server.
 3. Keep `FRONTEND_URL` (Spring Boot + Next.js) and the GitHub OAuth callback on this same domain.
 
-> **Current state (2026-08-01):** `nthtime.spencerjireh.com` has no dedicated record -- it resolves
+> **Current state (2026-07-31):** `nthtime.spencerjireh.com` has no dedicated record -- it resolves
 > through the proxied `*.spencerjireh.com` wildcard, so traffic is already on Cloudflare's edge.
 > An explicit proxied record is cleaner (independent of the wildcard) but not required.
 
@@ -31,12 +31,12 @@ Cloudflare to honor them, plus one aggressive static rule. These live in the
 
 | Rule (match) | Action | Status |
 |---|---|---|
-| `/_next/static/*` and `/tree-sitter/*` | Cache Everything; Edge + Browser TTL = respect origin (already `immutable`, 1 yr) | **APPLIED** 2026-08-01 |
+| `/_next/static/*` and `/tree-sitter/*` | Cache Everything; Edge + Browser TTL = respect origin (already `immutable`, 1 yr) | **APPLIED** 2026-07-31 |
 | `/api/cli/*` and `/api/challenges/*` | Cache Everything; respect origin `s-maxage` | Pending |
 | `/api/packs/*` and `/api/tracks/*` | Cache Everything **but** Bypass when the `JSESSIONID` cookie is present | Pending (see caveat) |
 | `/api/v1/me/*`, `/api/v1/settings`, `/api/v1/attempts`, `/api/auth/*`, `/api/author/*`, `/monitoring` | **Bypass cache** | Not needed (uncached by default) |
 
-**Applied (2026-08-01):** a single Cache Rule in the `http_request_cache_settings` entrypoint,
+**Applied (2026-07-31):** a single Cache Rule in the `http_request_cache_settings` entrypoint,
 `(starts_with(http.request.uri.path, "/tree-sitter/")) or (starts_with(http.request.uri.path,
 "/_next/static/"))` -> `set_cache_settings { cache: true, edge_ttl: respect_origin, browser_ttl:
 respect_origin }`. Before this rule, `.wasm` was served `cf-cache-status: DYNAMIC` (the ~6 MB of
@@ -45,8 +45,8 @@ after, repeat fetches are `HIT`.
 
 Key point: `/api/packs/*` and `/api/tracks/*` fold per-user progress into the same URL. The origin
 returns `private, no-store` for signed-in requests and `public, s-maxage=300` + `Vary: Cookie` for
-anonymous ones, but a cookie-keyed CDN cache is the reliable guard -- **always bypass cache when a
-session cookie is present** so a signed-in learner never receives an anonymous-cached body.
+anonymous ones, but a session-cookie bypass is the reliable guard -- **always bypass cache when a
+`JSESSIONID` cookie is present** so a signed-in learner never receives an anonymous-cached body.
 
 **Caveat -- the catalog API is currently un-cacheable regardless.** `GET /api/v1/packs` (and the
 other catalog proxies) set an `XSRF-TOKEN` cookie on every response, and Cloudflare never caches a
@@ -73,7 +73,7 @@ curl -sI -H 'Cookie: JSESSIONID=<real>' https://nthtime.yourdomain.com/api/packs
 Confirm `cf-cache-status: HIT` on a repeat anonymous WASM/`/api/cli` request and `BYPASS`/`DYNAMIC`
 on the signed-in and personalized ones.
 
-**Verified 2026-08-01:** after applying the static Cache Rule, `/tree-sitter/*.wasm` returns
+**Verified 2026-07-31:** after applying the static Cache Rule, `/tree-sitter/*.wasm` returns
 `cf-cache-status: MISS` on the first edge fetch and `HIT` on repeats (confirmed for the TypeScript
 and CSS grammars). `TLS = strict` and `Always Use HTTPS = on` are already set. `/api/cli/*` and
 `/api/v1/packs` are still `DYNAMIC` -- the CLI paths await their Cache Rule, and the catalog proxy

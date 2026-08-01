@@ -558,10 +558,11 @@ All three packs pass schema validation and reference solution verification. Seed
   - [x] `docker-compose.yml` with Next.js service
   - [x] Environment variable configuration (.env.production)
   - [x] Health check endpoint (`/api/health`)
-- [~] Set up Cloudflare (dashboard steps documented in `docs/operations/cloudflare-cdn.md`):
-  - [ ] DNS configuration (external -- see runbook)
-  - [ ] SSL termination (external -- Full (strict) over Coolify's Let's Encrypt cert)
-  - [ ] CDN caching rules (static assets, WASM grammars) (external -- see runbook)
+- [~] Set up Cloudflare (steps + live status in `docs/operations/cloudflare-cdn.md`):
+  - [x] DNS configuration -- `nthtime.spencerjireh.com` proxied via the `*.spencerjireh.com` wildcard
+  - [x] SSL termination -- Full (strict) + Always Use HTTPS, over Coolify's Let's Encrypt cert
+  - [x] CDN caching rules (static assets, WASM grammars) -- Cache Rule applied; `/tree-sitter/*.wasm` verified `cf-cache-status: HIT`
+  - [ ] CDN caching for `/api/cli/*` (pending; catalog `/api/v1/packs` blocked by its `XSRF-TOKEN` cookie -- see runbook)
   - [x] Cache headers for challenge data (origin: `next.config.js` WASM headers + `CacheControlInterceptor`)
 - [x] Complete GitHub Actions CI/CD pipeline:
   - [x] Validate packs (`pnpm validate` step)
