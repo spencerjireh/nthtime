@@ -10,8 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.spencerjireh.nthtime.AbstractIntegrationTest;
 import com.spencerjireh.nthtime.entity.AppUser;
 import com.spencerjireh.nthtime.entity.AuthAccount;
+import com.spencerjireh.nthtime.entity.Pack;
 import com.spencerjireh.nthtime.repository.AppUserRepository;
 import com.spencerjireh.nthtime.repository.AuthAccountRepository;
+import com.spencerjireh.nthtime.repository.PackRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +21,7 @@ class MeControllerIntegrationTest extends AbstractIntegrationTest {
 
   @Autowired private AppUserRepository appUserRepository;
   @Autowired private AuthAccountRepository authAccountRepository;
+  @Autowired private PackRepository packRepository;
 
   private AppUser createUser(String handle, String email) {
     AppUser user = appUserRepository.save(new AppUser());
@@ -94,5 +97,30 @@ class MeControllerIntegrationTest extends AbstractIntegrationTest {
     assertThat(appUserRepository.findById(userId)).isEmpty();
     assertThat(authAccountRepository.findByProviderAndProviderAccountId("github", "delete-me"))
         .isEmpty();
+  }
+
+  @Test
+  void deleteAccountRetainsAuthoredPacksButAnonymizesTheirAuthor() throws Exception {
+    AppUser user = createUser("author-del", "author-del@example.com");
+    Long userId = user.getId();
+
+    Pack pack = new Pack();
+    pack.setName("Owner's Pack");
+    pack.setSlug("owners-pack");
+    pack.setLanguage("typescript");
+    pack.setAuthor("Owner Name");
+    pack.setAuthorUser(user);
+    Long packId = packRepository.save(pack).getId();
+
+    mockMvc
+        .perform(delete("/api/me").cookie(sessionCookie(userId, "author-del")).with(csrf()))
+        .andExpect(status().isNoContent());
+
+    // The pack survives the account deletion (ON DELETE SET NULL on author_user_id) but its
+    // free-text author is de-identified so nothing publicly ties it back to the deleted user.
+    assertThat(appUserRepository.findById(userId)).isEmpty();
+    Pack retained = packRepository.findById(packId).orElseThrow();
+    assertThat(retained.getAuthorUser()).isNull();
+    assertThat(retained.getAuthor()).isEqualTo("Anonymous");
   }
 }

@@ -11,9 +11,12 @@ import static org.mockito.Mockito.when;
 import com.spencerjireh.nthtime.dto.response.ProfileResponse;
 import com.spencerjireh.nthtime.entity.AppUser;
 import com.spencerjireh.nthtime.entity.AuthAccount;
+import com.spencerjireh.nthtime.entity.Pack;
 import com.spencerjireh.nthtime.repository.AppUserRepository;
 import com.spencerjireh.nthtime.repository.AuthAccountRepository;
+import com.spencerjireh.nthtime.repository.PackRepository;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -30,6 +33,7 @@ class UserServiceTest {
 
   @Mock private AppUserRepository appUserRepository;
   @Mock private AuthAccountRepository authAccountRepository;
+  @Mock private PackRepository packRepository;
   @Mock private FindByIndexNameSessionRepository<Session> sessionRepository;
   @Mock private Session session;
 
@@ -40,6 +44,12 @@ class UserServiceTest {
     user.setId(id);
     user.setCreatedAt(Instant.parse("2026-03-15T00:00:00Z"));
     return user;
+  }
+
+  private Pack pack(String author) {
+    Pack pack = new Pack();
+    pack.setAuthor(author);
+    return pack;
   }
 
   private AuthAccount account(AppUser user, String handle) {
@@ -160,5 +170,25 @@ class UserServiceTest {
 
     verify(sessionRepository, never()).findByPrincipalName(any());
     verify(appUserRepository).deleteById(eq(8L));
+  }
+
+  @Test
+  void deleteUserAnonymizesNonBlankAuthorsOnOwnedPacksBeforeDeletingTheUser() {
+    Pack named = pack("Jane Dev");
+    Pack blank = pack("");
+    when(packRepository.findByAuthorUserId(5L)).thenReturn(List.of(named, blank));
+
+    userService.deleteUser(5L);
+
+    // A populated author is de-identified; a blank one is left untouched (no visible change
+    // to today's user-authored packs, which always carry a blank author).
+    assertThat(named.getAuthor()).isEqualTo("Anonymous");
+    assertThat(blank.getAuthor()).isEqualTo("");
+
+    // Only the touched pack is persisted, and the de-identification must land before the
+    // account (and its author_user_id link) is deleted.
+    InOrder order = inOrder(packRepository, appUserRepository);
+    order.verify(packRepository).saveAll(List.of(named));
+    order.verify(appUserRepository).deleteById(5L);
   }
 }
