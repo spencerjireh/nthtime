@@ -3,9 +3,12 @@ package com.spencerjireh.nthtime.service;
 import com.spencerjireh.nthtime.dto.response.ProfileResponse;
 import com.spencerjireh.nthtime.entity.AppUser;
 import com.spencerjireh.nthtime.entity.AuthAccount;
+import com.spencerjireh.nthtime.entity.Pack;
 import com.spencerjireh.nthtime.exception.ResourceNotFoundException;
 import com.spencerjireh.nthtime.repository.AppUserRepository;
 import com.spencerjireh.nthtime.repository.AuthAccountRepository;
+import com.spencerjireh.nthtime.repository.PackRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
@@ -15,16 +18,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+  // Substituted for the free-text author of a deleted user's retained packs.
+  private static final String ANONYMIZED_AUTHOR = "Anonymous";
+
   private final AppUserRepository appUserRepository;
   private final AuthAccountRepository authAccountRepository;
+  private final PackRepository packRepository;
   private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
 
   public UserService(
       AppUserRepository appUserRepository,
       AuthAccountRepository authAccountRepository,
+      PackRepository packRepository,
       FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
     this.appUserRepository = appUserRepository;
     this.authAccountRepository = authAccountRepository;
+    this.packRepository = packRepository;
     this.sessionRepository = sessionRepository;
   }
 
@@ -97,6 +106,19 @@ public class UserService {
           .findByPrincipalName(principalName)
           .keySet()
           .forEach(sessionRepository::deleteById);
+    }
+
+    // Authored packs survive the delete with author_user_id set to null (ON DELETE SET NULL),
+    // but their separate free-text author string would persist and could still identify the
+    // user. De-identify any non-blank ones before the account goes away. (Today the author UI
+    // never sets this field, so this is defense-in-depth for a future author-name feature.)
+    List<Pack> toAnonymize =
+        packRepository.findByAuthorUserId(userId).stream()
+            .filter(pack -> pack.getAuthor() != null && !pack.getAuthor().isBlank())
+            .toList();
+    if (!toAnonymize.isEmpty()) {
+      toAnonymize.forEach(pack -> pack.setAuthor(ANONYMIZED_AUTHOR));
+      packRepository.saveAll(toAnonymize);
     }
 
     // Cascades clear auth_accounts, attempts and user_settings. Authored packs and tracks
