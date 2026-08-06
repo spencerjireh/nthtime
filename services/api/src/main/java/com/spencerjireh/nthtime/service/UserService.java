@@ -45,24 +45,24 @@ public class UserService {
       String name,
       String email,
       String image) {
-    // 1. Normal path: match on the stable provider account id.
-    Optional<AuthAccount> byId =
+    Optional<AuthAccount> existing =
         authAccountRepository.findByProviderAndProviderAccountId(provider, providerAccountId);
-    if (byId.isPresent()) {
-      return refreshAccount(byId.get(), providerAccountId, login, name, email, image);
+    if (existing.isPresent()) {
+      // Refresh the profile and the display handle on each login. Because identity is keyed on
+      // the stable provider id, a GitHub rename now just updates the login here (SPE-231).
+      AuthAccount account = existing.get();
+      account.setLogin(login);
+      account.setName(name);
+      account.setEmail(email);
+      account.setImage(image);
+      authAccountRepository.save(account);
+      return account.getUser().getId();
     }
 
-    // 2. Re-key path (SPE-231): a pre-migration row still carries the login in
-    //    provider_account_id, so the stable-id lookup misses. Match it by login instead and
-    //    re-key it onto the stable id so a future rename can no longer orphan the user.
-    if (login != null) {
-      Optional<AuthAccount> byLogin = authAccountRepository.findByProviderAndLogin(provider, login);
-      if (byLogin.isPresent()) {
-        return refreshAccount(byLogin.get(), providerAccountId, login, name, email, image);
-      }
-    }
-
-    // 3. Genuinely new user.
+    // New user. A pre-migration row keyed by an old login is deliberately NOT matched here:
+    // GitHub logins are mutable AND reusable, so re-keying by login would let someone who
+    // claimed a freed username take over the original account. Legacy rows are re-keyed only
+    // by the targeted V8 backfill; any other legacy user re-authenticates as a fresh account.
     AppUser user = appUserRepository.save(new AppUser());
 
     AuthAccount account = new AuthAccount();
@@ -76,23 +76,6 @@ public class UserService {
     authAccountRepository.save(account);
 
     return user.getId();
-  }
-
-  /** Refreshes profile fields (and re-keys provider_account_id) on each login. */
-  private Long refreshAccount(
-      AuthAccount account,
-      String providerAccountId,
-      String login,
-      String name,
-      String email,
-      String image) {
-    account.setProviderAccountId(providerAccountId);
-    account.setLogin(login);
-    account.setName(name);
-    account.setEmail(email);
-    account.setImage(image);
-    authAccountRepository.save(account);
-    return account.getUser().getId();
   }
 
   @Transactional(readOnly = true)

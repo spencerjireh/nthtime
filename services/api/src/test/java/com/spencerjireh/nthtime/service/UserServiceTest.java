@@ -103,23 +103,18 @@ class UserServiceTest {
   }
 
   @Test
-  void findOrCreateUserReKeysALegacyLoginKeyedAccountOntoTheStableId() {
-    // A pre-migration row still holds the login in provider_account_id, so the stable-id
-    // lookup misses and the login fallback re-keys it in place.
-    AppUser existing = user(9L);
-    AuthAccount legacy = account(existing, "spencerjireh");
-    when(authAccountRepository.findByProviderAndLogin("github", "spencerjireh"))
-        .thenReturn(Optional.of(legacy));
+  void findOrCreateUserDoesNotReKeyALegacyLoginKeyedAccount() {
+    // A pre-migration row still holds the login in provider_account_id. The stable-id lookup
+    // misses and there is NO login fallback -- re-keying by the mutable, reusable login would
+    // be an account-takeover vector -- so a fresh account is minted instead (SPE-231 review).
+    when(appUserRepository.save(any(AppUser.class))).thenReturn(user(20L));
 
     Long id =
         userService.findOrCreateUser(
             "github", "1001", "spencerjireh", "Spencer", "spencer@example.com", "img");
 
-    assertThat(id).isEqualTo(9L); // same user, no new account minted
-    assertThat(legacy.getProviderAccountId()).isEqualTo("1001"); // re-keyed login -> stable id
-    assertThat(legacy.getLogin()).isEqualTo("spencerjireh");
-    verify(appUserRepository, never()).save(any());
-    verify(authAccountRepository).save(legacy);
+    assertThat(id).isEqualTo(20L); // a new user, not the legacy row
+    verify(authAccountRepository).save(any(AuthAccount.class));
   }
 
   @Test
