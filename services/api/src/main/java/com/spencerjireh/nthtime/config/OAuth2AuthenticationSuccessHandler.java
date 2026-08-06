@@ -32,12 +32,16 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     OAuth2User oauthUser = token.getPrincipal();
 
     String provider = token.getAuthorizedClientRegistrationId();
+    // With user-name-attribute: id, getName() is GitHub's stable numeric account id. The login
+    // is captured separately as a display handle (SPE-231).
     String providerAccountId = oauthUser.getName();
+    String login = oauthUser.getAttribute("login");
     String name = oauthUser.getAttribute("name");
     String email = oauthUser.getAttribute("email");
     String image = oauthUser.getAttribute("avatar_url");
 
-    Long appUserId = userService.findOrCreateUser(provider, providerAccountId, name, email, image);
+    Long appUserId =
+        userService.findOrCreateUser(provider, providerAccountId, login, name, email, image);
 
     request.getSession().setAttribute("appUserId", appUserId);
 

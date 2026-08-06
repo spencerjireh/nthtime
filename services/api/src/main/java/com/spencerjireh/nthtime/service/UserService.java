@@ -39,33 +39,60 @@ public class UserService {
 
   @Transactional
   public Long findOrCreateUser(
-      String provider, String providerAccountId, String name, String email, String image) {
-    Optional<AuthAccount> existing =
+      String provider,
+      String providerAccountId,
+      String login,
+      String name,
+      String email,
+      String image) {
+    // 1. Normal path: match on the stable provider account id.
+    Optional<AuthAccount> byId =
         authAccountRepository.findByProviderAndProviderAccountId(provider, providerAccountId);
-
-    if (existing.isPresent()) {
-      AuthAccount account = existing.get();
-      // Update profile info on each login
-      account.setName(name);
-      account.setEmail(email);
-      account.setImage(image);
-      authAccountRepository.save(account);
-      return account.getUser().getId();
+    if (byId.isPresent()) {
+      return refreshAccount(byId.get(), providerAccountId, login, name, email, image);
     }
 
-    AppUser user = new AppUser();
-    user = appUserRepository.save(user);
+    // 2. Re-key path (SPE-231): a pre-migration row still carries the login in
+    //    provider_account_id, so the stable-id lookup misses. Match it by login instead and
+    //    re-key it onto the stable id so a future rename can no longer orphan the user.
+    if (login != null) {
+      Optional<AuthAccount> byLogin = authAccountRepository.findByProviderAndLogin(provider, login);
+      if (byLogin.isPresent()) {
+        return refreshAccount(byLogin.get(), providerAccountId, login, name, email, image);
+      }
+    }
+
+    // 3. Genuinely new user.
+    AppUser user = appUserRepository.save(new AppUser());
 
     AuthAccount account = new AuthAccount();
     account.setUser(user);
     account.setProvider(provider);
     account.setProviderAccountId(providerAccountId);
+    account.setLogin(login);
     account.setName(name);
     account.setEmail(email);
     account.setImage(image);
     authAccountRepository.save(account);
 
     return user.getId();
+  }
+
+  /** Refreshes profile fields (and re-keys provider_account_id) on each login. */
+  private Long refreshAccount(
+      AuthAccount account,
+      String providerAccountId,
+      String login,
+      String name,
+      String email,
+      String image) {
+    account.setProviderAccountId(providerAccountId);
+    account.setLogin(login);
+    account.setName(name);
+    account.setEmail(email);
+    account.setImage(image);
+    authAccountRepository.save(account);
+    return account.getUser().getId();
   }
 
   @Transactional(readOnly = true)
@@ -79,13 +106,18 @@ public class UserService {
             .findFirstByUserIdOrderByCreatedAtAsc(userId)
             .orElseThrow(() -> new ResourceNotFoundException("No linked account for user"));
 
+    // handle is the display username (login). Fall back to providerAccountId for any row not
+    // yet backfilled/re-keyed, which before SPE-231 was itself the login.
+    String handle =
+        account.getLogin() != null ? account.getLogin() : account.getProviderAccountId();
+
     return new ProfileResponse(
         user.getId().toString(),
         account.getName(),
         account.getEmail(),
         account.getImage(),
         account.getProvider(),
-        account.getProviderAccountId(),
+        handle,
         user.getCreatedAt());
   }
 

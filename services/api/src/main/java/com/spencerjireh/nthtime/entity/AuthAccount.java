@@ -32,6 +32,11 @@ public class AuthAccount {
   @Column(name = "provider_account_id", nullable = false, length = 255)
   private String providerAccountId;
 
+  // The mutable provider username (e.g. GitHub login), kept for display only. Identity is
+  // keyed on the stable providerAccountId; see SPE-231.
+  @Column(length = 255)
+  private String login;
+
   @Column(length = 255)
   private String name;
 
@@ -76,6 +81,14 @@ public class AuthAccount {
 
   public void setProviderAccountId(String providerAccountId) {
     this.providerAccountId = providerAccountId;
+  }
+
+  public String getLogin() {
+    return login;
+  }
+
+  public void setLogin(String login) {
+    this.login = login;
   }
 
   public String getName() {
