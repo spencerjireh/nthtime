@@ -39,13 +39,19 @@ public class UserService {
 
   @Transactional
   public Long findOrCreateUser(
-      String provider, String providerAccountId, String name, String email, String image) {
+      String provider,
+      String providerAccountId,
+      String login,
+      String name,
+      String email,
+      String image) {
     Optional<AuthAccount> existing =
         authAccountRepository.findByProviderAndProviderAccountId(provider, providerAccountId);
-
     if (existing.isPresent()) {
+      // Refresh the profile and the display handle on each login. Because identity is keyed on
+      // the stable provider id, a GitHub rename now just updates the login here (SPE-231).
       AuthAccount account = existing.get();
-      // Update profile info on each login
+      account.setLogin(login);
       account.setName(name);
       account.setEmail(email);
       account.setImage(image);
@@ -53,13 +59,18 @@ public class UserService {
       return account.getUser().getId();
     }
 
-    AppUser user = new AppUser();
-    user = appUserRepository.save(user);
+    // New user. A pre-migration row keyed by an old login is deliberately NOT matched here:
+    // GitHub logins are mutable AND reusable, so re-keying by login would let someone who
+    // claimed a freed username take over the original account. Legacy rows are not re-keyed
+    // here or by V8; the one known owner account is re-keyed by a one-off manual production
+    // UPDATE, and any other legacy user re-authenticates as a fresh account.
+    AppUser user = appUserRepository.save(new AppUser());
 
     AuthAccount account = new AuthAccount();
     account.setUser(user);
     account.setProvider(provider);
     account.setProviderAccountId(providerAccountId);
+    account.setLogin(login);
     account.setName(name);
     account.setEmail(email);
     account.setImage(image);
@@ -79,13 +90,18 @@ public class UserService {
             .findFirstByUserIdOrderByCreatedAtAsc(userId)
             .orElseThrow(() -> new ResourceNotFoundException("No linked account for user"));
 
+    // handle is the display username (login). Fall back to providerAccountId for any row not
+    // yet backfilled/re-keyed, which before SPE-231 was itself the login.
+    String handle =
+        account.getLogin() != null ? account.getLogin() : account.getProviderAccountId();
+
     return new ProfileResponse(
         user.getId().toString(),
         account.getName(),
         account.getEmail(),
         account.getImage(),
         account.getProvider(),
-        account.getProviderAccountId(),
+        handle,
         user.getCreatedAt());
   }
 

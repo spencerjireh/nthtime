@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -57,6 +58,7 @@ class UserServiceTest {
     account.setUser(user);
     account.setProvider("github");
     account.setProviderAccountId(handle);
+    account.setLogin(handle);
     account.setName("Spencer Jireh");
     account.setEmail("spencer@example.com");
     account.setImage("https://avatars.githubusercontent.com/u/1?v=4");
@@ -67,12 +69,13 @@ class UserServiceTest {
   void findOrCreateUserRefreshesProfileFieldsOnAnExistingAccount() {
     AppUser existing = user(7L);
     AuthAccount stored = account(existing, "spencerjireh");
-    when(authAccountRepository.findByProviderAndProviderAccountId("github", "spencerjireh"))
+    stored.setProviderAccountId("1001"); // already keyed on the stable numeric id
+    when(authAccountRepository.findByProviderAndProviderAccountId("github", "1001"))
         .thenReturn(Optional.of(stored));
 
     Long id =
         userService.findOrCreateUser(
-            "github", "spencerjireh", "New Name", "new@example.com", "new-image");
+            "github", "1001", "spencerjireh", "New Name", "new@example.com", "new-image");
 
     assertThat(id).isEqualTo(7L);
     assertThat(stored.getName()).isEqualTo("New Name");
@@ -82,15 +85,50 @@ class UserServiceTest {
   }
 
   @Test
+  void findOrCreateUserFollowsARenameWithoutOrphaningTheUser() {
+    // The heart of SPE-231: same GitHub account (stable id 1001), new login after a rename.
+    AppUser existing = user(12L);
+    AuthAccount stored = account(existing, "old-login");
+    stored.setProviderAccountId("1001");
+    when(authAccountRepository.findByProviderAndProviderAccountId("github", "1001"))
+        .thenReturn(Optional.of(stored));
+
+    Long id =
+        userService.findOrCreateUser(
+            "github", "1001", "new-login", "Spencer", "spencer@example.com", "img");
+
+    assertThat(id).isEqualTo(12L); // the same user, not a freshly minted one
+    assertThat(stored.getLogin()).isEqualTo("new-login"); // display handle follows the rename
+    verify(appUserRepository, never()).save(any());
+  }
+
+  @Test
+  void findOrCreateUserDoesNotReKeyALegacyLoginKeyedAccount() {
+    // A pre-migration row still holds the login in provider_account_id. The stable-id lookup
+    // misses and there is NO login fallback -- re-keying by the mutable, reusable login would
+    // be an account-takeover vector -- so a fresh account is minted instead (SPE-231 review).
+    when(appUserRepository.save(any(AppUser.class))).thenReturn(user(20L));
+
+    Long id =
+        userService.findOrCreateUser(
+            "github", "1001", "spencerjireh", "Spencer", "spencer@example.com", "img");
+
+    assertThat(id).isEqualTo(20L); // a new user, not the legacy row
+    verify(authAccountRepository).save(any(AuthAccount.class));
+  }
+
+  @Test
   void findOrCreateUserCreatesAUserAndAccountWhenNoneExists() {
-    when(authAccountRepository.findByProviderAndProviderAccountId("github", "newcomer"))
-        .thenReturn(Optional.empty());
     when(appUserRepository.save(any(AppUser.class))).thenReturn(user(11L));
 
-    Long id = userService.findOrCreateUser("github", "newcomer", "New", "new@example.com", null);
+    Long id =
+        userService.findOrCreateUser("github", "2002", "newcomer", "New", "new@example.com", null);
 
     assertThat(id).isEqualTo(11L);
-    verify(authAccountRepository).save(any(AuthAccount.class));
+    ArgumentCaptor<AuthAccount> saved = ArgumentCaptor.forClass(AuthAccount.class);
+    verify(authAccountRepository).save(saved.capture());
+    assertThat(saved.getValue().getProviderAccountId()).isEqualTo("2002");
+    assertThat(saved.getValue().getLogin()).isEqualTo("newcomer");
   }
 
   @Test

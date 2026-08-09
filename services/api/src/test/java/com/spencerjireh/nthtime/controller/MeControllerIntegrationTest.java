@@ -29,6 +29,7 @@ class MeControllerIntegrationTest extends AbstractIntegrationTest {
     account.setUser(user);
     account.setProvider("github");
     account.setProviderAccountId(handle);
+    account.setLogin(handle);
     account.setName("Test User");
     account.setEmail(email);
     account.setImage("https://avatars.githubusercontent.com/u/1?v=4");

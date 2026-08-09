@@ -40,7 +40,10 @@ spring:
             redirect-uri: ${FRONTEND_URL:http://localhost:3000}/api/auth/callback/github
         provider:
           github:
-            user-name-attribute: login
+            # GitHub's stable numeric account id -- NOT the mutable login. Keying identity on
+            # the login orphaned users who renamed their GitHub account (SPE-231). The login is
+            # still captured separately as a display handle (auth_accounts.login).
+            user-name-attribute: id
 
   jackson:
     default-property-inclusion: non_null
